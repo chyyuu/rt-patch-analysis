@@ -1,0 +1,299 @@
+N:no patch
+p: pass using git am
+P: pass using patch
+r: already patched
+a: arm
+m: mips
+s: sparc
+w: powerpc
+c: changed
+n: nouse
+
+1 p
+2 r
+3 aN
+4 aN
+5 p
+6 p
+7 p
+8 p
+9 p
+10 p
+11 r
+12 p
+13 p
+14 p
+15 p
+16 p
+17 p
+18 sN
+19 p
+20 p
+21 c
+22 p
+23 p
+24 aN
+25 aN
+26 p
+27 c
+28 p
+29 aN
+30 aN
+31 aN
+32 p
+33 p
+34 p
+35 p
+36 p
+37 p
+38 p
+39 P
+40 p
+41 p
+42 p
+43 c commit 247bd003ec5dcb43895dc37f3feedb014ed5cde9
+44 p
+45 p
+46 p
+47 p
+48 p
+49 p
+50 p
+51 p
+52 P
+53 p
+54 p
+55 p
+56 p
+57 p
+58 p
+59 p
+60 p
+61 p
+62 c commit d22439f779f5e66cc6c4ea349eb5b01bcbfcecb8
+63 p
+64 p
+65 p
+66 p
+67 p
+68 p
+69 p
+70 p
+71 p
+72 p
+73 p
+74 c
+75 p
+76 c
+77 p
+78 p
+79 ap
+80 p
+81 p
+82 p
+83 p
+84 p
+85 p
+86 p
+87 P
+88 p
+89 p
+90 p
+91 P
+92 p
+93 p
+94 c
+95 p
+96 p
+97 P
+98 p
+99 p
+100 p
+101 P
+102 p
+103 p
+104 c
+105 p
+106 p
+107 p
+108 p
+109 p
+110 p
+111 p
+112 p
+113 p
+114 p
+115 p
+116 c
+117 p
+118 p
+119 P
+120 c
+121 p
+122 c
+123 p
+124 p
+125 p
+126 c
+127 p
+128 p
+129 p
+130 p
+131 p
+132 n commit 3ab7c086d5ec72585ef0158dbc265cb03ddc682a remove mutex_is_locked_by FUN, 所以这个patch 没用
+133 p
+134 p
+135 p
+136 p
+137 p
+138 p
+139 p
+140 p
+141 p
+142 p
+143 p
+144 c 小改动 有一个little patch“”在v4.10中存在。 --- include/linux/uprobes.h
+145-157 p
+158 P 几乎没改。
+159 P
+160-167 p
+168 c  mce.c中的mce_cpu_callback函数没有了,与commit 0e285d36bd2bfee0b95433ccc9065c878164f5b2相关 x86/mcheck: Move CPU_DEAD to hotplug state machine。 在完成202之后，我写了commit 18c042e2caaa10a2c02501d9391971a746b66508来fix compiling bug. 现在编译能通过了。
+169 P
+170 p
+171 p
+172 c
+173 n thermal/x86 函数没有了, commit 7646ff2e7a33ef097c0e8d189c63a60764f757dc pkg temp: Convert to hotplug state machine 也许要修改，但目前好像不用修改。
+174 p
+175 p
+176 p
+177 P
+178 P
+179 P
+180-187 p
+188 P
+189-196 p
+197 P
+198 p
+199 p
+200 P
+201 p
+202 c 手动patch，但struct gen_estimator变了，且除了已有的seqcount_t  running; 多了一个seqcount_t seq;是否对seq的操作也要改变一下？ 比如seqcount_init(&est->seq); 是否要修改？
+
+203 c
+204 p
+205 P
+206 P 注意，有一个sysrq.txt没有，但代码都能patch
+207 p
+208 p
+209 p
+210 c console_cont_flush FUN in printk.c was deleted by commit 5c2992ee7fd8a29d04125dc0aa3522784c5fa5eb. So the patch for console_cont_flush wasn't used.
+211 p
+212 c 
+213 wN
+214 wN
+215 wN
+216 aN
+217 aN
+218 aN
+219 p
+220 aN
+221 aN
+222 c 
+223 p
+224 wN
+225 mN
+226 p
+227 p
+228 p
+229 aN
+230 aN
+231 N 打patch不成功，代码变化大，但实际上rt好像也没啥用
+232 p
+233 p
+234 p
+235 p
+236 c  20170605
+237-245 p
+246 c
+247 c
+248-253 p
+254 c
+255-264 p
+265 c
+266 p
+267 c  entry_32.S 也修改了
+268 aN
+269 wN
+270 aN
+271-275 p
+276 c
+277 p
+278 P
+279 p
+280 p
+281 c
+282-285 p
+286 c  很简单，添加一个文件，表示版本号
+
+
+
++++ include/linux/uprobes.h
+@@ -27,6 +27,7 @@
+ #include <linux/errno.h>
+ #include <linux/rbtree.h>
+ #include <linux/types.h>
++#include <linux/wait.h>
+ 
+ struct vm_area_struct;
+ struct mm_struct;
+
+   
+===========
+编译错 4.10中没有cycle_t了。
+
+commit a5a1d1c2914b5316924c7893eb683a5420ebd3be
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Wed Dec 21 20:32:01 2016 +0100
+
+    clocksource: Use a plain u64 instead of cycle_t
+    
+    There is no point in having an extra type for extra confusion. u64 is
+    unambiguous.
+    
+    Conversion was done with the following coccinelle script:
+    
+    @rem@
+    @@
+    -typedef u64 cycle_t;
+    
+    @fix@
+    typedef cycle_t;
+    @@
+    -cycle_t
+    +u64
+    
+    Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: John Stultz <john.stultz@linaro.org>
+
+
+==============
+
+lkp测试出mm/workingset.c中的编译错，已经修复，并检查了潜在的bug，在
+对list_*_OP的处理中，应该都要加上 lock_lock_irq /lock_unlock_irq ...
+这是需要注意的语义错！ 一般patch解决不了，但通过分析语义 比如是list的读写，应该就要进行相应的保护
+但由于添加了函数，有对list的读写，导致已有patch很容易故略，产生bug
+
+===============
+commit fb486e8d07ee90aa5a78d92dec1b8d65fd4a259f
+update不够合理，原因是4.10已经去掉了很多哦与hotplug相关的老代码，
+但此patch还是基于老代码进行修改的，涉猎面比较多，会出现编译错。
+需要花时间看。
+
+肖络元： 
+目前的commit 6e61ac0c24bebcd1a6e496ab4dfabbb4ca0003d0
+只是把rt增加的大部分内容去掉，只是解决了编译错和在nonrt下正常运行的情况。
+
+
+
+

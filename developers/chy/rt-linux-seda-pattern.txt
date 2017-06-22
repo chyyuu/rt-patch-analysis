@@ -1,0 +1,691 @@
+pattern
+============
+
+
+一个task的各种上下文
+#define in_irq()        (hardirq_count()) 
+#define in_softirq()        (softirq_count()) 
+#define in_interrupt()        (irq_count())
+#define in_serving_softirq()    (softirq_count() & SOFTIRQ_OFFSET)
+
+所谓中断上下文，就是IRQ context ＋ softirq context＋NMI context
+这里的IRQ context其实就是hard irq context，也就是说明当前正在执行中断handler（top 
+half），只要preempt_count中的hardirq count大于0（＝1是没有中断嵌套，如果大于1，说
+明有中断嵌套），那么就是IRQ context。
+softirq context并没有那么的直接，一般人会认为当sofirq handler正在执行的时候就是softirq
+ context。这样说当然没有错，sofirq handler正在执行的时候，会增加softirq count，当
+然是softirq context。不过，在其他context的情况下，例如进程上下文中，有有可能因为同
+步的要求而调用local_bh_disable，这时候，通过local_bh_disable/enable保护起来的代码
+也是执行在softirq context中。当然，这时候其实并没有正在执行softirq handler。如果你
+确实想知道当前是否正在执行softirq handler，in_serving_softirq可以完成这个使命，这
+是通过操作preempt_count的bit 8来完成的。
+
+在linux kernel中，“越快越好型”有两种，softirq和tasklet，“随遇而安型”也有两种，workqueue
+和threaded irq handler。
+--------------------------------------------------------------------------------
+preempt_disable();/ migrate_disable
+preempt_disable();/ local_bh_disable(); //net/core/dev.c
+preempt_disable();/ dr_preload_lock();  //lib/idr.c
+preempt_disable();/ local_lock(send_msg_lock); drivers/connector/cn_proc.c
+
+preempt_enable();/ local_bh_enable();  //net/core/dev.c
+preempt_enable /migrate_enable
+preempt_enable(); / preempt_enable_nort(); //include/linux/radix-tree.h
+preempt_enable(); / idr_preload_unlock(); //lib/idr.c
+preempt_enable(); / local_unlock(send_msg_lock); //drivers/connector/cn_proc.c
+
+
+2.6内核和2.4内核显著的不同是提供了一个CONFIG_PREEMPT的选项，打开该选项后，linux 
+kernel就支持了内核代码的抢占（当然不能在临界区）对于抢占式内核而言，即便是从中断上下
+文返回内核空间的进程上下文，只要内核代码不在临界区内，就可以发生调度，让最高优先级的
+任务调度执行。因此，即便是打开了PREEMPT的选项，实际上linux系统的任务响应时间仍然是
+不确定的。一方面内核代码的临界区非常多，我们需要找到，系统中持有锁，或者禁止抢占的最
+大的时间片。另外一方面，在上图的T4中，能顺利的调度高优先级任务并非易事，这时候可能有
+触发的软中断，也可能有新来的中断，也可能某些driver的tasklet要执行，只有在没有任何
+bottom half的任务要执行的时候，调度器才会启动调度。
+强制线程化是一个和实时性相关的选项，从我的角度来看是一个很不好的设计（个人观点），各
+个驱动工程师在撰写自己的驱动代码的时候已经安排好了自己的上下文环境。有的是进程上下文，
+有的是中断上下文，在各自的上下文环境中，驱动工程师又选择了适合的内核同步机制。但是，
+强制线程化导致原来运行在中断上下文的primary handler现在运行在进程上下文，这有可能导
+致一些难以跟踪和定位的bug。
+
+一个task的thread info数据结构定义
+struct thread_info {  
+    …… 
+    int            preempt_count;    /* 0 => preemptable, <0 => bug */ 
+    …… 
+};
+preempt_count这个成员被用来判断当前进程是否可以被抢占。如果preempt_count不等于0（可
+能是代码调用preempt_disable显式的禁止了抢占，也可能是处于中断上下文等），说明当前不
+能进行抢占，如果preempt_count等于0，说明已经具备了抢占的条件（当然具体是否要抢占当前
+进程还是要看看thread info中的flag成员是否设定了_TIF_NEED_RESCHED这个标记，可能是当
+前的进程的时间片用完了，也可能是由于中断唤醒了优先级更高的进程）。 
+reemption count用来记录当前被显式的禁止抢占的次数，也就是说，每调用一次preempt_disable，
+preemption count就会加一，调用preempt_enable，该区域的数值会减去一。preempt_disable
+和preempt_enable必须成对出现，可以嵌套，最大嵌套的深度是255。
+
+include/linux/preempt.h
+/*
+ * We put the hardirq and softirq counter into the preemption
+ * counter. The bitmask has the following meaning:
+ *
+ * - bits 0-7 are the preemption count (max preemption depth: 256)
+ * - bits 8-15 are the softirq count (max # of softirqs: 256)
+ *
+ * The hardirq count could in theory be the same as the number of
+ * interrupts in the system, but we run all interrupt handlers with
+ * interrupts disabled, so we cannot have nesting interrupts. Though
+ * there are a few palaeontologic drivers which reenable interrupts in
+ * the handler, so we need more than one bit here.
+ *
+ *         PREEMPT_MASK:	0x000000ff
+ *         SOFTIRQ_MASK:	0x0000ff00
+ *         HARDIRQ_MASK:	0x000f0000
+ *             NMI_MASK:	0x00100000
+ * PREEMPT_NEED_RESCHED:	0x80000000
+ */
+
+
+#define preemptible()	(preempt_count() == 0 && !irqs_disabled())
+
+
+#ifdef CONFIG_PREEMPT_COUNT
+
+#define preempt_disable() \
+do { \
+	preempt_count_inc(); \
+	barrier(); \
+} while (0)
+
+#else /* !CONFIG_PREEMPT_COUNT */
+#define preempt_disable()			barrier()
+#define preempt_enable()			barrier()
+------
+#ifdef CONFIG_PREEMPT
+#define preempt_enable() \
+do { \
+	barrier(); \
+	if (unlikely(preempt_count_dec_and_test())) \
+		__preempt_schedule(); \
+} while (0)
+#else /* !CONFIG_PREEMPT */
+#define preempt_enable() \
+do { \
+	barrier(); \
+	preempt_count_dec(); \
+} while (0)
+
+会变成 percpu_add_op((pcp), val) 进行percpu的加或减1
+
+--------------------------------------------------------------------------------
+get_cpu / get_cpu_light()
+put_cpu / put_cpu_light()
+
+#define get_cpu()		({ preempt_disable(); smp_processor_id(); })
+#define put_cpu()		preempt_enable()
+--------------------------------------------------------------------------------
+
+cpu_relax /cpu_chill
+--------------------------------------------------------------------------------
+
+local_bh_enable/disable是给进程上下文使用的，用于防止softirq handler抢占local_bh_enable/disable
+之间的临界区的。在硬件中断的handler（top half）中，不应该调用disable/enable bottom half
+函数来保护共享数据，因为bottom half其实是不可能抢占top half的。
+
+irqs_disabled接口函数可以获知当前本地CPU中断是否是disable的，如果返回1，那么当前是
+disable 本地CPU的中断的。
+在linux kernel中，可以使用local_irq_disable和local_irq_enable来disable和enable本
+CPU中断。和硬件中断一样，软中断也可以disable，接口函数是local_bh_disable和local_bh_enable。
+虽然和想像的local_softirq_enable/disable有些出入，不过bh这个名字更准确反应了该接口
+函数的意涵，因为local_bh_disable/enable函数就是用来disable/enable bottom half的，
+这里就包括softirq和tasklet。
+
+本质上，关本地中断是一种比关本地bottom half更强劲的锁，关本地中断实际上是禁止了top 
+half和bottom half抢占当前进程上下文的运行。也许你会说：这也没有什么，就是有些浪费，
+至少代码逻辑没有问题。但事情没有这么简单，在local_bh_enable--->do_softirq--->__do_softirq
+中，有一条无条件打开当前中断的操作，也就是说，原本想通过local_irq_disable/local_irq_enable
+保护的临界区被破坏了，其他的中断handler可以插入执行，从而无法保证local_irq_disable/local_irq_enable
+保护的临界区的原子性，从而破坏了代码逻辑。
+in_irq()这个函数如果不等于0的话，说明local_bh_enable被irq_enter和irq_exit包围，也
+就是说在中断handler中调用了local_bh_enable/disable。这道理是和上面类似的，这里就不
+再详细描述了。
+
+local_irq_disable(); / local_irq_disable_nort();
+local_irq_disable(); / local_lock_irq(workingset_shadow_lock); // mm/workingset.c
+
+local_irq_enable(); / local_unlock_irq(workingset_shadow_lock); // mm/workingset.c
+local_irq_enable(); /	local_irq_enable_nort();
+
+local_irq_save(flags); / local_irq_save_nort(flags);
+local_irq_save(flags); / local_lock_irqsave(pa_lock, flags); 
+local_irq_save(flags); / cpu_lock_irqsave(cpu, flags); //mm/page_alloc.c
+
+local_irq_restore(flags); / local_irq_restore_nort(flags); //mm/page_alloc.c 
+local_irq_restore(flags);/  local_unlock_irqrestore(pa_lock, flags); //mm/page_alloc.c
+local_irq_restore(flags); / cpu_unlock_irqrestore(cpu, flags); //mm/page_alloc.c
+
+
+--------------------------------------------------------------------------------
+spin lock的特点如下：
+（1）spin lock是一种死等的锁机制。当发生访问资源冲突的时候，可以有两个选择：一个是死
+等，一个是挂起当前进程，调度其他进程执行。spin lock是一种死等的机制，当前的执行thread
+会不断的重新尝试直到获取锁进入临界区。
+（2）只允许一个thread进入。semaphore可以允许多个thread进入，spin lock不行，一次只能
+有一个thread获取锁并进入临界区，其他的thread都是在门口不断的尝试。
+（3）执行时间短。由于spin lock死等这种特性，因此它使用在那些代码不是非常复杂的临界区
+（当然也不能太简单，否则使用原子操作或者其他适用简单场景的同步机制就OK了），如果临界
+区执行时间太长，那么不断在临界区门口“死等”的那些thread是多么的浪费CPU啊（当然，现代
+CPU的设计都会考虑同步原语的实现，例如ARM提供了WFE和SEV这样的类似指令，避免CPU进入busy
+ loop的悲惨境地）
+（4）可以在中断上下文执行。由于不睡眠，因此spin lock可以在中断上下文中适用。
+
+当打开premptive选项后,1）进程A和进程B在某个系统调用过程中访问了共享资源R
+linux的kernel很简单，在A进程获取spin lock的时候，禁止本CPU上的抢占
+如果要加入中断上下文这个因素，linux kernel采用了这样的办法：如果涉及到中断上下文的
+访问，spin lock需要和禁止本CPU上的中断联合使用。
+
+对于UP，即便是打开的preempt选项，所谓的spin lock也不过就是disable preempt而已，
+不需定义什么spin lock的变量。
+
+通用（适用于各种arch）的spin lock使用spinlock_t这样的type name，各种arch定义自己的
+struct raw_spinlock。听起来不错的主意和命名方式，直到linux realtime tree（PREEMPT_RT）
+提出对spinlock的挑战。real time linux是一个试图将linux kernel增加硬实时性能的一个分
+支（你知道的，linux kernel mainline只是支持soft realtime），多年来，很多来自realtime
+ branch的特性被merge到了mainline上，例如：高精度timer、中断线程化等等。realtime tree
+希望可以对现存的spinlock进行分类：一种是在realtime kernel中可以睡眠的spinlock，另外
+一种就是在任何情况下都不可以睡眠的spinlock。分类很清楚但是如何起名字？起名字绝对是个
+技术活，起得好了事半功倍，可维护性好，什么文档啊、注释啊都素那浮云，阅读代码就是享受，
+如沐春风。起得不好，注定被后人唾弃，或者拖出来吊打。最终，spin lock的命名规范定义如下：
+（1）spinlock，在rt linux（配置了PREEMPT_RT）的时候可能会被抢占（实际底层可能是使用支持PI（优先级翻转）的mutext）。
+（2）raw_spinlock，即便是配置了PREEMPT_RT也要顽强的spin
+（3）arch_spinlock，spin lock是和architecture相关的，arch_spinlock是architecture相关的实现
+------
+接口API的类型	                                spinlock中的定义	        raw_spinlock的定义
+定义spin lock并初始化	                        DEFINE_SPINLOCK	                DEFINE_RAW_SPINLOCK
+动态初始化spin lock	                        spin_lock_init	                raw_spin_lock_init
+获取指定的spin lock	                        spin_lock	                raw_spin_lock
+获取指定的spin lock同时disable本CPU中断	        spin_lock_irq	                raw_spin_lock_irq
+保存本CPU当前的irq状态，disable本CPU中断
+并获取指定的spin lock	                        spin_lock_irqsave	        raw_spin_lock_irqsave
+获取指定的spin lock同时disable本CPU的bottom half spin_lock_bh	                raw_spin_lock_bh
+释放指定的spin lock	                        spin_unlock	                raw_spin_unlock
+释放指定的spin lock同时enable本CPU中断	        spin_unlock_irq	                raw_spin_unock_irq
+释放指定的spin lock同时恢复本CPU的中断状态	spin_unlock_irqstore	        raw_spin_unlock_irqstore
+获取指定的spin lock同时enable本CPU的bottom half	spin_unlock_bh	                raw_spin_unlock_bh
+尝试去获取spin lock，如果失败，不会spin，
+而是返回非零值	                                spin_trylock	                raw_spin_trylock
+判断spin lock是否是locked，如果其他的thread已经
+获取了该lock，那么返回非零值，否则返回0	        spin_is_locked	                raw_spin_is_locked
+
+
+read/write spinlock对于read thread和write thread采用相同的优先级，read thread必须
+等待write thread完成离开临界区才可以进入，而write thread需要等到所有的read thread完
+成操作离开临界区才能进入。
+------
+接口API描述	                                rw spinlock API
+定义rw spin lock并初始化	                DEFINE_RWLOCK
+动态初始化rw spin lock	                        rwlock_init
+获取指定的rw spin lock	                        read_lock 
+                                                write_lock
+获取指定的rw spin lock同时disable本CPU中断	read_lock_irq 
+                                                write_lock_irq
+保存本CPU当前的irq状态，disable本CPU中断并获取
+指定的rw spin lock	                        read_lock_irqsave 
+                                                write_lock_irqsave
+获取指定的rw spin lock同时disable本CPU的
+bottom half	                                read_lock_bh 
+                                                write_lock_bh
+释放指定的spin lock	                        read_unlock 
+                                                write_unlock
+释放指定的rw spin lock同时enable本CPU中断	read_unlock_irq 
+                                                write_unlock_irq
+释放指定的rw spin lock同时恢复本CPU的中断状态	read_unlock_irqrestore 
+                                                write_unlock_irqrestore
+获取指定的rw spin lock同时enable本CPU的
+bottom half	                                read_unlock_bh 
+                                                write_unlock_bh
+尝试去获取rw spin lock，如果失败，不会spin，
+而是返回非零值	                                read_trylock 
+                                                write_trylock
+
+-----
+RW spin lock给reader赋予了更高的优先级。让writer优先的锁的机制是seqlock。
+seqlock这种锁机制是倾向writer thread，也就是说，除非有其他的writer thread进入了临界
+区，否则它会长驱直入，无论有多少的reader thread都不能阻挡writer的脚步。
+对于seqlock，reader这一侧需要进行数据访问的过程中检测是否有并发的writer thread操作，
+如果检测到并发的writer，那么重新read。通过不断的retry，直到reader thread在临界区的
+时候，没有任何的writer thread插入即可。这样的设计对reader而言不是很公平，特别是如果
+writer thread负荷比较重的时候，reader thread可能会retry多次，从而导致reader thread
+这一侧性能的下降。
+总结一下seqlock的特点：临界区只允许一个writer thread进入，在没有writer thread的情况
+下，reader thread可以随意进入，也就是说reader不会阻挡reader。在临界区只有有reader 
+thread的情况下，writer thread可以立刻执行，不会等待。
+
+对于writer thread，获取seqlock操作如下：
+（1）获取锁（例如spin lock），该锁确保临界区只有一个writer进入。
+（2）sequence counter加一
+释放seqlock操作如下：
+（1）释放锁，允许其他writer thread进入临界区。
+（2）sequence counter加一（注意：不是减一哦，sequence counter是一个不断累加的counter）
+由上面的操作可知，如果临界区没有任何的writer thread，那么sequence counter是偶数（sequence counter初始化为0），如果临界区有一个writer thread（当然，也只能有一个），那么sequence counter是奇数。
+reader thread的操作如下：
+（1）获取sequence counter的值，如果是偶数，可以进入临界区，如果是奇数，那么等待writer离开临界区（sequence counter变成偶数）。进入临界区时候的sequence counter的值我们称之old sequence counter。
+（2）进入临界区，读取数据
+（3）获取sequence counter的值，如果等于old sequence counter，说明一切OK，否则回到step（1）
+
+
+适用场景。一般而言，seqlock适用于：
+（1）read操作比较频繁
+（2）write操作较少，但是性能要求高，不希望被reader thread阻挡（之所以要求write操作
+较少主要是考虑read side的性能）
+（3）数据类型比较简单，但是数据的访问又无法利用原子操作来保护。我们举一个简单的例子
+来描述：假设需要保护的数据是一个链表，header--->A node--->B node--->C node--->null。
+reader thread遍历链表的过程中，将B node的指针赋给了临时变量x，这时候，中断发生了，
+reader thread被preempt（注意，对于seqlock，reader并没有禁止抢占）。这样在其他cpu上
+执行的writer thread有充足的时间释放B node的memory（注意：reader thread中的临时变量
+x还指向这段内存）。当read thread恢复执行，并通过x这个指针进行内存访问（例如试图通过
+next找到C node），悲剧发生了……
+-----
+
+
+spin_lock_irqsave / raw_spin_lock_irqsave
+spin_unlock_irqrestore / raw_spin_unlock_irqrestore
+spin_unlock / raw_spin_unlock
+spin_lock /raw_spin_lock
+spin_lock_irq/ raw_spin_lock_irq
+spin_lock_irq(&pwq->pool->lock); / rcu_read_lock(); local_spin_lock_irq(pendingb_lock, &pwq->pool->lock); //kernel/workqueue.c
+spin_unlock_irq /raw_spin_unlock_irq /
+spin_unlock_irq(&pwq->pool->lock);/ local_spin_unlock_irq(pendingb_lock, &pwq->pool->lock); rcu_read_unlock(); //kernel/workqueue.c
+spin_lock_nested / raw_spin_lock_nested
+spin_lock_init/ raw_spin_lock_init
+spin_unlock(&sk->sk_lock.slock); / spin_unlock_bh(&sk->sk_lock.slock);   //net/core/sock.c
+wake_up_interruptible /swait_wake_interruptible
+wait_event_interruptible/ swait_event_interruptible
+
+--------------------------------------------------------------------------------
+
+
+disable_irq(irq)/disable_irq_nosync(irq);  // drivers/net/ethernet/realtek/8139too.c
+
+wake_up_all(&pci_cfg_wait);/wake_up_all_locked(&pci_cfg_wait); //drivers/pci/access.c
+
+write_seqcount_begin(&devnet_rename_seq);/mutex_lock(&devnet_rename_mutex); __raw_write_seqcount_begin(&devnet_rename_seq);
+write_seqcount_end(&devnet_rename_seq);/ __raw_write_seqcount_end(&devnet_rename_seq); mutex_unlock(&devnet_rename_mutex);
+seq = raw_seqcount_begin(&sp->so_reclaim_seqcount); \seq = read_seqbegin(&sp->so_reclaim_seqlock);
+seqcount_t	     so_reclaim_seqcount; \ seqlock_t	     so_reclaim_seqlock;
+read_seqcount_retry(&sp->so_reclaim_seqcount, seq)\  read_seqretry(&sp->so_reclaim_seqlock, seq)
+seqcount_init(&sp->so_reclaim_seqcount);\ seqlock_init(&sp->so_reclaim_seqlock);
+
+--------------------------------------------------------------------------------
+DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);/ DECLARE_SWAIT_QUEUE_HEAD_ONSTACK(wq);  // fs related files , commit 186 
+wait_queue_head_t	writer; / struct swait_queue_head	writer;
+.writer = __WAIT_QUEUE_HEAD_INITIALIZER(name.writer), \.writer = __SWAIT_QUEUE_HEAD_INITIALIZER(name.writer),
+init_waitqueue_head(&sem->writer);/i nit_swait_queue_head(&sem->writer);
+wake_up(&sem->writer);/swake_up(&sem->writer);
+wait_event(sem->writer, readers_active_check(sem)); /swait_event(sem->writer, readers_active_check(sem));
+
+
+
+OK，linux kernel已经把中断处理分成了top half和bottom half，看起来已经不错了，那为何
+还要提供softirq、tasklet和workqueue这些bottom half机制，linux kernel本来就够复杂了，
+bottom half还来添乱。实际上，在早期的linux kernel还真是只有一个bottom half机制，简称
+BH，简单好用，但是性能不佳。后来，linux kernel的开发者开发了task queue机制，试图来
+替代BH，当然，最后task queue也消失在内核代码中了。现在的linux kernel提供了三种bottom
+ half的机制，来应对不同的需求。workqueue和softirq、tasklet有本质的区别：workqueue运
+行在process context，而softirq和tasklet运行在interrupt context。因此，出现workqueue
+是不奇怪的，在有sleep需求的场景中，defering task必须延迟到kernel thread中执行，也就
+是说必须使用workqueue机制。softirq和tasklet是怎么回事呢？从本质上将，bottom half机
+制的设计有两方面的需求，一个是性能，一个是易用性。设计一个通用的bottom half机制来满
+足这两个需求非常的困难，因此，内核提供了softirq和tasklet两种机制。softirq更倾向于性
+能，而tasklet更倾向于易用性。
+
+--------------------------------------------------------------------------------
+
+静态定义的per cpu变量不能象普通变量那样进行访问，需要使用特定的接口函数
+get_cpu_var(var)
+put_cpu_var(var)
+
+上面这两个接口函数已经内嵌了锁的机制（preempt disable），用户可以直接调用该接口进行
+本CPU上该变量副本的访问。如果用户确认当前的执行环境已经是preempt disable（或者是更
+厉害的锁，例如关闭了CPU中断），那么可以使用lock-free版本的Per-CPU变量的API:
+__get_cpu_var。
+动态分配Per-CPU变量的API
+alloc_percpu(type) ：分配类型是type的per cpu变量，返回per cpu变量的地址（注意：不是各个CPU上的副本）
+void free_percpu(void __percpu *ptr) : 释放ptr指向的per cpu变量空间
+
+访问动态分配Per-CPU变量的API
+get_cpu_ptr  : 这个接口是和访问静态Per-CPU变量的get_cpu_var接口是类似的，当然，这个接口是for 动态分配Per-CPU变量
+put_cpu_ptr  : 同上
+per_cpu_ptr(ptr, cpu) : 根据per cpu变量的地址和cpu number，返回指定CPU number上该per cpu变量的地址
+ 
+
+
+get_cpu_ptr/raw_cpu_ptr
+
+area = &get_cpu_var(zs_map_area); / area = &get_locked_var(zs_map_area_lock, zs_map_area); //mm/zsmalloc.c
+put_cpu_var(zs_map_area); / put_locked_var(zs_map_area_lock, zs_map_area);  //mm/zsmalloc.c
+--------------------------------------------------------------------------------
+
+WARN_ON(!irqs_disabled());/WARN_ON_NONRT(!irqs_disabled());
+
+local_irq_save(flags); bit_spin_lock(BH_Uptodate_Lock, &first->b_state); \ flags = bh_uptodate_lock_irqsave(first);  //fs/buffer.c
+bit_spin_unlock(BH_Uptodate_Lock, &first->b_state); local_irq_restore(flags); \ bh_uptodate_unlock_irqrestore(first, flags); //fs/ntfs/aops.c
+
+
++#ifndef CONFIG_PREEMPT_RT_BASE
+ 	bit_spin_lock(0, (unsigned long *)b);
++#else
++	raw_spin_lock(&b->lock);
+
+
+cpu_relax() / cpu_chill()  //block/blk-ioc.c
+
+
+skb = skb_dequeue(&oldsd->input_pkt_queue) / skb = __skb_dequeue(&oldsd->input_pkt_queue) //net/core/dev.c
+read_seqcount_begin(running);/ net_seq_begin(running) //net/core/gen_estimator.c
+
+acpi_os_create_lock / acpi_os_create_raw_lock 
+acpi_os_delete_lock / acpi_os_delete_raw_lock
+acpi_os_release_lock / raw_spin_unlock_irqrestore
+acpi_os_acquire_lock / raw_spin_lock_irqsave
+
+do_set_cpus_allowed / set_cpus_allowed_ptr  //kernel/cpu.c
+
+
+
+migrate_disable(); rt_spin_lock_fastlock(...);/ rt_spin_lock_fastlock(...);  //kernel/locking/rtmutex.c
+
+
+blocking_notifier_chain_register/srcu_notifier_chain_register
+blocking_notifier_chain_unregister/ srcu_notifier_chain_unregister
+blocking_notifier_call_chain / srcu_notifier_call_chain  
+
+
+resched_curr/ resched_curr_lazy
+
+bit_spin_lock / zram_lock_table
+bit_spin_unlock / zram_unlock_table
+
+
+144: 
+添加了一堆文件，修改了一堆文件
+建立了新的api ：Add the preempt-rt lock replacement APIs
+
+157：
+work-simple: Simple work queue implemenation
+158： completion: Use simple wait queues
+159,160
+
+259,260?
+
+semantic
+===============
+把抢占点/锁的粒度分的更细，且没bug
+
+2: 
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -1264,7 +1264,7 @@ static int sc16is7xx_probe(struct device *dev,
+ 
+ 	/* Setup interrupt */
+ 	ret = devm_request_irq(dev, irq, sc16is7xx_irq,
+-			       IRQF_ONESHOT | flags, dev_name(dev), s);
++			       flags, dev_name(dev), s);
+ 	if (!ret)
+ 		return 0;
+
+
+
+
+9:
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index e23001bfcfee..359d5d169ec0 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -22,6 +22,7 @@
+ #include <linux/slab.h>
+ #include <linux/smp.h>
+ #include <linux/bitops.h>
++#include <linux/cpu.h>
+ 
+ static bool iova_rcache_insert(struct iova_domain *iovad,
+ 			       unsigned long pfn,
+@@ -420,10 +421,8 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 
+ 		/* Try replenishing IOVAs by flushing rcache. */
+ 		flushed_rcache = true;
+-		preempt_disable();
+ 		for_each_online_cpu(cpu)
+ 			free_cpu_cached_iovas(cpu, iovad);
+-		preempt_enable();
+ 		goto retry;
+ 	}
+
+
+@@ -781,7 +780,6 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 		iova_magazine_push(cpu_rcache->loaded, iova_pfn);
+ 
+ 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+-	put_cpu_ptr(rcache->cpu_rcaches);
+ 
+ 	if (mag_to_free) {
+ 		iova_magazine_free_pfns(mag_to_free, iovad);
+@@ -815,7 +813,7 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+ 	bool has_pfn = false;
+ 	unsigned long flags;
+ 
+-	cpu_rcache = get_cpu_ptr(rcache->cpu_rcaches);
++	cpu_rcache = raw_cpu_ptr(rcache->cpu_rcaches);
+ 	spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 
+ 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
+@@ -837,7 +835,6 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+ 		iova_pfn = iova_magazine_pop(cpu_rcache->loaded, limit_pfn);
+ 
+ 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+-	put_cpu_ptr(rcache->cpu_rcaches);
+ 
+ 	return iova_pfn;
+ }
+
+16:
+call sequence
+--- a/fs/btrfs/async-thread.c
++++ b/fs/btrfs/async-thread.c
+@@ -288,8 +288,8 @@ static void run_ordered_work(struct __btrfs_workqueue *wq)
+ 		 * we don't want to call the ordered free functions
+ 		 * with the lock held though
+ 		 */
+-		work->ordered_free(work);
+ 		trace_btrfs_all_work_done(work);
++		work->ordered_free(work);
+ 	}
+ 	spin_unlock_irqrestore(lock, flags);
+ }
+
+
+34:
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(sk_lock-AF_INET);
+                               lock(local_softirq_lock);
+                               lock(sk_lock-AF_INET);
+  lock(local_softirq_lock);
+
+ *** DEADLOCK ***
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2488,12 +2488,11 @@ void lock_sock_nested(struct sock *sk, int subclass)
+ 	if (sk->sk_lock.owned)
+ 		__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 	/*
+ 	 * The sk_lock has mutex_lock() semantics here:
+ 	 */
+ 	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+-	local_bh_enable();
+ }
+
+
+
+
+42:BUG
+@@ -441,7 +441,7 @@ EXPORT_SYMBOL_GPL(stop_critical_timings);
+ #ifdef CONFIG_PROVE_LOCKING
+ void time_hardirqs_on(unsigned long a0, unsigned long a1)
+ {
+-	trace_preemptirqsoff_hist(IRQS_ON, 0);
++	trace_preemptirqsoff_hist_rcuidle(IRQS_ON, 0);
+ 	if (!preempt_trace() && irq_trace())
+ 		stop_critical_timing(a0, a1);
+ }
+
+
+60:BUG
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1761,9 +1761,9 @@ static void __usb_hcd_giveback_urb(struct urb *urb)
+ 	 * and no one may trigger the above deadlock situation when
+ 	 * running complete() in tasklet.
+ 	 */
+-	local_irq_save(flags);
++	local_irq_save_nort(flags);
+ 	urb->complete(urb);
+-	local_irq_restore(flags);
++	local_irq_restore_nort(flags);
+ 
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
+
+
+
+76: mm/compaction.c
++				local_lock_irq(swapvec_lock);
+ 				lru_add_drain_cpu(cpu);
++				local_unlock_irq(swapvec_lock);
+
+
+78: include/linux/vmstat.h
++	preempt_disable_rt();
+ 	raw_cpu_add(vm_event_states.event[item], delta);
++	preempt_enable_rt();
+
+
+
+86: BUG mm/memcontrol.c
+-	curcpu = get_cpu();
++	curcpu = get_cpu_light();
+
+-	put_cpu();
++	put_cpu_light();
+
+
+164：
+mm: Protect activate_mm() by
+ preempt_[disable&enable]_rt()
+
+
+173：bug
+thermal: Defer thermal wakups to threads
+
+On RT the spin lock in pkg_temp_thermal_platfrom_thermal_notify will
+call schedule while we run in irq context.
+
+[<ffffffff816850ac>] dump_stack+0x4e/0x8f
+[<ffffffff81680f7d>] __schedule_bug+0xa6/0xb4
+[<ffffffff816896b4>] __schedule+0x5b4/0x700
+
+
+
+180: 引入cpu_chill() 代替 cpu_relax()
+
+182: bug , 用swait解决
+
+187: workqueue: Use normal rcu
+
+@@ -1226,6 +1226,7 @@ static int try_to_grab_pending(struct work_struct *work, bool is_dwork,
+ 	if (!test_and_set_bit(WORK_STRUCT_PENDING_BIT, work_data_bits(work)))
+ 		return 0;
+ 
++	rcu_read_lock();
+ 	/*
+ 	 * The queueing is in progress, or it is already queued. Try to
+ 	 * steal it from ->worklist without clearing WORK_STRUCT_PENDING.
+@@ -1264,10 +1265,12 @@ static int try_to_grab_pending(struct work_struct *work, bool is_dwork,
+ 		set_work_pool_and_keep_pending(work, pool->id);
+ 
+ 		spin_unlock(&pool->lock);
++		rcu_read_unlock();
+ 		return 1;
+ 	}
+ 	spin_unlock(&pool->lock);
+ fail:
++	rcu_read_unlock();
+ 	local_irq_restore(*flags);
+ 	if (work_is_canceling(work)
+
+
+189:
+workqueue: Prevent workqueue versus ata-piix livelock
+
+An Intel i7 system regularly detected rcu_preempt stalls after the kernel
+was upgraded from 3.6-rt to 3.8-rt. When the stall happened, disk I/O was no
+longer possible, unless the system was restarted.
+
+196:
+
+203:
+net: add back the missing serialization in
+ ip_send_unicast_reply()
+@@ -775,6 +780,7 @@ static void tcp_v4_send_ack(struct net *net,
+ 	if (oif)
+ 		arg.bound_dev_if = oif;
+ 	arg.tos = tos;
++	local_lock(tcp_sk_lock);
+ 	local_bh_disable();
+ 	ip_send_unicast_reply(*this_cpu_ptr(net->ipv4.tcp_sk),
+ 			      skb, &TCP_SKB_CB(skb)->header.h4.opt,
+@@ -783,6 +789,7 @@ static void tcp_v4_send_ack(struct net *net,
+ 
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	local_bh_enable();
++	local_unlock(tcp_sk_lock);
+ }
+
+204:
+net: add a lock around icmp_sk()
+@@ -215,12 +218,14 @@ static inline struct sock *icmp_xmit_lock(struct net *net)
+ 
+ 	local_bh_disable();
+ 
++	local_lock(icmp_sk_lock);
+ 	sk = icmp_sk(net);
+ 
+ 	if (unlikely(!spin_trylock(&sk->sk_lock.slock))) {
+ 		/* This can happen if the output path signals a
+ 		 * dst_link_failure() for an outgoing ICMP packet.
+ 		 */
++		local_unlock(icmp_sk_lock);
+ 		local_bh_enable();
+ 		return NULL;
+ 	}
+
+
+248:
+hotplug: Use set_cpus_allowed_ptr() in
+ sync_unplug_thread()
+
+do_set_cpus_allowed() is not safe vs ->sched_class change.
+
+285:
+@@ -1830,7 +1862,9 @@ static void destroy_worker(struct worker *worker)
+ 	pool->nr_workers--;
+ 	pool->nr_idle--;
+ 
++	rt_lock_idle_list(pool);
+ 	list_del_init(&worker->entry);
++	rt_unlock_idle_list(pool);

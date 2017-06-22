@@ -1,0 +1,478 @@
+0001-sched-reset...patch 失败，其他都成功
+原因是
+已经在v4.4 kernel的093e5840ae76f commit中了
+内容一样
+
+commit 093e5840ae76f1082633503964d035f40ed0216d
+Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date:   Mon Dec 21 18:17:10 2015 +0100
+
+    sched/core: Reset task's lockless wake-queues on fork()
+    
+    In the following commit:
+    
+      7675104990ed ("sched: Implement lockless wake-queues")
+    
+    we gained lockless wake-queues.
+    
+    The -RT kernel managed to lockup itself with those. There could be multiple
+    attempts for task X to enqueue it for a wakeup _even_ if task X is already
+    running.
+    
+    The reason is that task X could be runnable but not yet on CPU. The the
+    task performing the wakeup did not leave the CPU it could performe
+    multiple wakeups.
+    
+    With the proper timming task X could be running and enqueued for a
+    wakeup. If this happens while X is performing a fork() then its its
+    child will have a !NULL `wake_q` member copied.
+    
+    This is not a problem as long as the child task does not participate in
+    lockless wakeups :)
+    
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index fce002ee3ddf..1155eac61687 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -380,6 +380,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig)
+ #endif
+        tsk->splice_pipe = NULL;
+        tsk->task_frag.page = NULL;
++       tsk->wake_q.next = NULL;
+ 
+        account_kernel_stack(ti, 1);
+
+
+=================================================
+可能用seda的地方
+0008
+0009
+0012
+0041,42,43,44,45,48,59,65
+0058 live lock issues
+0060
+0061
+0062
+0063
+0067
+0072
+0082
+0134,135,136
+0142,143,144
+0168,169,170
+0171
+0172
+0238,239,240,241,242
+0254
+
+
+get_cpu / get_cpu_light()
+put_cpu / put_cpu_light()
+
+cpu_relax /cpu_chill
+local_irq_disable(); / local_irq_disable_nort();
+local_irq_enable(); /	local_irq_enable_nort();
+local_irq_save(flags); / local_irq_save_nort(flags);
+local_irq_restore(flags); / local_irq_restore_nort(flags);
+spin_lock_irqsave / raw_spin_lock_irqsave
+spin_unlock_irqrestore / raw_spin_unlock_irqrestore
+wake_up_interruptible /swait_wake_interruptible
+wait_event_interruptible/ swait_event_interruptible
+preempt_disable();/ migrate_disable
+preempt_enable /preempt_disable
+
+write_seqcount_begin(&devnet_rename_seq);/mutex_lock(&devnet_rename_mutex); __raw_write_seqcount_begin(&devnet_rename_seq);
+write_seqcount_end(&devnet_rename_seq);/ __raw_write_seqcount_end(&devnet_rename_seq); mutex_unlock(&devnet_rename_mutex);
+
+resched_curr/ resched_curr_lazy
+
+
+Q : 哪些情况下需要替换？ 
+
+From 7b27ba7ce85cb0c1220ca7bdafe8597a350a04e0 Mon Sep 17 00:00:00 2001
+From: Priyanka Jain <Priyanka.Jain@freescale.com>
+Date: Thu, 17 May 2012 09:35:11 +0530
+Subject: [PATCH 227/284] net: Remove preemption disabling in netif_rx()
+
+1)enqueue_to_backlog() (called from netif_rx) should be
+  bind to a particluar CPU. This can be achieved by
+  disabling migration. No need to disable preemption
+
+2)Fixes crash "BUG: scheduling while atomic: ksoftirqd"
+  in case of RT.
+  If preemption is disabled, enqueue_to_backog() is called
+  in atomic context. And if backlog exceeds its count,
+  kfree_skb() is called. But in RT, kfree_skb() might
+  gets scheduled out, so it expects non atomic context.
+
+3)When CONFIG_PREEMPT_RT_FULL is not defined,
+ migrate_enable(), migrate_disable() maps to
+ preempt_enable() and preempt_disable(), so no
+ change in functionality in case of non-RT.
+
+-Replace preempt_enable(), preempt_disable() with
+ migrate_enable(), migrate_disable() respectively
+-Replace get_cpu(), put_cpu() with get_cpu_light(),
+ put_cpu_light() respectively
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+可能bug的地方
+0018: drivers/net: Use disable_irq_nosync() in 8139too
+0020: net-flip-lock-dep-thingy.patch possible circular locking dependency detected
+0021: net: sched: Use msleep() instead of yield() deadlock
+0023: 
+0045: BUG: sleeping function called from invalid context at kernel/rtmutex.c:673
+0049: On x86_64 we must disable preemption before we enable interrupts for stack faults, int3 and debugging, because the current task is using
+a per CPU debug stack defined by the IST.
+
+0050: BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:917
+0054: BUG: sleeping function called from invalid context at kernel/rtmutex.c:658
+in_atomic(): 1, irqs_disabled(): 0, pid: 122, name: udevd
+
+0058: Preempt-RT runs into a live lock issue
+
+0069: BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:915
+|in_atomic(): 1, irqs_disabled(): 0, pid: 87, name: rcuop/7
+
+0071:BUG: sleeping function called from invalid context at kernel/rtmutex.c:659 in_atomic(): 1, irqs_disabled(): 0, pid: 17188, name: oom03
+
+0073:mm/rmap: retry lock check in anon_vma_free()
+
+0075: panic: skip get_random_bytes for RT_FULL in
+ init_oops_id
+
+0081:On RT that code is preemptible, so we cannot assign NULL to timers
+base as a preempter would spin forever in lock_timer_base().
+
+0087: hrtimer: Move schedule_work call to helper thread
+When run ltp leapsec_timer test, the following call trace is caught:
+
+BUG: sleeping function called from invalid context at kernel/rtmutex.c:659
+in_atomic(): 1, irqs_disabled(): 1, pid: 0, name: swapper/1
+
+
+0088: posix-timers: Thread posix-cpu-timers on -rt
+
+0094: sched: Take RT softirq semantics into account in  cond_resched()
+
+109: 关注tasklet: Prevent tasklets from going into infinite
+ spin in RT
+
+117：Fix bug on when a requeued RT task times out
+
+Requeue with timeout causes a bug with PREEMPT_RT_FULL.
+
+
+130： rcu: Frob softirq test
+
+With RT_FULL we get the below wreckage:
+
+[  126.060484] =======================================================
+[  126.060486] [ INFO: possible circular locking dependency detected ]
+
+
+145:fs/aio: simple simple work
+
+|BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:768
+|in_atomic(): 1, irqs_disabled(): 0, pid: 26, name: rcuos/2
+
+
+149: fs: ntfs: disable interrupt only on !RT
+
+151: x86/mce: use swait queue for mce wakeups
+
+We had a customer report a lockup on a 3.0-rt kernel that had the
+following backtrace:
+NOTE: THIS IS NOT A BUG ON MAINLINE
+
+166：  block: blk-mq: Use swait
+
+| BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914
+| in_atomic(): 1, irqs_disabled(): 0, pid: 255, name: kworker/u257:6
+| 5 locks held by kworker/u257:6/255:
+
+167：block/mq: drop per ctx cpu_lock   
+kernel BUG at kernel/locking/rtmutex.c:996!
+
+173: bug
+
+182: net/core/cpuhotplug: Drain input_pkt_queue lockless
+
+185: snd/pcm: fix snd_pcm_stream_lock*() irqs_disabled()
+ splats
+
+193： BUG: sleeping function called from invalid context at kernel/rtmutex.c:658
+[ 512.743000] in_atomic(): 0, irqs_disabled(): 128, pid: 994, name: a
+
+215： acpi/rt: Convert acpi_gbl_hardware lock back to a
+ raw_spinlock_t
+
+
+
+225：hotplug: Use set_cpus_allowed_ptr() in
+ sync_unplug_thread()
+do_set_cpus_allowed() is not safe vs ->sched_class change.
+
+226：scsi: qla2xxx: Use local_irq_save_nort() in
+ qla2x00_poll
+
+0254:orkqueue: Prevent deadlock/stall on RT
+
+
+
+
+################################
+#需要语义理解的地方
+114： rtmutex: trylock is okay on -RT
+116：rtmutex: Handle the various new futex race conditions
+
+132: rcu: Make ksoftirqd do RCU quiescent states 
+
+147: mm: Protect activate_mm() by
+ preempt_[disable&enable]_rt()
+
+149: fs: ntfs: disable interrupt only on !RT
+
+151: x86/mce: use swait queue for mce wakeups RT 和非RT有不同的理解
+
+160:block/mq: do not invoke preempt_disable()
+
+163： rt: Introduce cpu_chill()
+ causing the deadlock.
+
+Retry loops on RT might loop forever when the modifying side was
+preempted. Add cpu_chill() to replace cpu_relax(). cpu_chill()
+defaults to cpu_relax() for non RT. On RT it puts the looping task to
+sleep for a tick so the preempted task can make progress.
+
+
+
+
+
+SOME UNKNOWN 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+0077,78,80
+
+
+
+
+
+
+
+
+
+=================================================
+0001 sched: reset task's lockless wake-queues on fork()
+NOTICE: SCHED
+
+=================================================
+0002 ARM: smp: Move clear_tasks_mm_cpumask() call to  __cpu_die()
+
+NOTICE: ARCH:ARM
+arm/xtensa/sh/metag:__cpu_disable(void)
+powerpc: mmu_context_cpu_notify
+
+BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:917
+
+ 
+Defined in 2 files:
+
+include/linux/cpu.h, line 240 (as a prototype)
+kernel/cpu.c, line 261 (as a function)
+Referenced in 7 files:
+
+arch/arm/kernel/smp.c, line 233
+arch/metag/kernel/smp.c, line 290
+arch/powerpc/mm/mmu_context_nohash.c, line 400
+arch/sh/kernel/smp.c, line 155
+arch/xtensa/kernel/smp.c, line 279
+include/linux/cpu.h, line 240
+kernel/cpu.c, line 261
+
+
+=================================================
+0003: rtmutex: Handle non enqueued waiters gracefully
+
+NOTICE: SYNC
+Yimin debugged that in case of a PI wakeup in progress when
+rt_mutex_start_proxy_lock() calls task_blocks_on_rt_mutex() the latter
+returns -EAGAIN and in consequence the remove_waiter() call runs into
+a BUG_ON() because there is nothing to remove.
+
+=================================================
+0004 sparc64: use generic rwsem spinlocks rt
+NOTICE: CONF:ARCH:SPARC
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
+=================================================
