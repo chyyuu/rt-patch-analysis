@@ -22,7 +22,7 @@ https://github.com/fengguang/lkp-tests
 
 https://github.com/callgraph/openthos
 
-## 4. analysis rt-patchs(mjj & chy)
+## 4. rt-patchs analysis(mjj & chy)
 
 - https://github.com/chyyuu/rt-patch-analysis/tree/master/developers/mjj
 - https://github.com/chyyuu/rt-patch-analysis/tree/master/developers/chy
