@@ -24,5 +24,6 @@ https://github.com/callgraph/openthos
 
 ## 4. analysis rt-patchs(mjj & chy)
 
-https://github.com/openthos/research-analysis/blob/master/developers/%E8%8C%85%E4%BF%8A%E6%9D%B0/4.9-rt-api-changes.org
+- https://github.com/chyyuu/rt-patch-analysis/tree/master/developers/mjj
+- https://github.com/chyyuu/rt-patch-analysis/tree/master/developers/chy
 
