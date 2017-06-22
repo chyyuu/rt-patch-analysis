@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+import sys, os
+import re
+import unidiff
+import argparse
+from collections import defaultdict
+
+funcall = re.compile('^(?:.* )?(\w+)\(.*')
+
+def split_changed_lines(lines):
+    changes = []
+    contexts = []
+
+    acc = []
+    for line in lines:
+        if acc:
+            if line.is_context == acc[0].is_context:
+                acc.append(line)
+            else:
+                if acc[0].is_context:
+                    contexts.append(acc)
+                else:
+                    changes.append(acc)
+                acc = [line]
+        else:
+            acc.append(line)
+    if acc:
+        if acc[0].is_context:
+            contexts.append(acc)
+        else:
+            changes.append(acc)
+
+    return (changes, contexts)
+
+def scan_diff(f):
+    ret = set([])
+    diff = unidiff.PatchSet.from_filename(f)
+    for f in diff.modified_files:
+        for h in f:
+            deleted, cs1 = split_changed_lines(h.source_lines())
+            inserted, cs2 = split_changed_lines(h.target_lines())
+            if cs1 != cs2:
+                continue
+            if len(deleted) != len(inserted):
+                continue
+            if any(map(lambda x: len(x) != 1, deleted)) or any(map(lambda x: len(x) != 1, inserted)):
+                continue
+            # deleted = filter(lambda x: not x.is_context, h.source_lines())
+            # inserted = filter(lambda x: not x.is_context, h.target_lines())
+            # if len(deleted) != 1 or len(inserted) != 1:
+            #     continue
+            for d,i in zip(deleted, inserted):
+                deleted_line = str(d[0])[1:].strip()
+                inserted_line = str(i[0])[1:].strip()
+                m_d = funcall.match(deleted_line)
+                m_i = funcall.match(inserted_line)
+                if m_d and m_i:
+                    old = m_d.group(1)
+                    new = m_i.group(1)
+                    if old != new:
+                        ret.add((old, new))
+    return ret
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('directory')
+    args = parser.parse_args()
+
+    d = args.directory
+    patches = sorted([os.path.join(d, f) for f in os.listdir(d) if f.endswith('.patch')])
+
+    instances = defaultdict(lambda: [])
+    for p in patches:
+        changes = scan_diff(p)
+        for c in changes:
+            instances[c].append(p)
+
+    print '* raw data'
+    for k,v in sorted(instances.items()):
+        print '** %s -> %s' % (k[0], k[1])
+        for f in v:
+            print '   %s' % f
+
+if __name__ == '__main__':
+    main()
