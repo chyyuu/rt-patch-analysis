@@ -5,7 +5,7 @@
 https://github.com/chyyuu/linux/tree/v4.6-rt
 
 
-## 2. linux kernel compile and install (mym)
+## 2. linux kernel compile and install (mym & ycg)
 
 https://www.archlinux.org/packages/?q=linux
 https://git.archlinux.org/svntogit/packages.git/tree/trunk?h=packages/linux
