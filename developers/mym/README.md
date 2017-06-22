@@ -1,6 +1,6 @@
 your work
 
-have complished  a script to auto download kernel sourcecode, compile kernel sourcecode 
+have finished  a script to auto download kernel sourcecode, compile kernel sourcecode 
 install kernel vmlinuz and kernel module to  qemu_img disk. then boot the qemu_img disk use the new compiled kernel.
 
 
