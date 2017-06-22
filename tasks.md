@@ -23,3 +23,6 @@ https://github.com/fengguang/lkp-tests
 https://github.com/callgraph/openthos
 
 ## 4. analysis rt-patchs(mjj & chy)
+
+https://github.com/openthos/research-analysis/blob/master/developers/%E8%8C%85%E4%BF%8A%E6%9D%B0/4.9-rt-api-changes.org
+
