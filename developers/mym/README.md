@@ -6,3 +6,4 @@ install kernel vmlinuz and kernel module to  qemu_img disk. then boot the qemu_i
 
 1. should  check wether the kernel module loaded normally (lsmod udev?) ?
 1. use the ubuntu16.04 as qemu_img rootfs, then  boot test.
+1. lkp code需要在每次更新内核的时候也从github上面pull一下最新的代码，然后放到ubuntu rootfs里面，保证运行的是最新的lkp代码。
