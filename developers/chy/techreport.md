@@ -3,7 +3,7 @@
 这个报告的基本目标是：
 
 - 理解rt-linux的特征（设计特点，使用规则）和容易发生的错误
-- 让linux developer开发中减少错误和提供实时确定性 
+- 让linux developer开发中减少错误和提供实时确定性
 - 使得rt-linux的演化更加容易
 
 Challenge：
@@ -52,23 +52,23 @@ The key point of the PREEMPT_RT patch is to minimize the amount of kernel code t
 
 
 RT-PATCH的问题
-1 here is little quantitative understanding of their code bases. 
+1 here is little quantitative understanding of their code bases.
 一些具体的问题
 
-Where does the complexity of such systems lie? 
+Where does the complexity of such systems lie?
 
 what are most patches for?
 
 What types of bugs are common?
 
-Which performance features exist? Which reliability features are utilized? 
+Which performance features exist? Which reliability features are utilized?
 
 如果解决的这些问题，会带来的好处
 
 for developers, so that they can improve current designs and implementations
-and create better systems; 
+and create better systems;
 
-for tool builders, so that they can improve their tools to match reality (e.g., 
+for tool builders, so that they can improve their tools to match reality (e.g.,
 by finding the types of bugs that plague existing systems).
 
 解决方法
@@ -90,7 +90,7 @@ total 24 vers.
 
 一些分析的结论
 
-1  A large number of patches (nearly XX%) are XXX( e.g. maintenance) patches. The remaining dominant category is XXX(e.g. bugs)  
+1  A large number of patches (nearly XX%) are XXX( e.g. maintenance) patches. The remaining dominant category is XXX(e.g. bugs)
 
 
 
@@ -101,7 +101,7 @@ bug category (over XX% of all bugs).  Most of them are hard to detect via generi
 
 4 the study consequence of bugs.
 
-5 Beyond these results, another outcome of our work is an annotated dataset of rt-linux patches, which we make publicly available for further study 
+5 Beyond these results, another outcome of our work is an annotated dataset of rt-linux patches, which we make publicly available for further study
 
 The contributions of our work are as follows:
 
@@ -138,6 +138,9 @@ This option further reduces the latency of the kernel by making all kernel code 
 
 *4) PREEMPT_RT[GR-2].* The goal of the real-time preemption patch is to make fixed priority preemptive scheduling (i.e. POSIX SCHED_FIFO and SCHED_RR classes) as close as possible to their ideal behavior and all this with no impact for users/processes not interested in real-time. 
 
+> [Mao] Shall we discuss the difference among PREEMPT_RT_BASE, PREEMPT_RT_FULL
+> and PREEMPT_LAZY?
+
 
 
 ####  Comparing Priority Inversion
@@ -170,11 +173,14 @@ Disabling migration produces order-of-magnitude reductions in probability of pri
  Lesson: If you disable long enough, bad things are probable
 
 Disabling migration produces better results than does disabling preemption in all scenarios analyzed
+=======
+
+
 
 ### 2.3 Classification of RT patches
 
 we conduct a comprehensive study of its evolution by examining all RT patches from Linux 2.6.22
-(Jul ’07) to 4.11 (Jun ’17). 
+(Jul ’07) to 4.11 (Jun ’17).
 
 To better understand the evolution of different RT-linux, we conduct a broad study to answer three categories
 of fundamental questions:
@@ -242,7 +248,7 @@ We classify patches into five categories (Table 1): bug fixes (bug), performance
 Figure X shows the number and relative percentages of patch types for each rt-linux. Note that even though
 rt-linux exhibit significantly different levels of patch activity (shown by the total number of patches), the percentage breakdowns of patch types are relatively similar.
 
-Maintenance patches 
+Maintenance patches
 
 Bug patches
 
@@ -251,12 +257,18 @@ performance patches
 Summary:
 
 
+> [Mao] RTL consists of patchsets based on some Linux versions and thus does not
+> have a linear history. Do we need to discuss how many similar patches there
+> are in the patchsets for different versions? How many patches are merged into
+> mainline in each patchset? Looking into these may also reduce the total amount
+> of patches we need to inspect if quite a lot of the older patches are simply
+> re-applied to newer kernels.
 
 ### 3.2 Patch Size
 
 Patch size is one approximate way to quantify the complexity of a patch, and is defined here as the sum of linesof added and deleted by a patch. Figure X displays the size distribution of bug, performance, reliability, and feature patches. Most bug patches are small; XX% are less than 10 lines of code. However,  feature patches are significantly larger than other patch types. Over XX% of these patches have more than 100 lines of code; XX% have over 1000 lines of code.
 
-Summary: 
+Summary:
 
 
 
@@ -265,6 +277,10 @@ Summary:
 In this section, we study rt-linux bugs in detail to understand their patterns and consequences comprehensively. First, we show the distribution of bugs in rt-linux logical components. Second, we describe our bug pattern classification, bug trends, and bug consequences.  Finally, we analyze each type of bug with a more detailed classification and a number of real examples.
 
 
+> [Mao] Which bugs are going to be studied? If we only consider those explicitly
+> fixed in the patchset, I doubt if we have an adequate amount of bugs to
+> support our claim (25 patches w/ Call Trace in 4.9-rt1, mostly fixing
+> preemptible spin locks in preempt_disabled sections).
 
 ### 4.0 some rules on RT-patch
 
@@ -289,7 +305,7 @@ an overview of the features/rules that the PREEMPT_RT patch provides.
 
 #### Preemptible "interrupt disable" code sequences
 
-- Code that must interact with SA_NODELAY interrupts cannot use local_irq_save(), since this does not disable hardware interrupts. Instead, raw_local_irq_save() should be used. 
+- Code that must interact with SA_NODELAY interrupts cannot use local_irq_save(), since this does not disable hardware interrupts. Instead, raw_local_irq_save() should be used.
 - Similarly, raw spinlocks (raw_spinlock_t, raw_rwlock_t, and raw_seqlock_t) need to be used when interacting with SA_NODELAY interrupt handlers.
 - However, raw spinlocks and raw interrupt disabling should -not- be used outside of a few low-level areas, such as the scheduler, architecture-dependent code, and RCU.
 
@@ -347,6 +363,10 @@ A small but important set of patches improve performance and reliability, which 
 patches (Figure X). Performance and reliability patches account for X% and X% of patches respectively.
 
 
+> [Mao] If we want to collect RT performance metrics, we have to test the kernel
+> on bare metal (not in VMs) to remove the interference of the VMM. We need to
+> start this early next week so that the lkp-related stuff can be finished as
+> planned.
 
 ###  5.1  determinism related Performance Patches
 
@@ -435,4 +455,3 @@ The second change applies per-CPU variables to the slab allocator, as an alterna
 ### How many faults are there?
 
 ### Where are the faults?
-
