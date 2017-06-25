@@ -16,11 +16,13 @@
 >> chyyuu 基于 git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git 中的rt-liux branch即可，不用挑选下载3.x,4.x的patch。且从高版本到低版本一个一个实验。
 
 1. 分支(版本）名字和编译规则的映射关系（毛英明和杨兴杲负责，茅俊杰提供帮助）
+
    1.  根据commit能够查询到brantch或者tagname从而知道其对应的内核版本
    1.  知道该使用哪个版本的gcc和binutils编译代码
    1.  知道该使用什么.config文件(config文件中需要打开RT相关选项，并且将需要的内核ko编译进vmlinuz，从而不需要考虑ko文件安装的事情）
 
 1. lkp qemu测试（肖络元主要负责）
+
    1.  利用lkp运行rtlinux的cycletest测试用例
    1.  原本计划使用基于ubuntu的虚拟磁盘rootfs，在虚拟磁盘中运行rt-linux内核和lkp的全部代码（包括rt相关benchmark），这样的方式虚拟磁盘体积比较大。
    1.  肖络元和茅俊杰建议：使用lkp qemu命令，比较方便：
