@@ -138,6 +138,39 @@ This option further reduces the latency of the kernel by making all kernel code 
 
 *4) PREEMPT_RT[GR-2].* The goal of the real-time preemption patch is to make fixed priority preemptive scheduling (i.e. POSIX SCHED_FIFO and SCHED_RR classes) as close as possible to their ideal behavior and all this with no impact for users/processes not interested in real-time. 
 
+
+
+####  Comparing Priority Inversion
+
+spinlock related
+
+...
+
+ preempt_disable
+
+Note that preempt_disable() causes priority inversion:
+
+- Task 0 at priority 0 disables preemption on single-CPU system
+- Task 1 at priority 1 awakens, and is “born preempted” due to task 0's disabling of preemption
+
+ migration_disable
+
+Note that migration_disable() causes priority inversion:
+
+-  Task 1 at priority 1 running on CPU 0 disables migration
+- Task 2 at priority 2 awakens and runs on CPU 1
+- Task 3 at priority 3 awakens and preempts task 0 on CPU 0
+-  Task 3 disables migration
+-  Task 2 blocks, but neither task 1 nor task 3 can be migrated to CPU 1
+- This is a priority inversion involving the idle loop
+- Similar sequences result in more typical priority-inversion situations
+
+Disabling migration produces order-of-magnitude reductions in probability of priority inversion
+
+ Lesson: If you disable long enough, bad things are probable
+
+Disabling migration produces better results than does disabling preemption in all scenarios analyzed
+
 ### 2.3 Classification of RT patches
 
 we conduct a comprehensive study of its evolution by examining all RT patches from Linux 2.6.22
@@ -247,12 +280,12 @@ an overview of the features/rules that the PREEMPT_RT patch provides.
 #### Preemptible critical sections
 
 - In PREEMPT_RT, normal spinlocks (spinlock_t and rwlock_t) are preemptible, as are RCU read-side critical sections (rcu_read_lock() and rcu_read_unlock()). 
--  This preemptibility means that you can block while acquiring a spinlock, which in turn means that it is illegal to acquire a spinlock with either preemption or interrupts disabled (the one exception to this rule being the _trylock variants, at least as long as you don't repeatedly invoke them in a tight loop).
+- This preemptibility means that you can block while acquiring a spinlock, which in turn means that it is illegal to acquire a spinlock with either preemption or interrupts disabled (the one exception to this rule being the _trylock variants, at least as long as you don't repeatedly invoke them in a tight loop).
 - This preemptibility also means that spin_lock_irqsave() does -not- disable hardware interrupts when used on a spinlock_t.
 - what to do if you need to acquire a lock when either interrupts or preemption are disabled? You use a raw_spinlock_t instead of a spinlock_t, but continue invoking spin_lock() and friends on the raw_spinlock_t. 
 - These raw locks(raw_spinlock_t,raw_rwlock_t)) should not be needed outside of a few low-level areas, such as the scheduler, architecture-specific code, and RCU.
 - Since critical sections can now be preempted, you cannot rely on a given critical section executing on a single CPU -- it might move to a different CPU due to being preempted. 
--  when you are using per-CPU variables in a critical section, you must separately handle the possibility of preemption: (1) Explicitly disable preemption, either through use of get_cpu_var(), preempt_disable(), or disabling hardware interrupts. (2) Use a per-CPU lock to guard the per-CPU variables. One way to do this is by using the new DEFINE_PER_CPU_LOCKED() primitive
+- when you are using per-CPU variables in a critical section, you must separately handle the possibility of preemption: (1) Explicitly disable preemption, either through use of get_cpu_var(), preempt_disable(), or disabling hardware interrupts. (2) Use a per-CPU lock to guard the per-CPU variables. One way to do this is by using the new DEFINE_PER_CPU_LOCKED() primitive
 
 #### Preemptible "interrupt disable" code sequences
 
@@ -334,12 +367,54 @@ The second change applies per-CPU variables to the slab allocator, as an alterna
 
 ## References
 
-- [A realtime preemption overview](https://lwn.net/Articles/146861/)
 - [PREEMPT_RT](http://rt.wiki.kernel.org/index.php/Main_Page)
+
 - [RTAI](https://www.rtai.org/)
+
 - [xenomai](http://www.xenomai.org/index.php/Main_Page)
+
 - [dual-core RTLINUX](http://www.windriver.com/products/platforms/real-time_core/)
+
 - [xtratum](http://www.xtratum.org/)
+
+- [A realtime preemption overview](https://old.lwn.net/Articles/146861/)
+
+- [Different approaches to Linux realtime](http://lwn.net/Articles/143323/)
+
+- [Per-CPU variables and the realtime tree](https://lwn.net/Articles/452884)
+
+- [The return of simple wait queues](https://lwn.net/Articles/661424/)
+
+- [Realtime mainlining](https://lwn.net/Articles/662833/)
+
+- [PREEMPT_RT patchset](https://www.kernel.org/pub/linux/kernel/projects/rt/)
+
+- [Realtime preemption and read-copy-update](https://lwn.net/Articles/129511/)
+
+- [rationale for timer/hrtimer split](http://lwn.net/Articles/152363/)
+
+- [deferrable timers](http://lwn.net/Articles/228143/)
+
+- [high-resolution timer API – dated](http://lwn.net/Articles/167897/)
+
+- [Threaded Interrupts Approaches, October 2004](http://lwn.net/Articles/106010/) 
+
+- [Threaded Interrupts Debate, June 2005](http://lwn.net/Articles/138174/)
+
+  ​
+
+- [• http://en.wikipedia.org/wiki/RCU
+  • http://lwn.net/Articles/128228/ (early realtime-RCU attempt)
+  • http://www.rdrop.com/users/paulmck/RCU/OLSrtRCU.2006.08.11a.pdf
+  (realtime-RCU OLS paper)
+  • http://www.rdrop.com/users/paulmck/RCU/ (More RCU papers)
+  • http://www.rdrop.com/users/paulmck/RCU/linuxusage.html (Graphs)
+  • http://lwn.net/Articles/201195/ (Jon Corbet realtime-RCU writeup)
+  • http://lwn.net/Articles/220677/ (RCU priority boosting)
+  • http://lwn.net/Articles/220677/ (patch for higher-performance RCU)
+
+- Threaded Interrupts softirq splitting, June 2005](http://lwn.net/Articles/139062/)
+
 
 
 
