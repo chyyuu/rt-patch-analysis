@@ -13,6 +13,8 @@
    1.  将编译脚本和git自动更新检测脚本接到一起。能够通过git_url和git_branch_name下载对应分支最新的代码
    1.  开始编译内核生成vmlinuz。并且调用lkp qemu  传递-kernel /path/to/vmlinuz   -initrd=/path/to/initrd-lkp.img -append "git_commitid  bencmark_name"  
 
+>> chyyuu 基于 git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git 中的rt-liux branch即可，不用挑选下载3.x,4.x的patch。且从高版本到低版本一个一个实验。
+
 1. 分支(版本）名字和编译规则的映射关系（毛英明和杨兴杲负责，茅俊杰提供帮助）
    1.  根据commit能够查询到brantch或者tagname从而知道其对应的内核版本
    1.  知道该使用哪个版本的gcc和binutils编译代码
