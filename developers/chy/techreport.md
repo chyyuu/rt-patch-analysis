@@ -138,6 +138,9 @@ This option further reduces the latency of the kernel by making all kernel code 
 
 *4) PREEMPT_RT[GR-2].* The goal of the real-time preemption patch is to make fixed priority preemptive scheduling (i.e. POSIX SCHED_FIFO and SCHED_RR classes) as close as possible to their ideal behavior and all this with no impact for users/processes not interested in real-time. 
 
+> [Mao] Shall we discuss the difference among PREEMPT_RT_BASE, PREEMPT_RT_FULL
+> and PREEMPT_LAZY?
+
 ### 2.3 Classification of RT patches
 
 we conduct a comprehensive study of its evolution by examining all RT patches from Linux 2.6.22
@@ -218,6 +221,12 @@ performance patches
 Summary:
 
 
+> [Mao] RTL consists of patchsets based on some Linux versions and thus does not
+> have a linear history. Do we need to discuss how many similar patches there
+> are in the patchsets for different versions? How many patches are merged into
+> mainline in each patchset? Looking into these may also reduce the total amount
+> of patches we need to inspect if quite a lot of the older patches are simply
+> re-applied to newer kernels.
 
 ### 3.2 Patch Size
 
@@ -232,6 +241,10 @@ Summary:
 In this section, we study rt-linux bugs in detail to understand their patterns and consequences comprehensively. First, we show the distribution of bugs in rt-linux logical components. Second, we describe our bug pattern classification, bug trends, and bug consequences.  Finally, we analyze each type of bug with a more detailed classification and a number of real examples.
 
 
+> [Mao] Which bugs are going to be studied? If we only consider those explicitly
+> fixed in the patchset, I doubt if we have an adequate amount of bugs to
+> support our claim (25 patches w/ Call Trace in 4.9-rt1, mostly fixing
+> preemptible spin locks in preempt_disabled sections).
 
 ### 4.0 some rules on RT-patch
 
@@ -314,6 +327,10 @@ A small but important set of patches improve performance and reliability, which 
 patches (Figure X). Performance and reliability patches account for X% and X% of patches respectively.
 
 
+> [Mao] If we want to collect RT performance metrics, we have to test the kernel
+> on bare metal (not in VMs) to remove the interference of the VMM. We need to
+> start this early next week so that the lkp-related stuff can be finished as
+> planned.
 
 ###  5.1  determinism related Performance Patches
 
