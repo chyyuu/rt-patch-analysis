@@ -30,6 +30,6 @@
    1.  将内核版本的commit和需要测试的benchmakr_name通过-append传递给lkp
    1.  毛英明和肖络元约定-append传递参数问题。
 
-1. 后续计划： patch的人工分析和归类
+5. 后续计划： patch的人工分析和归类
 
 
