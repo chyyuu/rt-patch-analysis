@@ -4,6 +4,7 @@ have finished  a script to auto download kernel sourcecode, compile kernel sourc
 install kernel vmlinuz and kernel module to  qemu_img disk. then boot the qemu_img disk use the new compiled kernel.
 
 
-1. should  check wether the kernel module loaded normally (lsmod udev?) ?
-1. use the ubuntu16.04 as qemu_img rootfs, then  boot test.
-1. lkp code需要在每次更新内核的时候也从github上面pull一下最新的代码，然后放到ubuntu rootfs里面，保证运行的是最新的lkp代码。
+rt-linux-lkp.sh    https://github.com/chyyuu/linux-rt-devel.git  3ae7b241a0f49035e5b99b6b86c27fea5e49ef1c
+
+需要传递两个参数GIT_URL和commitID
+
