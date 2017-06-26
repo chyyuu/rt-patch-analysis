@@ -109,6 +109,6 @@ fi
 ## run qemu with qemu img 
 #############################   
  
-qemu-system-x86_64 -enable-kvm   -kernel ${BUILD_DIR}/arch/x86/boot/bzImage -initrd ${INITRD_IMG} -append  "commitid=${COMMITID}" -m 2048
+qemu-system-x86_64 -enable-kvm   -kernel ${BUILD_DIR}/arch/x86/boot/bzImage -initrd ${INITRD_IMG} -append  "commitid=${COMMITID} benchmark=abench" -m 2048
 
 ##lkp qemu
