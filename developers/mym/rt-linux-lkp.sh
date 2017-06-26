@@ -98,7 +98,7 @@ fi
 echo "FOR TEST!"
    
 
-INITRD_IMG=${WORK_DIR}/ubuntu_img.img
+INITRD_IMG=${WORK_DIR}/initrd_lkp.img
 if [ !  -f ${INITRD_IMG} ]
 then
    echo " error no   ${INITRD_IMG} " >&2
