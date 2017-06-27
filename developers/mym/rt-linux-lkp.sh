@@ -82,6 +82,17 @@ git checkout ${COMMITID}
   
   cd ${WORK_DIR}/${REPO_NAME}
   make   ARCH=x86_64  O=${BUILD_DIR}   defconfig
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_PREEMPT_RT_FULL
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_IRQSOFF_TRACER
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_INTERRUPT_OFF_HIST
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_PREEMPT_TRACER
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_PREEMPT_OFF_HIST
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_SCHED_TRACER
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_HWLAT_TRACER
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_WAKEUP_LATENCY_HIST
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_MISSED_TIMER_OFFSETS_HIST
+./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_HIST_TRIGGERS
+yes "" | make   ARCH=x86_64  O=${BUILD_DIR}   config >/dev/null
   make   ARCH=x86_64  O=${BUILD_DIR}   -j10  V=1  >${BUILD_DIR}/make.log 2>&1
 
 
@@ -109,6 +120,5 @@ fi
 ## run qemu with qemu img 
 #############################   
  
-qemu-system-x86_64 -enable-kvm   -kernel ${BUILD_DIR}/arch/x86/boot/bzImage -initrd ${INITRD_IMG} -append  "commitid=${COMMITID} benchmark=abench" -m 2048
-
+qemu-system-x86_64 -enable-kvm   -kernel ${BUILD_DIR}/arch/x86/boot/bzImage -initrd ${INITRD_IMG} -append  "console=ttyS0 commitid=${COMMITID} benchmark=abench" -m 2048 -nographic     >${BUILD_DIR}/boot_run_log.txt
 ##lkp qemu
