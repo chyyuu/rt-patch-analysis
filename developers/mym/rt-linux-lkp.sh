@@ -26,7 +26,9 @@ fi
   WORK_DIR=$(pwd)
 
 
-  BUILD_DIR=${WORK_DIR}/build/${REPO_NAME}/${COMMITID}
+  BUILD_COMMIT_DIR=${WORK_DIR}/build/${REPO_NAME}/${COMMITID}/$(date "+%Y-%m-%d_%H-%M-%S%z")
+  BUILD_DIR=${BUILD_COMMIT_DIR}/build_dir
+  KMODULE_DIR=${BUILD_COMMIT_DIR}/kmodule_dir
 
 #exit 
 #############################
@@ -41,15 +43,16 @@ fi
  
 cd ${WORK_DIR}
   
-  
-if [ -d ${BUILD_DIR} ]
-then
-
-   rm -rf ${BUILD_DIR}
-
-fi
-
+#if [ -d ${BUILD_COMMIT_DIR} ]
+#then
+#
+#   rm -rf ${BUILD_COMMIT_DIR}
+#
+#fi 
+mkdir -p  ${BUILD_COMMIT_DIR}
 mkdir -p  ${BUILD_DIR}
+mkdir -p  ${KMODULE_DIR}
+
 
 	
 #############################
@@ -72,7 +75,6 @@ fi
 cd ${WORK_DIR}/${REPO_NAME}
   
 git checkout ${COMMITID}
-##can we checkout files to anothoer dir?
 
   
 #############################
@@ -82,6 +84,7 @@ git checkout ${COMMITID}
   
   cd ${WORK_DIR}/${REPO_NAME}
   make   ARCH=x86_64  O=${BUILD_DIR}   defconfig
+#  make   ARCH=x86_64  O=${BUILD_DIR}   menuconfig
 ./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_PREEMPT_RT_FULL
 ./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_IRQSOFF_TRACER
 ./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_INTERRUPT_OFF_HIST
@@ -93,7 +96,7 @@ git checkout ${COMMITID}
 ./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_MISSED_TIMER_OFFSETS_HIST
 ./scripts/config --file ${BUILD_DIR}/.config --enable CONFIG_HIST_TRIGGERS
 yes "" | make   ARCH=x86_64  O=${BUILD_DIR}   config >/dev/null
-  make   ARCH=x86_64  O=${BUILD_DIR}   -j10  V=1  >${BUILD_DIR}/make.log 2>&1
+ make   ARCH=x86_64  O=${BUILD_DIR}   -j10  V=1  >${BUILD_DIR}/make.log 2>&1
 
 
 if [ !  -f ${BUILD_DIR}/arch/x86/boot/bzImage ]
@@ -102,6 +105,13 @@ then
    echo "  compile error!!! " >&2
    exit 1
 fi
+
+
+make   ARCH=x86_64  O=${BUILD_DIR}   INSTALL_MOD_PATH=${KMODULE_DIR}  modules_install  V=1  >${BUILD_DIR}/md_install.log 2>&1
+cd ${KMODULE_DIR}
+find . | cpio -o -H newc |gzip -9 > ../modules.cpio.gz  
+cd ${WORK_DIR}/${REPO_NAME}
+
    
 #############################
 ## test kernel via lkp
@@ -121,4 +131,6 @@ fi
 #############################   
  
 qemu-system-x86_64 -enable-kvm   -kernel ${BUILD_DIR}/arch/x86/boot/bzImage -initrd ${INITRD_IMG} -append  "console=ttyS0 commitid=${COMMITID} benchmark=abench" -m 2048 -nographic     >${BUILD_DIR}/boot_run_log.txt
-##lkp qemu
+
+#./run_lkp.sh bzImage COMMITID KERNEL_MODULE.cgz  benchmka  benchmkb benchmkc
+./run_lkp.sh ${BUILD_DIR}/arch/x86/boot/bzImage ${COMMITID}  ${BUILD_COMMIT_DIR}/modules.cpio.gz  benchmka  benchmkb benchmkc
