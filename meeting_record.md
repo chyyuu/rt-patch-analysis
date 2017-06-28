@@ -50,9 +50,9 @@ inside the RTpatch的学习记录：
 1. RTLINUX补丁，会将一部分spinlock（自旋锁）替换成了mutex_lock（睡眠锁），如果想继续使用自旋锁需要使用raw_spin_lock
    1.  但是不是所有原来使用spinlock的地方都可以换成mutex_lock，例如使用了percpu变量的进程，使用了mutex_lock会被迁移到别的进程上面去执行，这个时候percpu变量会出错。
 
-1. get_cpu不会抢占，不会进程迁移。get_cpu_light会抢占，但是不运行进程迁移
+1. get_cpu不会抢占，不会进程迁移。get_cpu_light会抢占，但是不允许进程迁移
 
-1. IRQ_NO_THREAD的中断例程里面不可以调用spin_lock（语义以及被替换为了mutex_lcok)会导致睡眠。如果driver里面的ISR例程，想要实现IRQ_THREAD,需要将原来使用spin_lock的地方，替换为raw_spin_lock。
+1. IRQ_NO_THREAD的中断例程里面不可以调用spin_lock（语义已经被替换为了mutex_lcok)会导致睡眠。如果driver里面的ISR例程，想要实现IRQ_THREAD,需要将原来使用spin_lock的地方，替换为raw_spin_lock。
 
 1. 查一下：in atomic path到底是什么意思？
 1. 查一下：PREEMPT_COUNT 实现机制。
