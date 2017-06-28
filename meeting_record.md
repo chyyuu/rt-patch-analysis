@@ -33,3 +33,29 @@
 5. 后续计划： patch的人工分析和归类
 
 
+开会时间：2017.6.28
+
+LKP RTLINUX测试部分：
+1. git update test，不能只focus github，需要能对任何git都能检测。最好使用已有的代码实现。（参考茅俊杰和肖络元之前写的代码）
+1  需要在真实系统上面利用LKP测试一下，RTLINUX的性能，写程序能够分析出测试结果中比较大的差异。（肖络元主要负责，毛英明提供帮助）
+1. SMI会影响实时性，可以通过hwlat detecter来检查SMI是否产生了干扰，如果是的关闭SMI 
+1. GPU driver里面的阻塞函数可能会影响实时性，用户态的图形应用程序，可能会触发gpu dirver的执行，导致影响实时性。后续可以测试一下opengl和mesa应用。
+
+inside the RTpatch的学习记录：
+1. kernel config里面提供了不同程度的抢占级别。不同时间的抢占，和不同地点的抢占。
+   1.  3个层次：关中断，关闭抢占，关闭进程迁移
+1. 需要看一下might_sleep的源代码实现，在原子操作里面是不允许调用might_sleep的（会发生睡眠和进程切换，破坏原子操作)
+   1.  但是存在一个疑问？（原子操作不就是临界区里面的代码吗？其不是已经有锁来保护了吗？即使发生了进程切换，其他进程仍然不能获得锁，依然无法执行临界区里面的内容啊？）
+
+1. RTLINUX补丁，会将一部分spinlock（自旋锁）替换成了mutex_lock（睡眠锁），如果想继续使用自旋锁需要使用raw_spin_lock
+   1.  但是不是所有原来使用spinlock的地方都可以换成mutex_lock，例如使用了percpu变量的进程，使用了mutex_lock会被迁移到别的进程上面去执行，这个时候percpu变量会出错。
+
+1. get_cpu不会抢占，不会进程迁移。get_cpu_light会抢占，但是不运行进程迁移
+
+1. IRQ_NO_THREAD的中断例程里面不可以调用spin_lock（语义以及被替换为了mutex_lcok)会导致睡眠。如果driver里面的ISR例程，想要实现IRQ_THREAD,需要将原来使用spin_lock的地方，替换为raw_spin_lock。
+
+1. 查一下：in atomic path到底是什么意思？
+1. 查一下：PREEMPT_COUNT 实现机制。
+
+
+
