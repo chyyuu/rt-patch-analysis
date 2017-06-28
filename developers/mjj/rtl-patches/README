@@ -1,0 +1,29 @@
+1. To download the patchsets under analysis, run:
+
+    $ bash download.sh
+
+2. To regenerate history.org, download the patchsets (see step 1), setup SeDA
+(git@enight.me:seda/seda.git), and run:
+
+    $ seda diff-patches --history `cat vers.txt`
+
+3. Under each section representing a unique patch, there is a list of versions
+in which that patch appears:
+
+      + [[file:2.6.22/new-softirq-code.patch][2.6.22]]
+      M [[file:2.6.23/new-softirq-code.patch][2.6.23]]
+        [[file:2.6.24/new-softirq-code.patch][2.6.24]]
+      M [[file:2.6.25/new-softirq-code.patch][2.6.25]]
+        [[file:2.6.26/new-softirq-code.patch][2.6.26]]
+      - 2.6.29
+
+   Meaning of the first character:
+
+      [+]        This patch is introduced in this version (not seen in previous ones).
+      [-]        This patch appears in the previous version but disappears in this one.
+      [ ]        This patch is seen in both the previous and current version.
+                 This patch is identical in the two versions.
+      [m]        This patch is seen in both the previous and current version.
+                 The changed lines in the patches are identical, but the contexts are not.
+      [M]        This patch is seen in both the previous and current version.
+                 The changed lines in the patches are different.

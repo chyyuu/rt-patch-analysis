@@ -1,5 +1,6 @@
 #!/bin/bash
 
+truncate -s 0 vers.txt
 cat list.txt | while read f; do
     fn=`basename $f`
     ver=`echo $fn | sed "s/patch[^-]*-//g" | sed "s/-broken-out//g" | sed "s/\.tar.*//g"`
@@ -8,5 +9,10 @@ cat list.txt | while read f; do
     else
 	ver=`echo $ver | grep -o "^[34]\.[0-9]*"`
     fi
-    wget -nc $f && tar xf $fn && mv patches $ver
+    if [[ ! -d $ver ]]; then
+	wget -nc $f && tar xf $fn && mv patches $ver
+    fi
+    echo -n "$ver " >> vers.txt
 done
+
+bash ./fix-subjects.sh
