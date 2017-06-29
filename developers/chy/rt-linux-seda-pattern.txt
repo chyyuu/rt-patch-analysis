@@ -20,6 +20,32 @@ softirq context并没有那么的直接，一般人会认为当sofirq handler正
 确实想知道当前是否正在执行softirq handler，in_serving_softirq可以完成这个使命，这
 是通过操作preempt_count的bit 8来完成的。
 
+atomic上下文的定义
+/*
+ * Do not use in_atomic() in driver code.
+ */
+#define in_atomic()	(preempt_count() != 0)
+
+/*
+ * We mask the PREEMPT_NEED_RESCHED bit so as not to confuse all current users
+ * that think a non-zero value indicates we cannot preempt.
+ */
+static __always_inline int preempt_count(void)
+{
+	return raw_cpu_read_4(__preempt_count) & ~PREEMPT_NEED_RESCHED;
+}
+
+对于一个 preemption counter而言，其内容成分如下
+ *         PREEMPT_MASK:	0x000000ff
+ *         SOFTIRQ_MASK:	0x0000ff00
+ *         HARDIRQ_MASK:	0x000f0000
+ *             NMI_MASK:	0x00100000
+ * PREEMPT_NEED_RESCHED:	0x80000000
+
+这意味着 atomic context=no_preempt+in_hardirq + in_softirq+ nmi
+
+
+
 在linux kernel中，“越快越好型”有两种，softirq和tasklet，“随遇而安型”也有两种，workqueue
 和threaded irq handler。
 --------------------------------------------------------------------------------
@@ -689,3 +715,41 @@ do_set_cpus_allowed() is not safe vs ->sched_class change.
 +	rt_lock_idle_list(pool);
  	list_del_init(&worker->entry);
 +	rt_unlock_idle_list(pool);
+
+
+# 需要注意
+##  void migrate_disable(void) core.c
+void migrate_disable(void)
+{
+	struct task_struct *p = current;
+
+	if (in_atomic() || irqs_disabled()) {
+#ifdef CONFIG_SCHED_DEBUG
+		p->migrate_disable_atomic++;
+#endif
+		return;
+	}
+#ifdef CONFIG_SCHED_DEBUG
+	if (unlikely(p->migrate_disable_atomic)) {
+		tracing_off();
+		WARN_ON_ONCE(1);
+	}
+#endif
+
+	if (p->migrate_disable) {
+		p->migrate_disable++;
+		return;
+	}
+
+	/* get_online_cpus(); */
+
+	preempt_disable();
+	preempt_lazy_disable();
+	pin_current_cpu();
+	p->migrate_disable = 1;
+
+	p->cpus_ptr = cpumask_of(smp_processor_id());
+	p->nr_cpus_allowed = 1;
+
+	preempt_enable();
+}

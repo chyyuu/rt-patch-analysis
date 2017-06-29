@@ -43,7 +43,7 @@ Critical sections are preemptible. The _irq operations (e.g., write_lock_irqsave
 #### RW_LOCK_UNLOCKED(mylock)
 The RW_LOCK_UNLOCKED macro now takes the lock itself as an argument, which is required for priority inheritance. Unfortunately, this makes its use incompatible with the PREEMPT and non-PREEMPT kernels. Uses of RW_LOCK_UNLOCKED should therefore be changed to DEFINE_RWLOCK().
 
-#### raw_rwlock_t
+#### raw_rwlock_t （disappear in 4.x）
 Special variant of rwlock_t that offers the traditional behavior, so that critical sections are non-preemptible and _irq operations really disable hardware interrupts. Note that you should use the normal primitives (e.g., read_lock()) on raw_rwlock_t. That said, as with raw_spinlock_t, you shouldn't be using raw_rwlock_t -at- -all- except deep within architecture-specific code or low-level scheduling and synchronization primitives. Misuse of raw_rwlock_t will destroy the realtime aspects of PREEMPT_RT.	You have once again been warned.
 
 #### seqlock_t
@@ -293,3 +293,34 @@ cpu_chill-->cpu_rest OR cpu_relax
  for (like spinning on a status variable or bit). This is equivalent to
  a msleep(1) and you can hope that the status will change by the time
  you wake up.
+
+##对抢占preempt的理解
+抢占式内核实现的原理是在释放自旋锁时或从中断返回时，如果当前执行进程的 need_resched 被标记，则进行抢占式调度。Linux内核在线程信息结构上增加了成员preempt_count作为内核抢占锁，为0表示可以进行内核高度，它随spinlock和rwlock等一起加锁和解锁。
+在抢占式内核中，认为如果内核不是在一个中断处理程序中，并且不在被 spinlock等互斥机制保护的临界代码中，就认为可以"安全"地进行进程切换。Linux内核将临界代码都加了互斥机制进行保护，同时，还在运行时间过长的代码路径上插入调度检查点，打断过长的执行路径，这样，任务可快速切换进程状态，也为内核抢占做好了准备。
+
+禁止内核抢占的情况列出如下：
+
+（1）内核执行中断处理例程时不允许内核抢占，中断返回时再执行内核抢占。
+
+（2）当内核执行软中断或tasklet时，禁止内核抢占，软中断返回时再执行内核抢占。
+
+（3）在临界区禁止内核抢占，临界区保护函数通过抢占计数宏控制抢占，计数大于0，表示禁止内核抢占。
+
+### 内核抢占API函数
+
+在中断或临界区代码中，线程需要关闭内核抢占，因此，互斥机制（如：自旋锁（spinlock）、RCU等）、中断代码、链表数据遍历等需要关闭内核抢占，临界代码运行完时，需要开启内核抢占。关闭/开启内核抢占需要使用内核抢占API函数preempt_disable和preempt_enable。
+
+内核抢占API函数说明如下（在include/linux/preempt.h中）：
+
+preempt_enable() //内核抢占计数preempt_count减1
+
+preempt_disable() //内核抢占计数preempt_count加1
+
+preempt_enable_no_resched()　 //内核抢占计数preempt_count减1，但不立即抢占式调度
+
+preempt_check_resched () //如果必要进行调度
+
+preempt_count() //返回抢占计数
+
+preempt_schedule() //核抢占时的调度程序的入口点
+
