@@ -33,5 +33,5 @@ while true; do
 			$script "$url" "$sha"
 		fi
 	done <<< "$ret"
-	sleep 3
+	sleep 60
 done
