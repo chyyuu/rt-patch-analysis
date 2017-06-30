@@ -25,3 +25,21 @@
 通过指定新编译的内核的bzImage文件和commitid，还有benchmarkname来运行lkp测试。
 
 
+## 使用方法
+*  自动回归测试 
+
+修改git-polling.sh中url="https://github.com/chyyuu/linux-rt-devel.git" 为想要测试的giturl 
+
+执行./git-polling.sh
+
+*  自动批量测试指定版本代码
+
+修改build_bat.sh中url="https://github.com/chyyuu/linux-rt-devel.git" 为想要测试的giturl tagename为想要测试的版本号码或者commitid 
+
+执行./build_bat.sh
+
+*  查看测试结果
+
+/build/${REPO_NAME}/${COMMITID}/$(date)/build_dir/目录中存放了内核源代码的编译结果。和编译日志make.log和简单的启动测试日志boot_run.log
+可以通过查看这两个文件从而知道是否编译或者启动成功。
+
