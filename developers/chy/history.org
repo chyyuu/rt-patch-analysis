@@ -1,182 +1,182 @@
-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C: feature}
+* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::feature}
   + [[file:2.6.22/i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch][2.6.22]]  {MOD::arch/i386}
   - 2.6.23  {M}
-* [2.6.22         ] clockevents-fix-device-replacement.patch {C: feature}
+* [2.6.22         ] clockevents-fix-device-replacement.patch {C::feature}
   + [[file:2.6.22/clockevents-fix-device-replacement.patch][2.6.22]]  {kernel} 
   - 2.6.23  {M}
-* [2.6.22         ] barrier - a scalable synchonisation barrier {C:perf}
+* [2.6.22         ] barrier - a scalable synchonisation barrier {C::perf}
   + [[file:2.6.22/barrier.patch][2.6.22]]  {MOD::include/linux} {API::init_barrier, barrier_lock, barrier_sync}
   - 2.6.23  {D}
-* [2.6.22         ] cpuidle_last_measured_004.patch  {C:perf}
+* [2.6.22         ] cpuidle_last_measured_004.patch  {C::perf}
   + [[file:2.6.22/cpuidle_last_measured_004.patch][2.6.22]]  {MOD::drivers/cpuidle} {API::menu_select,menu_reflect,menu_scan_devic}
   - 2.6.23  
-* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C: null}
+* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::null}
   + [[file:2.6.22/i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch][2.6.22]]  {MOD::arch/i386, include/asm-i386} 
   - 2.6.23
-* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C: feature}
+* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature}
   + [[file:2.6.22/cpuidle_add_support_for_max_cstate_limit.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch
-  + [[file:2.6.22/use-write_trylock_irqsave-in-ptrace_attach.patch][2.6.22]]
+* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::reconstruct}
+  + [[file:2.6.22/use-write_trylock_irqsave-in-ptrace_attach.patch][2.6.22]]  {MOD::kernel/}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch
-  + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix.patch][2.6.22]]
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::null}
+  + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix.patch][2.6.22]]  {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] hrtimer-no-getnstimeofday.patch
-  + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]]
+* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::feature}
+  + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch
-  + [[file:2.6.22/nohz-fix-nohz-x86-dyntick-idle-handling.patch][2.6.22]]
+* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::feature}
+  + [[file:2.6.22/nohz-fix-nohz-x86-dyntick-idle-handling.patch][2.6.22]]   {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-resume-logic.patch
-  + [[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]]
+* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::??::sync::resume clockevent device before resume tick}
+  + [[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]]   {MOD::arch/i386,arch/arm,arch/sh,arch/sparc64, kernel/time, include/linux}
   - 2.6.23
-* [2.6.22         ] x86_64-fix-apic-typo.patch
-  + [[file:2.6.22/x86_64-fix-apic-typo.patch][2.6.22]]
+* [2.6.22         ] x86_64-fix-apic-typo.patch {C::null}
+  + [[file:2.6.22/x86_64-fix-apic-typo.patch][2.6.22]]  {MOD::include/asm-x86_64}
   - 2.6.23
-* [2.6.22         ] i386-remove-volatile-in-apicc.patch
-  + [[file:2.6.22/i386-remove-volatile-in-apicc.patch][2.6.22]]
+* [2.6.22         ] i386-remove-volatile-in-apicc.patch {C::reconstruct::var::remove volatile feature in static int var}
+  + [[file:2.6.22/i386-remove-volatile-in-apicc.patch][2.6.22]] {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] slob-scale-break-out-caches.patch
-  + [[file:2.6.22/slob-scale-break-out-caches.patch][2.6.22]]
+* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::cache::use kmem_cache,remove global slobfree}
+  + [[file:2.6.22/slob-scale-break-out-caches.patch][2.6.22]]  {MOD::mm}
   - 2.6.23
-* [2.6.22         ] highres-improve-debug-output.patch
-  + [[file:2.6.22/highres-improve-debug-output.patch][2.6.22]]
+* [2.6.22         ] highres-improve-debug-output.patch {C::feature::debuginfo::debuginfo for hrtimer and clock events}
+  + [[file:2.6.22/highres-improve-debug-output.patch][2.6.22]] {MOD::arch/i386, kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_hang_fix.patch
-  + [[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]
+* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idel handler}
+  + [[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]  {MOD::dirvers/cpuidle}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_api_change.patch
-  + [[file:2.6.22/cpuidle_governor_api_change.patch][2.6.22]]
+* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::add opt stage to check something}
+  + [[file:2.6.22/cpuidle_governor_api_change.patch][2.6.22]]  {MOD::dirvers/cpuidle, include/linux}
   - 2.6.23
-* [2.6.22         ] time-warp-detect.patch
-  + [[file:2.6.22/time-warp-detect.patch][2.6.22]]
+* [2.6.22         ] time-warp-detect.patch {C::fixbug::timer expire early::semantic::add wrap_check_clock_was_changed fun}
+  + [[file:2.6.22/time-warp-detect.patch][2.6.22]]  {MOD::kernel,kernel/time, include/linux}
   - 2.6.23
-* [2.6.22         ] preempt-realtime-gtod-fixups.patch
-  + [[file:2.6.22/preempt-realtime-gtod-fixups.patch][2.6.22]]
+* [2.6.22         ] preempt-realtime-gtod-fixups.patch {C::perf::disableirq::put read_persistent_clock() outside write_seqlock_irqsave/irqrestore}
+  + [[file:2.6.22/preempt-realtime-gtod-fixups.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] highres-improve-debug-output-fix.patch
-  + [[file:2.6.22/highres-improve-debug-output-fix.patch][2.6.22]]
+* [2.6.22         ] highres-improve-debug-output-fix.patch {C::feature::debuginfo}
+  + [[file:2.6.22/highres-improve-debug-output-fix.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] lockdep-prove-locking.patch
-  + [[file:2.6.22/lockdep-prove-locking.patch][2.6.22]]
+* [2.6.22         ] lockdep-prove-locking.patch {C::feature::add config}
+  + [[file:2.6.22/lockdep-prove-locking.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] v2.6.21.4-rt11
-  + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]]
+* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::timer expire early::semantic::add wrap_check_clock_was_changed fun}
+  + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]]  {MOD::kernel,kernel/time}
   - 2.6.23
-* [2.6.22         ] spinlock-init-cleanup.patch
-  + [[file:2.6.22/spinlock-init-cleanup.patch][2.6.22]]
+* [2.6.22         ] spinlock-init-cleanup.patch {C::restruct::spin_lock_init}
+  + [[file:2.6.22/spinlock-init-cleanup.patch][2.6.22]]  {MOD::drivers/pci}
   - 2.6.23
-* [2.6.22         ] x86_64-use-generic-cmos-update.patch
-  + [[file:2.6.22/x86_64-use-generic-cmos-update.patch][2.6.22]]
+* [2.6.22         ] x86_64-use-generic-cmos-update.patch {C::restruct::set_rtc_mmss}
+  + [[file:2.6.22/x86_64-use-generic-cmos-update.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch
-  + [[file:2.6.22/cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch][2.6.22]]
+* [2.6.22         ] cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch {C::feature::cpuidle}
+  + [[file:2.6.22/cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch
-  + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc.patch][2.6.22]]
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch {C::restruct::update_cmos_clock}
+  + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc.patch][2.6.22]]  {MOD::arch/i386,arch/sparc64,include/asm-i386,kernel/time,include/linux}
   - 2.6.23
-* [2.6.22         ] lockstat: core infrastructure
-  + [[file:2.6.22/lockstat-core.patch][2.6.22]]
+* [2.6.22         ] lockstat: core infrastructure {C::feature::lockstate}
+  + [[file:2.6.22/lockstat-core.patch][2.6.22]]  {MOD::kernel,include/linux}
   - 2.6.23
-* [2.6.22         ] lockstat: better class name representation
-  + [[file:2.6.22/lockstat_class_name.patch][2.6.22]]
+* [2.6.22         ] lockstat: better class name representation {C::feature::printinfo}
+  + [[file:2.6.22/lockstat_class_name.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch
-  + [[file:2.6.22/cdrom-use-mdelay-instead-of-jiffies-loop.patch][2.6.22]]
+* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch {C::perf::msleep}
+  + [[file:2.6.22/cdrom-use-mdelay-instead-of-jiffies-loop.patch][2.6.22]]  {MOD::drivers/cdrom}
   - 2.6.23
-* [2.6.22         ] cpuidle-fix-modular-build.patch
-  + [[file:2.6.22/cpuidle-fix-modular-build.patch][2.6.22]]
+* [2.6.22         ] cpuidle-fix-modular-build.patch {C::null}
+  + [[file:2.6.22/cpuidle-fix-modular-build.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] s_files-per_cpu-flush-fix.patch
-  + [[file:2.6.22/s_files-per_cpu-flush-fix.patch][2.6.22]]
+* [2.6.22         ] s_files-per_cpu-flush-fix.patch {C::fixbug::data lose::semantic::add workqueue to flush files}
+  + [[file:2.6.22/s_files-per_cpu-flush-fix.patch][2.6.22]]  {MOD::fs}
   - 2.6.23
-* [2.6.22         ] lockstat_bounce.patch
-  + [[file:2.6.22/lockstat_bounce.patch][2.6.22]]
+* [2.6.22         ] lockstat_bounce.patch {C::feature::lockstat:measure lock bouncing}
+  + [[file:2.6.22/lockstat_bounce.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] module-pde-race-fixes.patch
-  + [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]]
+* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::race::->data is valid when ->read/write_proc are called::
+  + [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]]  {MOD::fs/proc,include/linux}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_core_cpuidle_infrastructure.patch
-  + [[file:2.6.22/cpuidle_take2_core_cpuidle_infrastructure.patch][2.6.22]]
+* [2.6.22         ] cpuidle_take2_core_cpuidle_infrastructure.patch {C::feature::cpudile infrasturcture}
+  + [[file:2.6.22/cpuidle_take2_core_cpuidle_infrastructure.patch][2.6.22]]  {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] x86_64-fix-irq-regs-leftovers.patch
-  + [[file:2.6.22/x86_64-fix-irq-regs-leftovers.patch][2.6.22]]
+* [2.6.22         ] x86_64-fix-irq-regs-leftovers.patch  {C::restruct}
+  + [[file:2.6.22/x86_64-fix-irq-regs-leftovers.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] cpuidle_developer_switch_04.patch
-  + [[file:2.6.22/cpuidle_developer_switch_04.patch][2.6.22]]
+* [2.6.22         ] cpuidle_developer_switch_04.patch  {C::feature::cpudile infrasturcture}
+  + [[file:2.6.22/cpuidle_developer_switch_04.patch][2.6.22]]  {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] clockevents-remove-prototypes-of-removed-functions.patch
-  + [[file:2.6.22/clockevents-remove-prototypes-of-removed-functions.patch][2.6.22]]
+* [2.6.22         ] clockevents-remove-prototypes-of-removed-functions.patch {C::restruct}
+  + [[file:2.6.22/clockevents-remove-prototypes-of-removed-functions.patch][2.6.22]]  {MOD::include/linux|
   - 2.6.23
-* [2.6.22         ] cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch
-  + [[file:2.6.22/cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch][2.6.22]]
+* [2.6.22         ] cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch {C::null}
+  + [[file:2.6.22/cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] hrtimer-speedup-hrtimer_enqueue.patch
-  + [[file:2.6.22/hrtimer-speedup-hrtimer_enqueue.patch][2.6.22]]
+* [2.6.22         ] hrtimer-speedup-hrtimer_enqueue.patch {C::performance::speedup hrtimer_enqueue}
+  + [[file:2.6.22/hrtimer-speedup-hrtimer_enqueue.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch
-  + [[file:2.6.22/acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch][2.6.22]]
+* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::??::sync::check ARB_DIS status before reading from ICH deivce}
+  + [[file:2.6.22/acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] lockdep_fixup_annotate.patch
-  + [[file:2.6.22/lockdep_fixup_annotate.patch][2.6.22]]
+* [2.6.22         ] lockdep_fixup_annotate.patch {C::feature::fixup annotation}
+  + [[file:2.6.22/lockdep_fixup_annotate.patch][2.6.22]]  {MOD::net/core}
   - 2.6.23
-* [2.6.22         ] x86_64-remove-now-useless-hpet-code.patch
-  + [[file:2.6.22/x86_64-remove-now-useless-hpet-code.patch][2.6.22]]
+* [2.6.22         ] x86_64-remove-now-useless-hpet-code.patch {C::restruct::remove code}
+  + [[file:2.6.22/x86_64-remove-now-useless-hpet-code.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] net/input: fix net/rfkill/rfkill-input.c bug on 64-bit systems
-  + [[file:2.6.22/rfkill-input-fix.patch][2.6.22]]
+* [2.6.22         ] net/input: fix net/rfkill/rfkill-input.c bug on 64-bit systems {C::fixbug::??::var::irq flags must be unsigned long}
+  + [[file:2.6.22/rfkill-input-fix.patch][2.6.22]]  {MOD::net/rfkill}
   - 2.6.23
-* [2.6.22         ] mm-lockless-preempt-fixup.patch
-  + [[file:2.6.22/mm-lockless-preempt-fixup.patch][2.6.22]]
+* [2.6.22         ] mm-lockless-preempt-fixup.patch {C::fixbug::livelock::fun::create/use new functions}
+  + [[file:2.6.22/mm-lockless-preempt-fixup.patch][2.6.22]]  {MOD::inlcude/linux}
   - 2.6.23
-* [2.6.22         ] x86_64-remove-dead-code-and-other-janitor-work-in-tscc.patch
-  + [[file:2.6.22/x86_64-remove-dead-code-and-other-janitor-work-in-tscc.patch][2.6.22]]
+* [2.6.22         ] x86_64-remove-dead-code-and-other-janitor-work-in-tscc.patch {C::restruct::remove unused code and var}
+  + [[file:2.6.22/x86_64-remove-dead-code-and-other-janitor-work-in-tscc.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] hrt-rt-fix-merge-artifact.patch
-  + [[file:2.6.22/hrt-rt-fix-merge-artifact.patch][2.6.22]]
+* [2.6.22         ] hrt-rt-fix-merge-artifact.patch {C::restruct::merge}
+  + [[file:2.6.22/hrt-rt-fix-merge-artifact.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] rt-mutex-spinlock-nested-export-fix.patch
-  + [[file:2.6.22/rt-mutex-spinlock-nested-export-fix.patch][2.6.22]]
+* [2.6.22         ] rt-mutex-spinlock-nested-export-fix.patch {C::restruct::export __spin_lock_irqsave_nested}
+  + [[file:2.6.22/rt-mutex-spinlock-nested-export-fix.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_warning_fix_002.patch
-  + [[file:2.6.22/cpuidle_warning_fix_002.patch][2.6.22]]
+* [2.6.22         ] cpuidle_warning_fix_002.patch {C::fixbug::??::uninitialized var}
+  + [[file:2.6.22/cpuidle_warning_fix_002.patch][2.6.22]]  {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] lockdep: variuos fixes
-  + [[file:2.6.22/lockdep_fixups.patch][2.6.22]]
+* [2.6.22         ] lockdep: variuos fixes {C::restruct::various update}
+  + [[file:2.6.22/lockdep_fixups.patch][2.6.22]]  {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] fork.c-takeover-tasklets-warning-fix.patch
-  + [[file:2.6.22/fork.c-takeover-tasklets-warning-fix.patch][2.6.22]]
+* [2.6.22         ] fork.c-takeover-tasklets-warning-fix.patch {C::null}
+  + [[file:2.6.22/fork.c-takeover-tasklets-warning-fix.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] s_files-proc-generic-fix.patch
-  + [[file:2.6.22/s_files-proc-generic-fix.patch][2.6.22]]
+* [2.6.22         ] s_files-proc-generic-fix.patch {C::fixbug::??::advance filevec_add_drain_all()}
+  + [[file:2.6.22/s_files-proc-generic-fix.patch][2.6.22]]  {MOD::fs/proc}
   - 2.6.23
-* [2.6.22         ] softlockup-print-regs.patch
-  + [[file:2.6.22/softlockup-print-regs.patch][2.6.22]]
+* [2.6.22         ] softlockup-print-regs.patch {C::feature::print regs}
+  + [[file:2.6.22/softlockup-print-regs.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] sched-cfs-latest.patch
-  + [[file:2.6.22/sched-cfs-latest.patch][2.6.22]]
+* [2.6.22         ] sched-cfs-latest.patch {C::restruct}
+  + [[file:2.6.22/sched-cfs-latest.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch
-  + [[file:2.6.22/clockevents-fix-typo-in-acpi_pmc.patch][2.6.22]]
+* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch {C::restruct}
+  + [[file:2.6.22/clockevents-fix-typo-in-acpi_pmc.patch][2.6.22]]  {MOD::drivers/clocksource}
   - 2.6.23
-* [2.6.22         ] timerc-cleanup-recently-introduced-whitespace-damage.patch
-  + [[file:2.6.22/timerc-cleanup-recently-introduced-whitespace-damage.patch][2.6.22]]
+* [2.6.22         ] timerc-cleanup-recently-introduced-whitespace-damage.patch {C::null::same}
+  + [[file:2.6.22/timerc-cleanup-recently-introduced-whitespace-damage.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] hpet-build-fix.patch
-  + [[file:2.6.22/hpet-build-fix.patch][2.6.22]]
+* [2.6.22         ] hpet-build-fix.patch  {C::null}
+  + [[file:2.6.22/hpet-build-fix.patch][2.6.22]] {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] sched-cfs-v2.6.22.1-v19.patch
-  + [[file:2.6.22/sched-cfs-v2.6.22.1-v19.patch][2.6.22]]
+* [2.6.22         ] sched-cfs-v2.6.22.1-v19.patch {C::null::cfs sched}
+  + [[file:2.6.22/sched-cfs-v2.6.22.1-v19.patch][2.6.22]] {MOD::kernel,fs/proc,arch/i386,block,init,include/linux, include/asm-generic}
   - 2.6.23
-* [2.6.22         ] Clockevents remove clockevents_{release,request}_device
-  + [[file:2.6.22/clockevents-remove-unused-code.patch][2.6.22]]
+* [2.6.22         ] Clockevents remove clockevents_{release,request}_device {C::restruct::remove clockevents_release/request_device}
+  + [[file:2.6.22/clockevents-remove-unused-code.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch
-  + [[file:2.6.22/cpuidle_take2_basic_documentation_for_cpuidle.patch][2.6.22]]
+* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::null}
+  + [[file:2.6.22/cpuidle_take2_basic_documentation_for_cpuidle.patch][2.6.22]] {MOD::Documentation}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_ratings_04.patch
-  + [[file:2.6.22/cpuidle_governor_ratings_04.patch][2.6.22]]
+* [2.6.22         ] cpuidle_governor_ratings_04.patch {C::feature::governor rating scheme}
+  + [[file:2.6.22/cpuidle_governor_ratings_04.patch][2.6.22]] {MOD::drivers//cpuidle,include/linux}
   - 2.6.23
 * [2.6.22         ] cpuidle_1_bit_field_must_be_unsigned.patch
   + [[file:2.6.22/cpuidle_1_bit_field_must_be_unsigned.patch][2.6.22]]

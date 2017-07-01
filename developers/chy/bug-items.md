@@ -39,6 +39,29 @@ __tasklet_common_schedule().
 This fix avoids this race by making sure *after* we've locked the
 tasklet that the STATE_SCHED bit is set before adding it to the list.
 
+### [2.6.22         ] preempt-realtime-gtod-fixups.patch
+注意:write_seqlock_irqsave/irqrestore
+Index: linux-rt.q/kernel/time/timekeeping.c
+===================================================================
+--- linux-rt.q.orig/kernel/time/timekeeping.c
++++ linux-rt.q/kernel/time/timekeeping.c
+@@ -366,9 +366,13 @@ static int timekeeping_suspend(struct sy
+ {
+ 	unsigned long flags;
+ 
++	/*
++	 * Read the CMOS outside the raw xtime_lock:
++	 */
++	timekeeping_suspend_time = read_persistent_clock();
++
+ 	write_seqlock_irqsave(&xtime_lock, flags);
+ 	timekeeping_suspended = 1;
+-	timekeeping_suspend_time = read_persistent_clock();
+ 	write_sequnlock_irqrestore(&xtime_lock, flags);
+ 
+ 	clockevents_notify(CLOCK_EVT_NOTIFY_SUSPEND, NULL);
+
+
 ## 3.0-rt1
 
 ###  drivers-dca-convert-dcalock-to-raw.patch
