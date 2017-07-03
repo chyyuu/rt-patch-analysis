@@ -1,4 +1,4 @@
-* [Wikipedia Real-time computing](https://en.wikipedia.org/wiki/Real-time_computing#Hard)
+# [Wikipedia Real-time computing](https://en.wikipedia.org/wiki/Real-time_computing#Hard)
 - Real-time computing
   - Real-time computing (RTC), or reactive computing describes hardware and software systems subject to a "real-time constraint", for example from event to system response. Real-time programs must guarantee response within specified time constraints, often referred to as "deadlines". Real-time responses are often understood to be in the order of milliseconds, and sometimes microseconds.
   - A real-time system has been described as one which "controls an environment by receiving data, processing them, and returning the results sufficiently quickly to affect the environment at that time."
@@ -8,23 +8,23 @@
     - Soft: the usefullness of a result degrades after its deadline, thereby degrading the system's performance.
 > The difference of the latter two are the usefullness of a delayed result? Thus it is a definition of the demand made by applications.
 
-* [Wikipedia Real-time operating system](https://en.wikipedia.org/wiki/Real-time_operating_system)
+# [Wikipedia Real-time operating system](https://en.wikipedia.org/wiki/Real-time_operating_system)
 - RTOS
   - A real-time operating system (RTOS) is an operating system (OS) intended to serve real-time applications that process data as it comes in, typically without buffer delays. Processing time requirements (including any OS delay) are measured in tenths of seconds or shorter increments of time. They either are event driven or time sharing.
   - A key characteristic of an RTOS is the level of its consistency concerning the amount of time it takes to accept and complete an application's task; the variability is jitter.[1] A hard real-time operating system has less jitter than a soft real-time operating system.
   - The chief design goal is a guarantee of a soft or hard performance category.
   - Key factors in a real-time OS are minimal interrupt latency and minimal thread switching latency.
 
-* [Wikipedia RTLinux](https://en.wikipedia.org/wiki/RTLinux)*(Saved for future reference)*
+# [Wikipedia RTLinux](https://en.wikipedia.org/wiki/RTLinux)*(Saved for future reference)*
 - RTLinux
   - Simple description: RTLinux is a hard realtime RTOS microkernel that runs the entire Linux operating system as a **fully preemptive process**. The hard real-time property makes it possible to control robots, data acquisition systems, manufacturing plants, and other time-sensitive instruments and machines from RTLinux applications.
   - Even with a similar name it is not related the "Real-Time Linux" project of the Linux Foundation.
 - Background
   The key design objective was to add hard real-time capabilities to commodity OS to facilitate the development of complex control programs with both capabilities.
 
-* [Wikipedia Scheduling analysis real-time systems](https://en.wikipedia.org/wiki/Scheduling_analysis_real-time_systems)
+# [Wikipedia Scheduling analysis real-time systems](https://en.wikipedia.org/wiki/Scheduling_analysis_real-time_systems)
 
-* [Attempted summary of "RT patch acceptance" thread, take2](https://old.lwn.net/Articles/143323/)
+# [Attempted summary of "RT patch acceptance" thread, take2](https://old.lwn.net/Articles/143323/)
 - Realtime operating system, especially hard-realtime, must be designed from ground up; Some exceptions:
   - **Many realtim eapplications use a very restricted subset of general-purpose OS.** Possible to provide very limited realtime support.
   - **Dramatic increase in performance.**
@@ -82,7 +82,7 @@
     - Forbid resourses to be acquired by tasks of different priorities.
     - Priority inheritance
 
-* To be read
+# To be read
 - [https://old.lwn.net/Articles/146861/](https://old.lwn.net/Articles/146861/)
 - [http://www2.rdrop.com/users/paulmck/realtime/paper/MV07_RTLdeepdive.2007.09.26a.pdf](http://www2.rdrop.com/users/paulmck/realtime/paper/MV07_RTLdeepdive.2007.09.26a.pdf)
 - [https://events.linuxfoundation.org/sites/events/files/slides/linux-con-rt-into-mainline-2015.pdf](https://events.linuxfoundation.org/sites/events/files/slides/linux-con-rt-into-mainline-2015.pdf)
