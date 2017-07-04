@@ -183,10 +183,10 @@ These are subject to change, but give a rough idea of the sorts of debug feature
 - DEBUG_RT_LOCKING_MODE enables runtime switching of spinlocks from preemptible to non-preemptible. This is useful to kernel developers who want to evaluate the overhead of the PREEMPT_RT mechanisms.
 - DETECT_SOFTLOCKUP causes the kernel to dump the current stack trace of any process that spends more than 10 seconds in the kernel without rescheduling.
 - LATENCY_TRACE records function-call traces representing long-latency events. These traces may be read out of the kernel via /proc/latency_trace. It is possible to filter out low-latency traces via /proc/sys/kernel/preempt_thresh.
-This config option is extremely useful when tracking down excessive latencies.
+  This config option is extremely useful when tracking down excessive latencies.
 
 - LPPTEST enables a device driver that performs parallel-port based latency measurements, such as used by Kristian Benoit for measurements posted on LKML in June 2005.
-Use scripts/testlpp.c to actually run this test.
+  Use scripts/testlpp.c to actually run this test.
 
 PRINTK_IGNORE_LOGLEVEL causes -all- printk() messages to be dumped to the console. Normally a very bad idea, but helpful when other debugging tools fail.
 RT_DEADLOCK_DETECT finds deadlock cycles.
@@ -200,7 +200,7 @@ WAKEUP_TIMING measures the maximum time from when a high-priority thread is awak
 ### migrate_disable()
 New mechanism that in some situations can
 replace preempt_disable().
- 
+
 - get_cpu_var()  uses preempt_disable()
 - get_local_var() uses migrate_disable()
 - local_lock()  uses get_local_var()
@@ -323,4 +323,84 @@ preempt_check_resched () //如果必要进行调度
 preempt_count() //返回抢占计数
 
 preempt_schedule() //核抢占时的调度程序的入口点
+
+
+
+## 对NO_HZ的理解
+
+在打开NO_HZ前后，rt的performance如何？
+
+## 对部分函数的理解
+
+### get/put_cpu_var_locked v2.6.22
+
+- in 2.6.22 get/put_cpu_var_locked 替换 get/put_cpu_var   in include/asm-generic/percpu.h
+
+  是否都替换，还是替换一部分？
+
+NON_RT
+
+```
+/*
+ * Must be an lvalue. Since @var must be a simple identifier,
+ * we force a syntax error here if it isn't.
+ */
+#define get_cpu_var(var) (*({				\
+	extern int simple_identifier_##var(void);	\
+	preempt_disable();				\
+	&__get_cpu_var(var); }))
+#define put_cpu_var(var) preempt_enable()
+```
+
+
+
+RT
+
+```
++/*
++ * Per-CPU data structures with an additional lock - useful for
++ * PREEMPT_RT code that wants to reschedule but also wants
++ * per-CPU data structures.
++ *
++ * 'cpu' gets updated with the CPU the task is currently executing on.
++ *
++ * NOTE: on normal !PREEMPT_RT kernels these per-CPU variables
++ * are the same as the normal per-CPU variables, so there no
++ * runtime overhead.
++ */
++#define get_cpu_var_locked(var, cpuptr)			\
++(*({							\
++	int __cpu = raw_smp_processor_id();		\
++							\
++	*(cpuptr) = __cpu;				\
++	spin_lock(&__get_cpu_lock(var, __cpu));		\
++	&__get_cpu_var_locked(var, __cpu);		\
++}))
++
++#define put_cpu_var_locked(var, cpu) \
++	 do { (void)cpu; spin_unlock(&__get_cpu_lock(var, cpu)); } while (0)
+```
+
+### local_lock v4.11
+
+
+
+### touch/stop_critical_timing
+
+对tr的保护？ atomic_inc(&tr->disabled)  ....   atomic_dec(&tr->disabled) ; mcount();
+
+
+
+### atomic_notifier_call_chain TO  raw_notifier_call_chain
+
+atomic_notifier chains are note NMIsafe in rt
+
+NMI context, NMI safe 的含义？？
+
+```
+
+Note that there already are several messages printed in NMI context:
+WARN_ON(in_nmi()), BUG_ON(in_nmi()), anything being printed out from MCE
+handlers.  These are not easy to avoid.
+```
 
