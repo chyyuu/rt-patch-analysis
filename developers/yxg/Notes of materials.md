@@ -200,8 +200,8 @@
     - Use ```raw_spinlock_t``` to acquire a lock when interrupts or preemption are disabled. A kind of "overload" is used in PREEMPT_RT.
     - Critical section can be preempted leading it move to a different CPU, and the per-CPU variables need to be especially dealt with:
       - explicitly disable preemption, through use of ```get_cpu_var()```, ```preempt_disable()``` or disabling hardware interrupts.
-      - User a per-CPU lock variables, by using primitive ```DEFINE_PER_CPU_LOCKED()
-  - Preemptible interrupt handlers*(Thread are caused by interrupt or normal? lead to the difference between interrupt context and process context)*
+      - Use a per-CPU lock variables, by using primitive ```DEFINE_PER_CPU_LOCKED()```
+      - Preemptible interrupt handlers *(Thread are caused by interrupt or normal? lead to the difference between interrupt context and process context)*
     - Almost all interrupt handlers run in process context.
     - ```SA_NODELAY``` can be used to let it run in interrupt context, only ```fpu_irq```*(floating-point co-processor interrupts)*, ```irq0```*(per-CPU timer interrupt)*, ```irq2``` and ```lpptest```*(interrupt-latency benchmarking)* is specified with it, and only ```irq0``` is normally used.
     - Software times do not run in hardware interrupt context, in process context and are fully preemptible instead.
