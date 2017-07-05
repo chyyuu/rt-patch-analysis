@@ -253,10 +253,10 @@
 * [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix-fix.patch {C::restruct::compile}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix-fix.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] tick-management-spread-timer-interrupt.patch {C::performance::per_cpu var::drop lock contention}
+* [2.6.22         ] tick-management-spread-timer-interrupt.patch {C::performance::per_cpu var::adds an extra offset per cpu so the ticks don't line up,drop lock contention}
   + [[file:2.6.22/tick-management-spread-timer-interrupt.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch
+* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::bugfix::hang::Verify whether hpet counter works during HPET setup}
   + [[file:2.6.22/i386-hpet-check-if-the-counter-works.patch][2.6.22]]
   - 2.6.23
 * [2.6.22         ] cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch {C::feature::export time untile next intr}
@@ -271,10 +271,10 @@
 * [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::restruct::function}
   + [[file:2.6.22/timekeeping-fixup-shadow-variable-argument.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::null::kconfig}
+* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::bugfix::compile_error}
   + [[file:2.6.22/cpuidle_ladder_does_not_depend_on_ACPI.patch][2.6.22]] {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] rt: convert the filevec primites for -RT {C::performance::use get/put_cpu_var_locked to replace get/put_cpu_var}
+* [2.6.22         ] s_files-per_cpu-rt.patch {C::performance::use get/put_cpu_var_locked to replace get/put_cpu_var}
   + [[file:2.6.22/s_files-per_cpu-rt.patch][2.6.22]] {MOD::fs}
   - 2.6.23
 * [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::restruct::compile}
@@ -289,7 +289,7 @@
 * [2.6.22         ] x86_64-untangle-asm-hpeth-from-asm-timexh.patch {C::restruct::compile}
   + [[file:2.6.22/x86_64-untangle-asm-hpeth-from-asm-timexh.patch][2.6.22]] {MOD::include/asm-x86_64,drivers/char}
   - 2.6.23
-* [2.6.22         ] fs: restore previous sb->s_files iteration semantics {C::fixbug::miss files::barrier_lock/unlock}
+* [2.6.22         ] s_files-barrier.patch {C::fixbug::miss files::barrier_lock/unlock}
   + [[file:2.6.22/s_files-barrier.patch][2.6.22]] {MOD::fs,include/linux}
   - 2.6.23
 * [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::resume fail::NORT, change site of statement}
