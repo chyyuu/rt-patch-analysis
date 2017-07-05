@@ -1,0 +1,22 @@
+Subject: cputimer: thread rt fix
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:58 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/posix-cpu-timers.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/posix-cpu-timers.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/posix-cpu-timers.c
++++ linux-2.6-tip/kernel/posix-cpu-timers.c
+@@ -1524,7 +1524,7 @@ void run_posix_cpu_timers(struct task_st
+ 		per_cpu(posix_timer_tasklist, cpu) = tsk;
+ 	}
+ 	/* XXX signal the thread somehow */
+-	wake_up_process(per_cpu(posix_timer_task,cpu));
++	wake_up_process(per_cpu(posix_timer_task, cpu));
+ }
+ 
+ /*

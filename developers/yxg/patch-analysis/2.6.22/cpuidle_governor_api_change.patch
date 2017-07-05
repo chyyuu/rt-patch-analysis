@@ -1,0 +1,119 @@
+commit ddb5ec5c0a7ef163c1efe2468bcc005a57187dfa
+Author: Adam Belay <abelay@novell.com>
+Date:   Sat Mar 24 03:46:58 2007 -0400
+
+    cpuidle: governor API changes
+    
+    This patch prepares cpuidle for the menu governor.  It adds an optional
+    stage after idle state entry to give the governor an opportunity to
+    check why the state was exited.  Also it makes sure the idle loop
+    returns after each state entry, allowing the appropriate dynticks code
+    to run.
+    
+    Signed-off-by: Adam Belay <abelay@novell.com>
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ drivers/cpuidle/cpuidle.c          |   33 ++++++++++++++-------------------
+ drivers/cpuidle/governor.c         |    2 +-
+ drivers/cpuidle/governors/ladder.c |    2 +-
+ include/linux/cpuidle.h            |    4 ++--
+ 4 files changed, 18 insertions(+), 23 deletions(-)
+
+Index: linux-rt.q/drivers/cpuidle/cpuidle.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/cpuidle.c
++++ linux-rt.q/drivers/cpuidle/cpuidle.c
+@@ -30,12 +30,10 @@ static void (*pm_idle_old)(void);
+  * cpuidle_idle_call - the main idle loop
+  *
+  * NOTE: no locks or semaphores should be used here
+- * FIXME: DYNTICKS handling
+  */
+ static void cpuidle_idle_call(void)
+ {
+ 	struct cpuidle_device *dev = __get_cpu_var(cpuidle_devices);
+-
+ 	struct cpuidle_state *target_state;
+ 	int next_state;
+ 
+@@ -48,24 +46,21 @@ static void cpuidle_idle_call(void)
+ 		return;
+ 	}
+ 
+-	if (cpuidle_curr_governor->prepare_idle)
+-		cpuidle_curr_governor->prepare_idle(dev);
+-
+-	while(!need_resched()) {
+-		next_state = cpuidle_curr_governor->select_state(dev);
+-		if (need_resched())
+-			break;
+-
+-		target_state = &dev->states[next_state];
+-
+-		dev->last_residency = target_state->enter(dev, target_state);
+-		dev->last_state = target_state;
+-		target_state->time += dev->last_residency;
+-		target_state->usage++;
++	/* ask the governor for the next state */
++	next_state = cpuidle_curr_governor->select(dev);
++	if (need_resched())
++		return;
++	target_state = &dev->states[next_state];
+ 
+-		if (dev->status != CPUIDLE_STATUS_DOIDLE)
+-			break;
+-	}
++	/* enter the state and update stats */
++	dev->last_residency = target_state->enter(dev, target_state);
++	dev->last_state = target_state;
++	target_state->time += dev->last_residency;
++	target_state->usage++;
++
++	/* give the governor an opportunity to reflect on the outcome */
++	if (cpuidle_curr_governor->reflect)
++		cpuidle_curr_governor->reflect(dev);
+ }
+ 
+ /**
+Index: linux-rt.q/drivers/cpuidle/governor.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/governor.c
++++ linux-rt.q/drivers/cpuidle/governor.c
+@@ -124,7 +124,7 @@ int cpuidle_register_governor(struct cpu
+ {
+ 	int ret = -EEXIST;
+ 
+-	if (!gov || !gov->select_state)
++	if (!gov || !gov->select)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&cpuidle_lock);
+Index: linux-rt.q/drivers/cpuidle/governors/ladder.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/governors/ladder.c
++++ linux-rt.q/drivers/cpuidle/governors/ladder.c
+@@ -202,7 +202,7 @@ static struct cpuidle_governor ladder_go
+ 	.init =		ladder_init_device,
+ 	.exit =		ladder_exit_device,
+ 	.scan =		ladder_scan_device,
+-	.select_state =	ladder_select_state,
++	.select =	ladder_select_state,
+ 	.owner =	THIS_MODULE,
+ };
+ 
+Index: linux-rt.q/include/linux/cpuidle.h
+===================================================================
+--- linux-rt.q.orig/include/linux/cpuidle.h
++++ linux-rt.q/include/linux/cpuidle.h
+@@ -164,8 +164,8 @@ struct cpuidle_governor {
+ 	void (*exit)		(struct cpuidle_device *dev);
+ 	void (*scan)		(struct cpuidle_device *dev);
+ 
+-	void (*prepare_idle)	(struct cpuidle_device *dev);
+-	int  (*select_state)	(struct cpuidle_device *dev);
++	int  (*select)		(struct cpuidle_device *dev);
++	void (*reflect)		(struct cpuidle_device *dev);
+ 
+ 	struct module 		*owner;
+ };

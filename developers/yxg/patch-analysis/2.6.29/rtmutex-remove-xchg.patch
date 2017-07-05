@@ -1,0 +1,25 @@
+Subject: rtmutex - remove double xchg
+From: Steven Rostedt <srostedt@redhat.com>
+
+No reason to update current if we are running. We'll do that when we exit
+the loop.
+
+Signed-off-by: Steven Rostedt <srostedt@redhat.com>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/rtmutex.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+Index: linux-2.6-tip/kernel/rtmutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rtmutex.c
++++ linux-2.6-tip/kernel/rtmutex.c
+@@ -748,8 +748,6 @@ rt_spin_lock_slowlock(struct rt_mutex *l
+ 		update_current(TASK_UNINTERRUPTIBLE, &saved_state);
+ 		if (waiter.task)
+ 			schedule_rt_mutex(lock);
+-		else
+-			update_current(TASK_RUNNING_MUTEX, &saved_state);
+ 
+ 		spin_lock_irqsave(&lock->wait_lock, flags);
+ 		current->flags |= saved_flags;

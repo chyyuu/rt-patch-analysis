@@ -1,0 +1,116 @@
+From fe5595c074005bd94f0c7d1644175941149f6768 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:16 +0200
+Subject: [PATCH 05/32] stop_machine: Provide stop_machine_cpuslocked()
+
+Some call sites of stop_machine() are within a get_online_cpus() protected
+region.
+
+stop_machine() calls get_online_cpus() as well, which is possible in the
+current implementation but prevents converting the hotplug locking to a
+percpu rwsem.
+
+Provide stop_machine_cpuslocked() to avoid nested calls to get_online_cpus().
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081547.400700852@linutronix.de
+---
+ include/linux/stop_machine.h | 26 +++++++++++++++++++++++---
+ kernel/stop_machine.c        | 11 +++++++----
+ 2 files changed, 30 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/stop_machine.h b/include/linux/stop_machine.h
+index 3cc9632dcc2a..3d60275e3ba9 100644
+--- a/include/linux/stop_machine.h
++++ b/include/linux/stop_machine.h
+@@ -116,15 +116,29 @@ static inline int try_stop_cpus(const struct cpumask *cpumask,
+  * @fn() runs.
+  *
+  * This can be thought of as a very heavy write lock, equivalent to
+- * grabbing every spinlock in the kernel. */
++ * grabbing every spinlock in the kernel.
++ *
++ * Protects against CPU hotplug.
++ */
+ int stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus);
+ 
++/**
++ * stop_machine_cpuslocked: freeze the machine on all CPUs and run this function
++ * @fn: the function to run
++ * @data: the data ptr for the @fn()
++ * @cpus: the cpus to run the @fn() on (NULL = any online cpu)
++ *
++ * Same as above. Must be called from with in a cpus_read_lock() protected
++ * region. Avoids nested calls to cpus_read_lock().
++ */
++int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus);
++
+ int stop_machine_from_inactive_cpu(cpu_stop_fn_t fn, void *data,
+ 				   const struct cpumask *cpus);
+ #else	/* CONFIG_SMP || CONFIG_HOTPLUG_CPU */
+ 
+-static inline int stop_machine(cpu_stop_fn_t fn, void *data,
+-				 const struct cpumask *cpus)
++static inline int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *data,
++					  const struct cpumask *cpus)
+ {
+ 	unsigned long flags;
+ 	int ret;
+@@ -134,6 +148,12 @@ static inline int stop_machine(cpu_stop_fn_t fn, void *data,
+ 	return ret;
+ }
+ 
++static inline int stop_machine(cpu_stop_fn_t fn, void *data,
++			       const struct cpumask *cpus)
++{
++	return stop_machine_cpuslocked(fn, data, cpus);
++}
++
+ static inline int stop_machine_from_inactive_cpu(cpu_stop_fn_t fn, void *data,
+ 						 const struct cpumask *cpus)
+ {
+diff --git a/kernel/stop_machine.c b/kernel/stop_machine.c
+index 1eb82661ecdb..b7591261652d 100644
+--- a/kernel/stop_machine.c
++++ b/kernel/stop_machine.c
+@@ -552,7 +552,8 @@ static int __init cpu_stop_init(void)
+ }
+ early_initcall(cpu_stop_init);
+ 
+-static int __stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus)
++int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *data,
++			    const struct cpumask *cpus)
+ {
+ 	struct multi_stop_data msdata = {
+ 		.fn = fn,
+@@ -561,6 +562,8 @@ static int __stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cp
+ 		.active_cpus = cpus,
+ 	};
+ 
++	lockdep_assert_cpus_held();
++
+ 	if (!stop_machine_initialized) {
+ 		/*
+ 		 * Handle the case where stop_machine() is called
+@@ -590,9 +593,9 @@ int stop_machine(cpu_stop_fn_t fn, void *data, const struct cpumask *cpus)
+ 	int ret;
+ 
+ 	/* No CPUs can come up or down during this. */
+-	get_online_cpus();
+-	ret = __stop_machine(fn, data, cpus);
+-	put_online_cpus();
++	cpus_read_lock();
++	ret = stop_machine_cpuslocked(fn, data, cpus);
++	cpus_read_unlock();
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(stop_machine);
+-- 
+2.11.0
+

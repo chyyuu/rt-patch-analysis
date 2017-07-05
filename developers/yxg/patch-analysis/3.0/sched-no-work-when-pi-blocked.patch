@@ -1,0 +1,32 @@
+Subject: sched-no-work-when-pi-blocked.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 20:46:52 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/sched.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+Index: linux-2.6/kernel/sched.c
+===================================================================
+--- linux-2.6.orig/kernel/sched.c
++++ linux-2.6/kernel/sched.c
+@@ -4281,7 +4281,7 @@ need_resched:
+ 
+ static inline void sched_submit_work(struct task_struct *tsk)
+ {
+-	if (!tsk->state)
++	if (!tsk->state || tsk->pi_blocked_on)
+ 		return;
+ 
+ 	/*
+@@ -4301,6 +4301,9 @@ static inline void sched_submit_work(str
+ 
+ static inline void sched_update_worker(struct task_struct *tsk)
+ {
++	if (tsk->pi_blocked_on)
++		return;
++
+ 	if (tsk->flags & PF_WQ_WORKER)
+ 		wq_worker_running(tsk);
+ }

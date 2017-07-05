@@ -1,0 +1,69 @@
+From fdaf0a51bad496289356d11d796095a293794b5f Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:33 +0200
+Subject: [PATCH 22/32] ACPI/processor: Use cpu_hotplug_disable() instead of
+ get_online_cpus()
+
+Converting the hotplug locking, i.e. get_online_cpus(), to a percpu rwsem
+unearthed a circular lock dependency which was hidden from lockdep due to
+the lockdep annotation of get_online_cpus() which prevents lockdep from
+creating full dependency chains.
+
+CPU0                    CPU1
+----                    ----
+lock((&wfc.work));
+                         lock(cpu_hotplug_lock.rw_sem);
+                         lock((&wfc.work));
+lock(cpu_hotplug_lock.rw_sem);
+
+This dependency is established via acpi_processor_start() which calls into
+the work queue code. And the work queue code establishes the reverse
+dependency.
+
+This is not a problem of get_online_cpus() recursion, it's a possible
+deadlock undetected by lockdep so far.
+
+The cure is to use cpu_hotplug_disable() instead of get_online_cpus() to
+protect the probing from acpi_processor_start().
+
+There is a side effect to this: cpu_hotplug_disable() makes a concurrent
+cpu hotplug attempt via the sysfs interfaces fail with -EBUSY, but that
+probing usually happens during the boot process where no interaction is
+possible. Any later invocations are infrequent enough and concurrent
+hotplug attempts are so unlikely that the danger of user space visible
+regressions is very close to zero. Anyway, thats preferrable over a real
+deadlock.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-acpi@vger.kernel.org
+Cc: Len Brown <lenb@kernel.org>
+Link: http://lkml.kernel.org/r/20170524081548.851588594@linutronix.de
+---
+ drivers/acpi/processor_driver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/processor_driver.c b/drivers/acpi/processor_driver.c
+index 8697a82bd465..591d1dd3f04e 100644
+--- a/drivers/acpi/processor_driver.c
++++ b/drivers/acpi/processor_driver.c
+@@ -268,9 +268,9 @@ static int acpi_processor_start(struct device *dev)
+ 		return -ENODEV;
+ 
+ 	/* Protect against concurrent CPU hotplug operations */
+-	get_online_cpus();
++	cpu_hotplug_disable();
+ 	ret = __acpi_processor_start(device);
+-	put_online_cpus();
++	cpu_hotplug_enable();
+ 	return ret;
+ }
+ 
+-- 
+2.11.0
+

@@ -1,0 +1,234 @@
+commit 40bf36fed3f990cad3c54175528a975f265659ce
+Author: Adam Belay <abelay@novell.com>
+Date:   Sat Mar 24 03:47:07 2007 -0400
+
+    cpuidle: add the 'menu' governor
+    
+    Here is my first take at implementing an idle PM governor that takes
+    full advantage of NO_HZ.  I call it the 'menu' governor because it
+    considers the full list of idle states before each entry.
+    
+    I've kept the implementation fairly simple.  It attempts to guess the
+    next residency time and then chooses a state that would meet at least
+    the break-even point between power savings and entry cost.  To this end,
+    it selects the deepest idle state that satisfies the following
+    constraints:
+         1. If the idle time elapsed since bus master activity was detected
+            is below a threshold (currently 20 ms), then limit the selection
+            to C2-type or above.
+         2. Do not choose a state with a break-even residency that exceeds
+            the expected time remaining until the next timer interrupt.
+         3. Do not choose a state with a break-even residency that exceeds
+            the elapsed time between the last pair of break events,
+            excluding timer interrupts.
+    
+    This governor has an advantage over "ladder" governor because it
+    proactively checks how much time remains until the next timer interrupt
+    using the tick infrastructure.  Also, it handles device interrupt
+    activity more intelligently by not including timer interrupts in break
+    event calculations.  Finally, it doesn't make policy decisions using the
+    number of state entries, which can have variable residency times (NO_HZ
+    makes these potentially very large), and instead only considers sleep
+    time deltas.
+    
+    The menu governor can be selected during runtime using the cpuidle sysfs
+    interface like so:
+    "echo "menu" > /sys/devices/system/cpu/cpuidle/current_governor"
+    
+    Signed-off-by: Adam Belay <abelay@novell.com>
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ drivers/cpuidle/Kconfig            |   11 ++
+ drivers/cpuidle/governors/Makefile |    1 
+ drivers/cpuidle/governors/menu.c   |  152 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 164 insertions(+)
+
+Index: linux-rt.q/drivers/cpuidle/Kconfig
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/Kconfig
++++ linux-rt.q/drivers/cpuidle/Kconfig
+@@ -23,6 +23,17 @@ config CPU_IDLE_GOV_LADDER
+ 	  states using residency time and bus master activity as metrics.  This
+ 	  algorithm was originally introduced in the old ACPI processor driver.
+ 
++config CPU_IDLE_GOV_MENU
++	tristate "'menu' governor"
++	depends on CPU_IDLE && NO_HZ
++	default y
++	help
++	  This cpuidle governor evaluates all available states and chooses the
++	  deepest state that meets all of the following constraints: BM activity,
++	  expected time until next timer interrupt, and last break event time
++	  delta.  It is designed to minimize power consumption.  Currently
++	  dynticks is required.
++
+ endif	# CPU_IDLE
+ 
+ endmenu
+Index: linux-rt.q/drivers/cpuidle/governors/Makefile
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/governors/Makefile
++++ linux-rt.q/drivers/cpuidle/governors/Makefile
+@@ -3,3 +3,4 @@
+ #
+ 
+ obj-$(CONFIG_CPU_IDLE_GOV_LADDER) += ladder.o
++obj-$(CONFIG_CPU_IDLE_GOV_MENU) += menu.o
+Index: linux-rt.q/drivers/cpuidle/governors/menu.c
+===================================================================
+--- /dev/null
++++ linux-rt.q/drivers/cpuidle/governors/menu.c
+@@ -0,0 +1,152 @@
++/*
++ * menu.c - the menu idle governor
++ *
++ * Copyright (C) 2006-2007 Adam Belay <abelay@novell.com>
++ *
++ * This code is licenced under the GPL.
++ */
++
++#include <linux/kernel.h>
++#include <linux/cpuidle.h>
++#include <linux/latency.h>
++#include <linux/time.h>
++#include <linux/ktime.h>
++#include <linux/tick.h>
++#include <linux/hrtimer.h>
++
++#define BM_HOLDOFF	20000	/* 20 ms */
++
++struct menu_device {
++	int		last_state_idx;
++	int		deepest_bm_state;
++
++	int		break_last_us;
++	int		break_elapsed_us;
++
++	int		bm_elapsed_us;
++	int		bm_holdoff_us;
++
++	unsigned long	idle_jiffies;
++};
++
++static DEFINE_PER_CPU(struct menu_device, menu_devices);
++
++/**
++ * menu_select - selects the next idle state to enter
++ * @dev: the CPU
++ */
++static int menu_select(struct cpuidle_device *dev)
++{
++	struct menu_device *data = &__get_cpu_var(menu_devices);
++	int i, expected_us, max_state = dev->state_count;
++
++	/* discard BM history because it is sticky */
++	cpuidle_get_bm_activity();
++
++	/* determine the expected residency time */
++	expected_us = (s32) ktime_to_ns(tick_nohz_get_sleep_length()) / 1000;
++	expected_us = min(expected_us, data->break_last_us);
++
++	/* determine the maximum state compatible with current BM status */
++	if (cpuidle_get_bm_activity())
++		data->bm_elapsed_us = 0;
++	if (data->bm_elapsed_us <= data->bm_holdoff_us)
++		max_state = data->deepest_bm_state + 1;
++
++	/* find the deepest idle state that satisfies our constraints */
++	for (i = 1; i < max_state; i++) {
++		struct cpuidle_state *s = &dev->states[i];
++		if (s->target_residency > expected_us)
++			break;
++		if (s->exit_latency > system_latency_constraint())
++			break;
++	}
++
++	data->last_state_idx = i - 1;
++	data->idle_jiffies = tick_nohz_get_idle_jiffies();
++	return i - 1;
++}
++
++/**
++ * menu_reflect - attempts to guess what happened after entry
++ * @dev: the CPU
++ *
++ * NOTE: it's important to be fast here because this operation will add to
++ *       the overall exit latency.
++ */
++static void menu_reflect(struct cpuidle_device *dev)
++{
++	struct menu_device *data = &__get_cpu_var(menu_devices);
++	int last_idx = data->last_state_idx;
++	int measured_us = cpuidle_get_last_residency(dev);
++	struct cpuidle_state *target = &dev->states[last_idx];
++
++	/*
++	 * Ugh, this idle state doesn't support residency measurements, so we
++	 * are basically lost in the dark.  As a compromise, assume we slept
++	 * for one full standard timer tick.  However, be aware that this
++	 * could potentially result in a suboptimal state transition.
++	 */
++	if (!(target->flags & CPUIDLE_FLAG_TIME_VALID))
++		measured_us = USEC_PER_SEC / HZ;
++
++	data->bm_elapsed_us += measured_us;
++	data->break_elapsed_us += measured_us;
++
++	/*
++	 * Did something other than the timer interrupt cause the break event?
++	 */
++	if (tick_nohz_get_idle_jiffies() == data->idle_jiffies) {
++		data->break_last_us = data->break_elapsed_us;
++		data->break_elapsed_us = 0;
++	}
++}
++
++/**
++ * menu_scan_device - scans a CPU's states and does setup
++ * @dev: the CPU
++ */
++static void menu_scan_device(struct cpuidle_device *dev)
++{
++	struct menu_device *data = &per_cpu(menu_devices, dev->cpu);
++	int i;
++
++	data->last_state_idx = 0;
++	data->break_last_us = 0;
++	data->break_elapsed_us = 0;
++	data->bm_elapsed_us = 0;
++	data->bm_holdoff_us = BM_HOLDOFF;
++
++	for (i = 1; i < dev->state_count; i++)
++		if (dev->states[i].flags & CPUIDLE_FLAG_CHECK_BM)
++			break;
++	data->deepest_bm_state = i - 1;
++}
++
++struct cpuidle_governor menu_governor = {
++	.name =		"menu",
++	.scan =		menu_scan_device,
++	.select =	menu_select,
++	.reflect =	menu_reflect,
++	.owner =	THIS_MODULE,
++};
++
++/**
++ * init_menu - initializes the governor
++ */
++static int __init init_menu(void)
++{
++	return cpuidle_register_governor(&menu_governor);
++}
++
++/**
++ * exit_menu - exits the governor
++ */
++static void __exit exit_menu(void)
++{
++	cpuidle_unregister_governor(&menu_governor);
++}
++
++MODULE_LICENSE("GPL");
++module_init(init_menu);
++module_exit(exit_menu);

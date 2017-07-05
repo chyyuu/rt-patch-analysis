@@ -1,0 +1,22 @@
+Subject: rt: sched groups
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:19 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/cgroup.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/cgroup.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/cgroup.c
++++ linux-2.6-tip/kernel/cgroup.c
+@@ -155,7 +155,7 @@ list_for_each_entry(_root, &roots, root_
+ /* the list of cgroups eligible for automatic release. Protected by
+  * release_list_lock */
+ static LIST_HEAD(release_list);
+-static DEFINE_SPINLOCK(release_list_lock);
++static DEFINE_RAW_SPINLOCK(release_list_lock);
+ static void cgroup_release_agent(struct work_struct *work);
+ static DECLARE_WORK(release_agent_work, cgroup_release_agent);
+ static void check_for_release(struct cgroup *cgrp);

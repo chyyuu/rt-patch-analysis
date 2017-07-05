@@ -1,0 +1,17 @@
+---
+ drivers/scsi/aacraid/aacraid.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6.26/drivers/scsi/aacraid/aacraid.h
+===================================================================
+--- linux-2.6.26.orig/drivers/scsi/aacraid/aacraid.h
++++ linux-2.6.26/drivers/scsi/aacraid/aacraid.h
+@@ -789,7 +789,7 @@ struct fib {
+ 	 *	This is the event the sendfib routine will wait on if the
+ 	 *	caller did not pass one and this is synch io.
+ 	 */
+-	struct semaphore	event_wait;
++	struct compat_semaphore	event_wait;
+ 	spinlock_t		event_lock;
+ 
+ 	u32			done;	/* gets set to 1 when fib is complete */

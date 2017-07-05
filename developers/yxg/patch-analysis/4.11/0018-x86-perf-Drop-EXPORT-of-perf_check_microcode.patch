@@ -1,0 +1,37 @@
+From 27d3b157fee0bad264eb745d5c547e2e0676f1a2 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:29 +0200
+Subject: [PATCH 18/32] x86/perf: Drop EXPORT of perf_check_microcode
+
+The only caller is the microcode update, which cannot be modular.
+
+Drop the export.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Borislav Petkov <bp@suse.de>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Link: http://lkml.kernel.org/r/20170524081548.515204988@linutronix.de
+---
+ arch/x86/events/core.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
+index 580b60f5ac83..ac650d57ebf7 100644
+--- a/arch/x86/events/core.c
++++ b/arch/x86/events/core.c
+@@ -2224,7 +2224,6 @@ void perf_check_microcode(void)
+ 	if (x86_pmu.check_microcode)
+ 		x86_pmu.check_microcode();
+ }
+-EXPORT_SYMBOL_GPL(perf_check_microcode);
+ 
+ static struct pmu pmu = {
+ 	.pmu_enable		= x86_pmu_enable,
+-- 
+2.11.0
+

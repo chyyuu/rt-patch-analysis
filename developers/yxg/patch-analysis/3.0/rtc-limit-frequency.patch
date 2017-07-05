@@ -1,0 +1,26 @@
+Subject: rtc: Limit frequency
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 22 Jul 2011 09:50:06 +0200
+
+The RTC hrtimer is self rearming. We really need to limit the
+frequency to something sensible.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@kernel.org
+---
+ drivers/rtc/interface.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6/drivers/rtc/interface.c
+===================================================================
+--- linux-2.6.orig/drivers/rtc/interface.c
++++ linux-2.6/drivers/rtc/interface.c
+@@ -708,7 +708,7 @@ int rtc_irq_set_freq(struct rtc_device *
+ 	int err = 0;
+ 	unsigned long flags;
+ 
+-	if (freq <= 0)
++	if (freq <= 0 || freq > 5000)
+ 		return -EINVAL;
+ retry:
+ 	spin_lock_irqsave(&rtc->irq_task_lock, flags);

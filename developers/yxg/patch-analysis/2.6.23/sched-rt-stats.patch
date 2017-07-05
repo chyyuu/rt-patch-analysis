@@ -1,0 +1,46 @@
+On Wed, Jul 25, 2007 at 10:05:04AM +0200, Ingo Molnar wrote:
+> 
+> * Ankita Garg <ankita@in.ibm.com> wrote:
+> 
+> > Hi,
+> > 
+> > This patch adds support to display captured -rt stats under 
+> > /proc/schedstat.
+> 
+> hm, could you add it to /proc/sched_debug instead? That's where all the 
+> runqueue values are showing up normally. I'm also a bit wary about 
+> introducing a new schedstats version for -rt.
+
+So, I have merged my previous patch (to display rt_nr_running info in
+sched_debug.c) with this one.
+
+
+Signed-off-by: Ankita Garg <ankita@in.ibm.com>
+[mingo@elte.hu: fix it to work on !SCHEDSTATS too]
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+--
+ kernel/sched_debug.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+Index: linux-2.6.23-rt1/kernel/sched_debug.c
+===================================================================
+--- linux-2.6.23-rt1.orig/kernel/sched_debug.c	2007-10-11 15:57:23.000000000 -0400
++++ linux-2.6.23-rt1/kernel/sched_debug.c	2007-10-11 16:01:21.000000000 -0400
+@@ -165,6 +165,17 @@ static void print_cpu(struct seq_file *m
+ 	P(cpu_load[2]);
+ 	P(cpu_load[3]);
+ 	P(cpu_load[4]);
++#ifdef CONFIG_PREEMPT_RT
++	/* Print rt related rq stats */
++	P(rt_nr_running);
++	P(rt_nr_uninterruptible);
++# ifdef CONFIG_SCHEDSTATS
++	P(rto_schedule);
++	P(rto_wakeup);
++	P(rto_pulled);
++# endif
++#endif
++
+ #undef P
+ 
+ 	print_cfs_stats(m, cpu);

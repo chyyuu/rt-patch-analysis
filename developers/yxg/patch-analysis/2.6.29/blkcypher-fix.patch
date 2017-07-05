@@ -1,0 +1,69 @@
+Subject: irq threading: fix PF_HARDIRQ definition
+From: Ingo Molnar <mingo@elte.hu>
+Date: Thu Feb 12 09:29:14 CET 2009
+
+Clark Williams reported the following warning:
+
+  WARNING: at crypto/blkcipher.c:327 blkcipher_walk_first+0x72/0x1aa()
+
+ [<ffffffff8035d176>] blkcipher_walk_first+0x72/0x1aa
+ [<ffffffff8035d2f6>] blkcipher_walk_virt+0x1a/0x1c
+ [<ffffffff803620af>] crypto_ecb_crypt+0x2b/0x9a
+ [<ffffffff8036214f>] crypto_ecb_decrypt+0x31/0x33
+ [<ffffffff80519beb>] ieee80211_wep_decrypt_data+0x5e/0x95
+ [<ffffffff80519d3a>] ieee80211_wep_decrypt+0x118/0x16f
+ [<ffffffff80519ddc>] ieee80211_crypto_wep_decrypt+0x4b/0x93
+ [<ffffffff80524d8f>] ieee80211_invoke_rx_handlers+0x26b/0x1395
+ [<ffffffff80526418>] __ieee80211_rx_handle_packet+0x55f/0x59c
+ [<ffffffff80526c82>] __ieee80211_rx+0x508/0x572
+ [<ffffffff80517451>] ieee80211_tasklet_handler+0x6d/0xff
+ [<ffffffff80241192>] __tasklet_action+0xa1/0x112
+ [<ffffffff80241277>] tasklet_action+0x39/0x3b
+ [<ffffffff80240eef>] ksoftirqd+0x162/0x278
+
+Which comes from:
+
+        if (WARN_ON_ONCE(in_irq()))
+                return -EDEADLK;
+
+This warning is surprising, as it clearly comes from a softirq
+context.
+
+The in_irq() definition looks like this on -rt:
+
+  #define in_irq()        (hardirq_count() || (current->flags & PF_HARDIRQ))
+
+hardirq_count() is correct, but looking at PF_HARDIRQ's definition in sched.h:
+
+ #define PF_EXITPIDONE  0x00000008      /* pi exit done on shut down */
+ #define PF_VCPU        0x00000010      /* I'm a virtual CPU */
+ #define PF_HARDIRQ     0x08000020      /* hardirq context */
+ #define PF_NOSCHED     0x00000020      /* Userspace does not expect scheduling */
+ #define PF_FORKNOEXEC  0x00000040      /* forked but didn't exec */
+
+Reveals that due to a typo it not only overlaps the PF_NOSCHED bit, but
+also has a spurious 0x08000000 component.
+
+Move it to a free slot: 0x00000080.
+
+Reported-by: Clark Williams <williams@redhat.com>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/sched.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/include/linux/sched.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/sched.h
++++ linux-2.6-tip/include/linux/sched.h
+@@ -1726,9 +1726,9 @@ extern cputime_t task_gtime(struct task_
+ #define PF_EXITING	0x00000004	/* getting shut down */
+ #define PF_EXITPIDONE	0x00000008	/* pi exit done on shut down */
+ #define PF_VCPU		0x00000010	/* I'm a virtual CPU */
+-#define PF_HARDIRQ	0x08000020	/* hardirq context */
+ #define PF_NOSCHED	0x00000020	/* Userspace does not expect scheduling */
+ #define PF_FORKNOEXEC	0x00000040	/* forked but didn't exec */
++#define PF_HARDIRQ	0x00000080	/* hardirq context */
+ #define PF_SUPERPRIV	0x00000100	/* used super-user privileges */
+ #define PF_DUMPCORE	0x00000200	/* dumped core */
+ #define PF_SIGNALED	0x00000400	/* killed by a signal */

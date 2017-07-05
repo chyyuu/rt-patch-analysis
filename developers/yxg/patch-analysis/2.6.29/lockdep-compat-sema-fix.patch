@@ -1,0 +1,36 @@
+Subject: lockdep: fix compat_sema_init
+From: Ingo Molnar <mingo@elte.hu>
+Date: Thu Mar 19 11:09:17 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/semaphore.h |    2 ++
+ kernel/lockdep.c          |    2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+Index: linux-2.6-tip/include/linux/semaphore.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/semaphore.h
++++ linux-2.6-tip/include/linux/semaphore.h
+@@ -38,6 +38,8 @@ static inline void compat_sema_init(stru
+ {
+ 	static struct lock_class_key __key;
+ 	*sem = (struct compat_semaphore) __COMPAT_SEMAPHORE_INITIALIZER(*sem, val);
++
++	spin_lock_init(&sem->lock);
+ 	lockdep_init_map(&sem->lock.dep_map, "semaphore->lock", &__key, 0);
+ }
+ 
+Index: linux-2.6-tip/kernel/lockdep.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/lockdep.c
++++ linux-2.6-tip/kernel/lockdep.c
+@@ -757,7 +757,7 @@ register_lock_class(struct lockdep_map *
+  	 */
+ 	if (!static_obj(lock->key)) {
+ 		debug_locks_off();
+-		printk("INFO: trying to register non-static key.\n");
++		printk("INFO: trying to register non-static key %p.\n", lock->key);
+ 		printk("the code is fine but needs lockdep annotation.\n");
+ 		printk("turning off the locking correctness validator.\n");
+ 		dump_stack();

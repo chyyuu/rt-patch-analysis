@@ -1,0 +1,64 @@
+Subject: cpu-hotplug: cpu_down vs preempt-rt
+From: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Date: Wed Mar 18 15:38:32 CET 2009
+
+idle_task_exit() calls mmdrop() from the idle thread, but in PREEMPT_RT all the
+allocator locks are sleeping locks - for obvious reasons scheduling away the
+idle thread gives some curious problems.
+
+Solve this by using mmdrop_delayed() and extending it to work for hotplug.
+
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+---
+ kernel/fork.c  |   14 ++++++++++++++
+ kernel/sched.c |    4 ++++
+ 2 files changed, 18 insertions(+)
+
+Index: linux-2.6-tip/kernel/fork.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/fork.c
++++ linux-2.6-tip/kernel/fork.c
+@@ -1816,6 +1816,19 @@ void  __mmdrop_delayed(struct mm_struct 
+ 	put_cpu_var(delayed_drop_list);
+ }
+ 
++static void takeover_delayed_drop(int hotcpu)
++{
++	struct list_head *head = &per_cpu(delayed_drop_list, hotcpu);
++
++	while (!list_empty(head)) {
++		struct mm_struct *mm = list_entry(head->next,
++				struct mm_struct, delayed_drop);
++
++		list_del(&mm->delayed_drop);
++		__mmdrop_delayed(mm);
++	}
++}
++
+ static int desched_thread(void * __bind_cpu)
+ {
+ 	set_user_nice(current, -10);
+@@ -1876,6 +1889,7 @@ static int __devinit cpu_callback(struct
+ 		p = per_cpu(desched_task, hotcpu);
+ 		per_cpu(desched_task, hotcpu) = NULL;
+ 		kthread_stop(p);
++		takeover_delayed_drop(hotcpu);
+ 		takeover_tasklets(hotcpu);
+ 		break;
+ #endif /* CONFIG_HOTPLUG_CPU */
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -7360,7 +7360,11 @@ void idle_task_exit(void)
+ 
+ 	if (mm != &init_mm)
+ 		switch_mm(mm, &init_mm, current);
++#ifdef CONFIG_PREEMPT_RT
++	mmdrop_delayed(mm);
++#else
+ 	mmdrop(mm);
++#endif
+ }
+ 
+ /* called under rq->lock with disabled interrupts */

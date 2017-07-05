@@ -1,0 +1,68 @@
+Subject: rt: mutex core fixes
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 02:20:51 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ arch/x86/include/asm/rwsem.h |    2 +-
+ include/linux/irqflags.h     |    3 +++
+ include/linux/spinlock.h     |    3 +++
+ kernel/sched.c               |    6 ------
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+Index: linux-2.6-tip/arch/x86/include/asm/rwsem.h
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/include/asm/rwsem.h
++++ linux-2.6-tip/arch/x86/include/asm/rwsem.h
+@@ -257,7 +257,7 @@ static inline int rwsem_atomic_update(in
+ 	return tmp + delta;
+ }
+ 
+-static inline int rwsem_is_locked(struct compat_rw_semaphore *sem)
++static inline int compat_rwsem_is_locked(struct compat_rw_semaphore *sem)
+ {
+ 	return (sem->count != 0);
+ }
+Index: linux-2.6-tip/include/linux/irqflags.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/irqflags.h
++++ linux-2.6-tip/include/linux/irqflags.h
+@@ -13,6 +13,9 @@
+ 
+ #include <linux/typecheck.h>
+ 
++/* dummy wrapper for now: */
++#define BUILD_CHECK_IRQ_FLAGS(flags)
++
+ #ifdef CONFIG_TRACE_IRQFLAGS
+   extern void trace_softirqs_on(unsigned long ip);
+   extern void trace_softirqs_off(unsigned long ip);
+Index: linux-2.6-tip/include/linux/spinlock.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/spinlock.h
++++ linux-2.6-tip/include/linux/spinlock.h
+@@ -613,4 +613,7 @@ static inline int bit_spin_is_locked(int
+ 	__cond_lock(lock, PICK_SPIN_OP_RET(__spin_can_lock, _spin_can_lock,\
+ 		lock))
+ 
++/* FIXME: porting hack! */
++#define spin_lock_nest_lock(lock, nest_lock) spin_lock_nested(lock, 0)
++
+ #endif /* __LINUX_SPINLOCK_H */
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -5406,12 +5406,6 @@ void complete_all(struct completion *x)
+ }
+ EXPORT_SYMBOL(complete_all);
+ 
+-unsigned int  completion_done(struct completion *x)
+-{
+-	return x->done;
+-}
+-EXPORT_SYMBOL(completion_done);
+-
+ static inline long __sched
+ do_wait_for_common(struct completion *x, long timeout, int state)
+ {

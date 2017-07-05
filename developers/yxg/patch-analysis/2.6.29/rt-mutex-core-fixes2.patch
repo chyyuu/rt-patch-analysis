@@ -1,0 +1,47 @@
+Subject: mingo: rt spinlock fix
+From: Ingo Molnar <mingo@elte.hu>
+Date: Sun Feb 08 17:10:09 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/spinlock_api_smp.h |    2 +-
+ kernel/spinlock.c                |    6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+Index: linux-2.6-tip/include/linux/spinlock_api_smp.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/spinlock_api_smp.h
++++ linux-2.6-tip/include/linux/spinlock_api_smp.h
+@@ -19,7 +19,7 @@ int in_lock_functions(unsigned long addr
+ 
+ #define assert_spin_locked(x)	BUG_ON(!spin_is_locked(x))
+ 
+-void __lockfunc _spin_lock_nest_lock(spinlock_t *lock, struct lockdep_map *map)
++void __lockfunc __spin_lock_nest_lock(raw_spinlock_t *lock, struct lockdep_map *map)
+ 							__acquires(lock);
+ #define ACQUIRE_SPIN		__acquires(lock)
+ #define ACQUIRE_RW		__acquires(lock)
+Index: linux-2.6-tip/kernel/spinlock.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/spinlock.c
++++ linux-2.6-tip/kernel/spinlock.c
+@@ -345,16 +345,16 @@ void __lockfunc __spin_lock_nested(raw_s
+ }
+ EXPORT_SYMBOL(__spin_lock_nested);
+ 
+-void __lockfunc _spin_lock_nest_lock(spinlock_t *lock,
++void __lockfunc __spin_lock_nest_lock(raw_spinlock_t *lock,
+ 				     struct lockdep_map *nest_lock)
+ {
+ 	preempt_disable();
+ 	spin_acquire_nest(&lock->dep_map, 0, 0, nest_lock, _RET_IP_);
+ 	LOCK_CONTENDED(lock, _raw_spin_trylock, _raw_spin_lock);
+ }
+-EXPORT_SYMBOL(_spin_lock_nest_lock);
++EXPORT_SYMBOL(__spin_lock_nest_lock);
+ 
+-unsigned long __lockfunc _spin_lock_irqsave_nested(spinlock_t *lock, int subclass)
++unsigned long __lockfunc __spin_lock_irqsave_nested(raw_spinlock_t *lock, int subclass)
+ {
+ 	unsigned long flags;
+ 

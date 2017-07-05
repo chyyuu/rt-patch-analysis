@@ -1,0 +1,19 @@
+---
+ drivers/char/rtc.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6.23-rt1/drivers/char/rtc.c
+===================================================================
+--- linux-2.6.23-rt1.orig/drivers/char/rtc.c	2007-10-11 16:00:15.000000000 -0400
++++ linux-2.6.23-rt1/drivers/char/rtc.c	2007-10-11 16:01:00.000000000 -0400
+@@ -1315,8 +1315,10 @@ static void rtc_dropped_irq(unsigned lon
+ 
+ 	spin_unlock_irq(&rtc_lock);
+ 
++#ifndef CONFIG_PREEMPT_RT
+ 	if (printk_ratelimit())
+ 		printk(KERN_WARNING "rtc: lost some interrupts at %ldHz.\n", freq);
++#endif
+ 
+ 	/* Now we have new data */
+ 	wake_up_interruptible(&rtc_wait);

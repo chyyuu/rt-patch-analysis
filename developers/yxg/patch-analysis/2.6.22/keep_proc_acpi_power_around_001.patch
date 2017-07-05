@@ -1,0 +1,61 @@
+
+Keep /proc/acpi/processor/CPU*/power around for a while as powertop depends
+on it. It will be marked deprecated and removed in future. powertop can use
+cpuidle interfaces instead.
+
+Signed-off-by: Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
+
+---
+ drivers/acpi/processor_idle.c |   18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
+
+Index: linux-rt.q/drivers/acpi/processor_idle.c
+===================================================================
+--- linux-rt.q.orig/drivers/acpi/processor_idle.c
++++ linux-rt.q/drivers/acpi/processor_idle.c
+@@ -803,7 +803,7 @@ int acpi_processor_power_exit(struct acp
+  * @t1: the start time
+  * @t2: the end time
+  */
+-static inline u32 ticks_elapsed(u32 t1, u32 t2)
++static inline u32 ticks_elapsed_in_us(u32 t1, u32 t2)
+ {
+ 	if (t2 >= t1)
+ 		return PM_TIMER_TICKS_TO_US(t2 - t1);
+@@ -813,6 +813,16 @@ static inline u32 ticks_elapsed(u32 t1, 
+ 		return PM_TIMER_TICKS_TO_US((0xFFFFFFFF - t1) + t2);
+ }
+ 
++static inline u32 ticks_elapsed(u32 t1, u32 t2)
++{
++	if (t2 >= t1)
++		return (t2 - t1);
++	else if (!(acpi_gbl_FADT.flags & ACPI_FADT_32BIT_TIMER))
++		return (((0x00FFFFFF - t1) + t2) & 0x00FFFFFF);
++	else
++		return ((0xFFFFFFFF - t1) + t2);
++}
++
+ /**
+  * acpi_idle_update_bm_rld - updates the BM_RLD bit depending on target state
+  * @pr: the processor
+@@ -936,7 +946,8 @@ static int acpi_idle_enter_c2(struct cpu
+ 	cx->usage++;
+ 
+ 	acpi_state_timer_broadcast(pr, cx, 0);
+-	return ticks_elapsed(t1, t2);
++	cx->time += ticks_elapsed(t1, t2);
++	return ticks_elapsed_in_us(t1, t2);
+ }
+ 
+ static int c3_cpu_count;
+@@ -1020,7 +1031,8 @@ static int acpi_idle_enter_c3(struct cpu
+ 	cx->usage++;
+ 
+ 	acpi_state_timer_broadcast(pr, cx, 0);
+-	return ticks_elapsed(t1, t2);
++	cx->time += ticks_elapsed(t1, t2);
++	return ticks_elapsed_in_us(t1, t2);
+ }
+ 
+ /**

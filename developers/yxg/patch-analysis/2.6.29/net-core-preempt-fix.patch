@@ -1,0 +1,23 @@
+Subject: net: core preempt fix
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:03:01 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ net/core/dev.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/net/core/dev.c
+===================================================================
+--- linux-2.6-tip.orig/net/core/dev.c
++++ linux-2.6-tip/net/core/dev.c
+@@ -1986,8 +1986,8 @@ int netif_rx_ni(struct sk_buff *skb)
+ {
+ 	int err;
+ 
+-	preempt_disable();
+ 	err = netif_rx(skb);
++	preempt_disable();
+ 	if (local_softirq_pending())
+ 		do_softirq();
+ 	preempt_enable();

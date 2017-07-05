@@ -1,0 +1,60 @@
+From 71a040bb37b815d4d4a2be8ab2a14b9c41e3fc19 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 4 Oct 2013 11:42:34 +0200
+Subject: [PATCH] net: iwlwifi: request only a threaded handler for
+ interrupts
+
+On RT the trans_pcie->irq_lock lock is converted into a sleeping lock
+and can't be used in primary irq handler. The lock is used in mutliple
+places which means turning it into a raw lock could increase the
+latency of the system.
+For now both handlers are moved into the thread.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/net/wireless/iwlwifi/pcie/trans.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+diff --git a/drivers/net/wireless/iwlwifi/pcie/trans.c b/drivers/net/wireless/iwlwifi/pcie/trans.c
+index aeb70e1..42567fc 100644
+--- a/drivers/net/wireless/iwlwifi/pcie/trans.c
++++ b/drivers/net/wireless/iwlwifi/pcie/trans.c
+@@ -1456,6 +1456,20 @@ static const struct iwl_trans_ops trans_ops_pcie = {
+ 	.set_bits_mask = iwl_trans_pcie_set_bits_mask,
+ };
+ 
++#ifdef CONFIG_PREEMPT_RT_BASE
++static irqreturn_t iwl_rt_irq_handler(int irq, void *dev_id)
++{
++	irqreturn_t ret;
++
++	local_bh_disable();
++	ret = iwl_pcie_isr_ict(irq, dev_id);
++	local_bh_enable();
++	if (ret == IRQ_WAKE_THREAD)
++		ret = iwl_pcie_irq_handler(irq, dev_id);
++	return ret;
++}
++#endif
++
+ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 				       const struct pci_device_id *ent,
+ 				       const struct iwl_cfg *cfg)
+@@ -1566,9 +1580,14 @@ struct iwl_trans *iwl_trans_pcie_alloc(struct pci_dev *pdev,
+ 	if (iwl_pcie_alloc_ict(trans))
+ 		goto out_free_cmd_pool;
+ 
++#ifdef CONFIG_PREEMPT_RT_BASE
++	if (request_threaded_irq(pdev->irq, NULL, iwl_rt_irq_handler,
++				 IRQF_SHARED | IRQF_ONESHOT, DRV_NAME, trans)) {
++#else
+ 	if (request_threaded_irq(pdev->irq, iwl_pcie_isr_ict,
+ 				 iwl_pcie_irq_handler,
+ 				 IRQF_SHARED, DRV_NAME, trans)) {
++#endif
+ 		IWL_ERR(trans, "Error allocating IRQ %d\n", pdev->irq);
+ 		goto out_free_ict;
+ 	}
+-- 
+1.8.4.rc3
+

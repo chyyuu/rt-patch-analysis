@@ -1,0 +1,44 @@
+From 547efeadd42a3c75e41e33c0637cba100fc18289 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:19 +0200
+Subject: [PATCH 08/32] x86/mtrr: Remove get_online_cpus() from
+ mtrr_save_state()
+
+mtrr_save_state() is invoked from native_cpu_up() which is in the context
+of a CPU hotplug operation and therefor calling get_online_cpus() is
+pointless.
+
+While this works in the current get_online_cpus() implementation it
+prevents from converting the hotplug locking to percpu rwsems.
+
+Remove it.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081547.651378834@linutronix.de
+---
+ arch/x86/kernel/cpu/mtrr/main.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/mtrr/main.c b/arch/x86/kernel/cpu/mtrr/main.c
+index 2bce84d91c2b..c5bb63be4ba1 100644
+--- a/arch/x86/kernel/cpu/mtrr/main.c
++++ b/arch/x86/kernel/cpu/mtrr/main.c
+@@ -807,10 +807,8 @@ void mtrr_save_state(void)
+ 	if (!mtrr_enabled())
+ 		return;
+ 
+-	get_online_cpus();
+ 	first_cpu = cpumask_first(cpu_online_mask);
+ 	smp_call_function_single(first_cpu, mtrr_save_fixed_ranges, NULL, 1);
+-	put_online_cpus();
+ }
+ 
+ void set_mtrr_aps_delayed_init(void)
+-- 
+2.11.0
+

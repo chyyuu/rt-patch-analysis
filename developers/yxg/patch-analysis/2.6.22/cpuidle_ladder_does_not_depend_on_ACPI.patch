@@ -1,0 +1,35 @@
+commit 8eecab24ab74a9b565888f62ab172b5993b85784
+Author: Len Brown <len.brown@intel.com>
+Date:   Wed Mar 7 04:37:53 2007 -0500
+
+    cpuidle: ladder does not depend on ACPI
+    
+    build fix for CONFIG_ACPI=n
+    
+    In file included from drivers/cpuidle/governors/ladder.c:21:
+    include/acpi/processor.h:88: error: expected specifier-qualifier-list before âacpi_integerâ
+    include/acpi/processor.h:106: error: expected specifier-qualifier-list before âacpi_integerâ
+    include/acpi/processor.h:168: error: expected specifier-qualifier-list before âacpi_handleâ
+    
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ drivers/cpuidle/governors/ladder.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+Index: linux-rt.q/drivers/cpuidle/governors/ladder.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/governors/ladder.c
++++ linux-rt.q/drivers/cpuidle/governors/ladder.c
+@@ -14,11 +14,9 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/cpuidle.h>
+-#include <linux/acpi.h>
+ #include <linux/latency.h>
+ #include <linux/moduleparam.h>
+ #include <linux/jiffies.h>
+-#include <acpi/processor.h>
+ 
+ #include <asm/io.h>
+ #include <asm/uaccess.h>

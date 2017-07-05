@@ -1,0 +1,39 @@
+Subject: rt: fix perfcounters
+From: Ingo Molnar <mingo@elte.hu>
+Date: Mon Feb 09 23:04:04 CET 2009
+
+perfcounter spinlocks get called from within the scheduler,
+so they need to be atomic spinlocks too.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/init_task.h    |    2 +-
+ include/linux/perf_counter.h |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+Index: linux-2.6-tip/include/linux/init_task.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/init_task.h
++++ linux-2.6-tip/include/linux/init_task.h
+@@ -128,7 +128,7 @@ extern struct cred init_cred;
+ 	.perf_counter_ctx.event_list =					\
+ 		LIST_HEAD_INIT(tsk.perf_counter_ctx.event_list),	\
+ 	.perf_counter_ctx.lock =					\
+-		__SPIN_LOCK_UNLOCKED(tsk.perf_counter_ctx.lock),
++		RAW_SPIN_LOCK_UNLOCKED(tsk.perf_counter_ctx.lock),
+ #else
+ # define INIT_PERF_COUNTERS(tsk)
+ #endif
+Index: linux-2.6-tip/include/linux/perf_counter.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/perf_counter.h
++++ linux-2.6-tip/include/linux/perf_counter.h
+@@ -368,7 +368,7 @@ struct perf_counter_context {
+ 	 * Protect the states of the counters in the list,
+ 	 * nr_active, and the list:
+ 	 */
+-	spinlock_t		lock;
++	raw_spinlock_t		lock;
+ 	/*
+ 	 * Protect the list of counters.  Locking either mutex or lock
+ 	 * is sufficient to ensure the list doesn't change; to change

@@ -1,0 +1,37 @@
+---
+ include/asm-i386/i8253.h |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+Index: linux-rt.q/include/asm-i386/i8253.h
+===================================================================
+--- linux-rt.q.orig/include/asm-i386/i8253.h
++++ linux-rt.q/include/asm-i386/i8253.h
+@@ -1,6 +1,8 @@
+ #ifndef __ASM_I8253_H__
+ #define __ASM_I8253_H__
+ 
++#include <linux/clockchips.h>
++
+ /* i8253A PIT registers */
+ #define PIT_MODE		0x43
+ #define PIT_CH0			0x40
+@@ -8,10 +10,6 @@
+ 
+ extern spinlock_t i8253_lock;
+ 
+-#ifdef CONFIG_GENERIC_CLOCKEVENTS
+-
+-#include <linux/clockchips.h>
+-
+ extern struct clock_event_device *global_clock_event;
+ 
+ /**
+@@ -25,8 +23,6 @@ static inline void pit_interrupt_hook(vo
+ 	global_clock_event->event_handler(global_clock_event);
+ }
+ 
+-#endif
+-
+ extern void setup_pit_timer(void);
+ 
+ #endif	/* __ASM_I8253_H__ */

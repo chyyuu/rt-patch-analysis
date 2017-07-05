@@ -1,0 +1,219 @@
+Subject: preempt: realtime fs block
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:53 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ block/blk-core.c            |    6 +++---
+ fs/aio.c                    |    4 +++-
+ fs/dcache.c                 |    5 +++--
+ fs/exec.c                   |    5 ++++-
+ fs/file.c                   |    5 +++--
+ fs/notify/dnotify/dnotify.c |    2 +-
+ fs/pipe.c                   |   12 ++++++++++++
+ fs/proc/task_mmu.c          |    4 +++-
+ fs/xfs/linux-2.6/mrlock.h   |    2 +-
+ fs/xfs/xfs_mount.h          |    2 +-
+ 10 files changed, 34 insertions(+), 13 deletions(-)
+
+Index: linux-2.6-tip/block/blk-core.c
+===================================================================
+--- linux-2.6-tip.orig/block/blk-core.c
++++ linux-2.6-tip/block/blk-core.c
+@@ -212,7 +212,7 @@ EXPORT_SYMBOL(blk_dump_rq_flags);
+  */
+ void blk_plug_device(struct request_queue *q)
+ {
+-	WARN_ON(!irqs_disabled());
++	WARN_ON_NONRT(!irqs_disabled());
+ 
+ 	/*
+ 	 * don't plug a stopped queue, it must be paired with blk_start_queue()
+@@ -252,7 +252,7 @@ EXPORT_SYMBOL(blk_plug_device_unlocked);
+  */
+ int blk_remove_plug(struct request_queue *q)
+ {
+-	WARN_ON(!irqs_disabled());
++	WARN_ON_NONRT(!irqs_disabled());
+ 
+ 	if (!queue_flag_test_and_clear(QUEUE_FLAG_PLUGGED, q))
+ 		return 0;
+@@ -362,7 +362,7 @@ static void blk_invoke_request_fn(struct
+  **/
+ void blk_start_queue(struct request_queue *q)
+ {
+-	WARN_ON(!irqs_disabled());
++	WARN_ON_NONRT(!irqs_disabled());
+ 
+ 	queue_flag_clear(QUEUE_FLAG_STOPPED, q);
+ 	blk_invoke_request_fn(q);
+Index: linux-2.6-tip/fs/aio.c
+===================================================================
+--- linux-2.6-tip.orig/fs/aio.c
++++ linux-2.6-tip/fs/aio.c
+@@ -622,9 +622,11 @@ static void use_mm(struct mm_struct *mm)
+ 	task_lock(tsk);
+ 	active_mm = tsk->active_mm;
+ 	atomic_inc(&mm->mm_count);
++	local_irq_disable(); // FIXME
++	switch_mm(active_mm, mm, tsk);
+ 	tsk->mm = mm;
+ 	tsk->active_mm = mm;
+-	switch_mm(active_mm, mm, tsk);
++	local_irq_enable();
+ 	task_unlock(tsk);
+ 
+ 	mmdrop(active_mm);
+Index: linux-2.6-tip/fs/dcache.c
+===================================================================
+--- linux-2.6-tip.orig/fs/dcache.c
++++ linux-2.6-tip/fs/dcache.c
+@@ -726,8 +726,9 @@ void shrink_dcache_for_umount(struct sup
+ {
+ 	struct dentry *dentry;
+ 
+-	if (down_read_trylock(&sb->s_umount))
+-		BUG();
++// -rt: this might succeed there ...
++//	if (down_read_trylock(&sb->s_umount))
++//		BUG();
+ 
+ 	dentry = sb->s_root;
+ 	sb->s_root = NULL;
+Index: linux-2.6-tip/fs/exec.c
+===================================================================
+--- linux-2.6-tip.orig/fs/exec.c
++++ linux-2.6-tip/fs/exec.c
+@@ -47,6 +47,7 @@
+ #include <linux/mount.h>
+ #include <linux/security.h>
+ #include <linux/syscalls.h>
++#include <linux/delay.h>
+ #include <linux/tsacct_kern.h>
+ #include <linux/cn_proc.h>
+ #include <linux/audit.h>
+@@ -739,10 +740,12 @@ static int exec_mmap(struct mm_struct *m
+ 		}
+ 	}
+ 	task_lock(tsk);
++	local_irq_disable();
+ 	active_mm = tsk->active_mm;
++	activate_mm(active_mm, mm);
+ 	tsk->mm = mm;
+ 	tsk->active_mm = mm;
+-	activate_mm(active_mm, mm);
++	local_irq_enable();
+ 	task_unlock(tsk);
+ 	arch_pick_mmap_layout(mm);
+ 	if (old_mm) {
+Index: linux-2.6-tip/fs/file.c
+===================================================================
+--- linux-2.6-tip.orig/fs/file.c
++++ linux-2.6-tip/fs/file.c
+@@ -102,14 +102,15 @@ void free_fdtable_rcu(struct rcu_head *r
+ 		kfree(fdt->open_fds);
+ 		kfree(fdt);
+ 	} else {
+-		fddef = &get_cpu_var(fdtable_defer_list);
++
++		fddef = &per_cpu(fdtable_defer_list, raw_smp_processor_id());
++
+ 		spin_lock(&fddef->lock);
+ 		fdt->next = fddef->next;
+ 		fddef->next = fdt;
+ 		/* vmallocs are handled from the workqueue context */
+ 		schedule_work(&fddef->wq);
+ 		spin_unlock(&fddef->lock);
+-		put_cpu_var(fdtable_defer_list);
+ 	}
+ }
+ 
+Index: linux-2.6-tip/fs/notify/dnotify/dnotify.c
+===================================================================
+--- linux-2.6-tip.orig/fs/notify/dnotify/dnotify.c
++++ linux-2.6-tip/fs/notify/dnotify/dnotify.c
+@@ -170,7 +170,7 @@ void dnotify_parent(struct dentry *dentr
+ 
+ 	spin_lock(&dentry->d_lock);
+ 	parent = dentry->d_parent;
+-	if (parent->d_inode->i_dnotify_mask & event) {
++	if (unlikely(parent->d_inode->i_dnotify_mask & event)) {
+ 		dget(parent);
+ 		spin_unlock(&dentry->d_lock);
+ 		__inode_dir_notify(parent->d_inode, event);
+Index: linux-2.6-tip/fs/pipe.c
+===================================================================
+--- linux-2.6-tip.orig/fs/pipe.c
++++ linux-2.6-tip/fs/pipe.c
+@@ -386,8 +386,14 @@ redo:
+ 		wake_up_interruptible_sync(&pipe->wait);
+ 		kill_fasync(&pipe->fasync_writers, SIGIO, POLL_OUT);
+ 	}
++	/*
++	 * Hack: we turn off atime updates for -RT kernels.
++	 * Who uses them on pipes anyway?
++	 */
++#ifndef CONFIG_PREEMPT_RT
+ 	if (ret > 0)
+ 		file_accessed(filp);
++#endif
+ 	return ret;
+ }
+ 
+@@ -559,8 +565,14 @@ out:
+ 		wake_up_interruptible_sync(&pipe->wait);
+ 		kill_fasync(&pipe->fasync_readers, SIGIO, POLL_IN);
+ 	}
++	/*
++	 * Hack: we turn off atime updates for -RT kernels.
++	 * Who uses them on pipes anyway?
++	 */
++#ifndef CONFIG_PREEMPT_RT
+ 	if (ret > 0)
+ 		file_update_time(filp);
++#endif
+ 	return ret;
+ }
+ 
+Index: linux-2.6-tip/fs/proc/task_mmu.c
+===================================================================
+--- linux-2.6-tip.orig/fs/proc/task_mmu.c
++++ linux-2.6-tip/fs/proc/task_mmu.c
+@@ -137,8 +137,10 @@ static void *m_start(struct seq_file *m,
+ 	vma = NULL;
+ 	if ((unsigned long)l < mm->map_count) {
+ 		vma = mm->mmap;
+-		while (l-- && vma)
++		while (l-- && vma) {
+ 			vma = vma->vm_next;
++			cond_resched();
++		}
+ 		goto out;
+ 	}
+ 
+Index: linux-2.6-tip/fs/xfs/linux-2.6/mrlock.h
+===================================================================
+--- linux-2.6-tip.orig/fs/xfs/linux-2.6/mrlock.h
++++ linux-2.6-tip/fs/xfs/linux-2.6/mrlock.h
+@@ -21,7 +21,7 @@
+ #include <linux/rwsem.h>
+ 
+ typedef struct {
+-	struct rw_semaphore	mr_lock;
++	struct compat_rw_semaphore	mr_lock;
+ #ifdef DEBUG
+ 	int			mr_writer;
+ #endif
+Index: linux-2.6-tip/fs/xfs/xfs_mount.h
+===================================================================
+--- linux-2.6-tip.orig/fs/xfs/xfs_mount.h
++++ linux-2.6-tip/fs/xfs/xfs_mount.h
+@@ -275,7 +275,7 @@ typedef struct xfs_mount {
+ 	uint			m_bm_maxlevels[2]; /* XFS_BM_MAXLEVELS */
+ 	uint			m_in_maxlevels;	/* XFS_IN_MAXLEVELS */
+ 	struct xfs_perag	*m_perag;	/* per-ag accounting info */
+-	struct rw_semaphore	m_peraglock;	/* lock for m_perag (pointer) */
++	struct compat_rw_semaphore m_peraglock;	/* lock for m_perag (pointer) */
+ 	struct mutex		m_growlock;	/* growfs mutex */
+ 	int			m_fixedfsid[2];	/* unchanged for life of FS */
+ 	uint			m_dmevmask;	/* DMI events for this FS */

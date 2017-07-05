@@ -1,0 +1,132 @@
+commit bd5951fdfdef243135ea275c27e6ff5ba20a3d7d
+Author: Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
+Date:   Thu Feb 22 13:54:57 2007 -0800
+
+    cpuidle take2: Basic documentation for cpuidle
+    
+    Documentation for cpuidle infrastructure
+    
+    Signed-off-by: Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
+    Signed-off-by: Adam Belay <abelay@novell.com>
+    Signed-off-by: Shaohua Li <shaohua.li@intel.com>
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ Documentation/cpuidle/core.txt     |   17 +++++++++++++++++
+ Documentation/cpuidle/driver.txt   |   24 ++++++++++++++++++++++++
+ Documentation/cpuidle/governor.txt |   24 ++++++++++++++++++++++++
+ Documentation/cpuidle/sysfs.txt    |   27 +++++++++++++++++++++++++++
+ 4 files changed, 92 insertions(+)
+
+Index: linux-rt.q/Documentation/cpuidle/core.txt
+===================================================================
+--- /dev/null
++++ linux-rt.q/Documentation/cpuidle/core.txt
+@@ -0,0 +1,17 @@
++
++		Supporting multiple CPU idle levels in kernel
++
++				cpuidle
++
++General Information:
++
++Various CPUs today support multiple idle levels that are differentiated
++by varying exit latencies and power consumption during idle.
++cpuidle is a generic in-kernel infrastructure that separates
++idle policy (governor) from idle mechanism (driver) and provides a
++standardized infrastructure to support independent development of
++governors and drivers.
++
++cpuidle resides under /drivers/cpuidle.
++
++
+Index: linux-rt.q/Documentation/cpuidle/driver.txt
+===================================================================
+--- /dev/null
++++ linux-rt.q/Documentation/cpuidle/driver.txt
+@@ -0,0 +1,24 @@
++
++
++		Supporting multiple CPU idle levels in kernel
++
++				cpuidle drivers
++
++
++
++
++cpuidle driver supports capability detection for a particular system. The
++init and exit routines will be called for each online CPU, with a percpu
++cpuidle_driver object and driver should fill in cpuidle_states inside
++cpuidle_driver depending on the CPU capability.
++
++Driver can handle dynamic state changes (like battery<->AC), by calling
++force_redetect interface.
++
++It is possible to have more than one driver registered at the same time and
++user can switch between drivers using /sysfs interface.
++
++Interfaces:
++int cpuidle_register_driver(struct cpuidle_driver *drv);
++void cpuidle_unregister_driver(struct cpuidle_driver *drv);
++int cpuidle_force_redetect(struct cpuidle_device *dev);
+Index: linux-rt.q/Documentation/cpuidle/governor.txt
+===================================================================
+--- /dev/null
++++ linux-rt.q/Documentation/cpuidle/governor.txt
+@@ -0,0 +1,24 @@
++
++
++
++		Supporting multiple CPU idle levels in kernel
++
++				cpuidle governors
++
++
++
++
++cpuidle governor is policy routine that decides what idle state to enter at
++any given time. cpuidle core uses different callbacks to governor while
++handling idle entry.
++* select_state callback where governor can determine next idle state to enter
++* prepare_idle callback is called before entering an idle state
++* scan callback is called after a driver forces redetection of the states
++
++More than one governor can be registered at the same time and
++user can switch between drivers using /sysfs interface.
++
++Interfaces:
++int cpuidle_register_governor(struct cpuidle_governor *gov);
++void cpuidle_unregister_governor(struct cpuidle_governor *gov);
++
+Index: linux-rt.q/Documentation/cpuidle/sysfs.txt
+===================================================================
+--- /dev/null
++++ linux-rt.q/Documentation/cpuidle/sysfs.txt
+@@ -0,0 +1,27 @@
++
++
++		Supporting multiple CPU idle levels in kernel
++
++				cpuidle sysfs
++
++System global cpuidle information are under
++/sys/devices/system/cpu/cpuidle
++
++The current interfaces in this directory has self-explanatory names:
++* available_drivers
++* available_governors
++* current_driver
++* current_governor
++
++Per logical CPU specific cpuidle information are under
++/sys/devices/system/cpu/cpuX/cpuidle
++for each online cpu X
++
++Under this percpu directory, there is a directory for each idle state supported
++by the driver, which in turn has
++* latency
++* power
++* time
++* usage
++
++

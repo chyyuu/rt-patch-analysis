@@ -1,0 +1,31 @@
+Subject: sched-show-state-no-task-list-lock.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 20:47:54 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/sched.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: linux-2.6/kernel/sched.c
+===================================================================
+--- linux-2.6.orig/kernel/sched.c
++++ linux-2.6/kernel/sched.c
+@@ -5880,7 +5880,7 @@ void show_state_filter(unsigned long sta
+ 	printk(KERN_INFO
+ 		"  task                        PC stack   pid father\n");
+ #endif
+-	read_lock(&tasklist_lock);
++	rcu_read_lock();
+ 	do_each_thread(g, p) {
+ 		/*
+ 		 * reset the NMI-timeout, listing all files on a slow
+@@ -5896,7 +5896,7 @@ void show_state_filter(unsigned long sta
+ #ifdef CONFIG_SCHED_DEBUG
+ 	sysrq_sched_debug_show();
+ #endif
+-	read_unlock(&tasklist_lock);
++	rcu_read_unlock();
+ 	/*
+ 	 * Only show locks if all tasks are dumped:
+ 	 */

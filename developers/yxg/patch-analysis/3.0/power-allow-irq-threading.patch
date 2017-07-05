@@ -1,0 +1,21 @@
+Subject: powerpc: Allow irq threading
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 16 Jul 2011 13:16:24 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/powerpc/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6/arch/powerpc/Kconfig
+===================================================================
+--- linux-2.6.orig/arch/powerpc/Kconfig
++++ linux-2.6/arch/powerpc/Kconfig
+@@ -134,6 +134,7 @@ config PPC
+ 	select GENERIC_IRQ_SHOW_LEVEL
+ 	select HAVE_RCU_TABLE_FREE if SMP
+ 	select HAVE_SYSCALL_TRACEPOINTS
++	select IRQ_FORCED_THREADING
+ 
+ config EARLY_PRINTK
+ 	bool

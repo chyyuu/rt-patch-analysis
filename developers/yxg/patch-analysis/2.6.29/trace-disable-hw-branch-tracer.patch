@@ -1,0 +1,21 @@
+Subject: trace-disable-hw-branch-tracer.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 17 Mar 2009 17:33:05 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/trace/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6-tip/kernel/trace/Kconfig
+===================================================================
+--- linux-2.6-tip.orig/kernel/trace/Kconfig
++++ linux-2.6-tip/kernel/trace/Kconfig
+@@ -295,6 +295,7 @@ config STACK_TRACER
+ 
+ config HW_BRANCH_TRACER
+ 	depends on HAVE_HW_BRANCH_TRACER
++	depends on !PREEMPT_RT
+ 	bool "Trace hw branches"
+ 	select TRACING
+ 	help

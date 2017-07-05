@@ -1,0 +1,17 @@
+---
+ arch/powerpc/kernel/irq.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-rt.q/arch/powerpc/kernel/irq.c
+===================================================================
+--- linux-rt.q.orig/arch/powerpc/kernel/irq.c
++++ linux-rt.q/arch/powerpc/kernel/irq.c
+@@ -114,7 +114,7 @@ static inline void set_soft_enabled(unsi
+ 	: : "r" (enable), "i" (offsetof(struct paca_struct, soft_enabled)));
+ }
+ 
+-void local_irq_restore(unsigned long en)
++void notrace local_irq_restore(unsigned long en)
+ {
+ 	/*
+ 	 * get_paca()->soft_enabled = en;

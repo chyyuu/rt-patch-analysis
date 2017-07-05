@@ -1,0 +1,80 @@
+Subject: add -rt extra-version
+From: Ingo Molnar <mingo@elte.hu>
+
+add -rt extra-version.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+---
+ include/linux/mutex.h |    4 ++--
+ kernel/rt.c           |    6 +++---
+ kernel/sched.c        |    2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+Index: linux-2.6-tip/include/linux/mutex.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/mutex.h
++++ linux-2.6-tip/include/linux/mutex.h
+@@ -38,7 +38,7 @@ struct mutex {
+ 	struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
+ 
+ extern void
+-_mutex_init(struct mutex *lock, char *name, struct lock_class_key *key);
++__mutex_init(struct mutex *lock, char *name, struct lock_class_key *key);
+ 
+ extern void __lockfunc _mutex_lock(struct mutex *lock);
+ extern int __lockfunc _mutex_lock_interruptible(struct mutex *lock);
+@@ -75,7 +75,7 @@ extern void __lockfunc _mutex_unlock(str
+ do {							\
+ 	static struct lock_class_key __key;		\
+ 							\
+-	_mutex_init((mutex), #mutex, &__key);		\
++	__mutex_init((mutex), #mutex, &__key);		\
+ } while (0)
+ 
+ #else /* PREEMPT_RT */
+Index: linux-2.6-tip/kernel/rt.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rt.c
++++ linux-2.6-tip/kernel/rt.c
+@@ -83,7 +83,7 @@ void zap_rt_locks(void)
+ /*
+  * struct mutex functions
+  */
+-void _mutex_init(struct mutex *lock, char *name, struct lock_class_key *key)
++void __mutex_init(struct mutex *lock, char *name, struct lock_class_key *key)
+ {
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
+ 	/*
+@@ -94,7 +94,7 @@ void _mutex_init(struct mutex *lock, cha
+ #endif
+ 	__rt_mutex_init(&lock->lock, name);
+ }
+-EXPORT_SYMBOL(_mutex_init);
++EXPORT_SYMBOL(__mutex_init);
+ 
+ void __lockfunc _mutex_lock(struct mutex *lock)
+ {
+@@ -550,7 +550,7 @@ int rt_down_timeout(struct semaphore *se
+ 	do {
+ 		jiffies_to_timespec(jiff, &ts);
+ 		hrtimer_init_on_stack(&t.timer, HRTIMER_MODE_REL, CLOCK_MONOTONIC);
+-		t.timer.expires = timespec_to_ktime(ts);
++		t.timer._expires = timespec_to_ktime(ts);
+ 
+ 		ret = rt_mutex_timed_lock(&sem->lock, &t, 0);
+ 		if (ret != -EINTR)
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -5137,7 +5137,7 @@ need_resched:
+ }
+ EXPORT_SYMBOL(schedule);
+ 
+-#ifdef CONFIG_SMP
++#if defined(CONFIG_SMP) && !defined(CONFIG_PREEMPT_RT)
+ /*
+  * Look out! "owner" is an entirely speculative pointer
+  * access and not reliable.

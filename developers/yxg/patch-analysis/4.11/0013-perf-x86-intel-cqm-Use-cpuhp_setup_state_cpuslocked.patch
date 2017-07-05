@@ -1,0 +1,64 @@
+From 04b247c2ebdd6ba1c46c7c22546229a89760b43a Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:24 +0200
+Subject: [PATCH 13/32] perf/x86/intel/cqm: Use cpuhp_setup_state_cpuslocked()
+
+intel_cqm_init() holds get_online_cpus() while registerring the hotplug
+callbacks.
+
+cpuhp_setup_state() invokes get_online_cpus() as well. This is correct, but
+prevents the conversion of the hotplug locking to a percpu rwsem.
+
+Use cpuhp_setup_state_cpuslocked() to avoid the nested call. Convert
+*_online_cpus() to the new interfaces while at it.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081548.075604046@linutronix.de
+---
+ arch/x86/events/intel/cqm.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/arch/x86/events/intel/cqm.c b/arch/x86/events/intel/cqm.c
+index 8c00dc09a5d2..2521f771f2f5 100644
+--- a/arch/x86/events/intel/cqm.c
++++ b/arch/x86/events/intel/cqm.c
+@@ -1682,7 +1682,7 @@ static int __init intel_cqm_init(void)
+ 	 *
+ 	 * Also, check that the scales match on all cpus.
+ 	 */
+-	get_online_cpus();
++	cpus_read_lock();
+ 	for_each_online_cpu(cpu) {
+ 		struct cpuinfo_x86 *c = &cpu_data(cpu);
+ 
+@@ -1746,14 +1746,14 @@ static int __init intel_cqm_init(void)
+ 	 * Setup the hot cpu notifier once we are sure cqm
+ 	 * is enabled to avoid notifier leak.
+ 	 */
+-	cpuhp_setup_state(CPUHP_AP_PERF_X86_CQM_STARTING,
+-			  "perf/x86/cqm:starting",
+-			  intel_cqm_cpu_starting, NULL);
+-	cpuhp_setup_state(CPUHP_AP_PERF_X86_CQM_ONLINE, "perf/x86/cqm:online",
+-			  NULL, intel_cqm_cpu_exit);
+-
++	cpuhp_setup_state_cpuslocked(CPUHP_AP_PERF_X86_CQM_STARTING,
++				     "perf/x86/cqm:starting",
++				     intel_cqm_cpu_starting, NULL);
++	cpuhp_setup_state_cpuslocked(CPUHP_AP_PERF_X86_CQM_ONLINE,
++				     "perf/x86/cqm:online",
++				     NULL, intel_cqm_cpu_exit);
+ out:
+-	put_online_cpus();
++	cpus_read_unlock();
+ 
+ 	if (ret) {
+ 		kfree(str);
+-- 
+2.11.0
+

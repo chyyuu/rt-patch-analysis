@@ -1,0 +1,35 @@
+Subject: x86-microcode-fix-sysfs-wreckage.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 14 Mar 2009 17:44:26 +0100
+
+commit 6807b3625c5709e0a70a8ede3f9c890103e2a458 (x86: cpumask: use
+work_on_cpu in arch/x86/kernel/microcode_core.c) introduced a sysfs
+WARNING.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/kernel/microcode_core.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+Index: linux-2.6-tip/arch/x86/kernel/microcode_core.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/microcode_core.c
++++ linux-2.6-tip/arch/x86/kernel/microcode_core.c
+@@ -391,9 +391,16 @@ static int mc_sysdev_add(struct sys_devi
+ 		return err;
+ 
+ 	err = microcode_init_cpu(cpu);
++#if 0
++	/*
++	 * While it looks correct, it's broken as we remove the sysfs
++	 * entry in sysdev_remove below again. The error handling in
++	 * this file is completely wreckaged and we have multiple
++	 * hotplug handling via notifier and sysdev as well.  Sigh.
++	 */
+ 	if (err)
+ 		sysfs_remove_group(&sys_dev->kobj, &mc_attr_group);
+-
++#endif
+ 	return err;
+ }
+ 

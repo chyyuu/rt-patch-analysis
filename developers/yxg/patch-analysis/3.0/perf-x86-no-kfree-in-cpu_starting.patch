@@ -1,0 +1,79 @@
+Subject: perf, x86: Avoid kfree in CPU_STARTING
+From: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Date: Fri Jul 22 13:41:54 CEST 2011
+
+On -rt kfree() can schedule, but CPU_STARTING is before the CPU is
+fully up and running. These are contradictory, so avoid it. Instead
+push the kfree() to CPU_ONLINE where we're free to schedule.
+
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Link: http://lkml.kernel.org/n/tip-b4ag6dk2jkuvupyz2l7txjmd@git.kernel.org
+---
+ arch/x86/kernel/cpu/perf_event.c       |    8 ++++++++
+ arch/x86/kernel/cpu/perf_event_amd.c   |    2 +-
+ arch/x86/kernel/cpu/perf_event_intel.c |    2 +-
+ 3 files changed, 10 insertions(+), 2 deletions(-)
+
+Index: linux-2.6/arch/x86/kernel/cpu/perf_event.c
+===================================================================
+--- linux-2.6.orig/arch/x86/kernel/cpu/perf_event.c
++++ linux-2.6/arch/x86/kernel/cpu/perf_event.c
+@@ -142,6 +142,8 @@ struct cpu_hw_events {
+ 	 * AMD specific bits
+ 	 */
+ 	struct amd_nb		*amd_nb;
++
++	void			*kfree_on_online;
+ };
+ 
+ #define __EVENT_CONSTRAINT(c, n, m, w) {\
+@@ -1452,10 +1454,12 @@ static int __cpuinit
+ x86_pmu_notifier(struct notifier_block *self, unsigned long action, void *hcpu)
+ {
+ 	unsigned int cpu = (long)hcpu;
++	struct cpu_hw_events *cpuc = &per_cpu(cpu_hw_events, cpu);
+ 	int ret = NOTIFY_OK;
+ 
+ 	switch (action & ~CPU_TASKS_FROZEN) {
+ 	case CPU_UP_PREPARE:
++		cpuc->kfree_on_online = NULL;
+ 		if (x86_pmu.cpu_prepare)
+ 			ret = x86_pmu.cpu_prepare(cpu);
+ 		break;
+@@ -1465,6 +1469,10 @@ x86_pmu_notifier(struct notifier_block *
+ 			x86_pmu.cpu_starting(cpu);
+ 		break;
+ 
++	case CPU_ONLINE:
++		kfree(cpuc->kfree_on_online);
++		break;
++
+ 	case CPU_DYING:
+ 		if (x86_pmu.cpu_dying)
+ 			x86_pmu.cpu_dying(cpu);
+Index: linux-2.6/arch/x86/kernel/cpu/perf_event_amd.c
+===================================================================
+--- linux-2.6.orig/arch/x86/kernel/cpu/perf_event_amd.c
++++ linux-2.6/arch/x86/kernel/cpu/perf_event_amd.c
+@@ -336,7 +336,7 @@ static void amd_pmu_cpu_starting(int cpu
+ 			continue;
+ 
+ 		if (nb->nb_id == nb_id) {
+-			kfree(cpuc->amd_nb);
++			cpuc->kfree_on_online = cpuc->amd_nb;
+ 			cpuc->amd_nb = nb;
+ 			break;
+ 		}
+Index: linux-2.6/arch/x86/kernel/cpu/perf_event_intel.c
+===================================================================
+--- linux-2.6.orig/arch/x86/kernel/cpu/perf_event_intel.c
++++ linux-2.6/arch/x86/kernel/cpu/perf_event_intel.c
+@@ -1267,7 +1267,7 @@ static void intel_pmu_cpu_starting(int c
+ 		struct intel_percore *pc = per_cpu(cpu_hw_events, i).per_core;
+ 
+ 		if (pc && pc->core_id == core_id) {
+-			kfree(cpuc->per_core);
++			cpuc->kfree_on_online = cpuc->per_core;
+ 			cpuc->per_core = pc;
+ 			break;
+ 		}

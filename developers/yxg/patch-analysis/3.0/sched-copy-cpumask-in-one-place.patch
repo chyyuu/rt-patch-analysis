@@ -1,0 +1,42 @@
+Subject: sched-copy-cpumask-in-one-place.patch
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Sat, 25 Jun 2011 15:45:46 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/sched.c    |    7 +++----
+ kernel/sched_rt.c |    3 ---
+ 2 files changed, 3 insertions(+), 7 deletions(-)
+
+Index: linux-2.6/kernel/sched.c
+===================================================================
+--- linux-2.6.orig/kernel/sched.c
++++ linux-2.6/kernel/sched.c
+@@ -6015,10 +6015,9 @@ void do_set_cpus_allowed(struct task_str
+ {
+ 	if (p->sched_class && p->sched_class->set_cpus_allowed)
+ 		p->sched_class->set_cpus_allowed(p, new_mask);
+-	else {
+-		cpumask_copy(&p->cpus_allowed, new_mask);
+-		p->rt.nr_cpus_allowed = cpumask_weight(new_mask);
+-	}
++
++	cpumask_copy(&p->cpus_allowed, new_mask);
++	p->rt.nr_cpus_allowed = cpumask_weight(new_mask);
+ }
+ 
+ /*
+Index: linux-2.6/kernel/sched_rt.c
+===================================================================
+--- linux-2.6.orig/kernel/sched_rt.c
++++ linux-2.6/kernel/sched_rt.c
+@@ -1615,9 +1615,6 @@ static void set_cpus_allowed_rt(struct t
+ 
+ 		update_rt_migration(&rq->rt);
+ 	}
+-
+-	cpumask_copy(&p->cpus_allowed, new_mask);
+-	p->rt.nr_cpus_allowed = weight;
+ }
+ 
+ /* Assumes rq->lock is held */

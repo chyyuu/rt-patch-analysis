@@ -1,0 +1,46 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 16 Jun 2010 16:58:34 +0200
+Subject: timer_stats: Convert table_lock to raw_spin_lock
+
+table_lock is taken in atomic contexts and therefor cannot be
+converted to a sleeping spinlock on rt. Make it raw.
+
+Reported-by: Andreas Sundebo <kernel@sundebo.dk>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Andreas Sundebo <kernel@sundebo.dk>
+
+---
+ kernel/time/timer_stats.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: linux-2.6-tip/kernel/time/timer_stats.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/time/timer_stats.c
++++ linux-2.6-tip/kernel/time/timer_stats.c
+@@ -81,7 +81,7 @@ struct entry {
+ /*
+  * Spinlock protecting the tables - not taken during lookup:
+  */
+-static DEFINE_SPINLOCK(table_lock);
++static DEFINE_RAW_SPINLOCK(table_lock);
+ 
+ /*
+  * Per-CPU lookup locks for fast hash lookup:
+@@ -188,7 +188,7 @@ static struct entry *tstat_lookup(struct
+ 	prev = NULL;
+ 	curr = *head;
+ 
+-	spin_lock(&table_lock);
++	raw_spin_lock(&table_lock);
+ 	/*
+ 	 * Make sure we have not raced with another CPU:
+ 	 */
+@@ -215,7 +215,7 @@ static struct entry *tstat_lookup(struct
+ 			*head = curr;
+ 	}
+  out_unlock:
+-	spin_unlock(&table_lock);
++	raw_spin_unlock(&table_lock);
+ 
+ 	return curr;
+ }

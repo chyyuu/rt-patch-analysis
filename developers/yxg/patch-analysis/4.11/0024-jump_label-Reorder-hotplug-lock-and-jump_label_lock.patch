@@ -1,0 +1,221 @@
+From f2545b2d4ce13e068897ef60ae64dffe215f4152 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:35 +0200
+Subject: [PATCH 24/32] jump_label: Reorder hotplug lock and jump_label_lock
+
+The conversion of the hotplug locking to a percpu rwsem unearthed lock
+ordering issues all over the place.
+
+The jump_label code has two issues:
+
+ 1) Nested get_online_cpus() invocations
+
+ 2) Ordering problems vs. the cpus rwsem and the jump_label_mutex
+
+To cure these, the following lock order has been established;
+
+   cpus_rwsem -> jump_label_lock -> text_mutex
+
+Even if not all architectures need protection against CPU hotplug, taking
+cpus_rwsem before jump_label_lock is now mandatory in code pathes which
+actually modify code and therefor need text_mutex protection.
+
+Move the get_online_cpus() invocations into the core jump label code and
+establish the proper lock order where required.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: "David S. Miller" <davem@davemloft.net>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Chris Metcalf <cmetcalf@mellanox.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Jason Baron <jbaron@akamai.com>
+Cc: Ralf Baechle <ralf@linux-mips.org>
+Link: http://lkml.kernel.org/r/20170524081549.025830817@linutronix.de
+---
+ arch/mips/kernel/jump_label.c  |  2 --
+ arch/sparc/kernel/jump_label.c |  2 --
+ arch/tile/kernel/jump_label.c  |  2 --
+ arch/x86/kernel/jump_label.c   |  2 --
+ kernel/jump_label.c            | 20 ++++++++++++++------
+ 5 files changed, 14 insertions(+), 14 deletions(-)
+
+diff --git a/arch/mips/kernel/jump_label.c b/arch/mips/kernel/jump_label.c
+index 3e586daa3a32..32e3168316cd 100644
+--- a/arch/mips/kernel/jump_label.c
++++ b/arch/mips/kernel/jump_label.c
+@@ -58,7 +58,6 @@ void arch_jump_label_transform(struct jump_entry *e,
+ 		insn.word = 0; /* nop */
+ 	}
+ 
+-	get_online_cpus();
+ 	mutex_lock(&text_mutex);
+ 	if (IS_ENABLED(CONFIG_CPU_MICROMIPS)) {
+ 		insn_p->halfword[0] = insn.word >> 16;
+@@ -70,7 +69,6 @@ void arch_jump_label_transform(struct jump_entry *e,
+ 			   (unsigned long)insn_p + sizeof(*insn_p));
+ 
+ 	mutex_unlock(&text_mutex);
+-	put_online_cpus();
+ }
+ 
+ #endif /* HAVE_JUMP_LABEL */
+diff --git a/arch/sparc/kernel/jump_label.c b/arch/sparc/kernel/jump_label.c
+index 07933b9e9ce0..93adde1ac166 100644
+--- a/arch/sparc/kernel/jump_label.c
++++ b/arch/sparc/kernel/jump_label.c
+@@ -41,12 +41,10 @@ void arch_jump_label_transform(struct jump_entry *entry,
+ 		val = 0x01000000;
+ 	}
+ 
+-	get_online_cpus();
+ 	mutex_lock(&text_mutex);
+ 	*insn = val;
+ 	flushi(insn);
+ 	mutex_unlock(&text_mutex);
+-	put_online_cpus();
+ }
+ 
+ #endif
+diff --git a/arch/tile/kernel/jump_label.c b/arch/tile/kernel/jump_label.c
+index 07802d586988..93931a46625b 100644
+--- a/arch/tile/kernel/jump_label.c
++++ b/arch/tile/kernel/jump_label.c
+@@ -45,14 +45,12 @@ static void __jump_label_transform(struct jump_entry *e,
+ void arch_jump_label_transform(struct jump_entry *e,
+ 				enum jump_label_type type)
+ {
+-	get_online_cpus();
+ 	mutex_lock(&text_mutex);
+ 
+ 	__jump_label_transform(e, type);
+ 	flush_icache_range(e->code, e->code + sizeof(tilegx_bundle_bits));
+ 
+ 	mutex_unlock(&text_mutex);
+-	put_online_cpus();
+ }
+ 
+ __init_or_module void arch_jump_label_transform_static(struct jump_entry *e,
+diff --git a/arch/x86/kernel/jump_label.c b/arch/x86/kernel/jump_label.c
+index c37bd0f39c70..ab4f491da2a9 100644
+--- a/arch/x86/kernel/jump_label.c
++++ b/arch/x86/kernel/jump_label.c
+@@ -105,11 +105,9 @@ static void __jump_label_transform(struct jump_entry *entry,
+ void arch_jump_label_transform(struct jump_entry *entry,
+ 			       enum jump_label_type type)
+ {
+-	get_online_cpus();
+ 	mutex_lock(&text_mutex);
+ 	__jump_label_transform(entry, type, NULL, 0);
+ 	mutex_unlock(&text_mutex);
+-	put_online_cpus();
+ }
+ 
+ static enum {
+diff --git a/kernel/jump_label.c b/kernel/jump_label.c
+index 6c9cb208ac48..d11c506a6ac3 100644
+--- a/kernel/jump_label.c
++++ b/kernel/jump_label.c
+@@ -15,6 +15,7 @@
+ #include <linux/static_key.h>
+ #include <linux/jump_label_ratelimit.h>
+ #include <linux/bug.h>
++#include <linux/cpu.h>
+ 
+ #ifdef HAVE_JUMP_LABEL
+ 
+@@ -124,6 +125,7 @@ void static_key_slow_inc(struct static_key *key)
+ 			return;
+ 	}
+ 
++	cpus_read_lock();
+ 	jump_label_lock();
+ 	if (atomic_read(&key->enabled) == 0) {
+ 		atomic_set(&key->enabled, -1);
+@@ -133,12 +135,14 @@ void static_key_slow_inc(struct static_key *key)
+ 		atomic_inc(&key->enabled);
+ 	}
+ 	jump_label_unlock();
++	cpus_read_unlock();
+ }
+ EXPORT_SYMBOL_GPL(static_key_slow_inc);
+ 
+ static void __static_key_slow_dec(struct static_key *key,
+ 		unsigned long rate_limit, struct delayed_work *work)
+ {
++	cpus_read_lock();
+ 	/*
+ 	 * The negative count check is valid even when a negative
+ 	 * key->enabled is in use by static_key_slow_inc(); a
+@@ -149,6 +153,7 @@ static void __static_key_slow_dec(struct static_key *key,
+ 	if (!atomic_dec_and_mutex_lock(&key->enabled, &jump_label_mutex)) {
+ 		WARN(atomic_read(&key->enabled) < 0,
+ 		     "jump label: negative count!\n");
++		cpus_read_unlock();
+ 		return;
+ 	}
+ 
+@@ -159,6 +164,7 @@ static void __static_key_slow_dec(struct static_key *key,
+ 		jump_label_update(key);
+ 	}
+ 	jump_label_unlock();
++	cpus_read_unlock();
+ }
+ 
+ static void jump_label_update_timeout(struct work_struct *work)
+@@ -334,6 +340,7 @@ void __init jump_label_init(void)
+ 	if (static_key_initialized)
+ 		return;
+ 
++	cpus_read_lock();
+ 	jump_label_lock();
+ 	jump_label_sort_entries(iter_start, iter_stop);
+ 
+@@ -353,6 +360,7 @@ void __init jump_label_init(void)
+ 	}
+ 	static_key_initialized = true;
+ 	jump_label_unlock();
++	cpus_read_unlock();
+ }
+ 
+ #ifdef CONFIG_MODULES
+@@ -590,28 +598,28 @@ jump_label_module_notify(struct notifier_block *self, unsigned long val,
+ 	struct module *mod = data;
+ 	int ret = 0;
+ 
++	cpus_read_lock();
++	jump_label_lock();
++
+ 	switch (val) {
+ 	case MODULE_STATE_COMING:
+-		jump_label_lock();
+ 		ret = jump_label_add_module(mod);
+ 		if (ret) {
+ 			WARN(1, "Failed to allocatote memory: jump_label may not work properly.\n");
+ 			jump_label_del_module(mod);
+ 		}
+-		jump_label_unlock();
+ 		break;
+ 	case MODULE_STATE_GOING:
+-		jump_label_lock();
+ 		jump_label_del_module(mod);
+-		jump_label_unlock();
+ 		break;
+ 	case MODULE_STATE_LIVE:
+-		jump_label_lock();
+ 		jump_label_invalidate_module_init(mod);
+-		jump_label_unlock();
+ 		break;
+ 	}
+ 
++	jump_label_unlock();
++	cpus_read_unlock();
++
+ 	return notifier_from_errno(ret);
+ }
+ 
+-- 
+2.11.0
+

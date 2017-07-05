@@ -1,0 +1,46 @@
+---
+ kernel/Kconfig.preempt |   34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+
+Index: linux-rt.q/kernel/Kconfig.preempt
+===================================================================
+--- linux-rt.q.orig/kernel/Kconfig.preempt
++++ linux-rt.q/kernel/Kconfig.preempt
+@@ -99,3 +99,37 @@ config RCU_TRACE
+ 
+ 	  Say Y here if you want to enable RCU tracing
+ 	  Say N if you are unsure.
++
++config PREEMPT_SOFTIRQS
++	bool "Thread Softirqs"
++	default n
++#	depends on PREEMPT
++	help
++	  This option reduces the latency of the kernel by 'threading'
++	  soft interrupts. This means that all softirqs will execute
++	  in softirqd's context. While this helps latency, it can also
++	  reduce performance.
++
++	  The threading of softirqs can also be controlled via
++	  /proc/sys/kernel/softirq_preemption runtime flag and the
++	  sofirq-preempt=0/1 boot-time option.
++
++	  Say N if you are unsure.
++
++config PREEMPT_HARDIRQS
++	bool "Thread Hardirqs"
++	default n
++	depends on !GENERIC_HARDIRQS_NO__DO_IRQ
++	help
++	  This option reduces the latency of the kernel by 'threading'
++	  hardirqs. This means that all (or selected) hardirqs will run
++	  in their own kernel thread context. While this helps latency,
++	  this feature can also reduce performance.
++
++	  The threading of hardirqs can also be controlled via the
++	  /proc/sys/kernel/hardirq_preemption runtime flag and the
++	  hardirq-preempt=0/1 boot-time option. Per-irq threading can
++	  be enabled/disable via the /proc/irq/<IRQ>/<handler>/threaded
++	  runtime flags.
++
++	  Say N if you are unsure.

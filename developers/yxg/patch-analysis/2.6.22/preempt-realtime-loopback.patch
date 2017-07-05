@@ -1,0 +1,17 @@
+---
+ drivers/net/loopback.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-rt.q/drivers/net/loopback.c
+===================================================================
+--- linux-rt.q.orig/drivers/net/loopback.c
++++ linux-rt.q/drivers/net/loopback.c
+@@ -159,7 +159,7 @@ static int loopback_xmit(struct sk_buff 
+ 	lb_stats->packets++;
+ 	put_cpu();
+ 
+-	netif_rx(skb);
++	netif_rx_ni(skb);
+ 
+ 	return 0;
+ }

@@ -1,0 +1,270 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 26 Jul 2009 17:38:49 +0200
+Subject: fs: Convert i_alloc_sem to rw_anon_semaphore
+
+i_alloc_sem is used as a completion in direct-io which does not follow
+owner rules. preempt-rt needs to keep it as such. So convert it to
+rw_anon_semaphore and annotate the semantics hereby.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ fs/attr.c           |    4 ++--
+ fs/direct-io.c      |    4 ++--
+ fs/ext4/inode.c     |   10 +++++-----
+ fs/fat/inode.c      |    4 ++--
+ fs/inode.c          |    2 +-
+ fs/ntfs/file.c      |    4 ++--
+ fs/ocfs2/aops.c     |    2 +-
+ fs/ocfs2/file.c     |   10 +++++-----
+ fs/reiserfs/xattr.c |    4 ++--
+ include/linux/fs.h  |    2 +-
+ mm/truncate.c       |    4 ++--
+ 11 files changed, 25 insertions(+), 25 deletions(-)
+
+Index: linux-2.6/fs/attr.c
+===================================================================
+--- linux-2.6.orig/fs/attr.c
++++ linux-2.6/fs/attr.c
+@@ -233,7 +233,7 @@ int notify_change(struct dentry * dentry
+ 		return error;
+ 
+ 	if (ia_valid & ATTR_SIZE)
+-		down_write(&dentry->d_inode->i_alloc_sem);
++		anon_down_write(&dentry->d_inode->i_alloc_sem);
+ 
+ 	if (inode->i_op->setattr)
+ 		error = inode->i_op->setattr(dentry, attr);
+@@ -241,7 +241,7 @@ int notify_change(struct dentry * dentry
+ 		error = simple_setattr(dentry, attr);
+ 
+ 	if (ia_valid & ATTR_SIZE)
+-		up_write(&dentry->d_inode->i_alloc_sem);
++		anon_up_write(&dentry->d_inode->i_alloc_sem);
+ 
+ 	if (!error)
+ 		fsnotify_change(dentry, ia_valid);
+Index: linux-2.6/fs/direct-io.c
+===================================================================
+--- linux-2.6.orig/fs/direct-io.c
++++ linux-2.6/fs/direct-io.c
+@@ -255,7 +255,7 @@ static ssize_t dio_complete(struct dio *
+ 
+ 	if (dio->flags & DIO_LOCKING)
+ 		/* lockdep: non-owner release */
+-		up_read_non_owner(&dio->inode->i_alloc_sem);
++		anon_up_read_non_owner(&dio->inode->i_alloc_sem);
+ 
+ 	return ret;
+ }
+@@ -1234,7 +1234,7 @@ __blockdev_direct_IO(int rw, struct kioc
+ 		 * Will be released at I/O completion, possibly in a
+ 		 * different thread.
+ 		 */
+-		down_read_non_owner(&inode->i_alloc_sem);
++		anon_down_read_non_owner(&inode->i_alloc_sem);
+ 	}
+ 
+ 	/*
+Index: linux-2.6/fs/ext4/inode.c
+===================================================================
+--- linux-2.6.orig/fs/ext4/inode.c
++++ linux-2.6/fs/ext4/inode.c
+@@ -5853,7 +5853,7 @@ int ext4_page_mkwrite(struct vm_area_str
+ 	 * Get i_alloc_sem to stop truncates messing with the inode. We cannot
+ 	 * get i_mutex because we are already holding mmap_sem.
+ 	 */
+-	down_read(&inode->i_alloc_sem);
++	anon_down_read(&inode->i_alloc_sem);
+ 	size = i_size_read(inode);
+ 	if (page->mapping != mapping || size <= page_offset(page)
+ 	    || !PageUptodate(page)) {
+@@ -5865,7 +5865,7 @@ int ext4_page_mkwrite(struct vm_area_str
+ 	lock_page(page);
+ 	wait_on_page_writeback(page);
+ 	if (PageMappedToDisk(page)) {
+-		up_read(&inode->i_alloc_sem);
++		anon_up_read(&inode->i_alloc_sem);
+ 		return VM_FAULT_LOCKED;
+ 	}
+ 
+@@ -5883,7 +5883,7 @@ int ext4_page_mkwrite(struct vm_area_str
+ 	if (page_has_buffers(page)) {
+ 		if (!walk_page_buffers(NULL, page_buffers(page), 0, len, NULL,
+ 					ext4_bh_unmapped)) {
+-			up_read(&inode->i_alloc_sem);
++			anon_up_read(&inode->i_alloc_sem);
+ 			return VM_FAULT_LOCKED;
+ 		}
+ 	}
+@@ -5912,11 +5912,11 @@ int ext4_page_mkwrite(struct vm_area_str
+ 	 */
+ 	lock_page(page);
+ 	wait_on_page_writeback(page);
+-	up_read(&inode->i_alloc_sem);
++	anon_up_read(&inode->i_alloc_sem);
+ 	return VM_FAULT_LOCKED;
+ out_unlock:
+ 	if (ret)
+ 		ret = VM_FAULT_SIGBUS;
+-	up_read(&inode->i_alloc_sem);
++	anon_up_read(&inode->i_alloc_sem);
+ 	return ret;
+ }
+Index: linux-2.6/fs/fat/inode.c
+===================================================================
+--- linux-2.6.orig/fs/fat/inode.c
++++ linux-2.6/fs/fat/inode.c
+@@ -224,9 +224,9 @@ static sector_t _fat_bmap(struct address
+ 	sector_t blocknr;
+ 
+ 	/* fat_get_cluster() assumes the requested blocknr isn't truncated. */
+-	down_read(&mapping->host->i_alloc_sem);
++	anon_down_read(&mapping->host->i_alloc_sem);
+ 	blocknr = generic_block_bmap(mapping, block, fat_get_block);
+-	up_read(&mapping->host->i_alloc_sem);
++	anon_up_read(&mapping->host->i_alloc_sem);
+ 
+ 	return blocknr;
+ }
+Index: linux-2.6/fs/inode.c
+===================================================================
+--- linux-2.6.orig/fs/inode.c
++++ linux-2.6/fs/inode.c
+@@ -176,7 +176,7 @@ int inode_init_always(struct super_block
+ 	mutex_init(&inode->i_mutex);
+ 	lockdep_set_class(&inode->i_mutex, &sb->s_type->i_mutex_key);
+ 
+-	init_rwsem(&inode->i_alloc_sem);
++	init_anon_rwsem(&inode->i_alloc_sem);
+ 	lockdep_set_class(&inode->i_alloc_sem, &sb->s_type->i_alloc_sem_key);
+ 
+ 	mapping->a_ops = &empty_aops;
+Index: linux-2.6/fs/ntfs/file.c
+===================================================================
+--- linux-2.6.orig/fs/ntfs/file.c
++++ linux-2.6/fs/ntfs/file.c
+@@ -1832,9 +1832,9 @@ static ssize_t ntfs_file_buffered_write(
+ 	 * fails again.
+ 	 */
+ 	if (unlikely(NInoTruncateFailed(ni))) {
+-		down_write(&vi->i_alloc_sem);
++		anon_down_write(&vi->i_alloc_sem);
+ 		err = ntfs_truncate(vi);
+-		up_write(&vi->i_alloc_sem);
++		anon_up_write(&vi->i_alloc_sem);
+ 		if (err || NInoTruncateFailed(ni)) {
+ 			if (!err)
+ 				err = -EIO;
+Index: linux-2.6/fs/ocfs2/aops.c
+===================================================================
+--- linux-2.6.orig/fs/ocfs2/aops.c
++++ linux-2.6/fs/ocfs2/aops.c
+@@ -569,7 +569,7 @@ static void ocfs2_dio_end_io(struct kioc
+ 	BUG_ON(!ocfs2_iocb_is_rw_locked(iocb));
+ 
+ 	if (ocfs2_iocb_is_sem_locked(iocb)) {
+-		up_read(&inode->i_alloc_sem);
++		anon_up_read(&inode->i_alloc_sem);
+ 		ocfs2_iocb_clear_sem_locked(iocb);
+ 	}
+ 
+Index: linux-2.6/fs/ocfs2/file.c
+===================================================================
+--- linux-2.6.orig/fs/ocfs2/file.c
++++ linux-2.6/fs/ocfs2/file.c
+@@ -2238,7 +2238,7 @@ static ssize_t ocfs2_file_aio_write(stru
+ relock:
+ 	/* to match setattr's i_mutex -> i_alloc_sem -> rw_lock ordering */
+ 	if (direct_io) {
+-		down_read(&inode->i_alloc_sem);
++		anon_down_read(&inode->i_alloc_sem);
+ 		have_alloc_sem = 1;
+ 		/* communicate with ocfs2_dio_end_io */
+ 		ocfs2_iocb_set_sem_locked(iocb);
+@@ -2290,7 +2290,7 @@ relock:
+ 	 */
+ 	if (direct_io && !can_do_direct) {
+ 		ocfs2_rw_unlock(inode, rw_level);
+-		up_read(&inode->i_alloc_sem);
++		anon_up_read(&inode->i_alloc_sem);
+ 
+ 		have_alloc_sem = 0;
+ 		rw_level = -1;
+@@ -2379,7 +2379,7 @@ out:
+ 
+ out_sems:
+ 	if (have_alloc_sem) {
+-		up_read(&inode->i_alloc_sem);
++		anon_up_read(&inode->i_alloc_sem);
+ 		ocfs2_iocb_clear_sem_locked(iocb);
+ 	}
+ 
+@@ -2531,7 +2531,7 @@ static ssize_t ocfs2_file_aio_read(struc
+ 	 * need locks to protect pending reads from racing with truncate.
+ 	 */
+ 	if (filp->f_flags & O_DIRECT) {
+-		down_read(&inode->i_alloc_sem);
++		anon_down_read(&inode->i_alloc_sem);
+ 		have_alloc_sem = 1;
+ 		ocfs2_iocb_set_sem_locked(iocb);
+ 
+@@ -2575,7 +2575,7 @@ static ssize_t ocfs2_file_aio_read(struc
+ 
+ bail:
+ 	if (have_alloc_sem) {
+-		up_read(&inode->i_alloc_sem);
++		anon_up_read(&inode->i_alloc_sem);
+ 		ocfs2_iocb_clear_sem_locked(iocb);
+ 	}
+ 	if (rw_level != -1)
+Index: linux-2.6/fs/reiserfs/xattr.c
+===================================================================
+--- linux-2.6.orig/fs/reiserfs/xattr.c
++++ linux-2.6/fs/reiserfs/xattr.c
+@@ -555,11 +555,11 @@ reiserfs_xattr_set_handle(struct reiserf
+ 
+ 		reiserfs_write_unlock(inode->i_sb);
+ 		mutex_lock_nested(&dentry->d_inode->i_mutex, I_MUTEX_XATTR);
+-		down_write(&dentry->d_inode->i_alloc_sem);
++		anon_down_write(&dentry->d_inode->i_alloc_sem);
+ 		reiserfs_write_lock(inode->i_sb);
+ 
+ 		err = reiserfs_setattr(dentry, &newattrs);
+-		up_write(&dentry->d_inode->i_alloc_sem);
++		anon_up_write(&dentry->d_inode->i_alloc_sem);
+ 		mutex_unlock(&dentry->d_inode->i_mutex);
+ 	} else
+ 		update_ctime(inode);
+Index: linux-2.6/include/linux/fs.h
+===================================================================
+--- linux-2.6.orig/include/linux/fs.h
++++ linux-2.6/include/linux/fs.h
+@@ -777,7 +777,7 @@ struct inode {
+ 	struct timespec		i_ctime;
+ 	blkcnt_t		i_blocks;
+ 	unsigned short          i_bytes;
+-	struct rw_semaphore	i_alloc_sem;
++	struct rw_anon_semaphore	i_alloc_sem;
+ 	const struct file_operations	*i_fop;	/* former ->i_op->default_file_ops */
+ 	struct file_lock	*i_flock;
+ 	struct address_space	*i_mapping;
+Index: linux-2.6/mm/truncate.c
+===================================================================
+--- linux-2.6.orig/mm/truncate.c
++++ linux-2.6/mm/truncate.c
+@@ -622,12 +622,12 @@ int vmtruncate_range(struct inode *inode
+ 		return -ENOSYS;
+ 
+ 	mutex_lock(&inode->i_mutex);
+-	down_write(&inode->i_alloc_sem);
++	anon_down_write(&inode->i_alloc_sem);
+ 	unmap_mapping_range(mapping, offset, (end - offset), 1);
+ 	inode->i_op->truncate_range(inode, offset, end);
+ 	/* unmap again to remove racily COWed private pages */
+ 	unmap_mapping_range(mapping, offset, (end - offset), 1);
+-	up_write(&inode->i_alloc_sem);
++	anon_up_write(&inode->i_alloc_sem);
+ 	mutex_unlock(&inode->i_mutex);
+ 
+ 	return 0;

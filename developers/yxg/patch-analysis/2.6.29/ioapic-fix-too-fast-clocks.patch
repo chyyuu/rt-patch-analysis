@@ -1,0 +1,43 @@
+Subject: patches/ioapic-fix-too-fast-clocks.patch
+From:    Akira Tsukamoto <akira-t@s9.dion.ne.jp>
+
+This one line patch adds upper bound testing inside timer_irq_works()
+when evaluating whether irq timer works or not on boot up.
+
+It fix the machines having problem with clock running too fast.
+
+What this patch do is,
+if  timer interrupts running too fast through IO-APIC IRQ then false back to
+i8259A IRQ.
+
+I really appreciate for the feedback from ATI Xpress 200 chipset user,
+It should eliminate the needs of adding no_timer_check on kernel options.
+
+I have NEC laptop using ATI Xpress 200 chipset with Pentium M 1.8GHz and
+its clock keep going forward when kernel compiled with local APIC support.
+Many machines based on RS200 chipset seem to have the same problem,
+including Acer Ferrari 400X AMD notebook or Compaq R4000.
+
+Also I would like to have comments on upper bound limit, 16 ticks, which
+I chose in this patch. My laptop always reports around 20, which is double from normal.
+
+ arch/x86/kernel/apic/io_apic.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+Index: linux-2.6-tip/arch/x86/kernel/apic/io_apic.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/apic/io_apic.c
++++ linux-2.6-tip/arch/x86/kernel/apic/io_apic.c
+@@ -2252,8 +2252,10 @@ static int __init timer_irq_works(void)
+ 	 */
+ 
+ 	/* jiffies wrap? */
+-	if (time_after(jiffies, t1 + 4))
++	if (time_after(jiffies, t1 + 4) &&
++	    time_before(jiffies, t1 + 16))
+ 		return 1;
++
+ 	return 0;
+ }
+ 

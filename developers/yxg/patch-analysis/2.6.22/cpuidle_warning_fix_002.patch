@@ -1,0 +1,22 @@
+
+Fix the uninitialized usage of ret.
+
+Signed-off-by: Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
+
+---
+ drivers/cpuidle/sysfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-rt.q/drivers/cpuidle/sysfs.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/sysfs.c
++++ linux-rt.q/drivers/cpuidle/sysfs.c
+@@ -301,7 +301,7 @@ static void inline cpuidle_free_state_ko
+  */
+ int cpuidle_add_driver_sysfs(struct cpuidle_device *device)
+ {
+-	int i, ret;
++	int i, ret = -ENOMEM;
+ 	struct cpuidle_state_kobj *kobj;
+ 
+ 	/* state statistics */

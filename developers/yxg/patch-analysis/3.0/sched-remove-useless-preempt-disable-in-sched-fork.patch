@@ -1,0 +1,52 @@
+Subject: sched: remove useles get_cpu() in sched_fork()
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 31 May 2011 13:06:26 +0200
+
+Nothing to protect there.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/sched.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+Index: linux-2.6/kernel/sched.c
+===================================================================
+--- linux-2.6.orig/kernel/sched.c
++++ linux-2.6/kernel/sched.c
+@@ -2755,7 +2755,7 @@ static void __sched_fork(struct task_str
+ void sched_fork(struct task_struct *p)
+ {
+ 	unsigned long flags;
+-	int cpu = get_cpu();
++	int cpu;
+ 
+ 	__sched_fork(p);
+ 	/*
+@@ -2795,6 +2795,7 @@ void sched_fork(struct task_struct *p)
+ 	if (!rt_prio(p->prio))
+ 		p->sched_class = &fair_sched_class;
+ 
++	cpu = get_cpu();
+ 	if (p->sched_class->task_fork)
+ 		p->sched_class->task_fork(p);
+ 
+@@ -2806,8 +2807,9 @@ void sched_fork(struct task_struct *p)
+ 	 * Silence PROVE_RCU.
+ 	 */
+ 	raw_spin_lock_irqsave(&p->pi_lock, flags);
+-	set_task_cpu(p, cpu);
++	set_task_cpu(p, smp_processor_id());
+ 	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
++	put_cpu();
+ 
+ #if defined(CONFIG_SCHEDSTATS) || defined(CONFIG_TASK_DELAY_ACCT)
+ 	if (likely(sched_info_on()))
+@@ -2823,8 +2825,6 @@ void sched_fork(struct task_struct *p)
+ #ifdef CONFIG_SMP
+ 	plist_node_init(&p->pushable_tasks, MAX_PRIO);
+ #endif
+-
+-	put_cpu();
+ }
+ 
+ /*

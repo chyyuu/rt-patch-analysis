@@ -1,0 +1,63 @@
+Subject: revert-sched-changes.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 14 Mar 2009 11:22:29 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/mutex.c |    4 +---
+ kernel/sched.c |   12 ++++++++----
+ 2 files changed, 9 insertions(+), 7 deletions(-)
+
+Index: linux-2.6-tip/kernel/mutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/mutex.c
++++ linux-2.6-tip/kernel/mutex.c
+@@ -248,9 +248,7 @@ __mutex_lock_common(struct mutex *lock, 
+ 
+ 		/* didnt get the lock, go to sleep: */
+ 		spin_unlock_mutex(&lock->wait_lock, flags);
+-		preempt_enable_no_resched();
+-		schedule();
+-		preempt_disable();
++		__schedule();
+ 		spin_lock_mutex(&lock->wait_lock, flags);
+ 	}
+ 
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -5021,15 +5021,13 @@ pick_next_task(struct rq *rq)
+ /*
+  * schedule() is the main scheduler function.
+  */
+-asmlinkage void __sched schedule(void)
++asmlinkage void __sched __schedule(void)
+ {
+ 	struct task_struct *prev, *next;
+ 	unsigned long *switch_count;
+ 	struct rq *rq;
+ 	int cpu;
+ 
+-need_resched:
+-	preempt_disable();
+ 	cpu = smp_processor_id();
+ 	rq = cpu_rq(cpu);
+ 	rcu_qsctr_inc(cpu);
+@@ -5087,9 +5085,15 @@ need_resched_nonpreemptible:
+ 
+ 	if (unlikely(reacquire_kernel_lock(current) < 0))
+ 		goto need_resched_nonpreemptible;
++}
+ 
++asmlinkage void __sched schedule(void)
++{
++need_resched:
++	preempt_disable();
++	__schedule();
+ 	preempt_enable_no_resched();
+-	if (need_resched())
++	if (unlikely(test_thread_flag(TIF_NEED_RESCHED)))
+ 		goto need_resched;
+ }
+ EXPORT_SYMBOL(schedule);

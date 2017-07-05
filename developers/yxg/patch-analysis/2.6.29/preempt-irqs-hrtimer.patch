@@ -1,0 +1,144 @@
+Subject: patches/preempt-irqs-hrtimer.patch
+
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/hrtimer.h |   10 ++++++++++
+ kernel/hrtimer.c        |   33 ++++++++++++++++++++++++++++++++-
+ kernel/itimer.c         |    1 +
+ kernel/posix-timers.c   |    3 +++
+ 4 files changed, 46 insertions(+), 1 deletion(-)
+
+Index: linux-2.6-tip/include/linux/hrtimer.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/hrtimer.h
++++ linux-2.6-tip/include/linux/hrtimer.h
+@@ -173,6 +173,9 @@ struct hrtimer_cpu_base {
+ 	int				hres_active;
+ 	unsigned long			nr_events;
+ #endif
++#ifdef CONFIG_PREEMPT_SOFTIRQS
++	wait_queue_head_t		wait;
++#endif
+ };
+ 
+ static inline void hrtimer_set_expires(struct hrtimer *timer, ktime_t time)
+@@ -360,6 +363,13 @@ static inline int hrtimer_restart(struct
+ 	return hrtimer_start_expires(timer, HRTIMER_MODE_ABS);
+ }
+ 
++/* Softirq preemption could deadlock timer removal */
++#ifdef CONFIG_PREEMPT_SOFTIRQS
++  extern void hrtimer_wait_for_timer(const struct hrtimer *timer);
++#else
++# define hrtimer_wait_for_timer(timer)	do { cpu_relax(); } while (0)
++#endif
++
+ /* Query timers: */
+ extern ktime_t hrtimer_get_remaining(const struct hrtimer *timer);
+ extern int hrtimer_get_res(const clockid_t which_clock, struct timespec *tp);
+Index: linux-2.6-tip/kernel/hrtimer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/hrtimer.c
++++ linux-2.6-tip/kernel/hrtimer.c
+@@ -836,6 +836,32 @@ static int enqueue_hrtimer(struct hrtime
+ 	return leftmost;
+ }
+ 
++#ifdef CONFIG_PREEMPT_SOFTIRQS
++# define wake_up_timer_waiters(b)	wake_up(&(b)->wait)
++
++/**
++ * hrtimer_wait_for_timer - Wait for a running timer
++ *
++ * @timer:	timer to wait for
++ *
++ * The function waits in case the timers callback function is
++ * currently executed on the waitqueue of the timer base. The
++ * waitqueue is woken up after the timer callback function has
++ * finished execution.
++ */
++void hrtimer_wait_for_timer(const struct hrtimer *timer)
++{
++	struct hrtimer_clock_base *base = timer->base;
++
++	if (base && base->cpu_base)
++		wait_event(base->cpu_base->wait,
++				!(timer->state & HRTIMER_STATE_CALLBACK));
++}
++
++#else
++# define wake_up_timer_waiters(b)	do { } while (0)
++#endif
++
+ /*
+  * __remove_hrtimer - internal function to remove a timer
+  *
+@@ -864,6 +890,8 @@ static void __remove_hrtimer(struct hrti
+ 		rb_erase(&timer->node, &base->active);
+ 	}
+ 	timer->state = newstate;
++
++	wake_up_timer_waiters(base->cpu_base);
+ }
+ 
+ /*
+@@ -1022,7 +1050,7 @@ int hrtimer_cancel(struct hrtimer *timer
+ 
+ 		if (ret >= 0)
+ 			return ret;
+-		cpu_relax();
++		hrtimer_wait_for_timer(timer);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(hrtimer_cancel);
+@@ -1545,6 +1573,9 @@ static void __cpuinit init_hrtimers_cpu(
+ 		cpu_base->clock_base[i].cpu_base = cpu_base;
+ 
+ 	hrtimer_init_hres(cpu_base);
++#ifdef CONFIG_PREEMPT_SOFTIRQS
++	init_waitqueue_head(&cpu_base->wait);
++#endif
+ }
+ 
+ #ifdef CONFIG_HOTPLUG_CPU
+Index: linux-2.6-tip/kernel/itimer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/itimer.c
++++ linux-2.6-tip/kernel/itimer.c
+@@ -161,6 +161,7 @@ again:
+ 		/* We are sharing ->siglock with it_real_fn() */
+ 		if (hrtimer_try_to_cancel(timer) < 0) {
+ 			spin_unlock_irq(&tsk->sighand->siglock);
++			hrtimer_wait_for_timer(&tsk->signal->real_timer);
+ 			goto again;
+ 		}
+ 		expires = timeval_to_ktime(value->it_value);
+Index: linux-2.6-tip/kernel/posix-timers.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/posix-timers.c
++++ linux-2.6-tip/kernel/posix-timers.c
+@@ -789,6 +789,7 @@ retry:
+ 
+ 	unlock_timer(timr, flag);
+ 	if (error == TIMER_RETRY) {
++		hrtimer_wait_for_timer(&timr->it.real.timer);
+ 		rtn = NULL;	// We already got the old time...
+ 		goto retry;
+ 	}
+@@ -827,6 +828,7 @@ retry_delete:
+ 
+ 	if (timer_delete_hook(timer) == TIMER_RETRY) {
+ 		unlock_timer(timer, flags);
++		hrtimer_wait_for_timer(&timer->it.real.timer);
+ 		goto retry_delete;
+ 	}
+ 
+@@ -856,6 +858,7 @@ retry_delete:
+ 
+ 	if (timer_delete_hook(timer) == TIMER_RETRY) {
+ 		unlock_timer(timer, flags);
++		hrtimer_wait_for_timer(&timer->it.real.timer);
+ 		goto retry_delete;
+ 	}
+ 	list_del(&timer->list);

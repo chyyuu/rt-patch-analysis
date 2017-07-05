@@ -1,0 +1,49 @@
+Subject: rt: fix timer hotplug
+From: Ingo Molnar <mingo@elte.hu>
+Date: Mon Feb 09 23:23:06 CET 2009
+
+Here we are in the CPU_DEAD notifier, and we must not sleep nor
+enable interrupts.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/timer.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+Index: linux-2.6-tip/kernel/timer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/timer.c
++++ linux-2.6-tip/kernel/timer.c
+@@ -1730,6 +1730,7 @@ static void __cpuinit migrate_timers(int
+ {
+ 	struct tvec_base *old_base;
+ 	struct tvec_base *new_base;
++	unsigned long flags;
+ 	int i;
+ 
+ 	BUG_ON(cpu_online(cpu));
+@@ -1739,8 +1740,11 @@ static void __cpuinit migrate_timers(int
+ 	 * The caller is globally serialized and nobody else
+ 	 * takes two locks at once, deadlock is not possible.
+ 	 */
+-	spin_lock_irq(&new_base->lock);
+-	spin_lock_nested(&old_base->lock, SINGLE_DEPTH_NESTING);
++	local_irq_save(flags);
++	while (!spin_trylock(&new_base->lock))
++		cpu_relax();
++	while (!spin_trylock(&old_base->lock))
++		cpu_relax();
+ 
+ 	BUG_ON(old_base->running_timer);
+ 
+@@ -1754,7 +1758,9 @@ static void __cpuinit migrate_timers(int
+ 	}
+ 
+ 	spin_unlock(&old_base->lock);
+-	spin_unlock_irq(&new_base->lock);
++	spin_unlock(&new_base->lock);
++	local_irq_restore(flags);
++
+ 	put_cpu_var(tvec_bases);
+ }
+ #endif /* CONFIG_HOTPLUG_CPU */

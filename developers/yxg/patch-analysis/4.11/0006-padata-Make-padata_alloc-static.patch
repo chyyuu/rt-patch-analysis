@@ -1,0 +1,95 @@
+From 9596695ee1e7eedd743c43811fe68299eb005b5c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:17 +0200
+Subject: [PATCH 06/32] padata: Make padata_alloc() static
+
+No users outside of padata.c
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-crypto@vger.kernel.org
+Link: http://lkml.kernel.org/r/20170524081547.491457256@linutronix.de
+---
+ include/linux/padata.h |  3 ---
+ kernel/padata.c        | 32 ++++++++++++++++----------------
+ 2 files changed, 16 insertions(+), 19 deletions(-)
+
+diff --git a/include/linux/padata.h b/include/linux/padata.h
+index 0f9e567d5e15..2f9c1f93b1ce 100644
+--- a/include/linux/padata.h
++++ b/include/linux/padata.h
+@@ -166,9 +166,6 @@ struct padata_instance {
+ 
+ extern struct padata_instance *padata_alloc_possible(
+ 					struct workqueue_struct *wq);
+-extern struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+-					    const struct cpumask *pcpumask,
+-					    const struct cpumask *cbcpumask);
+ extern void padata_free(struct padata_instance *pinst);
+ extern int padata_do_parallel(struct padata_instance *pinst,
+ 			      struct padata_priv *padata, int cb_cpu);
+diff --git a/kernel/padata.c b/kernel/padata.c
+index ac8f1e524836..0c708f648853 100644
+--- a/kernel/padata.c
++++ b/kernel/padata.c
+@@ -934,19 +934,6 @@ static struct kobj_type padata_attr_type = {
+ };
+ 
+ /**
+- * padata_alloc_possible - Allocate and initialize padata instance.
+- *                         Use the cpu_possible_mask for serial and
+- *                         parallel workers.
+- *
+- * @wq: workqueue to use for the allocated padata instance
+- */
+-struct padata_instance *padata_alloc_possible(struct workqueue_struct *wq)
+-{
+-	return padata_alloc(wq, cpu_possible_mask, cpu_possible_mask);
+-}
+-EXPORT_SYMBOL(padata_alloc_possible);
+-
+-/**
+  * padata_alloc - allocate and initialize a padata instance and specify
+  *                cpumasks for serial and parallel workers.
+  *
+@@ -954,9 +941,9 @@ EXPORT_SYMBOL(padata_alloc_possible);
+  * @pcpumask: cpumask that will be used for padata parallelization
+  * @cbcpumask: cpumask that will be used for padata serialization
+  */
+-struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+-				     const struct cpumask *pcpumask,
+-				     const struct cpumask *cbcpumask)
++static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
++					    const struct cpumask *pcpumask,
++					    const struct cpumask *cbcpumask)
+ {
+ 	struct padata_instance *pinst;
+ 	struct parallel_data *pd = NULL;
+@@ -1011,6 +998,19 @@ struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+ }
+ 
+ /**
++ * padata_alloc_possible - Allocate and initialize padata instance.
++ *                         Use the cpu_possible_mask for serial and
++ *                         parallel workers.
++ *
++ * @wq: workqueue to use for the allocated padata instance
++ */
++struct padata_instance *padata_alloc_possible(struct workqueue_struct *wq)
++{
++	return padata_alloc(wq, cpu_possible_mask, cpu_possible_mask);
++}
++EXPORT_SYMBOL(padata_alloc_possible);
++
++/**
+  * padata_free - free a padata instance
+  *
+  * @padata_inst: padata instance to free
+-- 
+2.11.0
+

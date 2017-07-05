@@ -1,0 +1,20 @@
+---
+ drivers/net/sungem.c |    4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+Index: linux-2.6.23-rt1/drivers/net/sungem.c
+===================================================================
+--- linux-2.6.23-rt1.orig/drivers/net/sungem.c	2007-10-11 15:58:11.000000000 -0400
++++ linux-2.6.23-rt1/drivers/net/sungem.c	2007-10-11 15:59:56.000000000 -0400
+@@ -1034,10 +1034,8 @@ static int gem_start_xmit(struct sk_buff
+ 			(csum_stuff_off << 21));
+ 	}
+ 
+-	local_irq_save(flags);
+-	if (!spin_trylock(&gp->tx_lock)) {
++	if (!spin_trylock_irqsave(&gp->tx_lock, flags)) {
+ 		/* Tell upper layer to requeue */
+-		local_irq_restore(flags);
+ 		return NETDEV_TX_LOCKED;
+ 	}
+ 	/* We raced with gem_do_stop() */

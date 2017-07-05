@@ -1,0 +1,27 @@
+Subject: ide: Fix irq flags madness
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 18 Jul 2011 21:00:48 +0200
+
+Revert the broken commit ec1a123 (IDE: pass IRQ flags to the IDE core)
+passes unfiltered resource->flags to the irq_flags which are used for
+request_irq. That's totally bogus. It results in random bits set
+(especially IORESOURCE_IRQ which maps to IRQF_PER_CPU).
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ drivers/ide/ide_platform.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6/drivers/ide/ide_platform.c
+===================================================================
+--- linux-2.6.orig/drivers/ide/ide_platform.c
++++ linux-2.6/drivers/ide/ide_platform.c
+@@ -95,7 +95,7 @@ static int __devinit plat_ide_probe(stru
+ 	plat_ide_setup_ports(&hw, base, alt_base, pdata, res_irq->start);
+ 	hw.dev = &pdev->dev;
+ 
+-	d.irq_flags = res_irq->flags;
++	d.irq_flags = 0;
+ 	if (mmio)
+ 		d.host_flags |= IDE_HFLAG_MMIO;
+ 

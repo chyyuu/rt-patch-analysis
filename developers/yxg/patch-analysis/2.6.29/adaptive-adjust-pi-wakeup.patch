@@ -1,0 +1,62 @@
+Subject: adjust pi_lock usage in wakeup
+From: Gregory Haskins <ghaskins@novell.com>
+Date: Tue, 20 May 2008 10:49:31 -0400
+
+    [ The following text is in the "utf-8" character set. ]
+    [ Your display is set for the "iso-8859-1" character set.  ]
+    [ Some characters may be displayed incorrectly. ]
+
+From: Peter W.Morreale <pmorreale@novell.com>
+
+In wakeup_next_waiter(), we take the pi_lock, and then find out whether
+we have another waiter to add to the pending owner.  We can reduce
+contention on the pi_lock for the pending owner if we first obtain the
+pointer to the next waiter outside of the pi_lock.
+
+Signed-off-by: Peter W. Morreale <pmorreale@novell.com>
+Signed-off-by: Gregory Haskins <ghaskins@novell.com>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/rtmutex.c |   14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+Index: linux-2.6-tip/kernel/rtmutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rtmutex.c
++++ linux-2.6-tip/kernel/rtmutex.c
+@@ -506,6 +506,7 @@ static void wakeup_next_waiter(struct rt
+ {
+ 	struct rt_mutex_waiter *waiter;
+ 	struct task_struct *pendowner;
++	struct rt_mutex_waiter *next;
+ 
+ 	spin_lock(&current->pi_lock);
+ 
+@@ -568,6 +569,12 @@ static void wakeup_next_waiter(struct rt
+ 	 * waiter with higher priority than pending-owner->normal_prio
+ 	 * is blocked on the unboosted (pending) owner.
+ 	 */
++
++	if (rt_mutex_has_waiters(lock))
++		next = rt_mutex_top_waiter(lock);
++	else
++		next = NULL;
++
+ 	spin_lock(&pendowner->pi_lock);
+ 
+ 	WARN_ON(!pendowner->pi_blocked_on);
+@@ -576,12 +583,9 @@ static void wakeup_next_waiter(struct rt
+ 
+ 	pendowner->pi_blocked_on = NULL;
+ 
+-	if (rt_mutex_has_waiters(lock)) {
+-		struct rt_mutex_waiter *next;
+-
+-		next = rt_mutex_top_waiter(lock);
++	if (next)
+ 		plist_add(&next->pi_list_entry, &pendowner->pi_waiters);
+-	}
++
+ 	spin_unlock(&pendowner->pi_lock);
+ }
+ 

@@ -1,0 +1,41 @@
+From 210e21331fc3a396af640cec652be769d146e49f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:28 +0200
+Subject: [PATCH 17/32] cpu/hotplug: Use stop_machine_cpuslocked() in
+ takedown_cpu()
+
+takedown_cpu() is a cpu hotplug function invoking stop_machine(). The cpu
+hotplug machinery holds the hotplug lock for write.
+
+stop_machine() invokes get_online_cpus() as well. This is correct, but
+prevents the conversion of the hotplug locking to a percpu rwsem.
+
+Use stop_machine_cpuslocked() to avoid the nested call.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081548.423292433@linutronix.de
+---
+ kernel/cpu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index e4389ac55b65..142d889d9f69 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -701,7 +701,7 @@ static int takedown_cpu(unsigned int cpu)
+ 	/*
+ 	 * So now all preempt/rcu users must observe !cpu_active().
+ 	 */
+-	err = stop_machine(take_cpu_down, NULL, cpumask_of(cpu));
++	err = stop_machine_cpuslocked(take_cpu_down, NULL, cpumask_of(cpu));
+ 	if (err) {
+ 		/* CPU refused to die */
+ 		irq_unlock_sparse();
+-- 
+2.11.0
+

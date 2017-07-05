@@ -1,0 +1,35 @@
+Subject: preempt: irqs port fixes
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 01:41:19 CET 2009
+
+cpumask infrastructure related changes.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/irq/manage.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: linux-2.6-tip/kernel/irq/manage.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/manage.c
++++ linux-2.6-tip/kernel/irq/manage.c
+@@ -970,7 +970,7 @@ static int do_irqd(void * __desc)
+ 	struct irq_desc *desc = __desc;
+ 
+ #ifdef CONFIG_SMP
+-	set_cpus_allowed(current, desc->affinity);
++	set_cpus_allowed_ptr(current, desc->affinity);
+ #endif
+ 	current->flags |= PF_NOFREEZE | PF_HARDIRQ;
+ 
+@@ -993,8 +993,8 @@ static int do_irqd(void * __desc)
+ 		/*
+ 		 * Did IRQ affinities change?
+ 		 */
+-		if (!cpus_equal(current->cpus_allowed, desc->affinity))
+-			set_cpus_allowed(current, desc->affinity);
++		if (!cpumask_equal(&current->cpus_allowed, desc->affinity))
++			set_cpus_allowed_ptr(current, desc->affinity);
+ #endif
+ 		schedule();
+ 	}

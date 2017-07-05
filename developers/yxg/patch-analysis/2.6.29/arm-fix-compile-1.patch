@@ -1,0 +1,22 @@
+Subject: arm-fix-compile-1.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 25 Feb 2009 20:16:18 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/arm/include/asm/system.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6-tip/arch/arm/include/asm/system.h
+===================================================================
+--- linux-2.6-tip.orig/arch/arm/include/asm/system.h
++++ linux-2.6-tip/arch/arm/include/asm/system.h
+@@ -60,6 +60,8 @@
+ #include <linux/linkage.h>
+ #include <linux/irqflags.h>
+ 
++#include <asm/memory.h>
++
+ #define __exception	__attribute__((section(".exception.text")))
+ 
+ struct thread_info;

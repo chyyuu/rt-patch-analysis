@@ -1,0 +1,23 @@
+Subject: rt: fix timer.c warning
+From: Ingo Molnar <mingo@elte.hu>
+Date: Sun Feb 08 07:46:38 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/timer.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6-tip/kernel/timer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/timer.c
++++ linux-2.6-tip/kernel/timer.c
+@@ -1233,7 +1233,9 @@ unsigned long avenrun_rt[3];
+ static inline void calc_load(unsigned long ticks)
+ {
+ 	unsigned long active_tasks; /* fixed-point */
++#ifdef CONFIG_PREEMPT_RT
+ 	unsigned long active_rt_tasks; /* fixed-point */
++#endif
+ 	static int count = LOAD_FREQ;
+ 
+ 	count -= ticks;

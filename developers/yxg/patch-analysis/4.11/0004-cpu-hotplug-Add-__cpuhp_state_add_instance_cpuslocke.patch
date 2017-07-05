@@ -1,0 +1,96 @@
+From 9805c6733349ea3ccd22cf75b8ebaabb5290e310 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:15 +0200
+Subject: [PATCH 04/32] cpu/hotplug: Add
+ __cpuhp_state_add_instance_cpuslocked()
+
+Add cpuslocked() variants for the multi instance registration so this can
+be called from a cpus_read_lock() protected region.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081547.321782217@linutronix.de
+---
+ include/linux/cpuhotplug.h |  9 +++++++++
+ kernel/cpu.c               | 18 +++++++++++++++---
+ 2 files changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index 4fac564dde70..df3d2719a796 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -240,6 +240,8 @@ static inline int cpuhp_setup_state_multi(enum cpuhp_state state,
+ 
+ int __cpuhp_state_add_instance(enum cpuhp_state state, struct hlist_node *node,
+ 			       bool invoke);
++int __cpuhp_state_add_instance_cpuslocked(enum cpuhp_state state,
++					  struct hlist_node *node, bool invoke);
+ 
+ /**
+  * cpuhp_state_add_instance - Add an instance for a state and invoke startup
+@@ -272,6 +274,13 @@ static inline int cpuhp_state_add_instance_nocalls(enum cpuhp_state state,
+ 	return __cpuhp_state_add_instance(state, node, false);
+ }
+ 
++static inline int
++cpuhp_state_add_instance_nocalls_cpuslocked(enum cpuhp_state state,
++					    struct hlist_node *node)
++{
++	return __cpuhp_state_add_instance_cpuslocked(state, node, false);
++}
++
+ void __cpuhp_remove_state(enum cpuhp_state state, bool invoke);
+ void __cpuhp_remove_state_cpuslocked(enum cpuhp_state state, bool invoke);
+ 
+diff --git a/kernel/cpu.c b/kernel/cpu.c
+index dc27c5a28153..e4389ac55b65 100644
+--- a/kernel/cpu.c
++++ b/kernel/cpu.c
+@@ -1413,18 +1413,20 @@ static void cpuhp_rollback_install(int failedcpu, enum cpuhp_state state,
+ 	}
+ }
+ 
+-int __cpuhp_state_add_instance(enum cpuhp_state state, struct hlist_node *node,
+-			       bool invoke)
++int __cpuhp_state_add_instance_cpuslocked(enum cpuhp_state state,
++					  struct hlist_node *node,
++					  bool invoke)
+ {
+ 	struct cpuhp_step *sp;
+ 	int cpu;
+ 	int ret;
+ 
++	lockdep_assert_cpus_held();
++
+ 	sp = cpuhp_get_step(state);
+ 	if (sp->multi_instance == false)
+ 		return -EINVAL;
+ 
+-	cpus_read_lock();
+ 	mutex_lock(&cpuhp_state_mutex);
+ 
+ 	if (!invoke || !sp->startup.multi)
+@@ -1453,6 +1455,16 @@ int __cpuhp_state_add_instance(enum cpuhp_state state, struct hlist_node *node,
+ 	hlist_add_head(node, &sp->list);
+ unlock:
+ 	mutex_unlock(&cpuhp_state_mutex);
++	return ret;
++}
++
++int __cpuhp_state_add_instance(enum cpuhp_state state, struct hlist_node *node,
++			       bool invoke)
++{
++	int ret;
++
++	cpus_read_lock();
++	ret = __cpuhp_state_add_instance_cpuslocked(state, node, invoke);
+ 	cpus_read_unlock();
+ 	return ret;
+ }
+-- 
+2.11.0
+

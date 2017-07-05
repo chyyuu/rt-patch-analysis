@@ -1,0 +1,174 @@
+Subject: rtmutex: prevent missed wakeups
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 19 Dec 2008 21:23:10 -0000
+
+The sleeping locks implementation based on rtmutexes can miss wakeups
+for two reasons:
+
+1) The unconditional usage TASK_UNINTERRUPTIBLE for the blocking state
+
+   Results in missed wakeups from wake_up_interruptible*()
+
+   state = TASK_INTERRUPTIBLE;
+   blocks_on_lock()
+     state = TASK_UNINTERRUPTIBLE;
+     schedule();
+     ....
+     acquires_lock();
+     restore_state();
+
+   Until the waiter has restored its state wake_up_interruptible*() will
+   fail.
+
+2) The rtmutex wakeup intermediate state TASK_RUNNING_MUTEX
+
+   Results in missed wakeups from wake_up*()
+
+   waiter is woken by mutex wakeup
+   	  waiter->state = TASK_RUNNING_MUTEX;
+   ....
+   acquires_lock();
+   restore_state();
+
+   Until the waiter has restored its state wake_up*() will fail.
+
+Solution:
+
+Instead of setting the state to TASK_RUNNING_MUTEX in the mutex wakeup
+case we logically OR TASK_RUNNING_MUTEX to the current waiter
+state. This keeps the original bits (TASK_INTERRUPTIBLE /
+TASK_UNINTERRUPTIBLE) intact and lets wakeups succeed. When a task
+blocks on a lock in state TASK_INTERRUPTIBLE and is woken up by a real
+wakeup, then we store the state = TASK_RUNNING for the restore and can
+safely use TASK_UNINTERRUPTIBLE from that point to avoid further
+wakeups which just let us loop in the lock code.
+
+This also removes the extra TASK_RUNNING_MUTEX flags from the
+wakeup_process*() functions as they are not longer necessary.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/sched.h |    3 +--
+ kernel/rtmutex.c      |   22 +++++++++++++++++++---
+ kernel/sched.c        |   24 ++++++++++++++++--------
+ 3 files changed, 36 insertions(+), 13 deletions(-)
+
+Index: linux-2.6-tip/include/linux/sched.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/sched.h
++++ linux-2.6-tip/include/linux/sched.h
+@@ -218,8 +218,7 @@ extern struct semaphore kernel_sem;
+ 
+ /* Convenience macros for the sake of wake_up */
+ #define TASK_NORMAL		(TASK_INTERRUPTIBLE | TASK_UNINTERRUPTIBLE)
+-#define TASK_ALL		(TASK_NORMAL | __TASK_STOPPED | __TASK_TRACED | \
+-				 TASK_RUNNING_MUTEX)
++#define TASK_ALL		(TASK_NORMAL | __TASK_STOPPED | __TASK_TRACED)
+ 
+ /* get_task_state() */
+ #define TASK_REPORT		(TASK_RUNNING | TASK_RUNNING_MUTEX | \
+Index: linux-2.6-tip/kernel/rtmutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rtmutex.c
++++ linux-2.6-tip/kernel/rtmutex.c
+@@ -739,16 +739,32 @@ static int adaptive_wait(struct rt_mutex
+ /*
+  * The state setting needs to preserve the original state and needs to
+  * take care of non rtmutex wakeups.
++ *
++ * Called with rtmutex->wait_lock held to serialize against rtmutex
++ * wakeups().
+  */
+ static inline unsigned long
+ rt_set_current_blocked_state(unsigned long saved_state)
+ {
+-	unsigned long state;
++	unsigned long state, block_state;
++
++	/*
++	 * If state is TASK_INTERRUPTIBLE, then we set the state for
++	 * blocking to TASK_INTERRUPTIBLE as well, otherwise we would
++	 * miss real wakeups via wake_up_interruptible(). If such a
++	 * wakeup happens we see the running state and preserve it in
++	 * saved_state. Now we can ignore further wakeups as we will
++	 * return in state running from our "spin" sleep.
++	 */
++	if (saved_state == TASK_INTERRUPTIBLE)
++		block_state = TASK_INTERRUPTIBLE;
++	else
++		block_state = TASK_UNINTERRUPTIBLE;
+ 
+-	state = xchg(&current->state, TASK_UNINTERRUPTIBLE);
++	state = xchg(&current->state, block_state);
+ 	/*
+ 	 * Take care of non rtmutex wakeups. rtmutex wakeups
+-	 * set the state to TASK_RUNNING_MUTEX.
++	 * or TASK_RUNNING_MUTEX to (UN)INTERRUPTIBLE.
+ 	 */
+ 	if (state == TASK_RUNNING)
+ 		saved_state = TASK_RUNNING;
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -2595,8 +2595,16 @@ out_running:
+ 	trace_sched_wakeup(rq, p, success);
+ 	check_preempt_curr(rq, p, sync);
+ 
++	/*
++	 * For a mutex wakeup we or TASK_RUNNING_MUTEX to the task
++	 * state to preserve the original state, so a real wakeup
++	 * still can see the (UN)INTERRUPTIBLE bits in the state check
++	 * above. We dont have to worry about the | TASK_RUNNING_MUTEX
++	 * here. The waiter is serialized by the mutex lock and nobody
++	 * else can fiddle with p->state as we hold rq lock.
++	 */
+ 	if (mutex)
+-		p->state = TASK_RUNNING_MUTEX;
++		p->state |= TASK_RUNNING_MUTEX;
+ 	else
+ 		p->state = TASK_RUNNING;
+ #ifdef CONFIG_SMP
+@@ -2635,7 +2643,7 @@ EXPORT_SYMBOL(wake_up_process_mutex_sync
+ 
+ int wake_up_state(struct task_struct *p, unsigned int state)
+ {
+-	return try_to_wake_up(p, state | TASK_RUNNING_MUTEX, 0, 0);
++	return try_to_wake_up(p, state, 0, 0);
+ }
+ 
+ /*
+@@ -5215,8 +5223,8 @@ asmlinkage void __sched __schedule(void)
+ 	update_rq_clock(rq);
+ 	clear_tsk_need_resched(prev);
+ 
+-	if ((prev->state & ~TASK_RUNNING_MUTEX) &&
+-			!(preempt_count() & PREEMPT_ACTIVE)) {
++	if (!(prev->state & TASK_RUNNING_MUTEX) && prev->state &&
++	    !(preempt_count() & PREEMPT_ACTIVE)) {
+ 		if (unlikely(signal_pending_state(prev->state, prev)))
+ 			prev->state = TASK_RUNNING;
+ 		else {
+@@ -5460,8 +5468,7 @@ asmlinkage void __sched preempt_schedule
+ int default_wake_function(wait_queue_t *curr, unsigned mode, int sync,
+ 			  void *key)
+ {
+-	return try_to_wake_up(curr->private, mode | TASK_RUNNING_MUTEX,
+-			      sync, 0);
++	return try_to_wake_up(curr->private, mode, sync, 0);
+ }
+ EXPORT_SYMBOL(default_wake_function);
+ 
+@@ -6879,8 +6886,9 @@ void sched_show_task(struct task_struct 
+ 	unsigned state;
+ 
+ 	state = p->state ? __ffs(p->state) + 1 : 0;
+-	printk("%-13.13s %c [%p]", p->comm,
+-		state < sizeof(stat_nam) - 1 ? stat_nam[state] : '?', p);
++	printk("%-13.13s %c (%03lx) [%p]", p->comm,
++	       state < sizeof(stat_nam) - 1 ? stat_nam[state] : '?',
++	       (unsigned long) p->state, p);
+ #if BITS_PER_LONG == 32
+ 	if (0 && (state == TASK_RUNNING))
+ 		printk(KERN_CONT " running  ");

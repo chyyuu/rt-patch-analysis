@@ -1,0 +1,95 @@
+From c5a81c8ff816d89941fe86961b286765d6ca2f5f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:18 +0200
+Subject: [PATCH 07/32] padata: Avoid nested calls to cpus_read_lock() in
+ pcrypt_init_padata()
+
+pcrypt_init_padata()
+   cpus_read_lock()
+   padata_alloc_possible()
+     padata_alloc()
+       cpus_read_lock()
+
+The nested call to cpus_read_lock() works with the current implementation,
+but prevents the conversion to a percpu rwsem.
+
+The other caller of padata_alloc_possible() is pcrypt_init_padata() which
+calls from a cpus_read_lock() protected region as well.
+
+Remove the cpus_read_lock() call in padata_alloc() and document the
+calling convention.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-crypto@vger.kernel.org
+Link: http://lkml.kernel.org/r/20170524081547.571278910@linutronix.de
+---
+ kernel/padata.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/padata.c b/kernel/padata.c
+index 0c708f648853..868f947166d7 100644
+--- a/kernel/padata.c
++++ b/kernel/padata.c
+@@ -940,6 +940,8 @@ static struct kobj_type padata_attr_type = {
+  * @wq: workqueue to use for the allocated padata instance
+  * @pcpumask: cpumask that will be used for padata parallelization
+  * @cbcpumask: cpumask that will be used for padata serialization
++ *
++ * Must be called from a cpus_read_lock() protected region
+  */
+ static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+ 					    const struct cpumask *pcpumask,
+@@ -952,7 +954,6 @@ static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+ 	if (!pinst)
+ 		goto err;
+ 
+-	get_online_cpus();
+ 	if (!alloc_cpumask_var(&pinst->cpumask.pcpu, GFP_KERNEL))
+ 		goto err_free_inst;
+ 	if (!alloc_cpumask_var(&pinst->cpumask.cbcpu, GFP_KERNEL)) {
+@@ -976,14 +977,12 @@ static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+ 
+ 	pinst->flags = 0;
+ 
+-	put_online_cpus();
+-
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&pinst->cpumask_change_notifier);
+ 	kobject_init(&pinst->kobj, &padata_attr_type);
+ 	mutex_init(&pinst->lock);
+ 
+ #ifdef CONFIG_HOTPLUG_CPU
+-	cpuhp_state_add_instance_nocalls(hp_online, &pinst->node);
++	cpuhp_state_add_instance_nocalls_cpuslocked(hp_online, &pinst->node);
+ #endif
+ 	return pinst;
+ 
+@@ -992,7 +991,6 @@ static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+ 	free_cpumask_var(pinst->cpumask.cbcpu);
+ err_free_inst:
+ 	kfree(pinst);
+-	put_online_cpus();
+ err:
+ 	return NULL;
+ }
+@@ -1003,9 +1001,12 @@ static struct padata_instance *padata_alloc(struct workqueue_struct *wq,
+  *                         parallel workers.
+  *
+  * @wq: workqueue to use for the allocated padata instance
++ *
++ * Must be called from a cpus_read_lock() protected region
+  */
+ struct padata_instance *padata_alloc_possible(struct workqueue_struct *wq)
+ {
++	lockdep_assert_cpus_held();
+ 	return padata_alloc(wq, cpu_possible_mask, cpu_possible_mask);
+ }
+ EXPORT_SYMBOL(padata_alloc_possible);
+-- 
+2.11.0
+

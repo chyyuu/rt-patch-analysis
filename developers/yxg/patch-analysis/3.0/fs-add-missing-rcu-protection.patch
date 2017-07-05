@@ -1,0 +1,42 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 9 Dec 2009 22:08:35 +0100
+Subject: fs: Add missing rcu protection for __task_cred() in sys_ioprio_get
+
+sys_ioprio_get() accesses __task_cred() without being in a RCU read
+side critical section. tasklist_lock is not protecting that when
+CONFIG_TREE_PREEMPT_RCU=y.
+
+Add a rcu_read_lock/unlock() section around the code which accesses
+__task_cred().
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: David Howells <dhowells@redhat.com>
+Cc: James Morris <jmorris@namei.org>
+Cc: linux-security-module@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+
+---
+ fs/ioprio.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6-tip/fs/ioprio.c
+===================================================================
+--- linux-2.6-tip.orig/fs/ioprio.c
++++ linux-2.6-tip/fs/ioprio.c
+@@ -226,6 +226,7 @@ SYSCALL_DEFINE2(ioprio_get, int, which, 
+ 			if (!user)
+ 				break;
+ 
++			rcu_read_lock();
+ 			do_each_thread(g, p) {
+ 				if (__task_cred(p)->uid != user->uid)
+ 					continue;
+@@ -237,6 +238,7 @@ SYSCALL_DEFINE2(ioprio_get, int, which, 
+ 				else
+ 					ret = ioprio_best(ret, tmpio);
+ 			} while_each_thread(g, p);
++			rcu_read_unlock();
+ 
+ 			if (who)
+ 				free_uid(user);

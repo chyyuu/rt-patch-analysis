@@ -1,0 +1,25 @@
+Subject: remove one extra (incorrect) test in mask_ack_irq()
+Date: Wed, 18 Mar 2009 19:16:46 -0700
+From: Frank Rowand <frank.rowand@am.sony.com>
+
+preempt-irqs-core.patch added an incorrect check for the existence of
+desc->chip->ack to mask_ack_irq()
+
+Signed-off-by: Frank Rowand <frank.rowand@am.sony.com>
+
+---
+ kernel/irq/chip.c |    1 -
+ 1 file changed, 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/irq/chip.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/chip.c
++++ linux-2.6-tip/kernel/irq/chip.c
+@@ -293,7 +293,6 @@ static inline void mask_ack_irq(struct i
+ 	if (desc->chip->mask_ack)
+ 		desc->chip->mask_ack(irq);
+ 	else {
+-		if (desc->chip->ack)
+ 		if (desc->chip->mask)
+ 			desc->chip->mask(irq);
+ 		if (desc->chip->ack)

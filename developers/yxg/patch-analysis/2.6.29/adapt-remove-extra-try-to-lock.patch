@@ -1,0 +1,39 @@
+Subject: remove the extra call to try_to_take_lock
+From: Gregory Haskins <ghaskins@novell.com>
+Date: Tue, 20 May 2008 10:49:36 -0400
+
+    [ The following text is in the "utf-8" character set. ]
+    [ Your display is set for the "iso-8859-1" character set.  ]
+    [ Some characters may be displayed incorrectly. ]
+
+From: Peter W. Morreale <pmorreale@novell.com>
+
+Remove the redundant attempt to get the lock.  While it is true that the
+exit path with this patch adds an un-necessary xchg (in the event the
+lock is granted without further traversal in the loop) experimentation
+shows that we almost never encounter this situation.
+
+Signed-off-by: Peter W. Morreale <pmorreale@novell.com>
+Signed-off-by: Gregory Haskins <ghaskins@novell.com>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/rtmutex.c |    6 ------
+ 1 file changed, 6 deletions(-)
+
+Index: linux-2.6-tip/kernel/rtmutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rtmutex.c
++++ linux-2.6-tip/kernel/rtmutex.c
+@@ -785,12 +785,6 @@ rt_spin_lock_slowlock(struct rt_mutex *l
+ 	spin_lock_irqsave(&lock->wait_lock, flags);
+ 	init_lists(lock);
+ 
+-	/* Try to acquire the lock again: */
+-	if (do_try_to_take_rt_mutex(lock, STEAL_LATERAL)) {
+-		spin_unlock_irqrestore(&lock->wait_lock, flags);
+-		return;
+-	}
+-
+ 	BUG_ON(rt_mutex_owner(lock) == current);
+ 
+ 	/*

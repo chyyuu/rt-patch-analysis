@@ -1,0 +1,149 @@
+Subject: preempt: realtime irqs
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:49 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ include/linux/irq.h   |   10 ++++------
+ kernel/irq/handle.c   |    7 +++++++
+ kernel/irq/manage.c   |   22 ++++++++++++++++------
+ kernel/irq/spurious.c |    3 +--
+ 4 files changed, 28 insertions(+), 14 deletions(-)
+
+Index: linux-2.6-tip/include/linux/irq.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/irq.h
++++ linux-2.6-tip/include/linux/irq.h
+@@ -156,7 +156,6 @@ struct irq_2_iommu;
+  * @irqs_unhandled:	stats field for spurious unhandled interrupts
+  * @thread:		Thread pointer for threaded preemptible irq handling
+  * @wait_for_handler:	Waitqueue to wait for a running preemptible handler
+- * @cycles:		Timestamp for stats and debugging
+  * @lock:		locking for SMP
+  * @affinity:		IRQ affinity on SMP
+  * @cpu:		cpu index useful for balancing
+@@ -184,10 +183,10 @@ struct irq_desc {
+ 	unsigned int		irq_count;	/* For detecting broken IRQs */
+ 	unsigned long		last_unhandled;	/* Aging timer for unhandled count */
+ 	unsigned int		irqs_unhandled;
+- 	struct task_struct	*thread;
+- 	wait_queue_head_t	wait_for_handler;
+- 	cycles_t		timestamp;
+-	spinlock_t		lock;
++	struct task_struct	*thread;
++	wait_queue_head_t	wait_for_handler;
++	cycles_t		timestamp;
++	raw_spinlock_t		lock;
+ #ifdef CONFIG_SMP
+ 	cpumask_var_t		affinity;
+ 	unsigned int		cpu;
+@@ -421,7 +420,6 @@ extern int set_irq_msi(unsigned int irq,
+ 
+ /* Early initialization of irqs */
+ extern void early_init_hardirqs(void);
+-extern cycles_t irq_timestamp(unsigned int irq);
+ 
+ #if defined(CONFIG_PREEMPT_HARDIRQS)
+ extern void init_hardirqs(void);
+Index: linux-2.6-tip/kernel/irq/handle.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/handle.c
++++ linux-2.6-tip/kernel/irq/handle.c
+@@ -485,6 +485,13 @@ unsigned int __do_IRQ(unsigned int irq)
+ 		desc->chip->end(irq);
+ 		return 1;
+ 	}
++	/*
++	 * If the task is currently running in user mode, don't
++	 * detect soft lockups.  If CONFIG_DETECT_SOFTLOCKUP is not
++	 * configured, this should be optimized out.
++	 */
++	if (user_mode(get_irq_regs()))
++		touch_softlockup_watchdog();
+ 
+ 	spin_lock(&desc->lock);
+ 	if (desc->chip->ack) {
+Index: linux-2.6-tip/kernel/irq/manage.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/manage.c
++++ linux-2.6-tip/kernel/irq/manage.c
+@@ -652,9 +652,9 @@ static struct irqaction *__free_irq(unsi
+ 	 *   'real' IRQ doesn't run in * parallel with our fake. )
+ 	 */
+ 	if (action->flags & IRQF_SHARED) {
+-		local_irq_save(flags);
++		local_irq_save_nort(flags);
+ 		action->handler(irq, dev_id);
+-		local_irq_restore(flags);
++		local_irq_restore_nort(flags);
+ 	}
+ #endif
+ 	return action;
+@@ -791,11 +791,11 @@ int request_irq(unsigned int irq, irq_ha
+ 		unsigned long flags;
+ 
+ 		disable_irq(irq);
+-		local_irq_save(flags);
++		local_irq_save_nort(flags);
+ 
+ 		handler(irq, dev_id);
+ 
+-		local_irq_restore(flags);
++		local_irq_restore_nort(flags);
+ 		enable_irq(irq);
+ 	}
+ #endif
+@@ -809,6 +809,11 @@ int hardirq_preemption = 1;
+ 
+ EXPORT_SYMBOL(hardirq_preemption);
+ 
++/*
++ * Real-Time Preemption depends on hardirq threading:
++ */
++#ifndef CONFIG_PREEMPT_RT
++
+ static int __init hardirq_preempt_setup (char *str)
+ {
+ 	if (!strncmp(str, "off", 3))
+@@ -823,6 +828,7 @@ static int __init hardirq_preempt_setup 
+ 
+ __setup("hardirq-preempt=", hardirq_preempt_setup);
+ 
++#endif
+ 
+ /*
+  * threaded simple handler
+@@ -982,12 +988,16 @@ static int do_irqd(void * __desc)
+ 	sys_sched_setscheduler(current->pid, SCHED_FIFO, &param);
+ 
+ 	while (!kthread_should_stop()) {
+-		local_irq_disable();
++		local_irq_disable_nort();
+ 		set_current_state(TASK_INTERRUPTIBLE);
++#ifndef CONFIG_PREEMPT_RT
+ 		irq_enter();
++#endif
+ 		do_hardirq(desc);
++#ifndef CONFIG_PREEMPT_RT
+ 		irq_exit();
+-		local_irq_enable();
++#endif
++		local_irq_enable_nort();
+ 		cond_resched();
+ #ifdef CONFIG_SMP
+ 		/*
+Index: linux-2.6-tip/kernel/irq/spurious.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/spurious.c
++++ linux-2.6-tip/kernel/irq/spurious.c
+@@ -59,9 +59,8 @@ static int try_one_irq(int irq, struct i
+ 		}
+ 		action = action->next;
+ 	}
+-	local_irq_disable();
+ 	/* Now clean up the flags */
+-	spin_lock(&desc->lock);
++		spin_lock_irq(&desc->lock);
+ 	action = desc->action;
+ 
+ 	/*

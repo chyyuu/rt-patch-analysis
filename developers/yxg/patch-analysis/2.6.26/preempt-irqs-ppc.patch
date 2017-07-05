@@ -1,0 +1,52 @@
+---
+ arch/powerpc/kernel/entry_32.S  |    4 ++--
+ arch/powerpc/kernel/irq.c       |    1 -
+ arch/powerpc/kernel/ppc_ksyms.c |    1 -
+ 3 files changed, 2 insertions(+), 4 deletions(-)
+
+Index: linux-2.6.26/arch/powerpc/kernel/entry_32.S
+===================================================================
+--- linux-2.6.26.orig/arch/powerpc/kernel/entry_32.S
++++ linux-2.6.26/arch/powerpc/kernel/entry_32.S
+@@ -910,7 +910,7 @@ global_dbcr0:
+ #endif /* !(CONFIG_4xx || CONFIG_BOOKE) */
+ 
+ do_work:			/* r10 contains MSR_KERNEL here */
+-	andi.	r0,r9,_TIF_NEED_RESCHED
++	andi.	r0,r9,(_TIF_NEED_RESCHED)
+ 	beq	do_user_signal
+ 
+ do_resched:			/* r10 contains MSR_KERNEL here */
+@@ -924,7 +924,7 @@ recheck:
+ 	MTMSRD(r10)		/* disable interrupts */
+ 	rlwinm	r9,r1,0,0,(31-THREAD_SHIFT)
+ 	lwz	r9,TI_FLAGS(r9)
+-	andi.	r0,r9,_TIF_NEED_RESCHED
++	andi.	r0,r9,(_TIF_NEED_RESCHED)
+ 	bne-	do_resched
+ 	andi.	r0,r9,_TIF_SIGPENDING|_TIF_RESTORE_SIGMASK
+ 	beq	restore_user
+Index: linux-2.6.26/arch/powerpc/kernel/irq.c
+===================================================================
+--- linux-2.6.26.orig/arch/powerpc/kernel/irq.c
++++ linux-2.6.26/arch/powerpc/kernel/irq.c
+@@ -94,7 +94,6 @@ extern atomic_t ipi_sent;
+ #endif
+ 
+ #ifdef CONFIG_PPC64
+-EXPORT_SYMBOL(irq_desc);
+ 
+ int distribute_irqs = 1;
+ 
+Index: linux-2.6.26/arch/powerpc/kernel/ppc_ksyms.c
+===================================================================
+--- linux-2.6.26.orig/arch/powerpc/kernel/ppc_ksyms.c
++++ linux-2.6.26/arch/powerpc/kernel/ppc_ksyms.c
+@@ -157,7 +157,6 @@ EXPORT_SYMBOL(screen_info);
+ 
+ #ifdef CONFIG_PPC32
+ EXPORT_SYMBOL(timer_interrupt);
+-EXPORT_SYMBOL(irq_desc);
+ EXPORT_SYMBOL(tb_ticks_per_jiffy);
+ EXPORT_SYMBOL(cacheable_memcpy);
+ #endif

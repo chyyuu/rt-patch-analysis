@@ -1,0 +1,74 @@
+From fe2a5cd8aa038e2b02fda983afc2083e94c04b4f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:25 +0200
+Subject: [PATCH 14/32] ARM/hw_breakpoint: Use cpuhp_setup_state_cpuslocked()
+
+arch_hw_breakpoint_init() holds get_online_cpus() while registerring the
+hotplug callbacks.
+
+cpuhp_setup_state() invokes get_online_cpus() as well. This is correct, but
+prevents the conversion of the hotplug locking to a percpu rwsem.
+
+Use cpuhp_setup_state_cpuslocked() to avoid the nested call. Convert
+*_online_cpus() to the new interfaces while at it.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Link: http://lkml.kernel.org/r/20170524081548.170940729@linutronix.de
+---
+ arch/arm/kernel/hw_breakpoint.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/kernel/hw_breakpoint.c b/arch/arm/kernel/hw_breakpoint.c
+index be3b3fbd382f..63cb4c7c6593 100644
+--- a/arch/arm/kernel/hw_breakpoint.c
++++ b/arch/arm/kernel/hw_breakpoint.c
+@@ -1090,7 +1090,7 @@ static int __init arch_hw_breakpoint_init(void)
+ 	 * driven low on this core and there isn't an architected way to
+ 	 * determine that.
+ 	 */
+-	get_online_cpus();
++	cpus_read_lock();
+ 	register_undef_hook(&debug_reg_hook);
+ 
+ 	/*
+@@ -1098,15 +1098,16 @@ static int __init arch_hw_breakpoint_init(void)
+ 	 * assume that a halting debugger will leave the world in a nice state
+ 	 * for us.
+ 	 */
+-	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "arm/hw_breakpoint:online",
+-				dbg_reset_online, NULL);
++	ret = cpuhp_setup_state_cpuslocked(CPUHP_AP_ONLINE_DYN,
++					   "arm/hw_breakpoint:online",
++					   dbg_reset_online, NULL);
+ 	unregister_undef_hook(&debug_reg_hook);
+ 	if (WARN_ON(ret < 0) || !cpumask_empty(&debug_err_mask)) {
+ 		core_num_brps = 0;
+ 		core_num_wrps = 0;
+ 		if (ret > 0)
+ 			cpuhp_remove_state_nocalls(ret);
+-		put_online_cpus();
++		cpus_read_unlock();
+ 		return 0;
+ 	}
+ 
+@@ -1124,7 +1125,7 @@ static int __init arch_hw_breakpoint_init(void)
+ 			TRAP_HWBKPT, "watchpoint debug exception");
+ 	hook_ifault_code(FAULT_CODE_DEBUG, hw_breakpoint_pending, SIGTRAP,
+ 			TRAP_HWBKPT, "breakpoint debug exception");
+-	put_online_cpus();
++	cpus_read_unlock();
+ 
+ 	/* Register PM notifiers. */
+ 	pm_init();
+-- 
+2.11.0
+

@@ -1,0 +1,77 @@
+Subject: preempt: irqs i386
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:03:08 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ arch/x86/kernel/i8259.c        |   10 ++++++----
+ arch/x86/kernel/irqinit_32.c   |    2 ++
+ arch/x86/kernel/visws_quirks.c |    2 ++
+ 3 files changed, 10 insertions(+), 4 deletions(-)
+
+Index: linux-2.6-tip/arch/x86/kernel/i8259.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/i8259.c
++++ linux-2.6-tip/arch/x86/kernel/i8259.c
+@@ -168,6 +168,8 @@ static void mask_and_ack_8259A(unsigned 
+ 	 */
+ 	if (cached_irq_mask & irqmask)
+ 		goto spurious_8259A_irq;
++	if (irq & 8)
++		outb(0x60+(irq&7), PIC_SLAVE_CMD); /* 'Specific EOI' to slave */
+ 	cached_irq_mask |= irqmask;
+ 
+ handle_real_irq:
+@@ -328,10 +330,10 @@ void init_8259A(int auto_eoi)
+ 	/* 8259A-1 (the master) has a slave on IR2 */
+ 	outb_pic(1U << PIC_CASCADE_IR, PIC_MASTER_IMR);
+ 
+-	if (auto_eoi)	/* master does Auto EOI */
+-		outb_pic(MASTER_ICW4_DEFAULT | PIC_ICW4_AEOI, PIC_MASTER_IMR);
+-	else		/* master expects normal EOI */
+-		outb_pic(MASTER_ICW4_DEFAULT, PIC_MASTER_IMR);
++	if (!auto_eoi)	/* master expects normal EOI */
++		outb_p(MASTER_ICW4_DEFAULT, PIC_MASTER_IMR);
++	else		/* master does Auto EOI */
++		outb_p(MASTER_ICW4_DEFAULT | PIC_ICW4_AEOI, PIC_MASTER_IMR);
+ 
+ 	outb_pic(0x11, PIC_SLAVE_CMD);	/* ICW1: select 8259A-2 init */
+ 
+Index: linux-2.6-tip/arch/x86/kernel/irqinit_32.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/irqinit_32.c
++++ linux-2.6-tip/arch/x86/kernel/irqinit_32.c
+@@ -50,6 +50,7 @@ static irqreturn_t math_error_irq(int cp
+  */
+ static struct irqaction fpu_irq = {
+ 	.handler = math_error_irq,
++	.flags = IRQF_NODELAY,
+ 	.mask = CPU_MASK_NONE,
+ 	.name = "fpu",
+ };
+@@ -83,6 +84,7 @@ void __init init_ISA_irqs(void)
+  */
+ static struct irqaction irq2 = {
+ 	.handler = no_action,
++	.flags = IRQF_NODELAY,
+ 	.mask = CPU_MASK_NONE,
+ 	.name = "cascade",
+ };
+Index: linux-2.6-tip/arch/x86/kernel/visws_quirks.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/visws_quirks.c
++++ linux-2.6-tip/arch/x86/kernel/visws_quirks.c
+@@ -643,11 +643,13 @@ out_unlock:
+ static struct irqaction master_action = {
+ 	.handler =	piix4_master_intr,
+ 	.name =		"PIIX4-8259",
++	.flags =	IRQF_NODELAY,
+ };
+ 
+ static struct irqaction cascade_action = {
+ 	.handler = 	no_action,
+ 	.name =		"cascade",
++	.flags =	IRQF_NODELAY,
+ };
+ 
+ 

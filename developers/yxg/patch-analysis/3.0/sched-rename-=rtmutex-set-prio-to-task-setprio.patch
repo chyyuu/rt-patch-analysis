@@ -1,0 +1,69 @@
+From: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Date: Fri, 3 Jul 2009 08:29:20 -0500
+Subject: sched: Rename rt_mutex_setprio to task_setprio
+
+In RT we have multiple non-mutex users of this function. Rename it.
+
+Signed-off-by: Peter Zijlstra <a.p.zijlstra@chello.nl>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ include/linux/sched.h |    7 ++++++-
+ kernel/sched.c        |    8 ++------
+ 2 files changed, 8 insertions(+), 7 deletions(-)
+
+Index: linux-2.6-tip/include/linux/sched.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/sched.h
++++ linux-2.6-tip/include/linux/sched.h
+@@ -2014,9 +2014,14 @@ static inline void sched_autogroup_fork(
+ static inline void sched_autogroup_exit(struct signal_struct *sig) { }
+ #endif
+ 
++extern void task_setprio(struct task_struct *p, int prio);
++
+ #ifdef CONFIG_RT_MUTEXES
+ extern int rt_mutex_getprio(struct task_struct *p);
+-extern void rt_mutex_setprio(struct task_struct *p, int prio);
++static inline void rt_mutex_setprio(struct task_struct *p, int prio)
++{
++	task_setprio(p, prio);
++}
+ extern void rt_mutex_adjust_pi(struct task_struct *p);
+ #else
+ static inline int rt_mutex_getprio(struct task_struct *p)
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -4807,10 +4807,8 @@ long __sched sleep_on_timeout(wait_queue
+ }
+ EXPORT_SYMBOL(sleep_on_timeout);
+ 
+-#ifdef CONFIG_RT_MUTEXES
+-
+ /*
+- * rt_mutex_setprio - set the current priority of a task
++ * task_setprio - set the current priority of a task
+  * @p: task
+  * @prio: prio value (kernel-internal form)
+  *
+@@ -4819,7 +4817,7 @@ EXPORT_SYMBOL(sleep_on_timeout);
+  *
+  * Used by the rt_mutex code to implement priority inheritance logic.
+  */
+-void rt_mutex_setprio(struct task_struct *p, int prio)
++void task_setprio(struct task_struct *p, int prio)
+ {
+ 	int oldprio, on_rq, running;
+ 	struct rq *rq;
+@@ -4855,8 +4853,6 @@ void rt_mutex_setprio(struct task_struct
+ 	__task_rq_unlock(rq);
+ }
+ 
+-#endif
+-
+ void set_user_nice(struct task_struct *p, long nice)
+ {
+ 	int old_prio, delta, on_rq;

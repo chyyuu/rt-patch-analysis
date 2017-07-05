@@ -1,0 +1,63 @@
+Subject: [patch] lockdep: show held locks when showing a stackdump
+From: Ingo Molnar <mingo@elte.hu>
+
+show held locks when printing a backtrace.
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+
+---
+ arch/x86/kernel/traps_32.c |    1 +
+ arch/x86/kernel/traps_64.c |    1 +
+ kernel/lockdep.c           |    8 +++++++-
+ 3 files changed, 9 insertions(+), 1 deletion(-)
+
+Index: linux-2.6.26/arch/x86/kernel/traps_32.c
+===================================================================
+--- linux-2.6.26.orig/arch/x86/kernel/traps_32.c
++++ linux-2.6.26/arch/x86/kernel/traps_32.c
+@@ -262,6 +262,7 @@ show_trace_log_lvl(struct task_struct *t
+ 	dump_trace(task, regs, stack, bp, &print_trace_ops, log_lvl);
+ 	printk("%s =======================\n", log_lvl);
+ 	print_preempt_trace(task);
++	debug_show_held_locks(task);
+ }
+ 
+ void show_trace(struct task_struct *task, struct pt_regs *regs,
+Index: linux-2.6.26/arch/x86/kernel/traps_64.c
+===================================================================
+--- linux-2.6.26.orig/arch/x86/kernel/traps_64.c
++++ linux-2.6.26/arch/x86/kernel/traps_64.c
+@@ -389,6 +389,7 @@ show_trace(struct task_struct *tsk, stru
+ 	printk("\nCall Trace:\n");
+ 	dump_trace(tsk, regs, stack, bp, &print_trace_ops, NULL);
+ 	printk("\n");
++	debug_show_held_locks(tsk);
+ 	print_preempt_trace(tsk);
+ }
+ 
+Index: linux-2.6.26/kernel/lockdep.c
+===================================================================
+--- linux-2.6.26.orig/kernel/lockdep.c
++++ linux-2.6.26/kernel/lockdep.c
+@@ -512,7 +512,11 @@ static void print_lock(struct held_lock 
+ 
+ static void lockdep_print_held_locks(struct task_struct *curr)
+ {
+-	int i, depth = curr->lockdep_depth;
++	int i, depth;
++
++	if (!curr)
++		curr = current;
++	depth = curr->lockdep_depth;
+ 
+ 	if (!depth) {
+ 		printk("no locks held by %s/%d.\n", curr->comm, task_pid_nr(curr));
+@@ -3235,6 +3239,8 @@ void __debug_show_held_locks(struct task
+ 		printk("INFO: lockdep is turned off.\n");
+ 		return;
+ 	}
++	if (task == current)
++		lockdep_print_held_locks(task);
+ 	lockdep_print_held_locks(task);
+ }
+ EXPORT_SYMBOL_GPL(__debug_show_held_locks);

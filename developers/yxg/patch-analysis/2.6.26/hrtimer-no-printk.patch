@@ -1,0 +1,17 @@
+---
+ kernel/hrtimer.c |    2 --
+ 1 file changed, 2 deletions(-)
+
+Index: linux-2.6.26/kernel/hrtimer.c
+===================================================================
+--- linux-2.6.26.orig/kernel/hrtimer.c
++++ linux-2.6.26/kernel/hrtimer.c
+@@ -731,8 +731,6 @@ static int hrtimer_switch_to_hres(void)
+ 	/* "Retrigger" the interrupt to get things going */
+ 	retrigger_next_event(NULL);
+ 	local_irq_restore(flags);
+-	printk(KERN_DEBUG "Switched to high resolution mode on CPU %d\n",
+-	       smp_processor_id());
+ 	return 1;
+ }
+ 

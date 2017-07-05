@@ -1,0 +1,126 @@
+commit 41fb61c2d08107ce96a5dcb3a6289b2afd3e135c
+Author: Steven Rostedt <srostedt@redhat.com>
+Date:   Wed Jul 13 15:03:44 2011 -0400
+
+    ftrace: Balance records when updating the hash
+    
+    Whenever the hash of the ftrace_ops is updated, the record counts
+    must be balance. This requires disabling the records that are set
+    in the original hash, and then enabling the records that are set
+    in the updated hash.
+    
+    Moving the update into ftrace_hash_move() removes the bug where the
+    hash was updated but the records were not, which results in ftrace
+    triggering a warning and disabling itself because the ftrace_ops filter
+    is updated while the ftrace_ops was registered, and then the failure
+    happens when the ftrace_ops is unregistered.
+    
+    The current code will not trigger this bug, but new code will.
+    
+    Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+
+---
+ kernel/trace/ftrace.c |   49 +++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 33 insertions(+), 16 deletions(-)
+
+Index: linux-2.6/kernel/trace/ftrace.c
+===================================================================
+--- linux-2.6.orig/kernel/trace/ftrace.c
++++ linux-2.6/kernel/trace/ftrace.c
+@@ -1182,8 +1182,14 @@ alloc_and_copy_ftrace_hash(int size_bits
+ 	return NULL;
+ }
+ 
++static void
++ftrace_hash_rec_disable(struct ftrace_ops *ops, int filter_hash);
++static void
++ftrace_hash_rec_enable(struct ftrace_ops *ops, int filter_hash);
++
+ static int
+-ftrace_hash_move(struct ftrace_hash **dst, struct ftrace_hash *src)
++ftrace_hash_move(struct ftrace_ops *ops, int enable,
++		 struct ftrace_hash **dst, struct ftrace_hash *src)
+ {
+ 	struct ftrace_func_entry *entry;
+ 	struct hlist_node *tp, *tn;
+@@ -1193,9 +1199,16 @@ ftrace_hash_move(struct ftrace_hash **ds
+ 	unsigned long key;
+ 	int size = src->count;
+ 	int bits = 0;
++	int ret;
+ 	int i;
+ 
+ 	/*
++	 * Remove the current set, update the hash and add
++	 * them back.
++	 */
++	ftrace_hash_rec_disable(ops, enable);
++
++	/*
+ 	 * If the new source is empty, just free dst and assign it
+ 	 * the empty_hash.
+ 	 */
+@@ -1215,9 +1228,10 @@ ftrace_hash_move(struct ftrace_hash **ds
+ 	if (bits > FTRACE_HASH_MAX_BITS)
+ 		bits = FTRACE_HASH_MAX_BITS;
+ 
++	ret = -ENOMEM;
+ 	new_hash = alloc_ftrace_hash(bits);
+ 	if (!new_hash)
+-		return -ENOMEM;
++		goto out;
+ 
+ 	size = 1 << src->size_bits;
+ 	for (i = 0; i < size; i++) {
+@@ -1236,7 +1250,16 @@ ftrace_hash_move(struct ftrace_hash **ds
+ 	rcu_assign_pointer(*dst, new_hash);
+ 	free_ftrace_hash_rcu(old_hash);
+ 
+-	return 0;
++	ret = 0;
++ out:
++	/*
++	 * Enable regardless of ret:
++	 *  On success, we enable the new hash.
++	 *  On failure, we re-enable the original hash.
++	 */
++	ftrace_hash_rec_enable(ops, enable);
++
++	return ret;
+ }
+ 
+ /*
+@@ -2857,7 +2880,7 @@ ftrace_set_regex(struct ftrace_ops *ops,
+ 		ftrace_match_records(hash, buf, len);
+ 
+ 	mutex_lock(&ftrace_lock);
+-	ret = ftrace_hash_move(orig_hash, hash);
++	ret = ftrace_hash_move(ops, enable, orig_hash, hash);
+ 	mutex_unlock(&ftrace_lock);
+ 
+ 	mutex_unlock(&ftrace_regex_lock);
+@@ -3040,18 +3063,12 @@ ftrace_regex_release(struct inode *inode
+ 			orig_hash = &iter->ops->notrace_hash;
+ 
+ 		mutex_lock(&ftrace_lock);
+-		/*
+-		 * Remove the current set, update the hash and add
+-		 * them back.
+-		 */
+-		ftrace_hash_rec_disable(iter->ops, filter_hash);
+-		ret = ftrace_hash_move(orig_hash, iter->hash);
+-		if (!ret) {
+-			ftrace_hash_rec_enable(iter->ops, filter_hash);
+-			if (iter->ops->flags & FTRACE_OPS_FL_ENABLED
+-			    && ftrace_enabled)
+-				ftrace_run_update_code(FTRACE_ENABLE_CALLS);
+-		}
++		ret = ftrace_hash_move(iter->ops, filter_hash,
++				       orig_hash, iter->hash);
++		if (!ret && (iter->ops->flags & FTRACE_OPS_FL_ENABLED)
++		    && ftrace_enabled)
++			ftrace_run_update_code(FTRACE_ENABLE_CALLS);
++
+ 		mutex_unlock(&ftrace_lock);
+ 	}
+ 	free_ftrace_hash(iter->hash);

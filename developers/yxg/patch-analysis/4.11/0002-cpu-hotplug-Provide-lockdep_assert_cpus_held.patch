@@ -1,0 +1,46 @@
+From ade3f680a76b474d9f5375a9b1d100ee787bf469 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:13 +0200
+Subject: [PATCH 02/32] cpu/hotplug: Provide lockdep_assert_cpus_held()
+
+Provide a stub function which can be used in places where existing
+get_online_cpus() calls are moved to call sites.
+
+This stub is going to be filled by the final conversion of the hotplug
+locking mechanism to a percpu rwsem.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081547.161282442@linutronix.de
+---
+ include/linux/cpu.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/linux/cpu.h b/include/linux/cpu.h
+index 055876003914..af4d660798e5 100644
+--- a/include/linux/cpu.h
++++ b/include/linux/cpu.h
+@@ -103,6 +103,7 @@ extern void cpus_write_lock(void);
+ extern void cpus_write_unlock(void);
+ extern void cpus_read_lock(void);
+ extern void cpus_read_unlock(void);
++static inline void lockdep_assert_cpus_held(void) { }
+ extern void cpu_hotplug_disable(void);
+ extern void cpu_hotplug_enable(void);
+ void clear_tasks_mm_cpumask(int cpu);
+@@ -114,6 +115,7 @@ static inline void cpus_write_lock(void) { }
+ static inline void cpus_write_unlock(void) { }
+ static inline void cpus_read_lock(void) { }
+ static inline void cpus_read_unlock(void) { }
++static inline void lockdep_assert_cpus_held(void) { }
+ static inline void cpu_hotplug_disable(void) { }
+ static inline void cpu_hotplug_enable(void) { }
+ #endif	/* !CONFIG_HOTPLUG_CPU */
+-- 
+2.11.0
+

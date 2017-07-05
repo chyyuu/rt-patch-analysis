@@ -1,0 +1,27 @@
+The clockevent layer now handles everything done by the ARM 
+timer_tick() call, except the LED stuff.  Here we add an
+arch_tick_leds() to handle LED toggling which is called by 
+do_timer().
+
+---
+ arch/arm/kernel/time.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+Index: linux-2.6.23-rt1/arch/arm/kernel/time.c
+===================================================================
+--- linux-2.6.23-rt1.orig/arch/arm/kernel/time.c	2007-10-11 15:58:12.000000000 -0400
++++ linux-2.6.23-rt1/arch/arm/kernel/time.c	2007-10-11 15:59:56.000000000 -0400
+@@ -236,6 +236,13 @@ static inline void do_leds(void)
+ #define	do_leds()
+ #endif
+ 
++void arch_tick_leds(void)
++{
++#ifdef CONFIG_LEDS_TIMER
++	do_leds();
++#endif
++}
++
+ #ifndef CONFIG_GENERIC_TIME
+ void do_gettimeofday(struct timeval *tv)
+ {

@@ -1,0 +1,29 @@
+Subject: rt: shorten posix_cpu_timers/<CPU> kernel thread names
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date: Wed, 13 Aug 2008 15:42:11 -0300
+
+Shorten the softirq kernel thread names because they always overflow the
+limited comm length, appearing as "posix_cpu_timer" CPU# times.
+
+Done on 2.6.24.7, but probably applicable to later kernels.
+
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/posix-cpu-timers.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/posix-cpu-timers.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/posix-cpu-timers.c
++++ linux-2.6-tip/kernel/posix-cpu-timers.c
+@@ -1541,7 +1541,7 @@ static int posix_cpu_thread_call(struct 
+ 	switch (action) {
+ 	case CPU_UP_PREPARE:
+ 		p = kthread_create(posix_cpu_timers_thread, hcpu,
+-					"posix_cpu_timers/%d",cpu);
++					"posixcputmr/%d",cpu);
+ 		if (IS_ERR(p))
+ 			return NOTIFY_BAD;
+ 		p->flags |= PF_NOFREEZE;

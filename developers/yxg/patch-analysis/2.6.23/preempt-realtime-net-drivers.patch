@@ -1,0 +1,16 @@
+---
+ drivers/net/tulip/tulip_core.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6.23-rt1/drivers/net/tulip/tulip_core.c
+===================================================================
+--- linux-2.6.23-rt1.orig/drivers/net/tulip/tulip_core.c	2007-10-11 15:57:36.000000000 -0400
++++ linux-2.6.23-rt1/drivers/net/tulip/tulip_core.c	2007-10-11 16:00:55.000000000 -0400
+@@ -1790,6 +1790,7 @@ static void __devexit tulip_remove_one (
+ 	pci_iounmap(pdev, tp->base_addr);
+ 	free_netdev (dev);
+ 	pci_release_regions (pdev);
++	pci_disable_device (pdev);
+ 	pci_set_drvdata (pdev, NULL);
+ 
+ 	/* pci_power_off (pdev, -1); */

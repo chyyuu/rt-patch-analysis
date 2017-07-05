@@ -1,0 +1,786 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 3 Jul 2009 08:44:46 -0500
+Subject: ARM: raw_lock conversions
+
+Annotate the locks which cannot be converted to sleeping locks in -rt
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ arch/arm/include/asm/dma.h                       |    6 +--
+ arch/arm/kernel/dma.c                            |    2 -
+ arch/arm/kernel/smp.c                            |    6 +--
+ arch/arm/kernel/traps.c                          |   20 +++++-----
+ arch/arm/mach-footbridge/include/mach/hardware.h |    2 -
+ arch/arm/mach-footbridge/netwinder-hw.c          |   14 +++----
+ arch/arm/mach-footbridge/netwinder-leds.c        |   10 ++---
+ arch/arm/mach-integrator/core.c                  |    6 +--
+ arch/arm/mach-integrator/pci_v3.c                |   14 +++----
+ arch/arm/mach-ixp4xx/common-pci.c                |   22 +++++------
+ arch/arm/mach-shark/leds.c                       |    6 +--
+ arch/arm/mm/cache-l2x0.c                         |   46 +++++++++++------------
+ arch/arm/mm/context.c                            |    8 ++--
+ arch/arm/mm/copypage-v4mc.c                      |    6 +--
+ arch/arm/mm/copypage-v6.c                        |   10 ++---
+ arch/arm/mm/copypage-xscale.c                    |    6 +--
+ 16 files changed, 92 insertions(+), 92 deletions(-)
+
+Index: linux-2.6/arch/arm/include/asm/dma.h
+===================================================================
+--- linux-2.6.orig/arch/arm/include/asm/dma.h
++++ linux-2.6/arch/arm/include/asm/dma.h
+@@ -33,18 +33,18 @@
+ #define DMA_MODE_CASCADE 0xc0
+ #define DMA_AUTOINIT	 0x10
+ 
+-extern spinlock_t  dma_spin_lock;
++extern raw_spinlock_t  dma_spin_lock;
+ 
+ static inline unsigned long claim_dma_lock(void)
+ {
+ 	unsigned long flags;
+-	spin_lock_irqsave(&dma_spin_lock, flags);
++	raw_spin_lock_irqsave(&dma_spin_lock, flags);
+ 	return flags;
+ }
+ 
+ static inline void release_dma_lock(unsigned long flags)
+ {
+-	spin_unlock_irqrestore(&dma_spin_lock, flags);
++	raw_spin_unlock_irqrestore(&dma_spin_lock, flags);
+ }
+ 
+ /* Clear the 'DMA Pointer Flip Flop'.
+Index: linux-2.6/arch/arm/kernel/dma.c
+===================================================================
+--- linux-2.6.orig/arch/arm/kernel/dma.c
++++ linux-2.6/arch/arm/kernel/dma.c
+@@ -23,7 +23,7 @@
+ 
+ #include <asm/mach/dma.h>
+ 
+-DEFINE_SPINLOCK(dma_spin_lock);
++DEFINE_RAW_SPINLOCK(dma_spin_lock);
+ EXPORT_SYMBOL(dma_spin_lock);
+ 
+ static dma_t *dma_chan[MAX_DMA_CHANNELS];
+Index: linux-2.6/arch/arm/kernel/smp.c
+===================================================================
+--- linux-2.6.orig/arch/arm/kernel/smp.c
++++ linux-2.6/arch/arm/kernel/smp.c
+@@ -531,7 +531,7 @@ static void percpu_timer_stop(void)
+ }
+ #endif
+ 
+-static DEFINE_SPINLOCK(stop_lock);
++static DEFINE_RAW_SPINLOCK(stop_lock);
+ 
+ /*
+  * ipi_cpu_stop - handle IPI from smp_send_stop()
+@@ -540,10 +540,10 @@ static void ipi_cpu_stop(unsigned int cp
+ {
+ 	if (system_state == SYSTEM_BOOTING ||
+ 	    system_state == SYSTEM_RUNNING) {
+-		spin_lock(&stop_lock);
++		raw_spin_lock(&stop_lock);
+ 		printk(KERN_CRIT "CPU%u: stopping\n", cpu);
+ 		dump_stack();
+-		spin_unlock(&stop_lock);
++		raw_spin_unlock(&stop_lock);
+ 	}
+ 
+ 	set_cpu_online(cpu, false);
+Index: linux-2.6/arch/arm/kernel/traps.c
+===================================================================
+--- linux-2.6.orig/arch/arm/kernel/traps.c
++++ linux-2.6/arch/arm/kernel/traps.c
+@@ -255,7 +255,7 @@ static int __die(const char *str, int er
+ 	return ret;
+ }
+ 
+-static DEFINE_SPINLOCK(die_lock);
++static DEFINE_RAW_SPINLOCK(die_lock);
+ 
+ /*
+  * This function is protected against re-entrancy.
+@@ -267,7 +267,7 @@ void die(const char *str, struct pt_regs
+ 
+ 	oops_enter();
+ 
+-	spin_lock_irq(&die_lock);
++	raw_spin_lock_irq(&die_lock);
+ 	console_verbose();
+ 	bust_spinlocks(1);
+ 	ret = __die(str, err, thread, regs);
+@@ -277,7 +277,7 @@ void die(const char *str, struct pt_regs
+ 
+ 	bust_spinlocks(0);
+ 	add_taint(TAINT_DIE);
+-	spin_unlock_irq(&die_lock);
++	raw_spin_unlock_irq(&die_lock);
+ 	oops_exit();
+ 
+ 	if (in_interrupt())
+@@ -302,24 +302,24 @@ void arm_notify_die(const char *str, str
+ }
+ 
+ static LIST_HEAD(undef_hook);
+-static DEFINE_SPINLOCK(undef_lock);
++static DEFINE_RAW_SPINLOCK(undef_lock);
+ 
+ void register_undef_hook(struct undef_hook *hook)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&undef_lock, flags);
++	raw_spin_lock_irqsave(&undef_lock, flags);
+ 	list_add(&hook->node, &undef_hook);
+-	spin_unlock_irqrestore(&undef_lock, flags);
++	raw_spin_unlock_irqrestore(&undef_lock, flags);
+ }
+ 
+ void unregister_undef_hook(struct undef_hook *hook)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&undef_lock, flags);
++	raw_spin_lock_irqsave(&undef_lock, flags);
+ 	list_del(&hook->node);
+-	spin_unlock_irqrestore(&undef_lock, flags);
++	raw_spin_unlock_irqrestore(&undef_lock, flags);
+ }
+ 
+ static int call_undef_hook(struct pt_regs *regs, unsigned int instr)
+@@ -328,12 +328,12 @@ static int call_undef_hook(struct pt_reg
+ 	unsigned long flags;
+ 	int (*fn)(struct pt_regs *regs, unsigned int instr) = NULL;
+ 
+-	spin_lock_irqsave(&undef_lock, flags);
++	raw_spin_lock_irqsave(&undef_lock, flags);
+ 	list_for_each_entry(hook, &undef_hook, node)
+ 		if ((instr & hook->instr_mask) == hook->instr_val &&
+ 		    (regs->ARM_cpsr & hook->cpsr_mask) == hook->cpsr_val)
+ 			fn = hook->fn;
+-	spin_unlock_irqrestore(&undef_lock, flags);
++	raw_spin_unlock_irqrestore(&undef_lock, flags);
+ 
+ 	return fn ? fn(regs, instr) : 1;
+ }
+Index: linux-2.6/arch/arm/mach-footbridge/include/mach/hardware.h
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-footbridge/include/mach/hardware.h
++++ linux-2.6/arch/arm/mach-footbridge/include/mach/hardware.h
+@@ -93,7 +93,7 @@
+ #define CPLD_FLASH_WR_ENABLE	1
+ 
+ #ifndef __ASSEMBLY__
+-extern spinlock_t nw_gpio_lock;
++extern raw_spinlock_t nw_gpio_lock;
+ extern void nw_gpio_modify_op(unsigned int mask, unsigned int set);
+ extern void nw_gpio_modify_io(unsigned int mask, unsigned int in);
+ extern unsigned int nw_gpio_read(void);
+Index: linux-2.6/arch/arm/mach-footbridge/netwinder-hw.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-footbridge/netwinder-hw.c
++++ linux-2.6/arch/arm/mach-footbridge/netwinder-hw.c
+@@ -68,7 +68,7 @@ static inline void wb977_ww(int reg, int
+ /*
+  * This is a lock for accessing ports GP1_IO_BASE and GP2_IO_BASE
+  */
+-DEFINE_SPINLOCK(nw_gpio_lock);
++DEFINE_RAW_SPINLOCK(nw_gpio_lock);
+ EXPORT_SYMBOL(nw_gpio_lock);
+ 
+ static unsigned int current_gpio_op;
+@@ -327,9 +327,9 @@ static inline void wb977_init_gpio(void)
+ 	/*
+ 	 * Set Group1/Group2 outputs
+ 	 */
+-	spin_lock_irqsave(&nw_gpio_lock, flags);
++	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+ 	nw_gpio_modify_op(-1, GPIO_RED_LED | GPIO_FAN);
+-	spin_unlock_irqrestore(&nw_gpio_lock, flags);
++	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+ }
+ 
+ /*
+@@ -390,9 +390,9 @@ static void __init cpld_init(void)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&nw_gpio_lock, flags);
++	raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+ 	nw_cpld_modify(-1, CPLD_UNMUTE | CPLD_7111_DISABLE);
+-	spin_unlock_irqrestore(&nw_gpio_lock, flags);
++	raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+ }
+ 
+ static unsigned char rwa_unlock[] __initdata =
+@@ -616,9 +616,9 @@ static int __init nw_hw_init(void)
+ 		cpld_init();
+ 		rwa010_init();
+ 
+-		spin_lock_irqsave(&nw_gpio_lock, flags);
++		raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+ 		nw_gpio_modify_op(GPIO_RED_LED|GPIO_GREEN_LED, DEFAULT_LEDS);
+-		spin_unlock_irqrestore(&nw_gpio_lock, flags);
++		raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+ 	}
+ 	return 0;
+ }
+Index: linux-2.6/arch/arm/mach-footbridge/netwinder-leds.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-footbridge/netwinder-leds.c
++++ linux-2.6/arch/arm/mach-footbridge/netwinder-leds.c
+@@ -31,13 +31,13 @@
+ static char led_state;
+ static char hw_led_state;
+ 
+-static DEFINE_SPINLOCK(leds_lock);
++static DEFINE_RAW_SPINLOCK(leds_lock);
+ 
+ static void netwinder_leds_event(led_event_t evt)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&leds_lock, flags);
++	raw_spin_lock_irqsave(&leds_lock, flags);
+ 
+ 	switch (evt) {
+ 	case led_start:
+@@ -117,12 +117,12 @@ static void netwinder_leds_event(led_eve
+ 		break;
+ 	}
+ 
+-	spin_unlock_irqrestore(&leds_lock, flags);
++	raw_spin_unlock_irqrestore(&leds_lock, flags);
+ 
+ 	if  (led_state & LED_STATE_ENABLED) {
+-		spin_lock_irqsave(&nw_gpio_lock, flags);
++		raw_spin_lock_irqsave(&nw_gpio_lock, flags);
+ 		nw_gpio_modify_op(GPIO_RED_LED | GPIO_GREEN_LED, hw_led_state);
+-		spin_unlock_irqrestore(&nw_gpio_lock, flags);
++		raw_spin_unlock_irqrestore(&nw_gpio_lock, flags);
+ 	}
+ }
+ 
+Index: linux-2.6/arch/arm/mach-integrator/core.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-integrator/core.c
++++ linux-2.6/arch/arm/mach-integrator/core.c
+@@ -205,7 +205,7 @@ static struct amba_pl010_data integrator
+ 
+ #define CM_CTRL	IO_ADDRESS(INTEGRATOR_HDR_CTRL)
+ 
+-static DEFINE_SPINLOCK(cm_lock);
++static DEFINE_RAW_SPINLOCK(cm_lock);
+ 
+ /**
+  * cm_control - update the CM_CTRL register.
+@@ -217,10 +217,10 @@ void cm_control(u32 mask, u32 set)
+ 	unsigned long flags;
+ 	u32 val;
+ 
+-	spin_lock_irqsave(&cm_lock, flags);
++	raw_spin_lock_irqsave(&cm_lock, flags);
+ 	val = readl(CM_CTRL) & ~mask;
+ 	writel(val | set, CM_CTRL);
+-	spin_unlock_irqrestore(&cm_lock, flags);
++	raw_spin_unlock_irqrestore(&cm_lock, flags);
+ }
+ 
+ EXPORT_SYMBOL(cm_control);
+Index: linux-2.6/arch/arm/mach-integrator/pci_v3.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-integrator/pci_v3.c
++++ linux-2.6/arch/arm/mach-integrator/pci_v3.c
+@@ -163,7 +163,7 @@
+  *	 7:2	register number
+  *  
+  */
+-static DEFINE_SPINLOCK(v3_lock);
++static DEFINE_RAW_SPINLOCK(v3_lock);
+ 
+ #define PCI_BUS_NONMEM_START	0x00000000
+ #define PCI_BUS_NONMEM_SIZE	SZ_256M
+@@ -284,7 +284,7 @@ static int v3_read_config(struct pci_bus
+ 	unsigned long flags;
+ 	u32 v;
+ 
+-	spin_lock_irqsave(&v3_lock, flags);
++	raw_spin_lock_irqsave(&v3_lock, flags);
+ 	addr = v3_open_config_window(bus, devfn, where);
+ 
+ 	switch (size) {
+@@ -302,7 +302,7 @@ static int v3_read_config(struct pci_bus
+ 	}
+ 
+ 	v3_close_config_window();
+-	spin_unlock_irqrestore(&v3_lock, flags);
++	raw_spin_unlock_irqrestore(&v3_lock, flags);
+ 
+ 	*val = v;
+ 	return PCIBIOS_SUCCESSFUL;
+@@ -314,7 +314,7 @@ static int v3_write_config(struct pci_bu
+ 	unsigned long addr;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&v3_lock, flags);
++	raw_spin_lock_irqsave(&v3_lock, flags);
+ 	addr = v3_open_config_window(bus, devfn, where);
+ 
+ 	switch (size) {
+@@ -335,7 +335,7 @@ static int v3_write_config(struct pci_bu
+ 	}
+ 
+ 	v3_close_config_window();
+-	spin_unlock_irqrestore(&v3_lock, flags);
++	raw_spin_unlock_irqrestore(&v3_lock, flags);
+ 
+ 	return PCIBIOS_SUCCESSFUL;
+ }
+@@ -510,7 +510,7 @@ void __init pci_v3_preinit(void)
+ 	hook_fault_code(8, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
+ 	hook_fault_code(10, v3_pci_fault, SIGBUS, 0, "external abort on non-linefetch");
+ 
+-	spin_lock_irqsave(&v3_lock, flags);
++	raw_spin_lock_irqsave(&v3_lock, flags);
+ 
+ 	/*
+ 	 * Unlock V3 registers, but only if they were previously locked.
+@@ -583,7 +583,7 @@ void __init pci_v3_preinit(void)
+ 		printk(KERN_ERR "PCI: unable to grab PCI error "
+ 		       "interrupt: %d\n", ret);
+ 
+-	spin_unlock_irqrestore(&v3_lock, flags);
++	raw_spin_unlock_irqrestore(&v3_lock, flags);
+ }
+ 
+ void __init pci_v3_postinit(void)
+Index: linux-2.6/arch/arm/mach-ixp4xx/common-pci.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-ixp4xx/common-pci.c
++++ linux-2.6/arch/arm/mach-ixp4xx/common-pci.c
+@@ -54,7 +54,7 @@ unsigned long ixp4xx_pci_reg_base = 0;
+  * these transactions are atomic or we will end up
+  * with corrupt data on the bus or in a driver.
+  */
+-static DEFINE_SPINLOCK(ixp4xx_pci_lock);
++static DEFINE_RAW_SPINLOCK(ixp4xx_pci_lock);
+ 
+ /*
+  * Read from PCI config space
+@@ -62,10 +62,10 @@ static DEFINE_SPINLOCK(ixp4xx_pci_lock);
+ static void crp_read(u32 ad_cbe, u32 *data)
+ {
+ 	unsigned long flags;
+-	spin_lock_irqsave(&ixp4xx_pci_lock, flags);
++	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
+ 	*PCI_CRP_AD_CBE = ad_cbe;
+ 	*data = *PCI_CRP_RDATA;
+-	spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
++	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
+ }
+ 
+ /*
+@@ -74,10 +74,10 @@ static void crp_read(u32 ad_cbe, u32 *da
+ static void crp_write(u32 ad_cbe, u32 data)
+ { 
+ 	unsigned long flags;
+-	spin_lock_irqsave(&ixp4xx_pci_lock, flags);
++	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
+ 	*PCI_CRP_AD_CBE = CRP_AD_CBE_WRITE | ad_cbe;
+ 	*PCI_CRP_WDATA = data;
+-	spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
++	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
+ }
+ 
+ static inline int check_master_abort(void)
+@@ -101,7 +101,7 @@ int ixp4xx_pci_read_errata(u32 addr, u32
+ 	int retval = 0;
+ 	int i;
+ 
+-	spin_lock_irqsave(&ixp4xx_pci_lock, flags);
++	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
+ 
+ 	*PCI_NP_AD = addr;
+ 
+@@ -118,7 +118,7 @@ int ixp4xx_pci_read_errata(u32 addr, u32
+ 	if(check_master_abort())
+ 		retval = 1;
+ 
+-	spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
++	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
+ 	return retval;
+ }
+ 
+@@ -127,7 +127,7 @@ int ixp4xx_pci_read_no_errata(u32 addr, 
+ 	unsigned long flags;
+ 	int retval = 0;
+ 
+-	spin_lock_irqsave(&ixp4xx_pci_lock, flags);
++	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
+ 
+ 	*PCI_NP_AD = addr;
+ 
+@@ -140,7 +140,7 @@ int ixp4xx_pci_read_no_errata(u32 addr, 
+ 	if(check_master_abort())
+ 		retval = 1;
+ 
+-	spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
++	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
+ 	return retval;
+ }
+ 
+@@ -149,7 +149,7 @@ int ixp4xx_pci_write(u32 addr, u32 cmd, 
+ 	unsigned long flags;
+ 	int retval = 0;
+ 
+-	spin_lock_irqsave(&ixp4xx_pci_lock, flags);
++	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
+ 
+ 	*PCI_NP_AD = addr;
+ 
+@@ -162,7 +162,7 @@ int ixp4xx_pci_write(u32 addr, u32 cmd, 
+ 	if(check_master_abort())
+ 		retval = 1;
+ 
+-	spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
++	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
+ 	return retval;
+ }
+ 
+Index: linux-2.6/arch/arm/mach-shark/leds.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mach-shark/leds.c
++++ linux-2.6/arch/arm/mach-shark/leds.c
+@@ -36,7 +36,7 @@ static char led_state;
+ static short hw_led_state;
+ static short saved_state;
+ 
+-static DEFINE_SPINLOCK(leds_lock);
++static DEFINE_RAW_SPINLOCK(leds_lock);
+ 
+ short sequoia_read(int addr) {
+   outw(addr,0x24);
+@@ -52,7 +52,7 @@ static void sequoia_leds_event(led_event
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&leds_lock, flags);
++	raw_spin_lock_irqsave(&leds_lock, flags);
+ 
+ 	hw_led_state = sequoia_read(0x09);
+ 
+@@ -144,7 +144,7 @@ static void sequoia_leds_event(led_event
+ 	if  (led_state & LED_STATE_ENABLED)
+ 		sequoia_write(hw_led_state,0x09);
+ 
+-	spin_unlock_irqrestore(&leds_lock, flags);
++	raw_spin_unlock_irqrestore(&leds_lock, flags);
+ }
+ 
+ static int __init leds_init(void)
+Index: linux-2.6/arch/arm/mm/cache-l2x0.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mm/cache-l2x0.c
++++ linux-2.6/arch/arm/mm/cache-l2x0.c
+@@ -26,7 +26,7 @@
+ #define CACHE_LINE_SIZE		32
+ 
+ static void __iomem *l2x0_base;
+-static DEFINE_SPINLOCK(l2x0_lock);
++static DEFINE_RAW_SPINLOCK(l2x0_lock);
+ static uint32_t l2x0_way_mask;	/* Bitmask of active ways */
+ static uint32_t l2x0_size;
+ 
+@@ -115,9 +115,9 @@ static void l2x0_cache_sync(void)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void __l2x0_flush_all(void)
+@@ -134,9 +134,9 @@ static void l2x0_flush_all(void)
+ 	unsigned long flags;
+ 
+ 	/* clean all ways */
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	__l2x0_flush_all();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_clean_all(void)
+@@ -144,11 +144,11 @@ static void l2x0_clean_all(void)
+ 	unsigned long flags;
+ 
+ 	/* clean all ways */
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_CLEAN_WAY);
+ 	cache_wait_way(l2x0_base + L2X0_CLEAN_WAY, l2x0_way_mask);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_inv_all(void)
+@@ -156,13 +156,13 @@ static void l2x0_inv_all(void)
+ 	unsigned long flags;
+ 
+ 	/* invalidate all ways */
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	/* Invalidating when L2 is enabled is a nono */
+ 	BUG_ON(readl(l2x0_base + L2X0_CTRL) & 1);
+ 	writel_relaxed(l2x0_way_mask, l2x0_base + L2X0_INV_WAY);
+ 	cache_wait_way(l2x0_base + L2X0_INV_WAY, l2x0_way_mask);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_inv_range(unsigned long start, unsigned long end)
+@@ -170,7 +170,7 @@ static void l2x0_inv_range(unsigned long
+ 	void __iomem *base = l2x0_base;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	if (start & (CACHE_LINE_SIZE - 1)) {
+ 		start &= ~(CACHE_LINE_SIZE - 1);
+ 		debug_writel(0x03);
+@@ -195,13 +195,13 @@ static void l2x0_inv_range(unsigned long
+ 		}
+ 
+ 		if (blk_end < end) {
+-			spin_unlock_irqrestore(&l2x0_lock, flags);
+-			spin_lock_irqsave(&l2x0_lock, flags);
++			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
++			raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 		}
+ 	}
+ 	cache_wait(base + L2X0_INV_LINE_PA, 1);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_clean_range(unsigned long start, unsigned long end)
+@@ -214,7 +214,7 @@ static void l2x0_clean_range(unsigned lo
+ 		return;
+ 	}
+ 
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	start &= ~(CACHE_LINE_SIZE - 1);
+ 	while (start < end) {
+ 		unsigned long blk_end = start + min(end - start, 4096UL);
+@@ -225,13 +225,13 @@ static void l2x0_clean_range(unsigned lo
+ 		}
+ 
+ 		if (blk_end < end) {
+-			spin_unlock_irqrestore(&l2x0_lock, flags);
+-			spin_lock_irqsave(&l2x0_lock, flags);
++			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
++			raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 		}
+ 	}
+ 	cache_wait(base + L2X0_CLEAN_LINE_PA, 1);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_flush_range(unsigned long start, unsigned long end)
+@@ -244,7 +244,7 @@ static void l2x0_flush_range(unsigned lo
+ 		return;
+ 	}
+ 
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	start &= ~(CACHE_LINE_SIZE - 1);
+ 	while (start < end) {
+ 		unsigned long blk_end = start + min(end - start, 4096UL);
+@@ -257,24 +257,24 @@ static void l2x0_flush_range(unsigned lo
+ 		debug_writel(0x00);
+ 
+ 		if (blk_end < end) {
+-			spin_unlock_irqrestore(&l2x0_lock, flags);
+-			spin_lock_irqsave(&l2x0_lock, flags);
++			raw_spin_unlock_irqrestore(&l2x0_lock, flags);
++			raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 		}
+ 	}
+ 	cache_wait(base + L2X0_CLEAN_INV_LINE_PA, 1);
+ 	cache_sync();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ static void l2x0_disable(void)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&l2x0_lock, flags);
++	raw_spin_lock_irqsave(&l2x0_lock, flags);
+ 	__l2x0_flush_all();
+ 	writel_relaxed(0, l2x0_base + L2X0_CTRL);
+ 	dsb();
+-	spin_unlock_irqrestore(&l2x0_lock, flags);
++	raw_spin_unlock_irqrestore(&l2x0_lock, flags);
+ }
+ 
+ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
+Index: linux-2.6/arch/arm/mm/context.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mm/context.c
++++ linux-2.6/arch/arm/mm/context.c
+@@ -16,7 +16,7 @@
+ #include <asm/mmu_context.h>
+ #include <asm/tlbflush.h>
+ 
+-static DEFINE_SPINLOCK(cpu_asid_lock);
++static DEFINE_RAW_SPINLOCK(cpu_asid_lock);
+ unsigned int cpu_last_asid = ASID_FIRST_VERSION;
+ #ifdef CONFIG_SMP
+ DEFINE_PER_CPU(struct mm_struct *, current_mm);
+@@ -117,7 +117,7 @@ void __new_context(struct mm_struct *mm)
+ {
+ 	unsigned int asid;
+ 
+-	spin_lock(&cpu_asid_lock);
++	raw_spin_lock(&cpu_asid_lock);
+ #ifdef CONFIG_SMP
+ 	/*
+ 	 * Check the ASID again, in case the change was broadcast from
+@@ -125,7 +125,7 @@ void __new_context(struct mm_struct *mm)
+ 	 */
+ 	if (unlikely(((mm->context.id ^ cpu_last_asid) >> ASID_BITS) == 0)) {
+ 		cpumask_set_cpu(smp_processor_id(), mm_cpumask(mm));
+-		spin_unlock(&cpu_asid_lock);
++		raw_spin_unlock(&cpu_asid_lock);
+ 		return;
+ 	}
+ #endif
+@@ -153,5 +153,5 @@ void __new_context(struct mm_struct *mm)
+ 	}
+ 
+ 	set_mm_context(mm, asid);
+-	spin_unlock(&cpu_asid_lock);
++	raw_spin_unlock(&cpu_asid_lock);
+ }
+Index: linux-2.6/arch/arm/mm/copypage-v4mc.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mm/copypage-v4mc.c
++++ linux-2.6/arch/arm/mm/copypage-v4mc.c
+@@ -30,7 +30,7 @@
+ #define minicache_pgprot __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | \
+ 				  L_PTE_MT_MINICACHE)
+ 
+-static DEFINE_SPINLOCK(minicache_lock);
++static DEFINE_RAW_SPINLOCK(minicache_lock);
+ 
+ /*
+  * ARMv4 mini-dcache optimised copy_user_highpage
+@@ -76,14 +76,14 @@ void v4_mc_copy_user_highpage(struct pag
+ 	if (!test_and_set_bit(PG_dcache_clean, &from->flags))
+ 		__flush_dcache_page(page_mapping(from), from);
+ 
+-	spin_lock(&minicache_lock);
++	raw_spin_lock(&minicache_lock);
+ 
+ 	set_pte_ext(TOP_PTE(0xffff8000), pfn_pte(page_to_pfn(from), minicache_pgprot), 0);
+ 	flush_tlb_kernel_page(0xffff8000);
+ 
+ 	mc_copy_user_page((void *)0xffff8000, kto);
+ 
+-	spin_unlock(&minicache_lock);
++	raw_spin_unlock(&minicache_lock);
+ 
+ 	kunmap_atomic(kto, KM_USER1);
+ }
+Index: linux-2.6/arch/arm/mm/copypage-v6.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mm/copypage-v6.c
++++ linux-2.6/arch/arm/mm/copypage-v6.c
+@@ -27,7 +27,7 @@
+ #define from_address	(0xffff8000)
+ #define to_address	(0xffffc000)
+ 
+-static DEFINE_SPINLOCK(v6_lock);
++static DEFINE_RAW_SPINLOCK(v6_lock);
+ 
+ /*
+  * Copy the user page.  No aliasing to deal with so we can just
+@@ -89,7 +89,7 @@ static void v6_copy_user_highpage_aliasi
+ 	 * Now copy the page using the same cache colour as the
+ 	 * pages ultimate destination.
+ 	 */
+-	spin_lock(&v6_lock);
++	raw_spin_lock(&v6_lock);
+ 
+ 	set_pte_ext(TOP_PTE(from_address) + offset, pfn_pte(page_to_pfn(from), PAGE_KERNEL), 0);
+ 	set_pte_ext(TOP_PTE(to_address) + offset, pfn_pte(page_to_pfn(to), PAGE_KERNEL), 0);
+@@ -102,7 +102,7 @@ static void v6_copy_user_highpage_aliasi
+ 
+ 	copy_page((void *)kto, (void *)kfrom);
+ 
+-	spin_unlock(&v6_lock);
++	raw_spin_unlock(&v6_lock);
+ }
+ 
+ /*
+@@ -122,13 +122,13 @@ static void v6_clear_user_highpage_alias
+ 	 * Now clear the page using the same cache colour as
+ 	 * the pages ultimate destination.
+ 	 */
+-	spin_lock(&v6_lock);
++	raw_spin_lock(&v6_lock);
+ 
+ 	set_pte_ext(TOP_PTE(to_address) + offset, pfn_pte(page_to_pfn(page), PAGE_KERNEL), 0);
+ 	flush_tlb_kernel_page(to);
+ 	clear_page((void *)to);
+ 
+-	spin_unlock(&v6_lock);
++	raw_spin_unlock(&v6_lock);
+ }
+ 
+ struct cpu_user_fns v6_user_fns __initdata = {
+Index: linux-2.6/arch/arm/mm/copypage-xscale.c
+===================================================================
+--- linux-2.6.orig/arch/arm/mm/copypage-xscale.c
++++ linux-2.6/arch/arm/mm/copypage-xscale.c
+@@ -32,7 +32,7 @@
+ #define minicache_pgprot __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | \
+ 				  L_PTE_MT_MINICACHE)
+ 
+-static DEFINE_SPINLOCK(minicache_lock);
++static DEFINE_RAW_SPINLOCK(minicache_lock);
+ 
+ /*
+  * XScale mini-dcache optimised copy_user_highpage
+@@ -98,14 +98,14 @@ void xscale_mc_copy_user_highpage(struct
+ 	if (!test_and_set_bit(PG_dcache_clean, &from->flags))
+ 		__flush_dcache_page(page_mapping(from), from);
+ 
+-	spin_lock(&minicache_lock);
++	raw_spin_lock(&minicache_lock);
+ 
+ 	set_pte_ext(TOP_PTE(COPYPAGE_MINICACHE), pfn_pte(page_to_pfn(from), minicache_pgprot), 0);
+ 	flush_tlb_kernel_page(COPYPAGE_MINICACHE);
+ 
+ 	mc_copy_user_page((void *)COPYPAGE_MINICACHE, kto);
+ 
+-	spin_unlock(&minicache_lock);
++	raw_spin_unlock(&minicache_lock);
+ 
+ 	kunmap_atomic(kto, KM_USER1);
+ }

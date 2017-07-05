@@ -1,0 +1,54 @@
+From 9489cc8f370be811f7e741a772bcce88b712272d Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:38 +0200
+Subject: [PATCH 27/32] arm: Prevent hotplug rwsem recursion
+
+The text patching functions which are invoked from jump_label and kprobes
+code are protected against cpu hotplug at the call sites.
+
+Use stop_machine_cpuslocked() to avoid recursion on the cpu hotplug
+rwsem. stop_machine_cpuslocked() contains a lockdep assertion to catch any
+unprotected callers.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Link: http://lkml.kernel.org/r/20170524081549.275871311@linutronix.de
+---
+ arch/arm/kernel/patch.c        | 2 +-
+ arch/arm/probes/kprobes/core.c | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/kernel/patch.c b/arch/arm/kernel/patch.c
+index 020560b2dcb7..a1a34722c655 100644
+--- a/arch/arm/kernel/patch.c
++++ b/arch/arm/kernel/patch.c
+@@ -124,5 +124,5 @@ void __kprobes patch_text(void *addr, unsigned int insn)
+ 		.insn = insn,
+ 	};
+ 
+-	stop_machine(patch_text_stop_machine, &patch, NULL);
++	stop_machine_cpuslocked(patch_text_stop_machine, &patch, NULL);
+ }
+diff --git a/arch/arm/probes/kprobes/core.c b/arch/arm/probes/kprobes/core.c
+index ad1f4e6a9e33..52d1cd14fda4 100644
+--- a/arch/arm/probes/kprobes/core.c
++++ b/arch/arm/probes/kprobes/core.c
+@@ -182,7 +182,8 @@ void __kprobes kprobes_remove_breakpoint(void *addr, unsigned int insn)
+ 		.addr = addr,
+ 		.insn = insn,
+ 	};
+-	stop_machine(__kprobes_remove_breakpoint, &p, cpu_online_mask);
++	stop_machine_cpuslocked(__kprobes_remove_breakpoint, &p,
++				cpu_online_mask);
+ }
+ 
+ void __kprobes arch_disarm_kprobe(struct kprobe *p)
+-- 
+2.11.0
+

@@ -1,0 +1,22 @@
+Subject: dmar-mark-dmar-irq-no-thread.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 19 Jul 2011 16:25:42 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ drivers/pci/dmar.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6/drivers/pci/dmar.c
+===================================================================
+--- linux-2.6.orig/drivers/pci/dmar.c
++++ linux-2.6/drivers/pci/dmar.c
+@@ -1388,7 +1388,7 @@ int dmar_set_interrupt(struct intel_iomm
+ 		return ret;
+ 	}
+ 
+-	ret = request_irq(irq, dmar_fault, 0, iommu->name, iommu);
++	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
+ 	if (ret)
+ 		printk(KERN_ERR "IOMMU: can't request irq\n");
+ 	return ret;

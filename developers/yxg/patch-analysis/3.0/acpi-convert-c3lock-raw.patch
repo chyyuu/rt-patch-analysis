@@ -1,0 +1,54 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 25 Jul 2009 18:14:37 +0200
+Subject: ACPI: Convert c3_lock to raw_spinlock
+
+We cannot convert this lock to a sleeping lock on -rt. We are in an
+interrupt disabled region and about to go into deep sleep.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ drivers/acpi/processor_idle.c |   10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+Index: linux-2.6-tip/drivers/acpi/processor_idle.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/acpi/processor_idle.c
++++ linux-2.6-tip/drivers/acpi/processor_idle.c
+@@ -852,7 +852,7 @@ static int acpi_idle_enter_simple(struct
+ }
+ 
+ static int c3_cpu_count;
+-static DEFINE_SPINLOCK(c3_lock);
++static DEFINE_RAW_SPINLOCK(c3_lock);
+ 
+ /**
+  * acpi_idle_enter_bm - enters C3 with proper BM handling
+@@ -930,12 +930,12 @@ static int acpi_idle_enter_bm(struct cpu
+ 	 * without doing anything.
+ 	 */
+ 	if (pr->flags.bm_check && pr->flags.bm_control) {
+-		spin_lock(&c3_lock);
++		raw_spin_lock(&c3_lock);
+ 		c3_cpu_count++;
+ 		/* Disable bus master arbitration when all CPUs are in C3 */
+ 		if (c3_cpu_count == num_online_cpus())
+ 			acpi_write_bit_register(ACPI_BITREG_ARB_DISABLE, 1);
+-		spin_unlock(&c3_lock);
++		raw_spin_unlock(&c3_lock);
+ 	} else if (!pr->flags.bm_check) {
+ 		ACPI_FLUSH_CPU_CACHE();
+ 	}
+@@ -944,10 +944,10 @@ static int acpi_idle_enter_bm(struct cpu
+ 
+ 	/* Re-enable bus master arbitration */
+ 	if (pr->flags.bm_check && pr->flags.bm_control) {
+-		spin_lock(&c3_lock);
++		raw_spin_lock(&c3_lock);
+ 		acpi_write_bit_register(ACPI_BITREG_ARB_DISABLE, 0);
+ 		c3_cpu_count--;
+-		spin_unlock(&c3_lock);
++		raw_spin_unlock(&c3_lock);
+ 	}
+ 	kt2 = ktime_get_real();
+ 	idle_time_ns = ktime_to_ns(ktime_sub(kt2, kt1));

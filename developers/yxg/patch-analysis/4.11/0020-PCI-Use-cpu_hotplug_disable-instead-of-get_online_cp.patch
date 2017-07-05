@@ -1,0 +1,92 @@
+From 1ddd45f8d76f0c15ec4e44073eeaaee6a806ee81 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:31 +0200
+Subject: [PATCH 20/32] PCI: Use cpu_hotplug_disable() instead of
+ get_online_cpus()
+
+Converting the hotplug locking, i.e. get_online_cpus(), to a percpu rwsem
+unearthed a circular lock dependency which was hidden from lockdep due to
+the lockdep annotation of get_online_cpus() which prevents lockdep from
+creating full dependency chains. There are several variants of this. And
+example is:
+
+Chain exists of:
+
+cpu_hotplug_lock.rw_sem --> drm_global_mutex --> &item->mutex
+
+CPU0                    CPU1
+----                    ----
+lock(&item->mutex);
+                        lock(drm_global_mutex);
+                        lock(&item->mutex);
+lock(cpu_hotplug_lock.rw_sem);
+
+because there are dependencies through workqueues. The call chain is:
+
+	get_online_cpus
+	apply_workqueue_attrs
+	__alloc_workqueue_key
+	ttm_mem_global_init
+	ast_ttm_mem_global_init
+	drm_global_item_ref
+	ast_mm_init
+	ast_driver_load
+	drm_dev_register
+	drm_get_pci_dev
+	ast_pci_probe
+	local_pci_probe
+	work_for_cpu_fn
+	process_one_work
+	worker_thread
+
+This is not a problem of get_online_cpus() recursion, it's a possible
+deadlock undetected by lockdep so far.
+
+The cure is to use cpu_hotplug_disable() instead of get_online_cpus() to
+protect the PCI probing.
+
+There is a side effect to this: cpu_hotplug_disable() makes a concurrent
+cpu hotplug attempt via the sysfs interfaces fail with -EBUSY, but PCI
+probing usually happens during the boot process where no interaction is
+possible. Any later invocations are infrequent enough and concurrent
+hotplug attempts are so unlikely that the danger of user space visible
+regressions is very close to zero. Anyway, thats preferrable over a real
+deadlock.
+
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: linux-pci@vger.kernel.org
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081548.691198590@linutronix.de
+---
+ drivers/pci/pci-driver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
+index 192e7b681b96..5bf92fd983e5 100644
+--- a/drivers/pci/pci-driver.c
++++ b/drivers/pci/pci-driver.c
+@@ -349,13 +349,13 @@ static int pci_call_probe(struct pci_driver *drv, struct pci_dev *dev,
+ 	if (node >= 0 && node != numa_node_id()) {
+ 		int cpu;
+ 
+-		get_online_cpus();
++		cpu_hotplug_disable();
+ 		cpu = cpumask_any_and(cpumask_of_node(node), cpu_online_mask);
+ 		if (cpu < nr_cpu_ids)
+ 			error = work_on_cpu(cpu, local_pci_probe, &ddi);
+ 		else
+ 			error = local_pci_probe(&ddi);
+-		put_online_cpus();
++		cpu_hotplug_enable();
+ 	} else
+ 		error = local_pci_probe(&ddi);
+ 
+-- 
+2.11.0
+

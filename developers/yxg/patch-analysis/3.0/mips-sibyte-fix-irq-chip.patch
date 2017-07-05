@@ -1,0 +1,22 @@
+Subject: mips: sibyte: Add missing irq_mask function
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 18 Jul 2011 18:26:38 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/mips/sibyte/sb1250/irq.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6/arch/mips/sibyte/sb1250/irq.c
+===================================================================
+--- linux-2.6.orig/arch/mips/sibyte/sb1250/irq.c
++++ linux-2.6/arch/mips/sibyte/sb1250/irq.c
+@@ -178,7 +178,7 @@ static void ack_sb1250_irq(struct irq_da
+ 
+ static struct irq_chip sb1250_irq_type = {
+ 	.name = "SB1250-IMR",
+-	.irq_mask_ack = ack_sb1250_irq,
++	.irq_mask = ack_sb1250_irq,
+ 	.irq_unmask = enable_sb1250_irq,
+ #ifdef CONFIG_SMP
+ 	.irq_set_affinity = sb1250_set_affinity

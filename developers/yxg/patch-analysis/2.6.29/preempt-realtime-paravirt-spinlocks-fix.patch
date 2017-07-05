@@ -1,0 +1,22 @@
+Subject: rt: fix paravirt spinlocks
+From: Ingo Molnar <mingo@elte.hu>
+Date: Thu Feb 12 15:34:50 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ arch/x86/kernel/paravirt-spinlocks.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/arch/x86/kernel/paravirt-spinlocks.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/paravirt-spinlocks.c
++++ linux-2.6-tip/arch/x86/kernel/paravirt-spinlocks.c
+@@ -8,7 +8,7 @@
+ #include <asm/paravirt.h>
+ 
+ static inline void
+-default_spin_lock_flags(raw_spinlock_t *lock, unsigned long flags)
++default_spin_lock_flags(__raw_spinlock_t *lock, unsigned long flags)
+ {
+ 	__raw_spin_lock(lock);
+ }

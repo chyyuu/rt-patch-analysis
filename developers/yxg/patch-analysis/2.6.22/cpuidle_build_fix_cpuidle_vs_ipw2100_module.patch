@@ -1,0 +1,26 @@
+commit 0157896199e2b0e65b5be1d423aded91634f2861
+Author: Len Brown <len.brown@intel.com>
+Date:   Thu May 31 22:51:43 2007 -0400
+
+    cpuidle: build fix - cpuidle vs ipw2100 module
+    
+    ERROR: "acpi_set_cstate_limit" [drivers/net/wireless/ipw2100.ko] undefined!
+    
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ drivers/acpi/osl.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-rt.q/drivers/acpi/osl.c
+===================================================================
+--- linux-rt.q.orig/drivers/acpi/osl.c
++++ linux-rt.q/drivers/acpi/osl.c
+@@ -1065,6 +1065,7 @@ void acpi_set_cstate_limit(unsigned int 
+ 	if (acpi_do_set_cstate_limit)
+ 		acpi_do_set_cstate_limit();
+ }
++EXPORT_SYMBOL(acpi_set_cstate_limit);
+ 
+ /*
+  * Acquire a spinlock.

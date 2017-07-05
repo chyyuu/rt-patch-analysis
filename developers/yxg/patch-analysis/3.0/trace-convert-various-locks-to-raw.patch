@@ -1,0 +1,303 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sat, 25 Jul 2009 17:13:33 +0200
+Subject: trace: Convert various locks to raw_spinlock
+
+The locks in the guts of the tracer cannot be converted to sleeping
+spinlocks on -rt. Annotate them.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/trace/ring_buffer.c   |   52 +++++++++++++++++++++----------------------
+ kernel/trace/trace.c         |   10 ++++----
+ kernel/trace/trace_irqsoff.c |    6 ++--
+ 3 files changed, 34 insertions(+), 34 deletions(-)
+
+Index: linux-2.6/kernel/trace/ring_buffer.c
+===================================================================
+--- linux-2.6.orig/kernel/trace/ring_buffer.c
++++ linux-2.6/kernel/trace/ring_buffer.c
+@@ -478,7 +478,7 @@ struct ring_buffer_per_cpu {
+ 	int				cpu;
+ 	atomic_t			record_disabled;
+ 	struct ring_buffer		*buffer;
+-	spinlock_t			reader_lock;	/* serialize readers */
++	raw_spinlock_t			reader_lock;	/* serialize readers */
+ 	arch_spinlock_t			lock;
+ 	struct lock_class_key		lock_key;
+ 	struct list_head		*pages;
+@@ -1055,7 +1055,7 @@ rb_allocate_cpu_buffer(struct ring_buffe
+ 
+ 	cpu_buffer->cpu = cpu;
+ 	cpu_buffer->buffer = buffer;
+-	spin_lock_init(&cpu_buffer->reader_lock);
++	raw_spin_lock_init(&cpu_buffer->reader_lock);
+ 	lockdep_set_class(&cpu_buffer->reader_lock, buffer->reader_lock_key);
+ 	cpu_buffer->lock = (arch_spinlock_t)__ARCH_SPIN_LOCK_UNLOCKED;
+ 
+@@ -1252,7 +1252,7 @@ rb_remove_pages(struct ring_buffer_per_c
+ 	struct list_head *p;
+ 	unsigned i;
+ 
+-	spin_lock_irq(&cpu_buffer->reader_lock);
++	raw_spin_lock_irq(&cpu_buffer->reader_lock);
+ 	rb_head_page_deactivate(cpu_buffer);
+ 
+ 	for (i = 0; i < nr_pages; i++) {
+@@ -1270,7 +1270,7 @@ rb_remove_pages(struct ring_buffer_per_c
+ 	rb_check_pages(cpu_buffer);
+ 
+ out:
+-	spin_unlock_irq(&cpu_buffer->reader_lock);
++	raw_spin_unlock_irq(&cpu_buffer->reader_lock);
+ }
+ 
+ static void
+@@ -1281,7 +1281,7 @@ rb_insert_pages(struct ring_buffer_per_c
+ 	struct list_head *p;
+ 	unsigned i;
+ 
+-	spin_lock_irq(&cpu_buffer->reader_lock);
++	raw_spin_lock_irq(&cpu_buffer->reader_lock);
+ 	rb_head_page_deactivate(cpu_buffer);
+ 
+ 	for (i = 0; i < nr_pages; i++) {
+@@ -1296,7 +1296,7 @@ rb_insert_pages(struct ring_buffer_per_c
+ 	rb_check_pages(cpu_buffer);
+ 
+ out:
+-	spin_unlock_irq(&cpu_buffer->reader_lock);
++	raw_spin_unlock_irq(&cpu_buffer->reader_lock);
+ }
+ 
+ /**
+@@ -2790,9 +2790,9 @@ void ring_buffer_iter_reset(struct ring_
+ 
+ 	cpu_buffer = iter->cpu_buffer;
+ 
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+ 	rb_iter_reset(iter);
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ }
+ EXPORT_SYMBOL_GPL(ring_buffer_iter_reset);
+ 
+@@ -3251,12 +3251,12 @@ ring_buffer_peek(struct ring_buffer *buf
+  again:
+ 	local_irq_save(flags);
+ 	if (dolock)
+-		spin_lock(&cpu_buffer->reader_lock);
++		raw_spin_lock(&cpu_buffer->reader_lock);
+ 	event = rb_buffer_peek(cpu_buffer, ts, lost_events);
+ 	if (event && event->type_len == RINGBUF_TYPE_PADDING)
+ 		rb_advance_reader(cpu_buffer);
+ 	if (dolock)
+-		spin_unlock(&cpu_buffer->reader_lock);
++		raw_spin_unlock(&cpu_buffer->reader_lock);
+ 	local_irq_restore(flags);
+ 
+ 	if (event && event->type_len == RINGBUF_TYPE_PADDING)
+@@ -3281,9 +3281,9 @@ ring_buffer_iter_peek(struct ring_buffer
+ 	unsigned long flags;
+ 
+  again:
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+ 	event = rb_iter_peek(iter, ts);
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ 
+ 	if (event && event->type_len == RINGBUF_TYPE_PADDING)
+ 		goto again;
+@@ -3323,7 +3323,7 @@ ring_buffer_consume(struct ring_buffer *
+ 	cpu_buffer = buffer->buffers[cpu];
+ 	local_irq_save(flags);
+ 	if (dolock)
+-		spin_lock(&cpu_buffer->reader_lock);
++		raw_spin_lock(&cpu_buffer->reader_lock);
+ 
+ 	event = rb_buffer_peek(cpu_buffer, ts, lost_events);
+ 	if (event) {
+@@ -3332,7 +3332,7 @@ ring_buffer_consume(struct ring_buffer *
+ 	}
+ 
+ 	if (dolock)
+-		spin_unlock(&cpu_buffer->reader_lock);
++		raw_spin_unlock(&cpu_buffer->reader_lock);
+ 	local_irq_restore(flags);
+ 
+  out:
+@@ -3424,11 +3424,11 @@ ring_buffer_read_start(struct ring_buffe
+ 
+ 	cpu_buffer = iter->cpu_buffer;
+ 
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+ 	arch_spin_lock(&cpu_buffer->lock);
+ 	rb_iter_reset(iter);
+ 	arch_spin_unlock(&cpu_buffer->lock);
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ }
+ EXPORT_SYMBOL_GPL(ring_buffer_read_start);
+ 
+@@ -3463,7 +3463,7 @@ ring_buffer_read(struct ring_buffer_iter
+ 	struct ring_buffer_per_cpu *cpu_buffer = iter->cpu_buffer;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+  again:
+ 	event = rb_iter_peek(iter, ts);
+ 	if (!event)
+@@ -3474,7 +3474,7 @@ ring_buffer_read(struct ring_buffer_iter
+ 
+ 	rb_advance_iter(iter);
+  out:
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ 
+ 	return event;
+ }
+@@ -3543,7 +3543,7 @@ void ring_buffer_reset_cpu(struct ring_b
+ 
+ 	atomic_inc(&cpu_buffer->record_disabled);
+ 
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+ 
+ 	if (RB_WARN_ON(cpu_buffer, local_read(&cpu_buffer->committing)))
+ 		goto out;
+@@ -3555,7 +3555,7 @@ void ring_buffer_reset_cpu(struct ring_b
+ 	arch_spin_unlock(&cpu_buffer->lock);
+ 
+  out:
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ 
+ 	atomic_dec(&cpu_buffer->record_disabled);
+ }
+@@ -3593,10 +3593,10 @@ int ring_buffer_empty(struct ring_buffer
+ 		cpu_buffer = buffer->buffers[cpu];
+ 		local_irq_save(flags);
+ 		if (dolock)
+-			spin_lock(&cpu_buffer->reader_lock);
++			raw_spin_lock(&cpu_buffer->reader_lock);
+ 		ret = rb_per_cpu_empty(cpu_buffer);
+ 		if (dolock)
+-			spin_unlock(&cpu_buffer->reader_lock);
++			raw_spin_unlock(&cpu_buffer->reader_lock);
+ 		local_irq_restore(flags);
+ 
+ 		if (!ret)
+@@ -3627,10 +3627,10 @@ int ring_buffer_empty_cpu(struct ring_bu
+ 	cpu_buffer = buffer->buffers[cpu];
+ 	local_irq_save(flags);
+ 	if (dolock)
+-		spin_lock(&cpu_buffer->reader_lock);
++		raw_spin_lock(&cpu_buffer->reader_lock);
+ 	ret = rb_per_cpu_empty(cpu_buffer);
+ 	if (dolock)
+-		spin_unlock(&cpu_buffer->reader_lock);
++		raw_spin_unlock(&cpu_buffer->reader_lock);
+ 	local_irq_restore(flags);
+ 
+ 	return ret;
+@@ -3826,7 +3826,7 @@ int ring_buffer_read_page(struct ring_bu
+ 	if (!bpage)
+ 		goto out;
+ 
+-	spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
++	raw_spin_lock_irqsave(&cpu_buffer->reader_lock, flags);
+ 
+ 	reader = rb_get_reader_page(cpu_buffer);
+ 	if (!reader)
+@@ -3949,7 +3949,7 @@ int ring_buffer_read_page(struct ring_bu
+ 		memset(&bpage->data[commit], 0, BUF_PAGE_SIZE - commit);
+ 
+  out_unlock:
+-	spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
++	raw_spin_unlock_irqrestore(&cpu_buffer->reader_lock, flags);
+ 
+  out:
+ 	return ret;
+Index: linux-2.6/kernel/trace/trace.c
+===================================================================
+--- linux-2.6.orig/kernel/trace/trace.c
++++ linux-2.6/kernel/trace/trace.c
+@@ -341,7 +341,7 @@ unsigned long trace_flags = TRACE_ITER_P
+ 	TRACE_ITER_GRAPH_TIME | TRACE_ITER_RECORD_CMD | TRACE_ITER_OVERWRITE;
+ 
+ static int trace_stop_count;
+-static DEFINE_SPINLOCK(tracing_start_lock);
++static DEFINE_RAW_SPINLOCK(tracing_start_lock);
+ 
+ /**
+  * trace_wake_up - wake up tasks waiting for trace input
+@@ -958,7 +958,7 @@ void tracing_start(void)
+ 	if (tracing_disabled)
+ 		return;
+ 
+-	spin_lock_irqsave(&tracing_start_lock, flags);
++	raw_spin_lock_irqsave(&tracing_start_lock, flags);
+ 	if (--trace_stop_count) {
+ 		if (trace_stop_count < 0) {
+ 			/* Someone screwed up their debugging */
+@@ -983,7 +983,7 @@ void tracing_start(void)
+ 
+ 	ftrace_start();
+  out:
+-	spin_unlock_irqrestore(&tracing_start_lock, flags);
++	raw_spin_unlock_irqrestore(&tracing_start_lock, flags);
+ }
+ 
+ /**
+@@ -998,7 +998,7 @@ void tracing_stop(void)
+ 	unsigned long flags;
+ 
+ 	ftrace_stop();
+-	spin_lock_irqsave(&tracing_start_lock, flags);
++	raw_spin_lock_irqsave(&tracing_start_lock, flags);
+ 	if (trace_stop_count++)
+ 		goto out;
+ 
+@@ -1016,7 +1016,7 @@ void tracing_stop(void)
+ 	arch_spin_unlock(&ftrace_max_lock);
+ 
+  out:
+-	spin_unlock_irqrestore(&tracing_start_lock, flags);
++	raw_spin_unlock_irqrestore(&tracing_start_lock, flags);
+ }
+ 
+ void trace_stop_cmdline_recording(void);
+Index: linux-2.6/kernel/trace/trace_irqsoff.c
+===================================================================
+--- linux-2.6.orig/kernel/trace/trace_irqsoff.c
++++ linux-2.6/kernel/trace/trace_irqsoff.c
+@@ -23,7 +23,7 @@ static int				tracer_enabled __read_most
+ 
+ static DEFINE_PER_CPU(int, tracing_cpu);
+ 
+-static DEFINE_SPINLOCK(max_trace_lock);
++static DEFINE_RAW_SPINLOCK(max_trace_lock);
+ 
+ enum {
+ 	TRACER_IRQS_OFF		= (1 << 1),
+@@ -319,7 +319,7 @@ check_critical_timing(struct trace_array
+ 	if (!report_latency(delta))
+ 		goto out;
+ 
+-	spin_lock_irqsave(&max_trace_lock, flags);
++	raw_spin_lock_irqsave(&max_trace_lock, flags);
+ 
+ 	/* check if we are still the max latency */
+ 	if (!report_latency(delta))
+@@ -342,7 +342,7 @@ check_critical_timing(struct trace_array
+ 	max_sequence++;
+ 
+ out_unlock:
+-	spin_unlock_irqrestore(&max_trace_lock, flags);
++	raw_spin_unlock_irqrestore(&max_trace_lock, flags);
+ 
+ out:
+ 	data->critical_sequence = max_sequence;

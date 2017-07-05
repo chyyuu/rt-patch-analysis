@@ -1,0 +1,68 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 17 Sep 2009 17:31:09 +0200
+Subject: latencytop: Convert latency_lock to raw_spinlock
+
+latency_lock is taken in the guts of the scheduler code and needs to
+be a real spinlock on RT. convert it to raw_spinlock.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ kernel/latencytop.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+Index: linux-2.6-tip/kernel/latencytop.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/latencytop.c
++++ linux-2.6-tip/kernel/latencytop.c
+@@ -58,7 +58,7 @@
+ #include <linux/list.h>
+ #include <linux/stacktrace.h>
+ 
+-static DEFINE_SPINLOCK(latency_lock);
++static DEFINE_RAW_SPINLOCK(latency_lock);
+ 
+ #define MAXLR 128
+ static struct latency_record latency_record[MAXLR];
+@@ -72,19 +72,19 @@ void clear_all_latency_tracing(struct ta
+ 	if (!latencytop_enabled)
+ 		return;
+ 
+-	spin_lock_irqsave(&latency_lock, flags);
++	raw_spin_lock_irqsave(&latency_lock, flags);
+ 	memset(&p->latency_record, 0, sizeof(p->latency_record));
+ 	p->latency_record_count = 0;
+-	spin_unlock_irqrestore(&latency_lock, flags);
++	raw_spin_unlock_irqrestore(&latency_lock, flags);
+ }
+ 
+ static void clear_global_latency_tracing(void)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&latency_lock, flags);
++	raw_spin_lock_irqsave(&latency_lock, flags);
+ 	memset(&latency_record, 0, sizeof(latency_record));
+-	spin_unlock_irqrestore(&latency_lock, flags);
++	raw_spin_unlock_irqrestore(&latency_lock, flags);
+ }
+ 
+ static void __sched
+@@ -190,7 +190,7 @@ __account_scheduler_latency(struct task_
+ 	lat.max = usecs;
+ 	store_stacktrace(tsk, &lat);
+ 
+-	spin_lock_irqsave(&latency_lock, flags);
++	raw_spin_lock_irqsave(&latency_lock, flags);
+ 
+ 	account_global_scheduler_latency(tsk, &lat);
+ 
+@@ -231,7 +231,7 @@ __account_scheduler_latency(struct task_
+ 	memcpy(&tsk->latency_record[i], &lat, sizeof(struct latency_record));
+ 
+ out_unlock:
+-	spin_unlock_irqrestore(&latency_lock, flags);
++	raw_spin_unlock_irqrestore(&latency_lock, flags);
+ }
+ 
+ static int lstats_show(struct seq_file *m, void *v)

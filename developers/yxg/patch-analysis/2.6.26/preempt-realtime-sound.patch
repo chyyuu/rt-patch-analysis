@@ -1,0 +1,24 @@
+---
+ sound/core/pcm_lib.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6.26/sound/core/pcm_lib.c
+===================================================================
+--- linux-2.6.26.orig/sound/core/pcm_lib.c
++++ linux-2.6.26/sound/core/pcm_lib.c
+@@ -29,6 +29,7 @@
+ #include <sound/pcm_params.h>
+ #include <sound/timer.h>
+ 
++#include <linux/ftrace.h>
+ /*
+  * fill ring buffer with silence
+  * runtime->silence_start: starting pointer to silence area
+@@ -129,6 +130,7 @@ static void xrun(struct snd_pcm_substrea
+ 	snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
+ #ifdef CONFIG_SND_PCM_XRUN_DEBUG
+ 	if (substream->pstr->xrun_debug) {
++		user_trace_stop();
+ 		snd_printd(KERN_DEBUG "XRUN: pcmC%dD%d%c\n",
+ 			   substream->pcm->card->number,
+ 			   substream->pcm->device,

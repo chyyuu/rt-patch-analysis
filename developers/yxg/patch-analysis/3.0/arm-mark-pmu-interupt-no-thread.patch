@@ -1,0 +1,24 @@
+Subject: arm: Mark pmu interupt IRQF_NO_THREAD
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 16 Mar 2011 14:45:31 +0100
+
+PMU interrupt must not be threaded.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/arm/kernel/perf_event.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/arch/arm/kernel/perf_event.c
+===================================================================
+--- linux-2.6-tip.orig/arch/arm/kernel/perf_event.c
++++ linux-2.6-tip/arch/arm/kernel/perf_event.c
+@@ -420,7 +420,7 @@ armpmu_reserve_hardware(void)
+ 			continue;
+ 
+ 		err = request_irq(irq, handle_irq,
+-				  IRQF_DISABLED | IRQF_NOBALANCING,
++				  IRQF_DISABLED | IRQF_NOBALANCING | IRQF_NO_THREAD,
+ 				  "armpmu", NULL);
+ 		if (err) {
+ 			pr_warning("unable to request IRQ%d for ARM perf "

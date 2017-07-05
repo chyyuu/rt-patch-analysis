@@ -1,0 +1,31 @@
+---
+ arch/mips/kernel/time.c       |    2 +-
+ arch/mips/sibyte/sb1250/irq.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+Index: linux-rt.q/arch/mips/kernel/time.c
+===================================================================
+--- linux-rt.q.orig/arch/mips/kernel/time.c
++++ linux-rt.q/arch/mips/kernel/time.c
+@@ -281,7 +281,7 @@ unsigned int mips_hpt_frequency;
+ 
+ static struct irqaction timer_irqaction = {
+ 	.handler = timer_interrupt,
+-	.flags = IRQF_DISABLED | IRQF_PERCPU,
++	.flags = IRQF_DISABLED | IRQF_PERCPU | IRQF_NODELAY,
+ 	.name = "timer",
+ };
+ 
+Index: linux-rt.q/arch/mips/sibyte/sb1250/irq.c
+===================================================================
+--- linux-rt.q.orig/arch/mips/sibyte/sb1250/irq.c
++++ linux-rt.q/arch/mips/sibyte/sb1250/irq.c
+@@ -242,7 +242,7 @@ static irqreturn_t  sb1250_dummy_handler
+ 
+ static struct irqaction sb1250_dummy_action = {
+ 	.handler = sb1250_dummy_handler,
+-	.flags   = 0,
++	.flags   = IRQF_NODELAY,
+ 	.mask    = CPU_MASK_NONE,
+ 	.name    = "sb1250-private",
+ 	.next    = NULL,

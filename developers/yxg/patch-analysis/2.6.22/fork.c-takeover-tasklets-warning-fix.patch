@@ -1,0 +1,16 @@
+---
+ kernel/fork.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-rt.q/kernel/fork.c
+===================================================================
+--- linux-rt.q.orig/kernel/fork.c
++++ linux-rt.q/kernel/fork.c
+@@ -34,6 +34,7 @@
+ #include <linux/swap.h>
+ #include <linux/syscalls.h>
+ #include <linux/jiffies.h>
++#include <linux/interrupt.h>
+ #include <linux/futex.h>
+ #include <linux/task_io_accounting_ops.h>
+ #include <linux/rcupdate.h>

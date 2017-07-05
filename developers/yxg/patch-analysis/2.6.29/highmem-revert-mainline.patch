@@ -1,0 +1,30 @@
+Subject: highmem: revert mainline
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:35 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ mm/highmem.c |   10 ----------
+ 1 file changed, 10 deletions(-)
+
+Index: linux-2.6-tip/mm/highmem.c
+===================================================================
+--- linux-2.6-tip.orig/mm/highmem.c
++++ linux-2.6-tip/mm/highmem.c
+@@ -108,16 +108,6 @@ static void flush_all_zero_pkmaps(void)
+ 		flush_tlb_kernel_range(PKMAP_ADDR(0), PKMAP_ADDR(LAST_PKMAP));
+ }
+ 
+-/**
+- * kmap_flush_unused - flush all unused kmap mappings in order to remove stray mappings
+- */
+-void kmap_flush_unused(void)
+-{
+-	spin_lock(&kmap_lock);
+-	flush_all_zero_pkmaps();
+-	spin_unlock(&kmap_lock);
+-}
+-
+ static inline unsigned long map_new_virtual(struct page *page)
+ {
+ 	unsigned long vaddr;

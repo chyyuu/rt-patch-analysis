@@ -1,0 +1,43 @@
+From 62ec05dd71b19f5be890a1992227cc7b2ac0adc4 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:41 +0200
+Subject: [PATCH 30/32] sched: Provide is_percpu_thread() helper
+
+Provide a helper function for checking whether current task is a per cpu
+thread.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Link: http://lkml.kernel.org/r/20170524081549.541649540@linutronix.de
+---
+ include/linux/sched.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 2b69fc650201..3dfa5f99d6ee 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1265,6 +1265,16 @@ extern struct pid *cad_pid;
+ #define tsk_used_math(p)			((p)->flags & PF_USED_MATH)
+ #define used_math()				tsk_used_math(current)
+ 
++static inline bool is_percpu_thread(void)
++{
++#ifdef CONFIG_SMP
++	return (current->flags & PF_NO_SETAFFINITY) &&
++		(current->nr_cpus_allowed  == 1);
++#else
++	return true;
++#endif
++}
++
+ /* Per-process atomic flags. */
+ #define PFA_NO_NEW_PRIVS		0	/* May not gain new privileges. */
+ #define PFA_SPREAD_PAGE			1	/* Spread page cache over cpuset */
+-- 
+2.11.0
+

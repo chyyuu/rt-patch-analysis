@@ -1,0 +1,29 @@
+Subject: net-netif_rx_ni-migrate-disable.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 16:29:27 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ net/core/dev.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+Index: linux-2.6/net/core/dev.c
+===================================================================
+--- linux-2.6.orig/net/core/dev.c
++++ linux-2.6/net/core/dev.c
+@@ -2902,11 +2902,13 @@ int netif_rx_ni(struct sk_buff *skb)
+ {
+ 	int err;
+ 
+-	preempt_disable();
++	preempt_disable_nort();
++	migrate_disable_rt();
+ 	err = netif_rx(skb);
+ 	if (local_softirq_pending())
+ 		thread_do_softirq();
+-	preempt_enable();
++	migrate_enable_rt();
++	preempt_enable_nort();
+ 
+ 	return err;
+ }

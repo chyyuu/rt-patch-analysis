@@ -1,0 +1,20 @@
+---
+ scripts/Kbuild.include |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+Index: linux-2.6-tip/scripts/Kbuild.include
+===================================================================
+--- linux-2.6-tip.orig/scripts/Kbuild.include
++++ linux-2.6-tip/scripts/Kbuild.include
+@@ -98,8 +98,9 @@ as-option = $(call try-run,\
+ # as-instr
+ # Usage: cflags-y += $(call as-instr,instr,option1,option2)
+ 
+-as-instr = $(call try-run,\
+-	echo -e "$(1)" | $(CC) $(KBUILD_AFLAGS) -c -xassembler -o "$$TMP" -,$(2),$(3))
++as-instr = $(call try-run,		\
++	echo -e "$(1)" > "$$TMP"; 	\
++	$(CC) $(KBUILD_AFLAGS) -c -xassembler -o "$$TMP" "$$TMP",$(2),$(3))
+ 
+ # cc-option
+ # Usage: cflags-y += $(call cc-option,-march=winchip-c6,-march=i586)

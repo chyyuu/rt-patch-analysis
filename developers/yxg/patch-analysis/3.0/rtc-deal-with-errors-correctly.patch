@@ -1,0 +1,34 @@
+Subject: rtc: Handle errors correctly in rtc_irq_set_state()
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 22 Jul 2011 09:19:37 +0200
+
+The code checks the correctness of the parameters, but unconditionally
+arms/disarms the hrtimer.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: stable@kernel.org
+---
+ drivers/rtc/interface.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+Index: linux-2.6/drivers/rtc/interface.c
+===================================================================
+--- linux-2.6.orig/drivers/rtc/interface.c
++++ linux-2.6/drivers/rtc/interface.c
+@@ -656,6 +656,8 @@ int rtc_irq_set_state(struct rtc_device 
+ 		err = -EBUSY;
+ 	if (rtc->irq_task != task)
+ 		err = -EACCES;
++	if (err)
++		goto out;
+ 
+ 	if (enabled) {
+ 		ktime_t period = ktime_set(0, NSEC_PER_SEC/rtc->irq_freq);
+@@ -664,6 +666,7 @@ int rtc_irq_set_state(struct rtc_device 
+ 		hrtimer_cancel(&rtc->pie_timer);
+ 	}
+ 	rtc->pie_enabled = enabled;
++out:
+ 	spin_unlock_irqrestore(&rtc->irq_task_lock, flags);
+ 
+ 	return err;

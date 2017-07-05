@@ -1,0 +1,71 @@
+Subject: patches/fix-net-bug-fixes.patch
+
+
+MUST-FIX: check the skbuff.c bit!
+MUST-FIX: check the sched.c bit!
+
+This doesn't look good. You declare it as a PER_CPU_LOCKED, but then
+never use the extra lock to synchronize data.
+
+Given that sock_proc_inuse_get() is a racy read anyway, the 'right' fix
+would be to do something like:
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/sched.c    |    2 ++
+ net/core/skbuff.c |    2 +-
+ net/core/sock.c   |    7 +++++--
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -6596,6 +6596,8 @@ int __sched cond_resched_softirq(void)
+ {
+ #ifndef CONFIG_PREEMPT_RT
+ 	WARN_ON_ONCE(!in_softirq());
++	if (!in_softirq())
++		return 0;
+ #endif
+ 	if (need_resched() && system_state == SYSTEM_RUNNING) {
+ 		local_bh_enable();
+Index: linux-2.6-tip/net/core/skbuff.c
+===================================================================
+--- linux-2.6-tip.orig/net/core/skbuff.c
++++ linux-2.6-tip/net/core/skbuff.c
+@@ -383,7 +383,7 @@ static void skb_release_head_state(struc
+ 	secpath_put(skb->sp);
+ #endif
+ 	if (skb->destructor) {
+-		WARN_ON(in_irq());
++//		WARN_ON(in_irq());
+ 		skb->destructor(skb);
+ 	}
+ #if defined(CONFIG_NF_CONNTRACK) || defined(CONFIG_NF_CONNTRACK_MODULE)
+Index: linux-2.6-tip/net/core/sock.c
+===================================================================
+--- linux-2.6-tip.orig/net/core/sock.c
++++ linux-2.6-tip/net/core/sock.c
+@@ -1949,8 +1949,9 @@ static DECLARE_BITMAP(proto_inuse_idx, P
+ #ifdef CONFIG_NET_NS
+ void sock_prot_inuse_add(struct net *net, struct proto *prot, int val)
+ {
+-	int cpu = smp_processor_id();
++	int cpu = get_cpu();
+ 	per_cpu_ptr(net->core.inuse, cpu)->val[prot->inuse_idx] += val;
++	put_cpu();
+ }
+ EXPORT_SYMBOL_GPL(sock_prot_inuse_add);
+ 
+@@ -1996,7 +1997,9 @@ static DEFINE_PER_CPU(struct prot_inuse,
+ 
+ void sock_prot_inuse_add(struct net *net, struct proto *prot, int val)
+ {
+-	__get_cpu_var(prot_inuse).val[prot->inuse_idx] += val;
++	int cpu = get_cpu();
++	per_cpu(prot_inuse, cpu).val[prot->inuse_idx] += val;
++	put_cpu();
+ }
+ EXPORT_SYMBOL_GPL(sock_prot_inuse_add);
+ 

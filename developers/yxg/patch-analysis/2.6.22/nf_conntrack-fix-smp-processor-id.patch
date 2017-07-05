@@ -1,0 +1,17 @@
+---
+ include/net/netfilter/nf_conntrack.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-rt.q/include/net/netfilter/nf_conntrack.h
+===================================================================
+--- linux-rt.q.orig/include/net/netfilter/nf_conntrack.h
++++ linux-rt.q/include/net/netfilter/nf_conntrack.h
+@@ -260,7 +260,7 @@ DECLARE_PER_CPU(struct ip_conntrack_stat
+ #define NF_CT_STAT_INC_ATOMIC(count)			\
+ do {							\
+ 	local_bh_disable();				\
+-	__get_cpu_var(nf_conntrack_stat).count++;	\
++	__raw_get_cpu_var(nf_conntrack_stat).count++;	\
+ 	local_bh_enable();				\
+ } while (0)
+ #define NF_CT_STAT_INC(count) (__raw_get_cpu_var(nf_conntrack_stat).count++)

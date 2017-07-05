@@ -1,0 +1,34 @@
+---
+ kernel/hrtimer.c          |    3 +--
+ kernel/time/timekeeping.c |    2 ++
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+Index: linux-2.6.23-rt1/kernel/hrtimer.c
+===================================================================
+--- linux-2.6.23-rt1.orig/kernel/hrtimer.c	2007-10-11 16:00:26.000000000 -0400
++++ linux-2.6.23-rt1/kernel/hrtimer.c	2007-10-11 16:01:01.000000000 -0400
+@@ -578,8 +578,7 @@ static int hrtimer_switch_to_hres(void)
+ 	/* "Retrigger" the interrupt to get things going */
+ 	retrigger_next_event(NULL);
+ 	local_irq_restore(flags);
+-	printk(KERN_INFO "Switched to high resolution mode on CPU %d\n",
+-	       smp_processor_id());
++
+ 	return 1;
+ }
+ 
+Index: linux-2.6.23-rt1/kernel/time/timekeeping.c
+===================================================================
+--- linux-2.6.23-rt1.orig/kernel/time/timekeeping.c	2007-10-11 16:00:57.000000000 -0400
++++ linux-2.6.23-rt1/kernel/time/timekeeping.c	2007-10-11 16:01:01.000000000 -0400
+@@ -239,8 +239,10 @@ static void change_clocksource(void)
+ 
+ 	tick_clock_notify();
+ 
++#ifndef CONFIG_PREEMPT_RT
+ 	printk(KERN_INFO "Time: %s clocksource has been installed.\n",
+ 	       clock->name);
++#endif
+ }
+ #else
+ static inline void change_clocksource(void) { }

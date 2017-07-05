@@ -1,0 +1,93 @@
+---
+ arch/i386/kernel/i8253.c   |    3 +++
+ arch/x86_64/kernel/time.c  |    4 ----
+ include/asm-i386/i8253.h   |    8 ++++++--
+ include/asm-x86_64/i8253.h |    8 ++------
+ 4 files changed, 11 insertions(+), 12 deletions(-)
+
+Index: linux-rt.q/arch/i386/kernel/i8253.c
+===================================================================
+--- linux-rt.q.orig/arch/i386/kernel/i8253.c
++++ linux-rt.q/arch/i386/kernel/i8253.c
+@@ -119,6 +119,7 @@ void __init setup_pit_timer(void)
+ 	global_clock_event = &pit_clockevent;
+ }
+ 
++#ifndef CONFIG_X86_64
+ /*
+  * Since the PIT overflows every tick, its not very useful
+  * to just read by itself. So use jiffies to emulate a free
+@@ -203,3 +204,5 @@ static int __init init_pit_clocksource(v
+ 	return clocksource_register(&clocksource_pit);
+ }
+ arch_initcall(init_pit_clocksource);
++
++#endif
+Index: linux-rt.q/arch/x86_64/kernel/time.c
+===================================================================
+--- linux-rt.q.orig/arch/x86_64/kernel/time.c
++++ linux-rt.q/arch/x86_64/kernel/time.c
+@@ -32,7 +32,6 @@
+ #include <acpi/achware.h>	/* for PM timer frequency */
+ #include <acpi/acpi_bus.h>
+ #endif
+-#include <asm/8253pit.h>
+ #include <asm/i8253.h>
+ #include <asm/pgtable.h>
+ #include <asm/vsyscall.h>
+@@ -320,9 +319,6 @@ static unsigned int __init pit_calibrate
+ 	return (end - start) / 50;
+ }
+ 
+-#define PIT_MODE 0x43
+-#define PIT_CH0  0x40
+-
+ static void __pit_init(int val, u8 mode)
+ {
+ 	unsigned long flags;
+Index: linux-rt.q/include/asm-i386/i8253.h
+===================================================================
+--- linux-rt.q.orig/include/asm-i386/i8253.h
++++ linux-rt.q/include/asm-i386/i8253.h
+@@ -1,8 +1,6 @@
+ #ifndef __ASM_I8253_H__
+ #define __ASM_I8253_H__
+ 
+-#include <linux/clockchips.h>
+-
+ /* i8253A PIT registers */
+ #define PIT_MODE		0x43
+ #define PIT_CH0			0x40
+@@ -10,6 +8,10 @@
+ 
+ extern spinlock_t i8253_lock;
+ 
++#ifdef CONFIG_GENERIC_CLOCKEVENTS
++
++#include <linux/clockchips.h>
++
+ extern struct clock_event_device *global_clock_event;
+ 
+ /**
+@@ -23,6 +25,8 @@ static inline void pit_interrupt_hook(vo
+ 	global_clock_event->event_handler(global_clock_event);
+ }
+ 
++#endif
++
+ extern void setup_pit_timer(void);
+ 
+ #endif	/* __ASM_I8253_H__ */
+Index: linux-rt.q/include/asm-x86_64/i8253.h
+===================================================================
+--- linux-rt.q.orig/include/asm-x86_64/i8253.h
++++ linux-rt.q/include/asm-x86_64/i8253.h
+@@ -1,6 +1,2 @@
+-#ifndef __ASM_I8253_H__
+-#define __ASM_I8253_H__
+-
+-extern spinlock_t i8253_lock;
+-
+-#endif	/* __ASM_I8253_H__ */
++#include <asm-i386/i8253.h>
++#include <asm/8253pit.h>

@@ -1,0 +1,17 @@
+---
+ include/linux/linkage.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-rt.q/include/linux/linkage.h
+===================================================================
+--- linux-rt.q.orig/include/linux/linkage.h
++++ linux-rt.q/include/linux/linkage.h
+@@ -3,6 +3,8 @@
+ 
+ #include <asm/linkage.h>
+ 
++#define notrace __attribute ((no_instrument_function))
++
+ #ifdef __cplusplus
+ #define CPP_ASMLINKAGE extern "C"
+ #else

@@ -1,0 +1,79 @@
+
+Make default cpuidle sysfs to show current_governor and current_driver in
+read-only mode. More elaborate available_governors and available_drivers with
+writeable current_governor and current_driver interface only appear with
+"cpuidle_sysfs_switch" boot parameter.
+
+Signed-off-by: Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
+
+---
+ drivers/cpuidle/cpuidle.c |    1 -
+ drivers/cpuidle/sysfs.c   |   22 +++++++++++++++++++++-
+ 2 files changed, 21 insertions(+), 2 deletions(-)
+
+Index: linux-rt.q/drivers/cpuidle/cpuidle.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/cpuidle.c
++++ linux-rt.q/drivers/cpuidle/cpuidle.c
+@@ -25,7 +25,6 @@ DEFINE_MUTEX(cpuidle_lock);
+ LIST_HEAD(cpuidle_detected_devices);
+ static void (*pm_idle_old)(void);
+ 
+-
+ /**
+  * cpuidle_idle_call - the main idle loop
+  *
+Index: linux-rt.q/drivers/cpuidle/sysfs.c
+===================================================================
+--- linux-rt.q.orig/drivers/cpuidle/sysfs.c
++++ linux-rt.q/drivers/cpuidle/sysfs.c
+@@ -13,6 +13,14 @@
+ 
+ #include "cpuidle.h"
+ 
++static unsigned int sysfs_switch;
++static int __init cpuidle_sysfs_setup(char *unused)
++{
++	sysfs_switch = 1;
++	return 1;
++}
++__setup("cpuidle_sysfs_switch", cpuidle_sysfs_setup);
++
+ static ssize_t show_available_drivers(struct sys_device *dev, char *buf)
+ {
+ 	ssize_t i = 0;
+@@ -127,6 +135,15 @@ static ssize_t store_current_governor(st
+ 	return count;
+ }
+ 
++static SYSDEV_ATTR(current_driver_ro, 0444, show_current_driver, NULL);
++static SYSDEV_ATTR(current_governor_ro, 0444, show_current_governor, NULL);
++
++static struct attribute *cpuclass_default_attrs[] = {
++	&attr_current_driver_ro.attr,
++	&attr_current_governor_ro.attr,
++	NULL
++};
++
+ static SYSDEV_ATTR(available_drivers, 0444, show_available_drivers, NULL);
+ static SYSDEV_ATTR(available_governors, 0444, show_available_governors, NULL);
+ static SYSDEV_ATTR(current_driver, 0644, show_current_driver,
+@@ -134,7 +151,7 @@ static SYSDEV_ATTR(current_driver, 0644,
+ static SYSDEV_ATTR(current_governor, 0644, show_current_governor,
+ 	store_current_governor);
+ 
+-static struct attribute *cpuclass_default_attrs[] = {
++static struct attribute *cpuclass_switch_attrs[] = {
+ 	&attr_available_drivers.attr,
+ 	&attr_available_governors.attr,
+ 	&attr_current_driver.attr,
+@@ -152,6 +169,9 @@ static struct attribute_group cpuclass_a
+  */
+ int cpuidle_add_class_sysfs(struct sysdev_class *cls)
+ {
++	if (sysfs_switch)
++		cpuclass_attr_group.attrs = cpuclass_switch_attrs;
++
+ 	return sysfs_create_group(&cls->kset.kobj, &cpuclass_attr_group);
+ }
+ 

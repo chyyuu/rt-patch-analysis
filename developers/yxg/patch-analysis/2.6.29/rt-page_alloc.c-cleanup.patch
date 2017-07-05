@@ -1,0 +1,26 @@
+Subject: rt: page_alloc.c cleanup
+From: Ingo Molnar <mingo@elte.hu>
+Date: Sun Feb 08 15:59:46 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ mm/page_alloc.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6-tip/mm/page_alloc.c
+===================================================================
+--- linux-2.6-tip.orig/mm/page_alloc.c
++++ linux-2.6-tip/mm/page_alloc.c
+@@ -1000,10 +1000,12 @@ void drain_local_pages(void *arg)
+ 	drain_pages(smp_processor_id());
+ }
+ 
++#ifdef CONFIG_PREEMPT_RT
+ static void drain_local_pages_work(struct work_struct *wrk)
+ {
+ 	drain_pages(smp_processor_id());
+ }
++#endif
+ 
+ /*
+  * Spill all the per-cpu pages from all CPUs back into the buddy allocator

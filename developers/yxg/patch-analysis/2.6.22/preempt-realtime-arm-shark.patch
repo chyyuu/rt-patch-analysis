@@ -1,0 +1,17 @@
+---
+ arch/arm/mach-shark/leds.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-rt.q/arch/arm/mach-shark/leds.c
+===================================================================
+--- linux-rt.q.orig/arch/arm/mach-shark/leds.c
++++ linux-rt.q/arch/arm/mach-shark/leds.c
+@@ -32,7 +32,7 @@ static char led_state;
+ static short hw_led_state;
+ static short saved_state;
+ 
+-static DEFINE_SPINLOCK(leds_lock);
++static DEFINE_RAW_SPINLOCK(leds_lock);
+ 
+ short sequoia_read(int addr) {
+   outw(addr,0x24);

@@ -1,0 +1,22 @@
+Subject: patches/irda-fix.patch
+
+
+Signed-off-by: Deepak Saxena <dsaxena@mvista.com>
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ net/irda/irttp.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-2.6-tip/net/irda/irttp.c
+===================================================================
+--- linux-2.6-tip.orig/net/irda/irttp.c
++++ linux-2.6-tip/net/irda/irttp.c
+@@ -1453,6 +1453,7 @@ struct tsap_cb *irttp_dup(struct tsap_cb
+ 	}
+ 	/* Dup */
+ 	memcpy(new, orig, sizeof(struct tsap_cb));
++	spin_lock_init(&new->lock);
+ 
+ 	/* We don't need the old instance any more */
+ 	spin_unlock_irqrestore(&irttp->tsaps->hb_spinlock, flags);

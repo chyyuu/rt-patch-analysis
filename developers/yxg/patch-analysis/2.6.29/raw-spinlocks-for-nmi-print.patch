@@ -1,0 +1,23 @@
+Subject: patches/raw-spinlocks-for-nmi-print.patch
+
+
+From: Clark Williams <williams@redhat.com>
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ arch/x86/kernel/apic/nmi.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/arch/x86/kernel/apic/nmi.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/apic/nmi.c
++++ linux-2.6-tip/arch/x86/kernel/apic/nmi.c
+@@ -417,7 +417,7 @@ nmi_watchdog_tick(struct pt_regs *regs, 
+ 	}
+ 
+ 	if (cpumask_test_cpu(cpu, backtrace_mask)) {
+-		static DEFINE_SPINLOCK(lock);	/* Serialise the printks */
++		static DEFINE_RAW_SPINLOCK(lock);	/* Serialise the printks */
+ 
+ 		spin_lock(&lock);
+ 		printk(KERN_WARNING "NMI backtrace for cpu %d\n", cpu);

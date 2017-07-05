@@ -1,0 +1,16 @@
+---
+ drivers/char/rtc.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: linux-rt.q/drivers/char/rtc.c
+===================================================================
+--- linux-rt.q.orig/drivers/char/rtc.c
++++ linux-rt.q/drivers/char/rtc.c
+@@ -91,6 +91,7 @@
+ #include <asm/ebus.h>
+ #ifdef __sparc_v9__
+ #include <asm/isa.h>
++#endif
+ static unsigned long rtc_port;
+ static int rtc_irq = PCI_IRQ_NONE;
+ #endif

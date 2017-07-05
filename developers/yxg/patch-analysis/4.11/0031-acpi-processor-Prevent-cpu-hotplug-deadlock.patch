@@ -1,0 +1,194 @@
+From 0266d81e9bf5cc1fe6405c0523dfa015fe55aae1 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 May 2017 10:15:42 +0200
+Subject: [PATCH 31/32] acpi/processor: Prevent cpu hotplug deadlock
+
+With the enhanced CPU hotplug lockdep coverage the following lockdep splat
+happens:
+
+======================================================
+WARNING: possible circular locking dependency detected
+4.12.0-rc2+ #84 Tainted: G        W
+------------------------------------------------------
+cpuhp/1/15 is trying to acquire lock:
+flush_work+0x39/0x2f0
+
+but task is already holding lock:
+cpuhp_thread_fun+0x30/0x160
+
+which lock already depends on the new lock.
+
+the existing dependency chain (in reverse order) is:
+
+-> #2 (cpuhp_state){+.+.+.}:
+       lock_acquire+0xb4/0x200
+       cpuhp_kick_ap_work+0x72/0x330
+       _cpu_down+0x8b/0x100
+       do_cpu_down+0x3e/0x60
+       cpu_down+0x10/0x20
+       cpu_subsys_offline+0x14/0x20
+       device_offline+0x88/0xb0
+       online_store+0x4c/0xa0
+       dev_attr_store+0x18/0x30
+       sysfs_kf_write+0x45/0x60
+       kernfs_fop_write+0x156/0x1e0
+       __vfs_write+0x37/0x160
+       vfs_write+0xca/0x1c0
+       SyS_write+0x58/0xc0
+       entry_SYSCALL_64_fastpath+0x23/0xc2
+
+-> #1 (cpu_hotplug_lock.rw_sem){++++++}:
+       lock_acquire+0xb4/0x200
+       cpus_read_lock+0x3d/0xb0
+       apply_workqueue_attrs+0x17/0x50
+       __alloc_workqueue_key+0x1e1/0x530
+       scsi_host_alloc+0x373/0x480 [scsi_mod]
+       ata_scsi_add_hosts+0xcb/0x130 [libata]
+       ata_host_register+0x11a/0x2c0 [libata]
+       ata_host_activate+0xf0/0x150 [libata]
+       ahci_host_activate+0x13e/0x170 [libahci]
+       ahci_init_one+0xa3a/0xd3f [ahci]
+       local_pci_probe+0x45/0xa0
+       work_for_cpu_fn+0x14/0x20
+       process_one_work+0x1f9/0x690
+       worker_thread+0x200/0x3d0
+       kthread+0x138/0x170
+       ret_from_fork+0x31/0x40
+
+-> #0 ((&wfc.work)){+.+.+.}:
+       __lock_acquire+0x11e1/0x13e0
+       lock_acquire+0xb4/0x200
+       flush_work+0x5c/0x2f0
+       work_on_cpu+0xa1/0xd0
+       acpi_processor_get_throttling+0x3d/0x50
+       acpi_processor_reevaluate_tstate+0x2c/0x50
+       acpi_soft_cpu_online+0x69/0xd0
+       cpuhp_invoke_callback+0xb4/0x8b0
+       cpuhp_up_callbacks+0x36/0xc0
+       cpuhp_thread_fun+0x14e/0x160
+       smpboot_thread_fn+0x1e8/0x300
+       kthread+0x138/0x170
+       ret_from_fork+0x31/0x40
+
+other info that might help us debug this:
+
+Chain exists of:
+  (&wfc.work) --> cpu_hotplug_lock.rw_sem --> cpuhp_state
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(cpuhp_state);
+                               lock(cpu_hotplug_lock.rw_sem);
+                               lock(cpuhp_state);
+  lock((&wfc.work));
+
+ *** DEADLOCK ***
+
+1 lock held by cpuhp/1/15:
+cpuhp_thread_fun+0x30/0x160
+
+stack backtrace:
+CPU: 1 PID: 15 Comm: cpuhp/1 Tainted: G        W       4.12.0-rc2+ #84
+Hardware name: Supermicro SYS-4048B-TR4FT/X10QBi, BIOS 1.1a 07/29/2015
+Call Trace:
+ dump_stack+0x85/0xc4
+ print_circular_bug+0x209/0x217
+ __lock_acquire+0x11e1/0x13e0
+ lock_acquire+0xb4/0x200
+ ? lock_acquire+0xb4/0x200
+ ? flush_work+0x39/0x2f0
+ ? acpi_processor_start+0x50/0x50
+ flush_work+0x5c/0x2f0
+ ? flush_work+0x39/0x2f0
+ ? acpi_processor_start+0x50/0x50
+ ? mark_held_locks+0x6d/0x90
+ ? queue_work_on+0x56/0x90
+ ? trace_hardirqs_on_caller+0x154/0x1c0
+ ? trace_hardirqs_on+0xd/0x10
+ ? acpi_processor_start+0x50/0x50
+ work_on_cpu+0xa1/0xd0
+ ? find_worker_executing_work+0x50/0x50
+ ? acpi_processor_power_exit+0x70/0x70
+ acpi_processor_get_throttling+0x3d/0x50
+ acpi_processor_reevaluate_tstate+0x2c/0x50
+ acpi_soft_cpu_online+0x69/0xd0
+ cpuhp_invoke_callback+0xb4/0x8b0
+ ? lock_acquire+0xb4/0x200
+ ? padata_replace+0x120/0x120
+ cpuhp_up_callbacks+0x36/0xc0
+ cpuhp_thread_fun+0x14e/0x160
+ smpboot_thread_fn+0x1e8/0x300
+ kthread+0x138/0x170
+ ? sort_range+0x30/0x30
+ ? kthread_create_on_node+0x70/0x70
+ ret_from_fork+0x31/0x40
+
+The problem is that the work is scheduled on the current CPU from the
+hotplug thread associated with that CPU.
+
+It's not required to invoke these functions via the workqueue because the
+hotplug thread runs on the target CPU already.
+
+Check whether current is a per cpu thread pinned on the target CPU and
+invoke the function directly to avoid the workqueue.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Sebastian Siewior <bigeasy@linutronix.de>
+Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: linux-acpi@vger.kernel.org
+Cc: Len Brown <lenb@kernel.org>
+Link: http://lkml.kernel.org/r/20170524081549.620489733@linutronix.de
+---
+ drivers/acpi/processor_throttling.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/acpi/processor_throttling.c b/drivers/acpi/processor_throttling.c
+index 3de34633f7f9..7f9aff4b8d62 100644
+--- a/drivers/acpi/processor_throttling.c
++++ b/drivers/acpi/processor_throttling.c
+@@ -909,6 +909,13 @@ static long __acpi_processor_get_throttling(void *data)
+ 	return pr->throttling.acpi_processor_get_throttling(pr);
+ }
+ 
++static int call_on_cpu(int cpu, long (*fn)(void *), void *arg, bool direct)
++{
++	if (direct || (is_percpu_thread() && cpu == smp_processor_id()))
++		return fn(arg);
++	return work_on_cpu(cpu, fn, arg);
++}
++
+ static int acpi_processor_get_throttling(struct acpi_processor *pr)
+ {
+ 	if (!pr)
+@@ -926,7 +933,7 @@ static int acpi_processor_get_throttling(struct acpi_processor *pr)
+ 	if (!cpu_online(pr->id))
+ 		return -ENODEV;
+ 
+-	return work_on_cpu(pr->id, __acpi_processor_get_throttling, pr);
++	return call_on_cpu(pr->id, __acpi_processor_get_throttling, pr, false);
+ }
+ 
+ static int acpi_processor_get_fadt_info(struct acpi_processor *pr)
+@@ -1076,13 +1083,6 @@ static long acpi_processor_throttling_fn(void *data)
+ 			arg->target_state, arg->force);
+ }
+ 
+-static int call_on_cpu(int cpu, long (*fn)(void *), void *arg, bool direct)
+-{
+-	if (direct)
+-		return fn(arg);
+-	return work_on_cpu(cpu, fn, arg);
+-}
+-
+ static int __acpi_processor_set_throttling(struct acpi_processor *pr,
+ 					   int state, bool force, bool direct)
+ {
+-- 
+2.11.0
+

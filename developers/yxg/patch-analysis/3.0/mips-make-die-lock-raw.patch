@@ -1,0 +1,45 @@
+From: Wu Zhangjin <wuzhangjin@gmail.com>
+Date: Mon, 22 Feb 2010 00:47:45 +0800
+Subject: MIPS: Make the die_lock be raw
+
+Kernel is going to die, the lock must be raw to ensure nobody can
+preempt it at this urgent time.
+
+Signed-off-by: Wu Zhangjin <wuzhangjin@gmail.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ arch/mips/kernel/traps.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+Index: linux-2.6-tip/arch/mips/kernel/traps.c
+===================================================================
+--- linux-2.6-tip.orig/arch/mips/kernel/traps.c
++++ linux-2.6-tip/arch/mips/kernel/traps.c
+@@ -364,7 +364,7 @@ static int regs_to_trapnr(struct pt_regs
+ 	return (regs->cp0_cause >> 2) & 0x1f;
+ }
+ 
+-static DEFINE_SPINLOCK(die_lock);
++static DEFINE_RAW_SPINLOCK(die_lock);
+ 
+ void __noreturn die(const char *str, struct pt_regs *regs)
+ {
+@@ -378,7 +378,7 @@ void __noreturn die(const char *str, str
+ 		sig = 0;
+ 
+ 	console_verbose();
+-	spin_lock_irq(&die_lock);
++	raw_spin_lock_irq(&die_lock);
+ 	bust_spinlocks(1);
+ #ifdef CONFIG_MIPS_MT_SMTC
+ 	mips_mt_regdump(dvpret);
+@@ -387,7 +387,7 @@ void __noreturn die(const char *str, str
+ 	printk("%s[#%d]:\n", str, ++die_counter);
+ 	show_registers(regs);
+ 	add_taint(TAINT_DIE);
+-	spin_unlock_irq(&die_lock);
++	raw_spin_unlock_irq(&die_lock);
+ 
+ 	if (in_interrupt())
+ 		panic("Fatal exception in interrupt");

@@ -1,0 +1,101 @@
+Subject: percpu-locked-netfilter-ecache.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 24 Feb 2009 16:57:24 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/net/netfilter/nf_conntrack_ecache.h |    8 ++++++--
+ net/netfilter/nf_conntrack_ecache.c         |   18 ++++++++++++++----
+ 2 files changed, 20 insertions(+), 6 deletions(-)
+
+Index: linux-2.6-tip/include/net/netfilter/nf_conntrack_ecache.h
+===================================================================
+--- linux-2.6-tip.orig/include/net/netfilter/nf_conntrack_ecache.h
++++ linux-2.6-tip/include/net/netfilter/nf_conntrack_ecache.h
+@@ -13,6 +13,7 @@
+ 
+ #ifdef CONFIG_NF_CONNTRACK_EVENTS
+ struct nf_conntrack_ecache {
++	spinlock_t lock;
+ 	struct nf_conn *ct;
+ 	unsigned int events;
+ };
+@@ -29,7 +30,8 @@ extern int nf_conntrack_register_notifie
+ extern int nf_conntrack_unregister_notifier(struct notifier_block *nb);
+ 
+ extern void nf_ct_deliver_cached_events(const struct nf_conn *ct);
+-extern void __nf_ct_event_cache_init(struct nf_conn *ct);
++extern void __nf_ct_event_cache_init(struct nf_conn *ct,
++				     struct nf_conntrack_ecache *ecache);
+ extern void nf_ct_event_cache_flush(struct net *net);
+ 
+ static inline void
+@@ -40,9 +42,11 @@ nf_conntrack_event_cache(enum ip_conntra
+ 
+ 	local_bh_disable();
+ 	ecache = per_cpu_ptr(net->ct.ecache, raw_smp_processor_id());
++	spin_lock(&ecache->lock);
+ 	if (ct != ecache->ct)
+-		__nf_ct_event_cache_init(ct);
++		__nf_ct_event_cache_init(ct, ecache);
+ 	ecache->events |= event;
++	spin_unlock(&ecache->lock);
+ 	local_bh_enable();
+ }
+ 
+Index: linux-2.6-tip/net/netfilter/nf_conntrack_ecache.c
+===================================================================
+--- linux-2.6-tip.orig/net/netfilter/nf_conntrack_ecache.c
++++ linux-2.6-tip/net/netfilter/nf_conntrack_ecache.c
+@@ -61,20 +61,20 @@ void nf_ct_deliver_cached_events(const s
+ 
+ 	local_bh_disable();
+ 	ecache = per_cpu_ptr(net->ct.ecache, raw_smp_processor_id());
++	spin_lock(&ecache->lock);
+ 	if (ecache->ct == ct)
+ 		__nf_ct_deliver_cached_events(ecache);
++	spin_unlock(&ecache->lock);
+ 	local_bh_enable();
+ }
+ EXPORT_SYMBOL_GPL(nf_ct_deliver_cached_events);
+ 
+ /* Deliver cached events for old pending events, if current conntrack != old */
+-void __nf_ct_event_cache_init(struct nf_conn *ct)
++void __nf_ct_event_cache_init(struct nf_conn *ct,
++			      struct nf_conntrack_ecache *ecache)
+ {
+ 	struct net *net = nf_ct_net(ct);
+-	struct nf_conntrack_ecache *ecache;
+ 
+-	/* take care of delivering potentially old events */
+-	ecache = per_cpu_ptr(net->ct.ecache, raw_smp_processor_id());
+ 	BUG_ON(ecache->ct == ct);
+ 	if (ecache->ct)
+ 		__nf_ct_deliver_cached_events(ecache);
+@@ -93,16 +93,26 @@ void nf_ct_event_cache_flush(struct net 
+ 
+ 	for_each_possible_cpu(cpu) {
+ 		ecache = per_cpu_ptr(net->ct.ecache, cpu);
++		spin_lock(&ecache->lock);
+ 		if (ecache->ct)
+ 			nf_ct_put(ecache->ct);
++		spin_unlock(&ecache->lock);
+ 	}
+ }
+ 
+ int nf_conntrack_ecache_init(struct net *net)
+ {
++	struct nf_conntrack_ecache *ecache;
++	int cpu;
++
+ 	net->ct.ecache = alloc_percpu(struct nf_conntrack_ecache);
+ 	if (!net->ct.ecache)
+ 		return -ENOMEM;
++
++	for_each_possible_cpu(cpu) {
++		ecache = per_cpu_ptr(net->ct.ecache, cpu);
++		spin_lock_init(&ecache->lock);
++	}
+ 	return 0;
+ }
+ 

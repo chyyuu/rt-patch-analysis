@@ -1,0 +1,102 @@
+Subject: preempt: realtime usb
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:47 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ drivers/net/usb/usbnet.c   |    2 ++
+ drivers/usb/core/devio.c   |    5 +++--
+ drivers/usb/core/message.c |   13 +++++++------
+ 3 files changed, 12 insertions(+), 8 deletions(-)
+
+Index: linux-2.6-tip/drivers/net/usb/usbnet.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/net/usb/usbnet.c
++++ linux-2.6-tip/drivers/net/usb/usbnet.c
+@@ -903,6 +903,8 @@ static void tx_complete (struct urb *urb
+ 
+ 	urb->dev = NULL;
+ 	entry->state = tx_done;
++	spin_lock_rt(&dev->txq.lock);
++	spin_unlock_rt(&dev->txq.lock);
+ 	defer_bh(dev, skb, &dev->txq);
+ }
+ 
+Index: linux-2.6-tip/drivers/usb/core/devio.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/usb/core/devio.c
++++ linux-2.6-tip/drivers/usb/core/devio.c
+@@ -325,10 +325,11 @@ static void async_completed(struct urb *
+ 	struct async *as = urb->context;
+ 	struct dev_state *ps = as->ps;
+ 	struct siginfo sinfo;
++	unsigned long flags;
+ 
+-	spin_lock(&ps->lock);
++	spin_lock_irqsave(&ps->lock, flags);
+ 	list_move_tail(&as->asynclist, &ps->async_completed);
+-	spin_unlock(&ps->lock);
++	spin_unlock_irqrestore(&ps->lock, flags);
+ 	as->status = urb->status;
+ 	if (as->signr) {
+ 		sinfo.si_signo = as->signr;
+Index: linux-2.6-tip/drivers/usb/core/message.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/usb/core/message.c
++++ linux-2.6-tip/drivers/usb/core/message.c
+@@ -268,8 +268,9 @@ static void sg_complete(struct urb *urb)
+ {
+ 	struct usb_sg_request *io = urb->context;
+ 	int status = urb->status;
++	unsigned long flags;
+ 
+-	spin_lock(&io->lock);
++	spin_lock_irqsave (&io->lock, flags);
+ 
+ 	/* In 2.5 we require hcds' endpoint queues not to progress after fault
+ 	 * reports, until the completion callback (this!) returns.  That lets
+@@ -303,7 +304,7 @@ static void sg_complete(struct urb *urb)
+ 		 * unlink pending urbs so they won't rx/tx bad data.
+ 		 * careful: unlink can sometimes be synchronous...
+ 		 */
+-		spin_unlock(&io->lock);
++		spin_unlock_irqrestore (&io->lock, flags);
+ 		for (i = 0, found = 0; i < io->entries; i++) {
+ 			if (!io->urbs [i] || !io->urbs [i]->dev)
+ 				continue;
+@@ -318,7 +319,7 @@ static void sg_complete(struct urb *urb)
+ 			} else if (urb == io->urbs [i])
+ 				found = 1;
+ 		}
+-		spin_lock(&io->lock);
++		spin_lock_irqsave (&io->lock, flags);
+ 	}
+ 	urb->dev = NULL;
+ 
+@@ -328,7 +329,7 @@ static void sg_complete(struct urb *urb)
+ 	if (!io->count)
+ 		complete(&io->complete);
+ 
+-	spin_unlock(&io->lock);
++	spin_unlock_irqrestore (&io->lock, flags);
+ }
+ 
+ 
+@@ -595,7 +596,7 @@ void usb_sg_cancel(struct usb_sg_request
+ 		int i;
+ 
+ 		io->status = -ECONNRESET;
+-		spin_unlock(&io->lock);
++		spin_unlock_irqrestore(&io->lock, flags);
+ 		for (i = 0; i < io->entries; i++) {
+ 			int retval;
+ 
+@@ -606,7 +607,7 @@ void usb_sg_cancel(struct usb_sg_request
+ 				dev_warn(&io->dev->dev, "%s, unlink --> %d\n",
+ 					__func__, retval);
+ 		}
+-		spin_lock(&io->lock);
++		spin_lock_irqsave(&io->lock, flags);
+ 	}
+ 	spin_unlock_irqrestore(&io->lock, flags);
+ }

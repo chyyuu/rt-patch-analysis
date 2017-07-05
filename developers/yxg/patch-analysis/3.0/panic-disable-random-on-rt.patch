@@ -1,0 +1,20 @@
+---
+ kernel/panic.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6/kernel/panic.c
+===================================================================
+--- linux-2.6.orig/kernel/panic.c
++++ linux-2.6/kernel/panic.c
+@@ -330,9 +330,11 @@ static u64 oops_id;
+ 
+ static int init_oops_id(void)
+ {
++#ifndef CONFIG_PREEMPT_RT_FULL
+ 	if (!oops_id)
+ 		get_random_bytes(&oops_id, sizeof(oops_id));
+ 	else
++#endif
+ 		oops_id++;
+ 
+ 	return 0;

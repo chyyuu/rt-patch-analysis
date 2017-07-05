@@ -1,0 +1,26 @@
+---
+ init/main.c |    4 ++++
+ 1 file changed, 4 insertions(+)
+
+Index: linux-2.6.26/init/main.c
+===================================================================
+--- linux-2.6.26.orig/init/main.c
++++ linux-2.6.26/init/main.c
+@@ -62,6 +62,7 @@
+ #include <linux/sched.h>
+ #include <linux/signal.h>
+ #include <linux/idr.h>
++#include <linux/ftrace.h>
+ 
+ #include <asm/io.h>
+ #include <asm/bugs.h>
+@@ -343,6 +344,9 @@ static int __init rdinit_setup(char *str
+ {
+ 	unsigned int i;
+ 
++#ifdef CONFIG_PREEMPT_RT
++	ftrace_disable_daemon();
++#endif
+ 	ramdisk_execute_command = str;
+ 	/* See "auto" comment in init_setup */
+ 	for (i = 1; i < MAX_INIT_ARGS; i++)

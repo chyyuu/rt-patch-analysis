@@ -1,0 +1,114 @@
+Subject: Fixes spurious system load spikes in /proc/loadavgrt
+From: "Luis Claudio R. Goncalves" <lclaudio@uudg.org>
+Date: Fri, 17 Aug 2007 16:37:06 -0300
+
+Hi!
+
+The patch I sent to the list had a minor glitch in the path for the second
+half of the diff. This is the fixed version.
+
+Sorry for any disturbance!
+
+Best regards,
+Luis
+
+Hello,
+
+The values in /proc/loadavgrt are sometimes the real load and sometimes
+garbage. As you can see in th tests below, it occurs from in 2.6.21.5-rt20
+to 2.6.23-rc2-rt2. The code for calc_load(), in kernel/timer.c has not
+changed much in -rt patches.
+
+        [lclaudio@lab sandbox]$ ls /proc/loadavg*
+        /proc/loadavg  /proc/loadavgrt
+        [lclaudio@lab sandbox]$ uname -a
+        Linux lab.casa 2.6.21-34.el5rt #1 SMP PREEMPT RT Thu Jul 12 15:26:48 EDT 2007 x86_64 x86_64 x86_64 GNU/Linux
+        [lclaudio@lab sandbox]$ cat /proc/loadavg*
+        4.57 4.90 4.16 3/146 23499
+        0.44 0.98 1.78 0/146 23499
+        ...
+        [lclaudio@lab sandbox]$ cat /proc/loadavg*
+        4.65 4.80 4.75 5/144 20720
+        23896.04 -898421.23 383170.94 2/144 20720
+
+        [root@neverland ~]# uname -a
+        Linux neverland.casa 2.6.21.5-rt20 #2 SMP PREEMPT RT Fri Jul 1318:31:38 BRT 2007 i686 athlon i386 GNU/Linux
+        [root@neverland ~]# cat /proc/loadavg*
+        0.16 0.16 0.15 1/184 11240
+        344.65 0.38 311.71 0/184 11240
+
+        [williams@torg ~]$ uname -a
+        Linux torg 2.6.23-rc2-rt2 #14 SMP PREEMPT RT Tue Aug 7 20:07:31 CDT 2007 x86_64 x86_64 x86_64 GNU/Linux
+        [williams@torg ~]$ cat /proc/loadavg*
+        0.88 0.76 0.57 1/257 7267
+        122947.70 103790.53 -564712.87 0/257 7267
+
+---------->
+
+Fixes spurious system load spikes observed in /proc/loadavgrt, as described in:
+
+  Bug 253103: /proc/loadavgrt issues weird results
+  https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=253103
+
+Signed-off-by: Luis Claudio R. Goncalves <lclaudio@uudg.org>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+---
+ kernel/sched_rt.c |    7 +++++++
+ kernel/timer.c    |   14 ++++++++------
+ 2 files changed, 15 insertions(+), 6 deletions(-)
+
+Index: linux-2.6-tip/kernel/sched_rt.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched_rt.c
++++ linux-2.6-tip/kernel/sched_rt.c
+@@ -878,6 +878,13 @@ unsigned long rt_nr_uninterruptible(void
+ 	for_each_online_cpu(i)
+ 		sum += cpu_rq(i)->rt.rt_nr_uninterruptible;
+ 
++	/*
++	 * Since we read the counters lockless, it might be slightly
++	 * inaccurate. Do not allow it to go below zero though:
++	 */
++	if (unlikely((long)sum < 0))
++		sum = 0;
++
+ 	return sum;
+ }
+ 
+Index: linux-2.6-tip/kernel/timer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/timer.c
++++ linux-2.6-tip/kernel/timer.c
+@@ -1235,23 +1235,25 @@ unsigned long avenrun_rt[3];
+ static inline void calc_load(unsigned long ticks)
+ {
+ 	unsigned long active_tasks; /* fixed-point */
++	unsigned long active_rt_tasks; /* fixed-point */
+ 	static int count = LOAD_FREQ;
+ 
+ 	count -= ticks;
+ 	if (unlikely(count < 0)) {
+ 		active_tasks = count_active_tasks();
++		active_rt_tasks = count_active_rt_tasks();
+ 		do {
+ 			CALC_LOAD(avenrun[0], EXP_1, active_tasks);
+ 			CALC_LOAD(avenrun[1], EXP_5, active_tasks);
+ 			CALC_LOAD(avenrun[2], EXP_15, active_tasks);
+-			count += LOAD_FREQ;
+-		} while (count < 0);
+ #ifdef CONFIG_PREEMPT_RT
+-		active_tasks = count_active_rt_tasks();
+-		CALC_LOAD(avenrun_rt[0], EXP_1, active_tasks);
+-		CALC_LOAD(avenrun_rt[1], EXP_5, active_tasks);
+-		CALC_LOAD(avenrun_rt[2], EXP_15, active_tasks);
++			CALC_LOAD(avenrun_rt[0], EXP_1, active_tasks);
++			CALC_LOAD(avenrun_rt[1], EXP_5, active_tasks);
++			CALC_LOAD(avenrun_rt[2], EXP_15, active_tasks);
+ #endif
++			count += LOAD_FREQ;
++
++		} while (count < 0);
+ 	}
+ }
+ 

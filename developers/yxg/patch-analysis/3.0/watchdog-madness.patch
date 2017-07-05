@@ -1,0 +1,32 @@
+Subject: watchdog-madness.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 13 Jul 2011 11:48:03 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/watchdog.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+Index: linux-2.6/kernel/watchdog.c
+===================================================================
+--- linux-2.6.orig/kernel/watchdog.c
++++ linux-2.6/kernel/watchdog.c
+@@ -320,7 +320,7 @@ static enum hrtimer_restart watchdog_tim
+  */
+ static int watchdog(void *unused)
+ {
+-	static struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
++	struct sched_param param = { .sched_priority = MAX_RT_PRIO-1 };
+ 	struct hrtimer *hrtimer = &__raw_get_cpu_var(watchdog_hrtimer);
+ 
+ 	sched_setscheduler(current, SCHED_FIFO, &param);
+@@ -349,7 +349,8 @@ static int watchdog(void *unused)
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 	}
+ 	__set_current_state(TASK_RUNNING);
+-
++	param.sched_priority = 0;
++	sched_setscheduler(current, SCHED_NORMAL, &param);
+ 	return 0;
+ }
+ 

@@ -1,0 +1,30 @@
+Subject: printk-tick-move-to-softirq-on-rt.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 05 Feb 2009 09:42:22 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/timer.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/timer.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/timer.c
++++ linux-2.6-tip/kernel/timer.c
+@@ -1180,7 +1180,6 @@ void update_process_times(int user_tick)
+ 	run_local_timers();
+ 	if (rcu_pending(cpu))
+ 		rcu_check_callbacks(cpu, user_tick);
+-	printk_tick();
+ 	run_posix_cpu_timers(p);
+ }
+ 
+@@ -1348,6 +1347,7 @@ static void run_timer_softirq(struct sof
+ {
+ 	struct tvec_base *base = per_cpu(tvec_bases, raw_smp_processor_id());
+ 
++	printk_tick();
+ 	update_times();
+ 	hrtimer_run_pending();
+ 

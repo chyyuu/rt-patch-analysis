@@ -1,0 +1,43 @@
+Subject: printk: dont bug on sched
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:19 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/rtmutex.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+Index: linux-2.6-tip/kernel/rtmutex.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/rtmutex.c
++++ linux-2.6-tip/kernel/rtmutex.c
+@@ -14,6 +14,7 @@
+ #include <linux/module.h>
+ #include <linux/sched.h>
+ #include <linux/timer.h>
++#include <linux/hardirq.h>
+ #include <linux/semaphore.h>
+ 
+ #include "rtmutex_common.h"
+@@ -635,6 +636,9 @@ rt_spin_lock_fastlock(struct rt_mutex *l
+ 	/* Temporary HACK! */
+ 	if (!current->in_printk)
+ 		might_sleep();
++	else if (in_atomic() || irqs_disabled())
++		/* don't grab locks for printk in atomic */
++		return;
+ 
+ 	if (likely(rt_mutex_cmpxchg(lock, NULL, current)))
+ 		rt_mutex_deadlock_account_lock(lock, current);
+@@ -646,6 +650,11 @@ static inline void
+ rt_spin_lock_fastunlock(struct rt_mutex *lock,
+ 			void  (*slowfn)(struct rt_mutex *lock))
+ {
++	/* Temporary HACK! */
++	if (current->in_printk && (in_atomic() || irqs_disabled()))
++		/* don't grab locks for printk in atomic */
++		return;
++
+ 	if (likely(rt_mutex_cmpxchg(lock, current, NULL)))
+ 		rt_mutex_deadlock_account_unlock(current);
+ 	else

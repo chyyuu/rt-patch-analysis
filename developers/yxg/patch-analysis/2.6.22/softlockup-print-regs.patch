@@ -1,0 +1,34 @@
+---
+ kernel/softlockup.c |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+Index: linux-rt.q/kernel/softlockup.c
+===================================================================
+--- linux-rt.q.orig/kernel/softlockup.c
++++ linux-rt.q/kernel/softlockup.c
+@@ -14,6 +14,8 @@
+ #include <linux/notifier.h>
+ #include <linux/module.h>
+ 
++#include <asm/irq_regs.h>
++
+ static DEFINE_RAW_SPINLOCK(print_lock);
+ 
+ static DEFINE_PER_CPU(unsigned long, touch_timestamp);
+@@ -103,9 +105,13 @@ void softlockup_tick(void)
+ 		stop_trace();
+ 
+ 		spin_lock(&print_lock);
+-		printk(KERN_ERR "BUG: soft lockup detected on CPU#%d!\n",
+-			this_cpu);
+-		dump_stack();
++		printk(KERN_ERR "BUG: soft lockup detected on CPU#%d! [%s:%d]\n",
++			this_cpu, current->comm, current->pid);
++		if (get_irq_regs())
++			show_regs(get_irq_regs());
++		else
++			dump_stack();
++//		nmi_show_all_regs();
+ 		spin_unlock(&print_lock);
+ 	}
+ }

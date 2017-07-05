@@ -1,0 +1,572 @@
+---
+ arch/powerpc/Kconfig                 |   15 +++++++------
+ arch/powerpc/lib/locks.c             |    4 +--
+ arch/ppc/Kconfig                     |   19 ++++++++++------
+ arch/ppc/kernel/entry.S              |    4 +--
+ arch/ppc/lib/locks.c                 |   38 ++++++++++++++++-----------------
+ drivers/macintosh/adb.c              |    2 -
+ include/asm-powerpc/rwsem.h          |   40 +++++++++++++++++------------------
+ include/asm-powerpc/spinlock.h       |   38 ++++++++++++++++-----------------
+ include/asm-powerpc/spinlock_types.h |    4 +--
+ 9 files changed, 85 insertions(+), 79 deletions(-)
+
+Index: linux-2.6.26/arch/powerpc/Kconfig
+===================================================================
+--- linux-2.6.26.orig/arch/powerpc/Kconfig
++++ linux-2.6.26/arch/powerpc/Kconfig
+@@ -62,13 +62,6 @@ config LOCKDEP_SUPPORT
+ 	bool
+ 	default y
+ 
+-config RWSEM_GENERIC_SPINLOCK
+-	bool
+-
+-config RWSEM_XCHGADD_ALGORITHM
+-	bool
+-	default y
+-
+ config GENERIC_LOCKBREAK
+ 	bool
+ 	default y
+@@ -229,6 +222,14 @@ config HIGHMEM
+ source kernel/time/Kconfig
+ source kernel/Kconfig.hz
+ source kernel/Kconfig.preempt
++
++config RWSEM_GENERIC_SPINLOCK
++	bool
++	default y
++
++config RWSEM_XCHGADD_ALGORITHM
++	bool
++
+ source "fs/Kconfig.binfmt"
+ 
+ config HUGETLB_PAGE_SIZE_VARIABLE
+Index: linux-2.6.26/arch/powerpc/lib/locks.c
+===================================================================
+--- linux-2.6.26.orig/arch/powerpc/lib/locks.c
++++ linux-2.6.26/arch/powerpc/lib/locks.c
+@@ -25,7 +25,7 @@
+ #include <asm/smp.h>
+ #include <asm/firmware.h>
+ 
+-void __spin_yield(raw_spinlock_t *lock)
++void __spin_yield(__raw_spinlock_t *lock)
+ {
+ 	unsigned int lock_value, holder_cpu, yield_count;
+ 
+@@ -82,7 +82,7 @@ void __rw_yield(raw_rwlock_t *rw)
+ }
+ #endif
+ 
+-void __raw_spin_unlock_wait(raw_spinlock_t *lock)
++void __raw_spin_unlock_wait(__raw_spinlock_t *lock)
+ {
+ 	while (lock->slock) {
+ 		HMT_low();
+Index: linux-2.6.26/arch/ppc/Kconfig
+===================================================================
+--- linux-2.6.26.orig/arch/ppc/Kconfig
++++ linux-2.6.26/arch/ppc/Kconfig
+@@ -16,13 +16,6 @@ config GENERIC_HARDIRQS
+ 	bool
+ 	default y
+ 
+-config RWSEM_GENERIC_SPINLOCK
+-	bool
+-
+-config RWSEM_XCHGADD_ALGORITHM
+-	bool
+-	default y
+-
+ config ARCH_HAS_ILOG2_U32
+ 	bool
+ 	default y
+@@ -846,6 +839,18 @@ config ARCH_POPULATES_NODE_MAP
+ 
+ source kernel/Kconfig.hz
+ source kernel/Kconfig.preempt
++
++config RWSEM_GENERIC_SPINLOCK
++	bool
++	default y
++
++config ASM_SEMAPHORES
++	bool
++	default y
++
++config RWSEM_XCHGADD_ALGORITHM
++	bool
++
+ source "mm/Kconfig"
+ 
+ source "fs/Kconfig.binfmt"
+Index: linux-2.6.26/arch/ppc/kernel/entry.S
+===================================================================
+--- linux-2.6.26.orig/arch/ppc/kernel/entry.S
++++ linux-2.6.26/arch/ppc/kernel/entry.S
+@@ -882,7 +882,7 @@ global_dbcr0:
+ #endif /* !(CONFIG_4xx || CONFIG_BOOKE) */
+ 
+ do_work:			/* r10 contains MSR_KERNEL here */
+-	andi.	r0,r9,_TIF_NEED_RESCHED
++	andi.	r0,r9,(_TIF_NEED_RESCHED)
+ 	beq	do_user_signal
+ 
+ do_resched:			/* r10 contains MSR_KERNEL here */
+@@ -896,7 +896,7 @@ recheck:
+ 	MTMSRD(r10)		/* disable interrupts */
+ 	rlwinm	r9,r1,0,0,18
+ 	lwz	r9,TI_FLAGS(r9)
+-	andi.	r0,r9,_TIF_NEED_RESCHED
++	andi.	r0,r9,(_TIF_NEED_RESCHED)
+ 	bne-	do_resched
+ 	andi.	r0,r9,_TIF_SIGPENDING
+ 	beq	restore_user
+Index: linux-2.6.26/arch/ppc/lib/locks.c
+===================================================================
+--- linux-2.6.26.orig/arch/ppc/lib/locks.c
++++ linux-2.6.26/arch/ppc/lib/locks.c
+@@ -42,7 +42,7 @@ static inline unsigned long __spin_trylo
+ 	return ret;
+ }
+ 
+-void _raw_spin_lock(spinlock_t *lock)
++void __raw_spin_lock(raw_spinlock_t *lock)
+ {
+ 	int cpu = smp_processor_id();
+ 	unsigned int stuck = INIT_STUCK;
+@@ -62,9 +62,9 @@ void _raw_spin_lock(spinlock_t *lock)
+ 	lock->owner_pc = (unsigned long)__builtin_return_address(0);
+ 	lock->owner_cpu = cpu;
+ }
+-EXPORT_SYMBOL(_raw_spin_lock);
++EXPORT_SYMBOL(__raw_spin_lock);
+ 
+-int _raw_spin_trylock(spinlock_t *lock)
++int __raw_spin_trylock(raw_spinlock_t *lock)
+ {
+ 	if (__spin_trylock(&lock->lock))
+ 		return 0;
+@@ -72,9 +72,9 @@ int _raw_spin_trylock(spinlock_t *lock)
+ 	lock->owner_pc = (unsigned long)__builtin_return_address(0);
+ 	return 1;
+ }
+-EXPORT_SYMBOL(_raw_spin_trylock);
++EXPORT_SYMBOL(__raw_spin_trylock);
+ 
+-void _raw_spin_unlock(spinlock_t *lp)
++void __raw_spin_unlock(raw_spinlock_t *lp)
+ {
+   	if ( !lp->lock )
+ 		printk("_spin_unlock(%p): no lock cpu %d curr PC %p %s/%d\n",
+@@ -88,13 +88,13 @@ void _raw_spin_unlock(spinlock_t *lp)
+ 	wmb();
+ 	lp->lock = 0;
+ }
+-EXPORT_SYMBOL(_raw_spin_unlock);
++EXPORT_SYMBOL(__raw_spin_unlock);
+ 
+ /*
+  * For rwlocks, zero is unlocked, -1 is write-locked,
+  * positive is read-locked.
+  */
+-static __inline__ int __read_trylock(rwlock_t *rw)
++static __inline__ int __read_trylock(raw_rwlock_t *rw)
+ {
+ 	signed int tmp;
+ 
+@@ -114,13 +114,13 @@ static __inline__ int __read_trylock(rwl
+ 	return tmp;
+ }
+ 
+-int _raw_read_trylock(rwlock_t *rw)
++int __raw_read_trylock(raw_rwlock_t *rw)
+ {
+ 	return __read_trylock(rw) > 0;
+ }
+-EXPORT_SYMBOL(_raw_read_trylock);
++EXPORT_SYMBOL(__raw_read_trylock);
+ 
+-void _raw_read_lock(rwlock_t *rw)
++void __raw_read_lock(rwlock_t *rw)
+ {
+ 	unsigned int stuck;
+ 
+@@ -135,9 +135,9 @@ void _raw_read_lock(rwlock_t *rw)
+ 		}
+ 	}
+ }
+-EXPORT_SYMBOL(_raw_read_lock);
++EXPORT_SYMBOL(__raw_read_lock);
+ 
+-void _raw_read_unlock(rwlock_t *rw)
++void __raw_read_unlock(raw_rwlock_t *rw)
+ {
+ 	if ( rw->lock == 0 )
+ 		printk("_read_unlock(): %s/%d (nip %08lX) lock %d\n",
+@@ -146,9 +146,9 @@ void _raw_read_unlock(rwlock_t *rw)
+ 	wmb();
+ 	atomic_dec((atomic_t *) &(rw)->lock);
+ }
+-EXPORT_SYMBOL(_raw_read_unlock);
++EXPORT_SYMBOL(__raw_read_unlock);
+ 
+-void _raw_write_lock(rwlock_t *rw)
++void __raw_write_lock(raw_rwlock_t *rw)
+ {
+ 	unsigned int stuck;
+ 
+@@ -164,18 +164,18 @@ void _raw_write_lock(rwlock_t *rw)
+ 	}
+ 	wmb();
+ }
+-EXPORT_SYMBOL(_raw_write_lock);
++EXPORT_SYMBOL(__raw_write_lock);
+ 
+-int _raw_write_trylock(rwlock_t *rw)
++int __raw_write_trylock(raw_rwlock_t *rw)
+ {
+ 	if (cmpxchg(&rw->lock, 0, -1) != 0)
+ 		return 0;
+ 	wmb();
+ 	return 1;
+ }
+-EXPORT_SYMBOL(_raw_write_trylock);
++EXPORT_SYMBOL(__raw_write_trylock);
+ 
+-void _raw_write_unlock(rwlock_t *rw)
++void __raw_write_unlock(raw_rwlock_t *rw)
+ {
+ 	if (rw->lock >= 0)
+ 		printk("_write_lock(): %s/%d (nip %08lX) lock %d\n",
+@@ -184,6 +184,6 @@ void _raw_write_unlock(rwlock_t *rw)
+ 	wmb();
+ 	rw->lock = 0;
+ }
+-EXPORT_SYMBOL(_raw_write_unlock);
++EXPORT_SYMBOL(__raw_write_unlock);
+ 
+ #endif
+Index: linux-2.6.26/drivers/macintosh/adb.c
+===================================================================
+--- linux-2.6.26.orig/drivers/macintosh/adb.c
++++ linux-2.6.26/drivers/macintosh/adb.c
+@@ -84,7 +84,7 @@ struct adb_driver *adb_controller;
+ BLOCKING_NOTIFIER_HEAD(adb_client_list);
+ static int adb_got_sleep;
+ static int adb_inited;
+-static DECLARE_MUTEX(adb_probe_mutex);
++static COMPAT_DECLARE_MUTEX(adb_probe_mutex);
+ static int sleepy_trackpad;
+ static int autopoll_devs;
+ int __adb_probe_sync;
+Index: linux-2.6.26/include/asm-powerpc/rwsem.h
+===================================================================
+--- linux-2.6.26.orig/include/asm-powerpc/rwsem.h
++++ linux-2.6.26/include/asm-powerpc/rwsem.h
+@@ -21,7 +21,7 @@
+ /*
+  * the semaphore definition
+  */
+-struct rw_semaphore {
++struct compat_rw_semaphore {
+ 	/* XXX this should be able to be an atomic_t  -- paulus */
+ 	signed int		count;
+ #define RWSEM_UNLOCKED_VALUE		0x00000000
+@@ -30,7 +30,7 @@ struct rw_semaphore {
+ #define RWSEM_WAITING_BIAS		(-0x00010000)
+ #define RWSEM_ACTIVE_READ_BIAS		RWSEM_ACTIVE_BIAS
+ #define RWSEM_ACTIVE_WRITE_BIAS		(RWSEM_WAITING_BIAS + RWSEM_ACTIVE_BIAS)
+-	spinlock_t		wait_lock;
++	raw_spinlock_t		wait_lock;
+ 	struct list_head	wait_list;
+ #ifdef CONFIG_DEBUG_LOCK_ALLOC
+ 	struct lockdep_map	dep_map;
+@@ -48,17 +48,17 @@ struct rw_semaphore {
+ 	  LIST_HEAD_INIT((name).wait_list) __RWSEM_DEP_MAP_INIT(name) }
+ 
+ #define DECLARE_RWSEM(name)		\
+-	struct rw_semaphore name = __RWSEM_INITIALIZER(name)
++	struct compat_rw_semaphore name = __RWSEM_INITIALIZER(name)
+ 
+-extern struct rw_semaphore *rwsem_down_read_failed(struct rw_semaphore *sem);
+-extern struct rw_semaphore *rwsem_down_write_failed(struct rw_semaphore *sem);
+-extern struct rw_semaphore *rwsem_wake(struct rw_semaphore *sem);
+-extern struct rw_semaphore *rwsem_downgrade_wake(struct rw_semaphore *sem);
++extern struct compat_rw_semaphore *rwsem_down_read_failed(struct compat_rw_semaphore *sem);
++extern struct compat_rw_semaphore *rwsem_down_write_failed(struct compat_rw_semaphore *sem);
++extern struct compat_rw_semaphore *rwsem_wake(struct compat_rw_semaphore *sem);
++extern struct compat_rw_semaphore *rwsem_downgrade_wake(struct compat_rw_semaphore *sem);
+ 
+-extern void __init_rwsem(struct rw_semaphore *sem, const char *name,
++extern void __init_rwsem(struct compat_rw_semaphore *sem, const char *name,
+ 			 struct lock_class_key *key);
+ 
+-#define init_rwsem(sem)					\
++#define compat_init_rwsem(sem)					\
+ 	do {						\
+ 		static struct lock_class_key __key;	\
+ 							\
+@@ -68,13 +68,13 @@ extern void __init_rwsem(struct rw_semap
+ /*
+  * lock for reading
+  */
+-static inline void __down_read(struct rw_semaphore *sem)
++static inline void __down_read(struct compat_rw_semaphore *sem)
+ {
+ 	if (unlikely(atomic_inc_return((atomic_t *)(&sem->count)) <= 0))
+ 		rwsem_down_read_failed(sem);
+ }
+ 
+-static inline int __down_read_trylock(struct rw_semaphore *sem)
++static inline int __down_read_trylock(struct compat_rw_semaphore *sem)
+ {
+ 	int tmp;
+ 
+@@ -90,7 +90,7 @@ static inline int __down_read_trylock(st
+ /*
+  * lock for writing
+  */
+-static inline void __down_write_nested(struct rw_semaphore *sem, int subclass)
++static inline void __down_write_nested(struct compat_rw_semaphore *sem, int subclass)
+ {
+ 	int tmp;
+ 
+@@ -100,12 +100,12 @@ static inline void __down_write_nested(s
+ 		rwsem_down_write_failed(sem);
+ }
+ 
+-static inline void __down_write(struct rw_semaphore *sem)
++static inline void __down_write(struct compat_rw_semaphore *sem)
+ {
+ 	__down_write_nested(sem, 0);
+ }
+ 
+-static inline int __down_write_trylock(struct rw_semaphore *sem)
++static inline int __down_write_trylock(struct compat_rw_semaphore *sem)
+ {
+ 	int tmp;
+ 
+@@ -117,7 +117,7 @@ static inline int __down_write_trylock(s
+ /*
+  * unlock after reading
+  */
+-static inline void __up_read(struct rw_semaphore *sem)
++static inline void __up_read(struct compat_rw_semaphore *sem)
+ {
+ 	int tmp;
+ 
+@@ -129,7 +129,7 @@ static inline void __up_read(struct rw_s
+ /*
+  * unlock after writing
+  */
+-static inline void __up_write(struct rw_semaphore *sem)
++static inline void __up_write(struct compat_rw_semaphore *sem)
+ {
+ 	if (unlikely(atomic_sub_return(RWSEM_ACTIVE_WRITE_BIAS,
+ 			      (atomic_t *)(&sem->count)) < 0))
+@@ -139,7 +139,7 @@ static inline void __up_write(struct rw_
+ /*
+  * implement atomic add functionality
+  */
+-static inline void rwsem_atomic_add(int delta, struct rw_semaphore *sem)
++static inline void rwsem_atomic_add(int delta, struct compat_rw_semaphore *sem)
+ {
+ 	atomic_add(delta, (atomic_t *)(&sem->count));
+ }
+@@ -147,7 +147,7 @@ static inline void rwsem_atomic_add(int 
+ /*
+  * downgrade write lock to read lock
+  */
+-static inline void __downgrade_write(struct rw_semaphore *sem)
++static inline void __downgrade_write(struct compat_rw_semaphore *sem)
+ {
+ 	int tmp;
+ 
+@@ -159,12 +159,12 @@ static inline void __downgrade_write(str
+ /*
+  * implement exchange and add functionality
+  */
+-static inline int rwsem_atomic_update(int delta, struct rw_semaphore *sem)
++static inline int rwsem_atomic_update(int delta, struct compat_rw_semaphore *sem)
+ {
+ 	return atomic_add_return(delta, (atomic_t *)(&sem->count));
+ }
+ 
+-static inline int rwsem_is_locked(struct rw_semaphore *sem)
++static inline int compat_rwsem_is_locked(struct compat_rw_semaphore *sem)
+ {
+ 	return (sem->count != 0);
+ }
+Index: linux-2.6.26/include/asm-powerpc/spinlock.h
+===================================================================
+--- linux-2.6.26.orig/include/asm-powerpc/spinlock.h
++++ linux-2.6.26/include/asm-powerpc/spinlock.h
+@@ -54,7 +54,7 @@
+  * This returns the old value in the lock, so we succeeded
+  * in getting the lock if the return value is 0.
+  */
+-static __inline__ unsigned long __spin_trylock(raw_spinlock_t *lock)
++static __inline__ unsigned long ___raw_spin_trylock(__raw_spinlock_t *lock)
+ {
+ 	unsigned long tmp, token;
+ 
+@@ -73,10 +73,10 @@ static __inline__ unsigned long __spin_t
+ 	return tmp;
+ }
+ 
+-static int __inline__ __raw_spin_trylock(raw_spinlock_t *lock)
++static int __inline__ __raw_spin_trylock(__raw_spinlock_t *lock)
+ {
+ 	CLEAR_IO_SYNC;
+-	return __spin_trylock(lock) == 0;
++	return ___raw_spin_trylock(lock) == 0;
+ }
+ 
+ /*
+@@ -96,19 +96,19 @@ static int __inline__ __raw_spin_trylock
+ #if defined(CONFIG_PPC_SPLPAR) || defined(CONFIG_PPC_ISERIES)
+ /* We only yield to the hypervisor if we are in shared processor mode */
+ #define SHARED_PROCESSOR (get_lppaca()->shared_proc)
+-extern void __spin_yield(raw_spinlock_t *lock);
+-extern void __rw_yield(raw_rwlock_t *lock);
++extern void __spin_yield(__raw_spinlock_t *lock);
++extern void __rw_yield(__raw_rwlock_t *lock);
+ #else /* SPLPAR || ISERIES */
+ #define __spin_yield(x)	barrier()
+ #define __rw_yield(x)	barrier()
+ #define SHARED_PROCESSOR	0
+ #endif
+ 
+-static void __inline__ __raw_spin_lock(raw_spinlock_t *lock)
++static void __inline__ __raw_spin_lock(__raw_spinlock_t *lock)
+ {
+ 	CLEAR_IO_SYNC;
+ 	while (1) {
+-		if (likely(__spin_trylock(lock) == 0))
++		if (likely(___raw_spin_trylock(lock) == 0))
+ 			break;
+ 		do {
+ 			HMT_low();
+@@ -119,13 +119,13 @@ static void __inline__ __raw_spin_lock(r
+ 	}
+ }
+ 
+-static void __inline__ __raw_spin_lock_flags(raw_spinlock_t *lock, unsigned long flags)
++static void __inline__ __raw_spin_lock_flags(__raw_spinlock_t *lock, unsigned long flags)
+ {
+ 	unsigned long flags_dis;
+ 
+ 	CLEAR_IO_SYNC;
+ 	while (1) {
+-		if (likely(__spin_trylock(lock) == 0))
++		if (likely(___raw_spin_trylock(lock) == 0))
+ 			break;
+ 		local_save_flags(flags_dis);
+ 		local_irq_restore(flags);
+@@ -139,7 +139,7 @@ static void __inline__ __raw_spin_lock_f
+ 	}
+ }
+ 
+-static __inline__ void __raw_spin_unlock(raw_spinlock_t *lock)
++static __inline__ void __raw_spin_unlock(__raw_spinlock_t *lock)
+ {
+ 	SYNC_IO;
+ 	__asm__ __volatile__("# __raw_spin_unlock\n\t"
+@@ -148,7 +148,7 @@ static __inline__ void __raw_spin_unlock
+ }
+ 
+ #ifdef CONFIG_PPC64
+-extern void __raw_spin_unlock_wait(raw_spinlock_t *lock);
++extern void __raw_spin_unlock_wait(__raw_spinlock_t *lock);
+ #else
+ #define __raw_spin_unlock_wait(lock) \
+ 	do { while (__raw_spin_is_locked(lock)) cpu_relax(); } while (0)
+@@ -180,7 +180,7 @@ extern void __raw_spin_unlock_wait(raw_s
+  * This returns the old value in the lock + 1,
+  * so we got a read lock if the return value is > 0.
+  */
+-static long __inline__ __read_trylock(raw_rwlock_t *rw)
++static long __inline__ __read_trylock(__raw_rwlock_t *rw)
+ {
+ 	long tmp;
+ 
+@@ -204,7 +204,7 @@ static long __inline__ __read_trylock(ra
+  * This returns the old value in the lock,
+  * so we got the write lock if the return value is 0.
+  */
+-static __inline__ long __write_trylock(raw_rwlock_t *rw)
++static __inline__ long __write_trylock(__raw_rwlock_t *rw)
+ {
+ 	long tmp, token;
+ 
+@@ -224,7 +224,7 @@ static __inline__ long __write_trylock(r
+ 	return tmp;
+ }
+ 
+-static void __inline__ __raw_read_lock(raw_rwlock_t *rw)
++static void __inline__ __raw_read_lock(__raw_rwlock_t *rw)
+ {
+ 	while (1) {
+ 		if (likely(__read_trylock(rw) > 0))
+@@ -238,7 +238,7 @@ static void __inline__ __raw_read_lock(r
+ 	}
+ }
+ 
+-static void __inline__ __raw_write_lock(raw_rwlock_t *rw)
++static void __inline__ __raw_write_lock(__raw_rwlock_t *rw)
+ {
+ 	while (1) {
+ 		if (likely(__write_trylock(rw) == 0))
+@@ -252,17 +252,17 @@ static void __inline__ __raw_write_lock(
+ 	}
+ }
+ 
+-static int __inline__ __raw_read_trylock(raw_rwlock_t *rw)
++static int __inline__ __raw_read_trylock(__raw_rwlock_t *rw)
+ {
+ 	return __read_trylock(rw) > 0;
+ }
+ 
+-static int __inline__ __raw_write_trylock(raw_rwlock_t *rw)
++static int __inline__ __raw_write_trylock(__raw_rwlock_t *rw)
+ {
+ 	return __write_trylock(rw) == 0;
+ }
+ 
+-static void __inline__ __raw_read_unlock(raw_rwlock_t *rw)
++static void __inline__ __raw_read_unlock(__raw_rwlock_t *rw)
+ {
+ 	long tmp;
+ 
+@@ -279,7 +279,7 @@ static void __inline__ __raw_read_unlock
+ 	: "cr0", "memory");
+ }
+ 
+-static __inline__ void __raw_write_unlock(raw_rwlock_t *rw)
++static __inline__ void __raw_write_unlock(__raw_rwlock_t *rw)
+ {
+ 	__asm__ __volatile__("# write_unlock\n\t"
+ 				LWSYNC_ON_SMP: : :"memory");
+Index: linux-2.6.26/include/asm-powerpc/spinlock_types.h
+===================================================================
+--- linux-2.6.26.orig/include/asm-powerpc/spinlock_types.h
++++ linux-2.6.26/include/asm-powerpc/spinlock_types.h
+@@ -7,13 +7,13 @@
+ 
+ typedef struct {
+ 	volatile unsigned int slock;
+-} raw_spinlock_t;
++} __raw_spinlock_t;
+ 
+ #define __RAW_SPIN_LOCK_UNLOCKED	{ 0 }
+ 
+ typedef struct {
+ 	volatile signed int lock;
+-} raw_rwlock_t;
++} __raw_rwlock_t;
+ 
+ #define __RAW_RW_LOCK_UNLOCKED		{ 0 }
+ 

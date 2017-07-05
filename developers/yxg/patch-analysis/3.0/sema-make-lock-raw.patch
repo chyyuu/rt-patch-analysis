@@ -1,0 +1,142 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 24 Feb 2010 09:50:22 +0100
+Subject: semaphore: Make inner lock raw
+
+There is no reason to have the spin_lock protecting the semaphore
+being converted to a sleeping spinlock in -rt. Convert it to a
+raw_spinlock. On rt this also solves lockdep complaining about the
+rt_mutex.wait_lock being not initialized.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+---
+ include/linux/semaphore.h |    4 ++--
+ kernel/semaphore.c        |   28 ++++++++++++++--------------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
+
+Index: linux-2.6-tip/include/linux/semaphore.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/semaphore.h
++++ linux-2.6-tip/include/linux/semaphore.h
+@@ -14,14 +14,14 @@
+ 
+ /* Please don't access any members of this structure directly */
+ struct semaphore {
+-	spinlock_t		lock;
++	raw_spinlock_t		lock;
+ 	unsigned int		count;
+ 	struct list_head	wait_list;
+ };
+ 
+ #define __SEMAPHORE_INITIALIZER(name, n)				\
+ {									\
+-	.lock		= __SPIN_LOCK_UNLOCKED((name).lock),		\
++	.lock		= __RAW_SPIN_LOCK_UNLOCKED((name).lock),	\
+ 	.count		= n,						\
+ 	.wait_list	= LIST_HEAD_INIT((name).wait_list),		\
+ }
+Index: linux-2.6-tip/kernel/semaphore.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/semaphore.c
++++ linux-2.6-tip/kernel/semaphore.c
+@@ -54,12 +54,12 @@ void down(struct semaphore *sem)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	if (likely(sem->count > 0))
+ 		sem->count--;
+ 	else
+ 		__down(sem);
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ }
+ EXPORT_SYMBOL(down);
+ 
+@@ -77,12 +77,12 @@ int down_interruptible(struct semaphore 
+ 	unsigned long flags;
+ 	int result = 0;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	if (likely(sem->count > 0))
+ 		sem->count--;
+ 	else
+ 		result = __down_interruptible(sem);
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ 
+ 	return result;
+ }
+@@ -103,12 +103,12 @@ int down_killable(struct semaphore *sem)
+ 	unsigned long flags;
+ 	int result = 0;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	if (likely(sem->count > 0))
+ 		sem->count--;
+ 	else
+ 		result = __down_killable(sem);
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ 
+ 	return result;
+ }
+@@ -132,11 +132,11 @@ int down_trylock(struct semaphore *sem)
+ 	unsigned long flags;
+ 	int count;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	count = sem->count - 1;
+ 	if (likely(count >= 0))
+ 		sem->count = count;
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ 
+ 	return (count < 0);
+ }
+@@ -157,12 +157,12 @@ int down_timeout(struct semaphore *sem, 
+ 	unsigned long flags;
+ 	int result = 0;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	if (likely(sem->count > 0))
+ 		sem->count--;
+ 	else
+ 		result = __down_timeout(sem, jiffies);
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ 
+ 	return result;
+ }
+@@ -179,12 +179,12 @@ void up(struct semaphore *sem)
+ {
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&sem->lock, flags);
++	raw_spin_lock_irqsave(&sem->lock, flags);
+ 	if (likely(list_empty(&sem->wait_list)))
+ 		sem->count++;
+ 	else
+ 		__up(sem);
+-	spin_unlock_irqrestore(&sem->lock, flags);
++	raw_spin_unlock_irqrestore(&sem->lock, flags);
+ }
+ EXPORT_SYMBOL(up);
+ 
+@@ -217,9 +217,9 @@ static inline int __sched __down_common(
+ 		if (timeout <= 0)
+ 			goto timed_out;
+ 		__set_task_state(task, state);
+-		spin_unlock_irq(&sem->lock);
++		raw_spin_unlock_irq(&sem->lock);
+ 		timeout = schedule_timeout(timeout);
+-		spin_lock_irq(&sem->lock);
++		raw_spin_lock_irq(&sem->lock);
+ 		if (waiter.up)
+ 			return 0;
+ 	}

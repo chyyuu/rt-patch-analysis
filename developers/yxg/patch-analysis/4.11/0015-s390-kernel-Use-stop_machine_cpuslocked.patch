@@ -1,0 +1,49 @@
+From 2337e879e8805a630b418f3e73a98084d4724b83 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 24 May 2017 10:15:26 +0200
+Subject: [PATCH 15/32] s390/kernel: Use stop_machine_cpuslocked()
+
+stp_work_fn() holds get_online_cpus() while invoking stop_machine().
+
+stop_machine() invokes get_online_cpus() as well. This is correct, but
+prevents the conversion of the hotplug locking to a percpu rwsem.
+
+Use stop_machine_cpuslocked() to avoid the nested call. Convert
+*_online_cpus() to the new interfaces while at it.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Ingo Molnar <mingo@kernel.org>
+Acked-by: Heiko Carstens <heiko.carstens@de.ibm.com>
+Cc: Paul E. McKenney <paulmck@linux.vnet.ibm.com>
+Cc: linux-s390@vger.kernel.org
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: David Hildenbrand <dahi@linux.vnet.ibm.com>
+Cc: Martin Schwidefsky <schwidefsky@de.ibm.com>
+Link: http://lkml.kernel.org/r/20170524081548.250203087@linutronix.de
+---
+ arch/s390/kernel/time.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/s390/kernel/time.c b/arch/s390/kernel/time.c
+index c3a52f9a69a0..192efdfac918 100644
+--- a/arch/s390/kernel/time.c
++++ b/arch/s390/kernel/time.c
+@@ -636,10 +636,10 @@ static void stp_work_fn(struct work_struct *work)
+ 		goto out_unlock;
+ 
+ 	memset(&stp_sync, 0, sizeof(stp_sync));
+-	get_online_cpus();
++	cpus_read_lock();
+ 	atomic_set(&stp_sync.cpus, num_online_cpus() - 1);
+-	stop_machine(stp_sync_clock, &stp_sync, cpu_online_mask);
+-	put_online_cpus();
++	stop_machine_cpuslocked(stp_sync_clock, &stp_sync, cpu_online_mask);
++	cpus_read_unlock();
+ 
+ 	if (!check_sync_clock())
+ 		/*
+-- 
+2.11.0
+

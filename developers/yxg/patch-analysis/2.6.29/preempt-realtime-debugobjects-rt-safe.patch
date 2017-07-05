@@ -1,0 +1,31 @@
+Subject: preempt-realtime-debugobjects-rt-safe.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 09 Feb 2009 18:52:50 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ lib/debugobjects.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: linux-2.6-tip/lib/debugobjects.c
+===================================================================
+--- linux-2.6-tip.orig/lib/debugobjects.c
++++ linux-2.6-tip/lib/debugobjects.c
+@@ -25,14 +25,14 @@
+ 
+ struct debug_bucket {
+ 	struct hlist_head	list;
+-	spinlock_t		lock;
++	raw_spinlock_t		lock;
+ };
+ 
+ static struct debug_bucket	obj_hash[ODEBUG_HASH_SIZE];
+ 
+ static struct debug_obj		obj_static_pool[ODEBUG_POOL_SIZE] __initdata;
+ 
+-static DEFINE_SPINLOCK(pool_lock);
++static DEFINE_RAW_SPINLOCK(pool_lock);
+ 
+ static HLIST_HEAD(obj_pool);
+ 

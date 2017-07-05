@@ -1,0 +1,41 @@
+Subject: preempt: realtime sched remove debug
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 06:17:45 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/sched.c |    5 -----
+ 1 file changed, 5 deletions(-)
+
+Index: linux-2.6-tip/kernel/sched.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/sched.c
++++ linux-2.6-tip/kernel/sched.c
+@@ -2888,7 +2888,6 @@ asmlinkage void schedule_tail(struct tas
+ 	__releases(rq->lock)
+ {
+ 	preempt_disable();
+-	BUG_ON((preempt_count() & 0xffff) != 2);
+ 	finish_task_switch(this_rq(), prev);
+ 	__preempt_enable_no_resched();
+ 	local_irq_enable();
+@@ -5232,19 +5231,15 @@ asmlinkage void __sched __schedule(void)
+ 	}
+ 
+ 	reacquire_kernel_lock(current);
+-	BUG_ON(preempt_count() & 0xffff);
+ }
+ 
+ asmlinkage void __sched schedule(void)
+ {
+-	BUG_ON((preempt_count() & 0xffff) && !current->exit_state);
+ need_resched:
+ 	local_irq_disable();
+ 	__schedule();
+ 	local_irq_enable();
+ 
+-	BUG_ON(preempt_count() & 0xffff);
+-
+ 	if (unlikely(test_thread_flag(TIF_NEED_RESCHED)))
+ 		goto need_resched;
+ }

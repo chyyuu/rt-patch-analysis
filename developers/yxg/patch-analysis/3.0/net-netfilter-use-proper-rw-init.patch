@@ -1,0 +1,22 @@
+Subject: netfilter-wtf.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 13 Jul 2011 23:54:23 +0200
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ net/netfilter/ipvs/ip_vs_ctl.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6/net/netfilter/ipvs/ip_vs_ctl.c
+===================================================================
+--- linux-2.6.orig/net/netfilter/ipvs/ip_vs_ctl.c
++++ linux-2.6/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -3679,7 +3679,7 @@ int __net_init __ip_vs_control_init(stru
+ 	int idx;
+ 	struct netns_ipvs *ipvs = net_ipvs(net);
+ 
+-	ipvs->rs_lock = __RW_LOCK_UNLOCKED(ipvs->rs_lock);
++	rwlock_init(&ipvs->rs_lock);
+ 
+ 	/* Initialize rs_table */
+ 	for (idx = 0; idx < IP_VS_RTAB_SIZE; idx++)

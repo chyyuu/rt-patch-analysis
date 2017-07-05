@@ -1,0 +1,160 @@
+Subject: preempt: realtime rawlocks
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:02:48 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ drivers/oprofile/oprofilefs.c  |    2 +-
+ drivers/pci/access.c           |    2 +-
+ drivers/video/console/vgacon.c |    2 +-
+ include/linux/kprobes.h        |    2 +-
+ include/linux/oprofile.h       |    2 +-
+ include/linux/percpu_counter.h |    2 +-
+ kernel/kprobes.c               |   12 ++++++------
+ kernel/softlockup.c            |    2 +-
+ 8 files changed, 13 insertions(+), 13 deletions(-)
+
+Index: linux-2.6-tip/drivers/oprofile/oprofilefs.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/oprofile/oprofilefs.c
++++ linux-2.6-tip/drivers/oprofile/oprofilefs.c
+@@ -21,7 +21,7 @@
+ 
+ #define OPROFILEFS_MAGIC 0x6f70726f
+ 
+-DEFINE_SPINLOCK(oprofilefs_lock);
++DEFINE_RAW_SPINLOCK(oprofilefs_lock);
+ 
+ static struct inode *oprofilefs_get_inode(struct super_block *sb, int mode)
+ {
+Index: linux-2.6-tip/drivers/pci/access.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/pci/access.c
++++ linux-2.6-tip/drivers/pci/access.c
+@@ -12,7 +12,7 @@
+  * configuration space.
+  */
+ 
+-static DEFINE_SPINLOCK(pci_lock);
++static DEFINE_RAW_SPINLOCK(pci_lock);
+ 
+ /*
+  *  Wrappers for all PCI configuration access functions.  They just check
+Index: linux-2.6-tip/drivers/video/console/vgacon.c
+===================================================================
+--- linux-2.6-tip.orig/drivers/video/console/vgacon.c
++++ linux-2.6-tip/drivers/video/console/vgacon.c
+@@ -51,7 +51,7 @@
+ #include <video/vga.h>
+ #include <asm/io.h>
+ 
+-static DEFINE_SPINLOCK(vga_lock);
++static DEFINE_RAW_SPINLOCK(vga_lock);
+ static int cursor_size_lastfrom;
+ static int cursor_size_lastto;
+ static u32 vgacon_xres;
+Index: linux-2.6-tip/include/linux/kprobes.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/kprobes.h
++++ linux-2.6-tip/include/linux/kprobes.h
+@@ -156,7 +156,7 @@ struct kretprobe {
+ 	int nmissed;
+ 	size_t data_size;
+ 	struct hlist_head free_instances;
+-	spinlock_t lock;
++	raw_spinlock_t lock;
+ };
+ 
+ struct kretprobe_instance {
+Index: linux-2.6-tip/include/linux/oprofile.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/oprofile.h
++++ linux-2.6-tip/include/linux/oprofile.h
+@@ -153,7 +153,7 @@ ssize_t oprofilefs_ulong_to_user(unsigne
+ int oprofilefs_ulong_from_user(unsigned long * val, char const __user * buf, size_t count);
+ 
+ /** lock for read/write safety */
+-extern spinlock_t oprofilefs_lock;
++extern raw_spinlock_t oprofilefs_lock;
+ 
+ /**
+  * Add the contents of a circular buffer to the event buffer.
+Index: linux-2.6-tip/include/linux/percpu_counter.h
+===================================================================
+--- linux-2.6-tip.orig/include/linux/percpu_counter.h
++++ linux-2.6-tip/include/linux/percpu_counter.h
+@@ -16,7 +16,7 @@
+ #ifdef CONFIG_SMP
+ 
+ struct percpu_counter {
+-	spinlock_t lock;
++	raw_spinlock_t lock;
+ 	s64 count;
+ #ifdef CONFIG_HOTPLUG_CPU
+ 	struct list_head list;	/* All percpu_counters are on a list */
+Index: linux-2.6-tip/kernel/kprobes.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/kprobes.c
++++ linux-2.6-tip/kernel/kprobes.c
+@@ -73,10 +73,10 @@ static bool kprobe_enabled;
+ static DEFINE_MUTEX(kprobe_mutex);	/* Protects kprobe_table */
+ static DEFINE_PER_CPU(struct kprobe *, kprobe_instance) = NULL;
+ static struct {
+-	spinlock_t lock ____cacheline_aligned_in_smp;
++	raw_spinlock_t lock ____cacheline_aligned_in_smp;
+ } kretprobe_table_locks[KPROBE_TABLE_SIZE];
+ 
+-static spinlock_t *kretprobe_table_lock_ptr(unsigned long hash)
++static raw_spinlock_t *kretprobe_table_lock_ptr(unsigned long hash)
+ {
+ 	return &(kretprobe_table_locks[hash].lock);
+ }
+@@ -415,7 +415,7 @@ void __kprobes kretprobe_hash_lock(struc
+ 			 struct hlist_head **head, unsigned long *flags)
+ {
+ 	unsigned long hash = hash_ptr(tsk, KPROBE_HASH_BITS);
+-	spinlock_t *hlist_lock;
++	raw_spinlock_t *hlist_lock;
+ 
+ 	*head = &kretprobe_inst_table[hash];
+ 	hlist_lock = kretprobe_table_lock_ptr(hash);
+@@ -425,7 +425,7 @@ void __kprobes kretprobe_hash_lock(struc
+ static void __kprobes kretprobe_table_lock(unsigned long hash,
+ 	unsigned long *flags)
+ {
+-	spinlock_t *hlist_lock = kretprobe_table_lock_ptr(hash);
++	raw_spinlock_t *hlist_lock = kretprobe_table_lock_ptr(hash);
+ 	spin_lock_irqsave(hlist_lock, *flags);
+ }
+ 
+@@ -433,7 +433,7 @@ void __kprobes kretprobe_hash_unlock(str
+ 	unsigned long *flags)
+ {
+ 	unsigned long hash = hash_ptr(tsk, KPROBE_HASH_BITS);
+-	spinlock_t *hlist_lock;
++	raw_spinlock_t *hlist_lock;
+ 
+ 	hlist_lock = kretprobe_table_lock_ptr(hash);
+ 	spin_unlock_irqrestore(hlist_lock, *flags);
+@@ -441,7 +441,7 @@ void __kprobes kretprobe_hash_unlock(str
+ 
+ void __kprobes kretprobe_table_unlock(unsigned long hash, unsigned long *flags)
+ {
+-	spinlock_t *hlist_lock = kretprobe_table_lock_ptr(hash);
++	raw_spinlock_t *hlist_lock = kretprobe_table_lock_ptr(hash);
+ 	spin_unlock_irqrestore(hlist_lock, *flags);
+ }
+ 
+Index: linux-2.6-tip/kernel/softlockup.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/softlockup.c
++++ linux-2.6-tip/kernel/softlockup.c
+@@ -20,7 +20,7 @@
+ 
+ #include <asm/irq_regs.h>
+ 
+-static DEFINE_SPINLOCK(print_lock);
++static DEFINE_RAW_SPINLOCK(print_lock);
+ 
+ static DEFINE_PER_CPU(unsigned long, touch_timestamp);
+ static DEFINE_PER_CPU(unsigned long, print_timestamp);

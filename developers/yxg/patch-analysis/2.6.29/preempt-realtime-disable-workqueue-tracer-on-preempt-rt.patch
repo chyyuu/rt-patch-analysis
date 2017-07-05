@@ -1,0 +1,65 @@
+Subject: rt: no workqueue tracer
+From: Ingo Molnar <mingo@elte.hu>
+Date: Tue Feb 10 00:30:42 CET 2009
+
+Turn it off for now:
+
+BUG: sleeping function called from invalid context at kernel/rtmutex.c:683
+in_atomic(): 1, irqs_disabled(): 0, pid: 1, name: init
+1 lock held by init/1:
+ #0:  (&cwq->lock){--..}, at: [<ffffffff8025e6f1>] __queue_work+0x21/0x50
+Pid: 1, comm: init Not tainted 2.6.29-rc4-rt0-tip #186
+Call Trace:
+ [<ffffffff802765d3>] ? __debug_show_held_locks+0x13/0x30
+ [<ffffffff80238fc1>] __might_sleep+0x141/0x180
+ [<ffffffff805c0c26>] __lock_text_start+0x56/0xd0
+ [<ffffffff8020c6d6>] ? ftrace_call+0x5/0x2b
+ [<ffffffff802aabd8>] probe_workqueue_insertion+0x18/0xc0
+ [<ffffffff8025e197>] insert_work+0x87/0x190
+ [<ffffffff8025e703>] __queue_work+0x33/0x50
+ [<ffffffff8025e84f>] queue_work_on+0xaf/0xc0
+ [<ffffffff8025e896>] queue_work+0x16/0x20
+ [<ffffffff8025db2f>] call_usermodehelper_exec+0xff/0x130
+ [<ffffffff8026ccfc>] ? prepare_usermodehelper_creds+0x15c/0x180
+ [<ffffffff8026ccfc>] ? prepare_usermodehelper_creds+0x15c/0x180
+ [<ffffffff803af071>] kobject_uevent_env+0x8f1/0x900
+ [<ffffffff8020c6d6>] ? ftrace_call+0x5/0x2b
+ [<ffffffff803af08b>] kobject_uevent+0xb/0x10
+ [<ffffffff8040f373>] device_add+0x793/0xa70
+ [<ffffffff8040f66e>] device_register+0x1e/0x30
+ [<ffffffff8040f8de>] device_create_vargs+0x13e/0x180
+ [<ffffffff8040f951>] device_create+0x31/0x40
+ [<ffffffff8020c6d6>] ? ftrace_call+0x5/0x2b
+ [<ffffffff803eb30b>] vcs_make_sysfs+0x3b/0x70
+ [<ffffffff803f4e18>] con_open+0x128/0x160
+ [<ffffffff803dda5d>] tty_open+0x2fd/0x7a0
+ [<ffffffff802ef8f5>] chrdev_open+0x185/0x230
+ [<ffffffff802ef770>] ? chrdev_open+0x0/0x230
+ [<ffffffff802e823f>] __dentry_open+0x1ff/0x4c0
+ [<ffffffff802e862c>] nameidata_to_filp+0x4c/0x80
+ [<ffffffff802fc86e>] do_filp_open+0x39e/0xd20
+ [<ffffffff805c2aa4>] ? __spin_unlock_irqrestore+0x74/0xb0
+ [<ffffffff805bf8da>] ? rt_spin_lock_slowunlock+0x5a/0xa0
+ [<ffffffff8030bab4>] ? alloc_fd+0xa4/0x1e0
+ [<ffffffff802e7f43>] do_sys_open+0xd3/0x160
+ [<ffffffff802e8010>] sys_open+0x20/0x30
+ [<ffffffff8020ca48>] system_call_fastpath+0x16/0x1b
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/trace/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/trace/Kconfig
+===================================================================
+--- linux-2.6-tip.orig/kernel/trace/Kconfig
++++ linux-2.6-tip/kernel/trace/Kconfig
+@@ -322,7 +322,7 @@ config KMEMTRACE
+ 	  If unsure, say N.
+ 
+ config WORKQUEUE_TRACER
+-	bool "Trace workqueues"
++	bool "Trace workqueues" if !PREEMPT_RT
+ 	select TRACING
+ 	help
+ 	  The workqueue tracer provides some statistical informations

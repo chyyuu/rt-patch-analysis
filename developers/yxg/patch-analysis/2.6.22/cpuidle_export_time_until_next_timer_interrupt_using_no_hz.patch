@@ -1,0 +1,147 @@
+commit 85b2afe395e09ffb6a0bdb88d8e0fe80f039ef30
+Author: Adam Belay <abelay@novell.com>
+Date:   Sat Mar 24 03:47:03 2007 -0400
+
+    cpuidle: export time until next timer interrupt using NO_HZ
+    
+    Expose information about the time remaining until the next
+    timer interrupt expires by utilizing the dynticks infrastructure.
+    Also modify the main idle loop to allow dynticks to handle
+    non-interrupt break events (e.g. DMA).  Finally, expose sleep ticks
+    information to external code.  Thomas Gleixner is responsible for much
+    of the code in this patch.  However, I've made some additional changes,
+    so I'm probably responsible if there are any bugs or oversights :)
+    
+    
+    Signed-off-by: Adam Belay <abelay@novell.com>
+    Signed-off-by: Len Brown <len.brown@intel.com>
+
+---
+ arch/i386/kernel/process.c |    3 ++-
+ include/linux/tick.h       |   10 ++++++++++
+ kernel/softirq.c           |    5 -----
+ kernel/time/tick-sched.c   |   24 ++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 6 deletions(-)
+
+Index: linux-rt.q/arch/i386/kernel/process.c
+===================================================================
+--- linux-rt.q.orig/arch/i386/kernel/process.c
++++ linux-rt.q/arch/i386/kernel/process.c
+@@ -179,13 +179,14 @@ void cpu_idle(void)
+ 
+ 	/* endless idle loop with no priority at all */
+ 	while (1) {
+-		tick_nohz_stop_sched_tick();
+ 		while (!need_resched()) {
+ 			void (*idle)(void);
+ 
+ 			if (__get_cpu_var(cpu_idle_state))
+ 				__get_cpu_var(cpu_idle_state) = 0;
+ 
++			tick_nohz_stop_sched_tick();
++
+ 			check_pgt_cache();
+ 			rmb();
+ 			idle = pm_idle;
+Index: linux-rt.q/include/linux/tick.h
+===================================================================
+--- linux-rt.q.orig/include/linux/tick.h
++++ linux-rt.q/include/linux/tick.h
+@@ -40,6 +40,7 @@ enum tick_nohz_mode {
+  * @idle_sleeps:	Number of idle calls, where the sched tick was stopped
+  * @idle_entrytime:	Time when the idle call was entered
+  * @idle_sleeptime:	Sum of the time slept in idle with sched tick stopped
++ * @sleep_length:	Duration of the current idle sleep
+  */
+ struct tick_sched {
+ 	struct hrtimer			sched_timer;
+@@ -52,6 +53,7 @@ struct tick_sched {
+ 	unsigned long			idle_sleeps;
+ 	ktime_t				idle_entrytime;
+ 	ktime_t				idle_sleeptime;
++	ktime_t				sleep_length;
+ 	unsigned long			last_jiffies;
+ 	unsigned long			next_jiffies;
+ 	ktime_t				idle_expires;
+@@ -100,10 +102,18 @@ static inline int tick_check_oneshot_cha
+ extern void tick_nohz_stop_sched_tick(void);
+ extern void tick_nohz_restart_sched_tick(void);
+ extern void tick_nohz_update_jiffies(void);
++extern ktime_t tick_nohz_get_sleep_length(void);
++extern unsigned long tick_nohz_get_idle_jiffies(void);
+ # else
+ static inline void tick_nohz_stop_sched_tick(void) { }
+ static inline void tick_nohz_restart_sched_tick(void) { }
+ static inline void tick_nohz_update_jiffies(void) { }
++static inline ktime_t tick_nohz_get_sleep_length(void)
++{
++	ktime_t len = { .tv64 = NSEC_PER_SEC/HZ };
++
++	return len;
++}
+ # endif /* !NO_HZ */
+ 
+ #endif
+Index: linux-rt.q/kernel/softirq.c
+===================================================================
+--- linux-rt.q.orig/kernel/softirq.c
++++ linux-rt.q/kernel/softirq.c
+@@ -303,11 +303,6 @@ void irq_exit(void)
+ 	if (!in_interrupt() && local_softirq_pending())
+ 		invoke_softirq();
+ 
+-#ifdef CONFIG_NO_HZ
+-	/* Make sure that timer wheel updates are propagated */
+-	if (!in_interrupt() && idle_cpu(smp_processor_id()) && !need_resched())
+-		tick_nohz_stop_sched_tick();
+-#endif
+ 	preempt_enable_no_resched();
+ }
+ 
+Index: linux-rt.q/kernel/time/tick-sched.c
+===================================================================
+--- linux-rt.q.orig/kernel/time/tick-sched.c
++++ linux-rt.q/kernel/time/tick-sched.c
+@@ -153,6 +153,7 @@ void tick_nohz_stop_sched_tick(void)
+ 	unsigned long seq, last_jiffies, next_jiffies, delta_jiffies, flags;
+ 	struct tick_sched *ts;
+ 	ktime_t last_update, expires, now, delta;
++	struct clock_event_device *dev = __get_cpu_var(tick_cpu_device).evtdev;
+ 	int cpu;
+ 
+ 	local_irq_save(flags);
+@@ -290,11 +291,34 @@ void tick_nohz_stop_sched_tick(void)
+ out:
+ 	ts->next_jiffies = next_jiffies;
+ 	ts->last_jiffies = last_jiffies;
++	ts->sleep_length = ktime_sub(dev->next_event, now);
+ end:
+ 	local_irq_restore(flags);
+ }
+ 
+ /**
++ * tick_nohz_get_sleep_length - return the length of the current sleep
++ *
++ * Called from power state control code with interrupts disabled
++ */
++ktime_t tick_nohz_get_sleep_length(void)
++{
++       struct tick_sched *ts = &__get_cpu_var(tick_cpu_sched);
++
++       return ts->sleep_length;
++}
++
++/**
++ * tick_nohz_get_idle_jiffies - returns the current idle jiffie count
++ */
++unsigned long tick_nohz_get_idle_jiffies(void)
++{
++       struct tick_sched *ts = &__get_cpu_var(tick_cpu_sched);
++
++       return ts->idle_jiffies;
++}
++
++/**
+  * nohz_restart_sched_tick - restart the idle tick from the idle task
+  *
+  * Restart the idle tick when the CPU is woken up from idle

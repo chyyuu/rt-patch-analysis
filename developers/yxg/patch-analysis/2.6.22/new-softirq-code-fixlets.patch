@@ -1,0 +1,84 @@
+---
+ kernel/softirq.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
+
+Index: linux-rt.q/kernel/softirq.c
+===================================================================
+--- linux-rt.q.orig/kernel/softirq.c
++++ linux-rt.q/kernel/softirq.c
+@@ -102,6 +102,7 @@ static void wakeup_softirqd(int softirq)
+ 
+ 	if (unlikely(!tsk))
+ 		return;
++#if 1
+ #if defined(CONFIG_PREEMPT_SOFTIRQS) && defined(CONFIG_PREEMPT_HARDIRQS)
+ 	/*
+ 	 * Optimization: if we are in a hardirq thread context, and
+@@ -116,6 +117,7 @@ static void wakeup_softirqd(int softirq)
+ 			(tsk->normal_prio == current->normal_prio))
+ 		return;
+ #endif
++#endif
+ 	/*
+ 	 * Wake up the softirq task:
+ 	 */
+@@ -771,19 +773,18 @@ static int ksoftirqd(void * __data)
+ 	struct softirq_action *h;
+ 	int cpu = data->cpu;
+ 
+-	current->flags |= PF_NOFREEZE | PF_SOFTIRQ;
+-
+ #ifdef CONFIG_PREEMPT_SOFTIRQS
+ 	init_waitqueue_head(&data->wait);
+ #endif
+ 
+ 	sys_sched_setscheduler(current->pid, SCHED_FIFO, &param);
++	current->flags |= PF_NOFREEZE | PF_SOFTIRQ;
+ 
+ 	set_current_state(TASK_INTERRUPTIBLE);
+ 
+ 	while (!kthread_should_stop()) {
+ 		preempt_disable();
+-		if (!local_softirq_pending() & softirq_mask) {
++		if (!(local_softirq_pending() & softirq_mask)) {
+ sleep_more:
+ 			__preempt_enable_no_resched();
+ 			schedule();
+@@ -792,7 +793,11 @@ sleep_more:
+ 
+ 		__set_current_state(TASK_RUNNING);
+ 
+-		while (local_softirq_pending() & soft_irqmask) {
++#ifdef CONFIG_PREEMPT_SOFTIRQS
++		data->running = 1;
++#endif
++
++		while (local_softirq_pending() & softirq_mask) {
+ 			/* Preempt disable stops cpu going offline.
+ 			   If already offline, we'll be on wrong CPU:
+ 			   don't process */
+@@ -930,6 +935,9 @@ static int __cpuinit cpu_callback(struct
+ 		for (i = 0; i < MAX_SOFTIRQ; i++) {
+ 			per_cpu(ksoftirqd, hotcpu)[i].nr = i;
+ 			per_cpu(ksoftirqd, hotcpu)[i].cpu = hotcpu;
++			per_cpu(ksoftirqd, hotcpu)[i].tsk = NULL;
++		}
++		for (i = 0; i < MAX_SOFTIRQ; i++) {
+ 			p = kthread_create(ksoftirqd,
+ 					   &per_cpu(ksoftirqd, hotcpu)[i],
+ 					   "softirq-%s/%d", softirq_names[i],
+@@ -952,12 +960,14 @@ static int __cpuinit cpu_callback(struct
+ #ifdef CONFIG_HOTPLUG_CPU
+ 	case CPU_UP_CANCELED:
+ 	case CPU_UP_CANCELED_FROZEN:
++#if 0
+ 		for (i = 0; i < MAX_SOFTIRQ; i++) {
+ 			if (!per_cpu(ksoftirqd, hotcpu)[i].tsk)
+ 				continue;
+ 			kthread_bind(per_cpu(ksoftirqd, hotcpu)[i].tsk,
+ 				     any_online_cpu(cpu_online_map));
+ 		}
++#endif
+ 	case CPU_DEAD:
+ 	case CPU_DEAD_FROZEN:
+ 		for (i = 0; i < MAX_SOFTIRQ; i++) {

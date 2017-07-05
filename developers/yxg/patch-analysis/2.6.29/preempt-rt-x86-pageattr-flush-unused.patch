@@ -1,0 +1,24 @@
+Subject: preempt-rt-x86-pageattr-flush-unused.patch
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 16 Feb 2009 23:15:49 +0100
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ arch/x86/mm/pageattr.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: linux-2.6-tip/arch/x86/mm/pageattr.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/mm/pageattr.c
++++ linux-2.6-tip/arch/x86/mm/pageattr.c
+@@ -839,8 +839,10 @@ static int change_page_attr_set_clr(unsi
+ 		}
+ 	}
+ 
++#if 0
+ 	/* Must avoid aliasing mappings in the highmem code */
+ 	kmap_flush_unused();
++#endif
+ 
+ 	vm_unmap_aliases();
+ 

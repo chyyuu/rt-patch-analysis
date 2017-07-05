@@ -1,0 +1,24 @@
+Subject: rt: irq handle.c fix2
+From: Ingo Molnar <mingo@elte.hu>
+Date: Sun Feb 08 18:06:00 CET 2009
+
+=> fold back to mingo-rt-irq-handle.c-fix.patch
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ kernel/irq/handle.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: linux-2.6-tip/kernel/irq/handle.c
+===================================================================
+--- linux-2.6-tip.orig/kernel/irq/handle.c
++++ linux-2.6-tip/kernel/irq/handle.c
+@@ -430,7 +430,7 @@ int redirect_hardirq(struct irq_desc *de
+ 		return 0;
+ 
+ #ifdef __i386__
+-	if (debug_direct_keyboard && (desc - irq_desc == 1))
++	if (debug_direct_keyboard && desc->irq == 1)
+ 		return 0;
+ #endif
+ 

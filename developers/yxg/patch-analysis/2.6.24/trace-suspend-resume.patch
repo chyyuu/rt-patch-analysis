@@ -1,0 +1,67 @@
+From: Ingo Molnar <mingo@elte.hu>
+Subject: Re: [mingo@elte.hu: Re: [BUG] Strange 1-second pauses during Resume-from-RAM]
+
+
+* Ingo Molnar <mingo@elte.hu> wrote:
+
+> some suspend/resume add-ons below.
+
+oops, replacement patch for the latency_tracing.c hunk:
+
+---
+Index: linux/kernel/latency_trace.c
+===================================================================
+--- linux.orig/kernel/latency_trace.c
++++ linux/kernel/latency_trace.c
+@@ -258,19 +258,28 @@ static struct cpu_trace cpu_traces[NR_CP
+ #endif
+  } };
+ 
+-static notrace cycle_t now(struct cpu_trace *tr, int monotonic)
++static inline notrace cycle_t __now(int monotonic)
+ {
+-	cycles_t now, delta, last = tr->last_cycles;
++	cycles_t now;
+ 
+ 	if (trace_use_raw_cycles && !monotonic)
+ 		now = get_cycles();
+ 	else
+ 		now = get_monotonic_cycles();
+ 
++	return now;
++}
++
++static notrace cycle_t now(struct cpu_trace *tr, int monotonic)
++{
++	cycles_t now, delta, last = tr->last_cycles;
++
++	now = __now(monotonic);
++
+ 	/*
+ 	 * Protect against time warps:
+ 	 */
+-	if (unlikely(now < last))
++	if (unlikely(now < last || !last))
+ 		delta = 1;
+ 	else
+ 		delta = now - last;
+@@ -281,6 +290,17 @@ static notrace cycle_t now(struct cpu_tr
+ 	return tr->cycles;
+ }
+ 
++/*
++ * Resume callback - ignore any time spent resumed:
++ * (the clocksource readout might be unreliable anyway)
++ */
++void notrace trace_resume(void)
++{
++	struct cpu_trace *tr = cpu_traces + raw_smp_processor_id();
++
++	tr->last_cycles = 0;
++	mcount();
++}
+ 
+ #ifdef CONFIG_EVENT_TRACE
+ 
+
+

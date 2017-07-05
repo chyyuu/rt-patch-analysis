@@ -1,0 +1,87 @@
+Subject: rt: mutex x86 64
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:03:04 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ arch/x86/Kconfig              |    2 +-
+ arch/x86/kernel/dumpstack.c   |    8 ++++----
+ arch/x86/kernel/tsc_sync.c    |    2 +-
+ arch/x86/kernel/vsyscall_64.c |    2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+Index: linux-2.6-tip/arch/x86/Kconfig
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/Kconfig
++++ linux-2.6-tip/arch/x86/Kconfig
+@@ -125,7 +125,7 @@ config ASM_SEMAPHORES
+ 
+ config RWSEM_XCHGADD_ALGORITHM
+ 	bool
+-	depends on X86_XADD && !RWSEM_GENERIC_SPINLOCK
++	depends on X86_XADD && !RWSEM_GENERIC_SPINLOCK && !PREEMPT_RT
+ 	default y
+ 
+ config ARCH_HAS_CPU_IDLE_WAIT
+Index: linux-2.6-tip/arch/x86/kernel/dumpstack.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/dumpstack.c
++++ linux-2.6-tip/arch/x86/kernel/dumpstack.c
+@@ -188,7 +188,7 @@ void dump_stack(void)
+ }
+ EXPORT_SYMBOL(dump_stack);
+ 
+-static raw_spinlock_t die_lock = __RAW_SPIN_LOCK_UNLOCKED;
++static raw_spinlock_t die_lock = RAW_SPIN_LOCK_UNLOCKED(die_lock);
+ static int die_owner = -1;
+ static unsigned int die_nest_count;
+ 
+@@ -207,11 +207,11 @@ unsigned __kprobes long oops_begin(void)
+ 	/* racy, but better than risking deadlock. */
+ 	raw_local_irq_save(flags);
+ 	cpu = smp_processor_id();
+-	if (!__raw_spin_trylock(&die_lock)) {
++	if (!spin_trylock(&die_lock)) {
+ 		if (cpu == die_owner)
+ 			/* nested oops. should stop eventually */;
+ 		else
+-			__raw_spin_lock(&die_lock);
++			spin_lock(&die_lock);
+ 	}
+ 	die_nest_count++;
+ 	die_owner = cpu;
+@@ -231,7 +231,7 @@ void __kprobes oops_end(unsigned long fl
+ 	die_nest_count--;
+ 	if (!die_nest_count)
+ 		/* Nest count reaches zero, release the lock. */
+-		__raw_spin_unlock(&die_lock);
++		spin_unlock(&die_lock);
+ 	raw_local_irq_restore(flags);
+ 	oops_exit();
+ 
+Index: linux-2.6-tip/arch/x86/kernel/tsc_sync.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/tsc_sync.c
++++ linux-2.6-tip/arch/x86/kernel/tsc_sync.c
+@@ -33,7 +33,7 @@ static __cpuinitdata atomic_t stop_count
+  * we want to have the fastest, inlined, non-debug version
+  * of a critical section, to be able to prove TSC time-warps:
+  */
+-static __cpuinitdata raw_spinlock_t sync_lock = __RAW_SPIN_LOCK_UNLOCKED;
++static __cpuinitdata __raw_spinlock_t sync_lock = __RAW_SPIN_LOCK_UNLOCKED;
+ static __cpuinitdata cycles_t last_tsc;
+ static __cpuinitdata cycles_t max_warp;
+ static __cpuinitdata int nr_warps;
+Index: linux-2.6-tip/arch/x86/kernel/vsyscall_64.c
+===================================================================
+--- linux-2.6-tip.orig/arch/x86/kernel/vsyscall_64.c
++++ linux-2.6-tip/arch/x86/kernel/vsyscall_64.c
+@@ -59,7 +59,7 @@ int __vgetcpu_mode __section_vgetcpu_mod
+ 
+ struct vsyscall_gtod_data __vsyscall_gtod_data __section_vsyscall_gtod_data =
+ {
+-	.lock = SEQLOCK_UNLOCKED,
++	.lock = __RAW_SEQLOCK_UNLOCKED(__vsyscall_gtod_data.lock),
+ 	.sysctl_enabled = 1,
+ };
+ 

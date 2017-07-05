@@ -1,0 +1,27 @@
+Subject: rt: mutex trivial tcp preempt fix
+From: Ingo Molnar <mingo@elte.hu>
+Date: Wed Feb 04 00:03:05 CET 2009
+
+Signed-off-by: Ingo Molnar <mingo@elte.hu>
+---
+ net/ipv4/tcp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: linux-2.6-tip/net/ipv4/tcp.c
+===================================================================
+--- linux-2.6-tip.orig/net/ipv4/tcp.c
++++ linux-2.6-tip/net/ipv4/tcp.c
+@@ -1322,11 +1322,11 @@ int tcp_recvmsg(struct kiocb *iocb, stru
+ 		    (len > sysctl_tcp_dma_copybreak) && !(flags & MSG_PEEK) &&
+ 		    !sysctl_tcp_low_latency &&
+ 		    dma_find_channel(DMA_MEMCPY)) {
+-			preempt_enable_no_resched();
++			preempt_enable();
+ 			tp->ucopy.pinned_list =
+ 					dma_pin_iovec_pages(msg->msg_iov, len);
+ 		} else {
+-			preempt_enable_no_resched();
++			preempt_enable();
+ 		}
+ 	}
+ #endif
