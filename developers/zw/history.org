@@ -31,73 +31,73 @@
 * [2.6.22         ] radix-tree: gang_lookup_slot {C::performance::function for lockless lookup on radix tree}
   + [[file:2.6.22/radix-tree-gang_lookup_slot.patch][2.6.22]] {MOD::lib,include/linux}
   - 2.6.23
-* [2.6.22         ] rt: convert the filevec primites for -RT
+* [2.6.22         ] rt: convert the filevec primites for -RT {C::TODO}
   + [[file:2.6.22/s_files-per_cpu-rt.patch][2.6.22]] {MOD::fs}
   - 2.6.23
-* [2.6.22         ] highres-improve-debug-output-fix.patch
+* [2.6.22         ] highres-improve-debug-output-fix.patch {C::feature::improved debug output}
   + [[file:2.6.22/highres-improve-debug-output-fix.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_add_menu_governor.patch
+* [2.6.22         ] cpuidle_add_menu_governor.patch {C::feature::add the 'menu' governor}
   + [[file:2.6.22/cpuidle_add_menu_governor.patch][2.6.22]] {MOD::drivers/cpuidle,drivers/cpuidle/governors}
   - 2.6.23
-* [2.6.22         ] x86_64-fix-irq-regs-leftovers.patch
+* [2.6.22         ] x86_64-fix-irq-regs-leftovers.patch {C::restruct::change function signature}
   + [[file:2.6.22/x86_64-fix-irq-regs-leftovers.patch][2.6.22]] {MOD::arch/x86_64/kernel}
   - 2.6.23
-* [2.6.22         ] i386-remove-volatile-in-apicc.patch
+* [2.6.22         ] i386-remove-volatile-in-apicc.patch {C::restruct::remove the volatile in apic and fix a coding style issue}
   + [[file:2.6.22/i386-remove-volatile-in-apicc.patch][2.6.22]] {MOD::arch/i386/kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle-fix-modular-build.patch
+* [2.6.22         ] cpuidle-fix-modular-build.patch {C::fixbug::??::export symbols to modules}
   + [[file:2.6.22/cpuidle-fix-modular-build.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] hrtimer-no-getnstimeofday.patch
+* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::restruct::remove getnstimeofday}
   + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]] {MOD::kernel,kernel/time,include/linux}
   - 2.6.23
-* [2.6.22         ] futex-tidy-up-the-code-v2.patch
+* [2.6.22         ] futex-tidy-up-the-code-v2.patch {C::restruct::tidy up the code}
   + [[file:2.6.22/futex-tidy-up-the-code-v2.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] slob-scale-no-bigblock-list.patch
+* [2.6.22         ] slob-scale-no-bigblock-list.patch {C::performance::use mem_map pages}
   + [[file:2.6.22/slob-scale-no-bigblock-list.patch][2.6.22]] {MOD::mm}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch {C::restruct::move code for cmos clock into kernel/time/ntp.c}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc.patch][2.6.22]] {MOD::arch/sparc64,kernel/time,arch/sparc64/kernel,include/linux,arch/i386/kernel,arch/i386,include/asm-i386}
   - 2.6.23
-* [2.6.22         ] hrt-rt-fix-merge-artifact.patch
+* [2.6.22         ] hrt-rt-fix-merge-artifact.patch {C::restruct::fix merge artifact}
   + [[file:2.6.22/hrt-rt-fix-merge-artifact.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] lockstat: better class name representation
+* [2.6.22         ] lockstat: better class name representation {C::feature::better class name representation}
   + [[file:2.6.22/lockstat_class_name.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] hrtimer-speedup-hrtimer_enqueue.patch
+* [2.6.22         ] hrtimer-speedup-hrtimer_enqueue.patch {C::preformance::speedup hrtimer_enqueue}
   + [[file:2.6.22/hrtimer-speedup-hrtimer_enqueue.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] i386-hpet-assumes-boot-cpu-is-0.patch
+* [2.6.22         ] i386-hpet-assumes-boot-cpu-is-0.patch {C::fixbug::??::hardware::get the boot cpu id}
   + [[file:2.6.22/i386-hpet-assumes-boot-cpu-is-0.patch][2.6.22]] {MOD::arch/i386/kernel}
   - 2.6.23
-* [2.6.22         ] hpet-build-fix.patch
+* [2.6.22         ] hpet-build-fix.patch {C::fixbug::??::add header file}
   + [[file:2.6.22/hpet-build-fix.patch][2.6.22]] {MOD::arch/i386/kernel}
   - 2.6.23
-* [2.6.22         ] x86_64-convert-to-cleckevents.patch
+* [2.6.22         ] x86_64-convert-to-cleckevents.patch {C::feature::use clockevents framework for x86_64}
   + [[file:2.6.22/x86_64-convert-to-cleckevents.patch][2.6.22]] {MOD::arch/x86_64/kernel,arch/x86_64,include/asm-x86_64}
   - 2.6.23
-* [2.6.22         ] mm-lockless-preempt-fixup.patch
+* [2.6.22         ] mm-lockless-preempt-fixup.patch {C::fixbug::livelock::fun::create/use new functions}
   + [[file:2.6.22/mm-lockless-preempt-fixup.patch][2.6.22]] {MOD::mm,include/linux}
   - 2.6.23
-* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch
+* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch {C::bugfix::hang::check if HPET counter works}
   + [[file:2.6.22/i386-hpet-check-if-the-counter-works.patch][2.6.22]] {MOD::arch/i386/kernel}
   - 2.6.23
-* [2.6.22         ] spinlock-init-cleanup.patch
+* [2.6.22         ] spinlock-init-cleanup.patch {C::restruct::spinlock init cleanup}
   + [[file:2.6.22/spinlock-init-cleanup.patch][2.6.22]] {MOD::drivers/pci/pcie/aer}
   - 2.6.23
-* [2.6.22         ] x86_64-fix-apic-typo.patch
+* [2.6.22         ] x86_64-fix-apic-typo.patch {C::restruct::fix a typo}
   + [[file:2.6.22/x86_64-fix-apic-typo.patch][2.6.22]] {MOD::arch/x86_64/kernel,include/asm-x86_64}
   - 2.6.23
-* [2.6.22         ] lockstat: core infrastructure
+* [2.6.22         ] lockstat: core infrastructure {C::feature::lock statistics}
   + [[file:2.6.22/lockstat-core.patch][2.6.22]] {MOD::kernel,lib,include/linux}
   - 2.6.23
-* [2.6.22         ] tick-management-spread-timer-interrupt.patch
+* [2.6.22         ] tick-management-spread-timer-interrupt.patch {C::performance::adds an extra offset per cpu}
   + [[file:2.6.22/tick-management-spread-timer-interrupt.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch
+* [2.6.22         ] cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch {C::fixbug::??::export acpi_set_cstate_limit}
   + [[file:2.6.22/cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch][2.6.22]] {MOD::drivers/acpi}
   - 2.6.23
 * [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch
