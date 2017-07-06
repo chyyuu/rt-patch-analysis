@@ -1,34 +1,34 @@
-* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch
+* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::maintain::basic documentation for cpuidle}
   + [[file:2.6.22/cpuidle_take2_basic_documentation_for_cpuidle.patch][2.6.22]] {MOD::Documentation/cpuidle}
   - 2.6.23
-* [2.6.22         ] cpuidle_1_bit_field_must_be_unsigned.patch
+* [2.6.22         ] cpuidle_1_bit_field_must_be_unsigned.patch {C::bugfix::??::dubious bitfield::1-bit field must be unsigned}
   + [[file:2.6.22/cpuidle_1_bit_field_must_be_unsigned.patch][2.6.22]] {MOD::drivers/cpuidle/governors}
   - 2.6.23
-* [2.6.22         ] slob-scale-break-out-caches.patch
+* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::cache::kmem_cache,slobfree for every cache}
   + [[file:2.6.22/slob-scale-break-out-caches.patch][2.6.22]] {MOD::mm}
   - 2.6.23
-* [2.6.22         ] sched-cfs-v2.6.22.1-v19.patch
+* [2.6.22         ] sched-cfs-v2.6.22.1-v19.patch {C::feature::CFS scheduler}
   + [[file:2.6.22/sched-cfs-v2.6.22.1-v19.patch][2.6.22]] {MOD::kernel,Documentation,arch/ia64/kernel,lib,include/asm-generic/bitops,arch/sparc/kernel,include/linux,arch/sparc64/kernel,fs/proc,init,arch/i386/kernel,block,arch/mips/kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_api_change.patch
+* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::optional stage after idle state entry}
   + [[file:2.6.22/cpuidle_governor_api_change.patch][2.6.22]] {MOD::drivers/cpuidle,drivers/cpuidle/governors,include/linux}
   - 2.6.23
-* [2.6.22         ] s_files-per_cpu-flush-fix.patch
+* [2.6.22         ] s_files-per_cpu-flush-fix.patch {C::fixbug::TODO}
   + [[file:2.6.22/s_files-per_cpu-flush-fix.patch][2.6.22]] {MOD::fs}
   - 2.6.23
-* [2.6.22         ] lockstat: hook into spinlock_t, rwlock_t, rwsem and mutex
+* [2.6.22         ] lockstat: hook into spinlock_t, rwlock_t, rwsem and mutex {C::feature::hook lockstat function into lock primitives}
   + [[file:2.6.22/lockstat-hooks.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] lockstat: human readability tweaks
+* [2.6.22         ] lockstat: human readability tweaks {C::feature::human readable /proc/lock_stat}
   + [[file:2.6.22/lockstat-output.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] s_files-proc-generic-fix.patch
+* [2.6.22         ] s_files-proc-generic-fix.patch {C::fixbug::??::move filevec_add_drain_all() around}
   + [[file:2.6.22/s_files-proc-generic-fix.patch][2.6.22]] {MOD::fs/proc}
   - 2.6.23
-* [2.6.22         ] lockdep: variuos fixes
+* [2.6.22         ] lockdep: variuos fixes {C::fixbug::??::variuos fixes on lockdep}
   + [[file:2.6.22/lockdep_fixups.patch][2.6.22]] {MOD::kernel,include/linux}
   - 2.6.23
-* [2.6.22         ] radix-tree: gang_lookup_slot
+* [2.6.22         ] radix-tree: gang_lookup_slot {C::performance::function for lockless lookup on radix tree}
   + [[file:2.6.22/radix-tree-gang_lookup_slot.patch][2.6.22]] {MOD::lib,include/linux}
   - 2.6.23
 * [2.6.22         ] rt: convert the filevec primites for -RT
