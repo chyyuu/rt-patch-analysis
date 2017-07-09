@@ -1,13 +1,13 @@
-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::feature}
+* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::bugfix::PIT malfunction::config err::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
   + [[file:2.6.22/i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch][2.6.22]]  {MOD::arch/i386}
   - 2.6.23  {M}
-* [2.6.22         ] clockevents-fix-device-replacement.patch {C::feature}
+* [2.6.22         ] clockevents-fix-device-replacement.patch {C::bugfix::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
   + [[file:2.6.22/clockevents-fix-device-replacement.patch][2.6.22]]  {kernel} 
   - 2.6.23  {M}
-* [2.6.22         ] barrier - a scalable synchonisation barrier {C::perf}
+* [2.6.22         ] barrier - a scalable synchonisation barrier {C::feature::barrier_lock & barrier_lock[avoid cache bouncing]}
   + [[file:2.6.22/barrier.patch][2.6.22]]  {MOD::include/linux} {API::init_barrier, barrier_lock, barrier_sync}
   - 2.6.23  {D}
-* [2.6.22         ] cpuidle_last_measured_004.patch  {C::perf}
+* [2.6.22         ] cpuidle_last_measured_004.patch  {C::perf?::add a counter of wakeup early, eliminate the state when threshold exceeded}
   + [[file:2.6.22/cpuidle_last_measured_004.patch][2.6.22]]  {MOD::drivers/cpuidle} {API::menu_select,menu_reflect,menu_scan_devic}
   - 2.6.23  
 * [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::null}

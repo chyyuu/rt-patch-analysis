@@ -1,0 +1,6 @@
+- Our problem is not the same with FAST'13. A bigger scope than fs.
+  - A concise definition of problem sort is needed, or different and more detail whatever.
+  - e.g. Does the performance patch a RT relevant performance enhancement or the whole system, as the 2.6.22-cpuidle_last_measured_004.patch. This lead to the other two problem below.
+- Some patch change I find not relevant with RT features directly. Not all the patches is about preempte, I guess, most are not.
+  - The problem is do we need to find the connection? Does it a normal patch or something specific in RT? The second question is beyond our discuss currently. 
+  - Although I just read few patches, I think it is necessary. Should we isolate preempte things from the other patches we don't yet know the relation with RT?
