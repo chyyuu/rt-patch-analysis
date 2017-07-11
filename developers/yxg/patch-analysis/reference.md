@@ -38,4 +38,37 @@ Didn't find much ref in linux documentation
     - cpuidle framework
       - [wowotech cpuidle](http://www.wowotech.net/pm_subsystem/cpuidle_overview.html)
     - c state
-    
+
+- cpuidle_add_support_for_max_cstate_limit.patch
+  - move the max cstate set in acpi.h to osl.c, the other change seems to get or set the max_cstate, and make it available for some setup.
+  > It are quite many things about cpuidle framework in 2.6.22, and never show up again in the following versions.
+
+- use-write_trylock_irqsave-in-ptrace_attach.patch
+  - Use ```write_trylock_irqsave``` instead of ```write_trylock```. And remove ```local_irq_disable``` things.
+  > The first patch relevant with preempt qaq
+  > Actually no change, the irqsave will disable interrupt even in mainline.
+  - REF
+    - [Linux man page](https://linux.die.net/man/2/ptrace)
+    - [Wikipedia](https://en.wikipedia.org/wiki/Ptrace)
+    - [Linux journal](http://www.linuxjournal.com/article/6100)
+
+- hrtimer-no-getnstimeofday.patch
+  - [high resolution timer](https://github.com/torvalds/linux/blob/master/Documentation/timers/hrtimers.txt)
+  > The function ```getnstimeofday``` is replaced by some other functions. I don't know the reason why replace it, just sort this patch as performance.
+
+- nohz-fix-nohz-x86-dyntick-idle-handling.patch
+  - nohz in cpuidle
+
+- slob-scale-break-out-caches.patch
+  - The first part of linux I learned and moved to ucore+ one year ago, so familiar with the code
+  - The kmem_cache is reintroduced, and of course the way to trace the list of it
+
+- preempt-realtime-gtod-fixups.patch
+  > Not quite sure it is a perf patch, as maybe something malfunction when irqsaved
+  - gtod: generic time-of-day
+
+- lockstat-core.patch
+  > Maybe I need to read the detail someday.
+
+- cdrom-use-mdelay-instead-of-jiffies-loop.patch
+  > I doubt whether it should be put in perf

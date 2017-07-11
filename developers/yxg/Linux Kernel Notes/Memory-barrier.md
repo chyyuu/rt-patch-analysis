@@ -58,9 +58,57 @@ Implicit varieties:
     > I thing it's vital!
     - No guarantee that some interveneing piece of off-the-CPU hardware will not reorder the memory accesses. **CPU cache coherency mechanisms should propagate the indirect effects of a memory barrier between CPUs, but might not do so in order** 
 
+### Barriers Details
+  - Data Dependency Barriers
+    > I think it as a good example:
+```
+	CPU 1		      CPU 2  
+	===============	      ===============  
+	{ A == 1, B == 2, C == 3, P == &A, Q == &C }  
+  1.    B = 4;  
+  2.    <write barrier>  
+  3.    WRITE_ONCE(P, &B);  
+  4.                          Q = READ_ONCE(P);  
+  5.                          <data dependency barrier>  
+  6.                          D = *Q;  
+```
+    - If there is no ```<data dependency barrier>```, **the value of B may be update after updating D, and the execute sequence is thus 3->4->6->1**. Notice that the ```<write barrier>``` could not guarrantee the load operation to execute after the write barrier.
+    - And thus, the ```<data dependency barrier>``` is inserted to make sure any store operation become effective before the barrier.
+    - **This is very important to the RCU system**
+    > However I find no barrier API used in the linux/include/linux/rcupdate.h
+  - Control Dependencies
+  > I think it is interesting, and the linux documentation provide us a lot of details
+  > Read the [documentation](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt#L640) carefully, I just take down some of my thoughts
+    - ?Current compilers do not understand them, some optimization is taken, leading to wrong order.
+    > I think it is false of compiler? and should not happen anyway?
+    - First, a definition of control dependencies: a store operation and a condition statement with the value updated with that operation. The code below is a load-load control sequence:
+```
+    q = READ_ONCE(a);
+    if(q){
+        p = READ_ONCE(b);
+    }
+```
+  - Problems:
+    - The CPU may short-circuit by attempting to predict the outcome in advance, so the other CPUs see the load from b having happened before the load from a.
+      - Thus a ```<read_barrier>``` is put before the load from b.
+    - Then there is something I don't know what does it explain about load-store sequence
+      - Two-legged if control ordering is used to garrantee the order, but the compiler may move the store operation out of the if statement and thus violate the order
+      - If the two legs are loading different, the load operation will not be moved out of the if statement.
+      - If you need to order the sequence of load-store, use the explicit mb like ```smp_store_release()``` to prevent compiler optimization.
+  - Control dependencies apply only to the then & else clause of the if-statement, doesn't necessarily apply to code following the if-statement.
+  - Control dependencies do not guarrantee transitivity, use ```smp_mb()``` if necessary
+### SMP barrier pairing
+  - Barriers can pair all other kinds of barriers, with some exceptions that read and write may not pair with themselves.
+  - The [Note](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt#L974) should be careful, because I don't get the reason why it is mentioned.
+### Examples of Memory Barrier Sequences
+  - As the example mentioned before, the ```<data_dependency_barrier>``` is used to combine the sequence of update of perception on both CPU. Without it, although the update in the second CPU is expected to execute the Load operation after the Store operation in the first CPU, there is no guarrantee that it will happen.
+  - Another example is trying to emphasis that the barrier is a *partial* barrier, but the picture of the sequence is *wrong*.
+
 
 ## Ref
   - [Linux Document](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt)
+  - [A formal kernel memory-ordering model (part 1)](https://lwn.net/Articles/718628/)
+  - [A formal kernel memory-ordering model (part 2)](https://lwn.net/Articles/720550/)
 
 ## TODOS
   - Linux ```READ_ONLY``` & ```WRITE_ONLY```

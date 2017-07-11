@@ -10,22 +10,22 @@
 * [2.6.22         ] cpuidle_last_measured_004.patch  {C::perf?::add a counter of wakeup early, eliminate the state when threshold exceeded}
   + [[file:2.6.22/cpuidle_last_measured_004.patch][2.6.22]]  {MOD::drivers/cpuidle} {API::menu_select,menu_reflect,menu_scan_devic}
   - 2.6.23  
-* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::null}
+* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::maintain::reconstruct}
   + [[file:2.6.22/i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch][2.6.22]]  {MOD::arch/i386, include/asm-i386} 
   - 2.6.23
-* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature}
+* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::making max_cstate available}
   + [[file:2.6.22/cpuidle_add_support_for_max_cstate_limit.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::reconstruct}
+* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::maintain::reconstruct[Use write_trylock_irqsave instead of write_trylock. And remove local_irq_disable things]}
   + [[file:2.6.22/use-write_trylock_irqsave-in-ptrace_attach.patch][2.6.22]]  {MOD::kernel/}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::null}
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::null::add a header file}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix.patch][2.6.22]]  {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::feature}
+* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::performance::replace getnstimeofday with other functions}
   + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::feature}
+* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::fixbug::add cond-compile for some arch where tick nohz handling went wrong}
   + [[file:2.6.22/nohz-fix-nohz-x86-dyntick-idle-handling.patch][2.6.22]]   {MOD::arch/i386}
   - 2.6.23
 * [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::??::sync::resume clockevent device before resume tick}
@@ -37,19 +37,19 @@
 * [2.6.22         ] i386-remove-volatile-in-apicc.patch {C::reconstruct::var::remove volatile feature in static int var}
   + [[file:2.6.22/i386-remove-volatile-in-apicc.patch][2.6.22]] {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::cache::use kmem_cache,remove global slobfree}
+* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::slob cache::use kmem_cache,remove global slobfree, anyway, implement some slab mechanism here again}
   + [[file:2.6.22/slob-scale-break-out-caches.patch][2.6.22]]  {MOD::mm}
   - 2.6.23
 * [2.6.22         ] highres-improve-debug-output.patch {C::feature::debuginfo::debuginfo for hrtimer and clock events}
   + [[file:2.6.22/highres-improve-debug-output.patch][2.6.22]] {MOD::arch/i386, kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idel handler}
+* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
   + [[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]  {MOD::dirvers/cpuidle}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::add opt stage to check something}
+* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::add opt stage, and let the governor to ?reflect on some device}
   + [[file:2.6.22/cpuidle_governor_api_change.patch][2.6.22]]  {MOD::dirvers/cpuidle, include/linux}
   - 2.6.23
-* [2.6.22         ] time-warp-detect.patch {C::fixbug::timer expire early::semantic::add wrap_check_clock_was_changed fun}
+* [2.6.22         ] time-warp-detect.patch {C::feature::semantic::add wrap_check_clock_changed to set timestamp per online cpu 0, and means in fun __get_realtime_clock_ to detected time warp bug}
   + [[file:2.6.22/time-warp-detect.patch][2.6.22]]  {MOD::kernel,kernel/time, include/linux}
   - 2.6.23
 * [2.6.22         ] preempt-realtime-gtod-fixups.patch {C::perf::disableirq::put read_persistent_clock() outside write_seqlock_irqsave/irqrestore}
@@ -61,16 +61,16 @@
 * [2.6.22         ] lockdep-prove-locking.patch {C::feature::add config}
   + [[file:2.6.22/lockdep-prove-locking.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::timer expire early::semantic::add wrap_check_clock_was_changed fun}
+* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compiling err::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
   + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]]  {MOD::kernel,kernel/time}
   - 2.6.23
-* [2.6.22         ] spinlock-init-cleanup.patch {C::restruct::spin_lock_init}
+* [2.6.22         ] spinlock-init-cleanup.patch {C::reconstruct::spin_lock_init}
   + [[file:2.6.22/spinlock-init-cleanup.patch][2.6.22]]  {MOD::drivers/pci}
   - 2.6.23
-* [2.6.22         ] x86_64-use-generic-cmos-update.patch {C::restruct::set_rtc_mmss}
+* [2.6.22         ] x86_64-use-generic-cmos-update.patch {C::reconstruct::set_rtc_mmss}
   + [[file:2.6.22/x86_64-use-generic-cmos-update.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch {C::feature::cpuidle}
+* [2.6.22         ] cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch {C::maintain::reconstruct::establish a united API of acpi_driver, divide the cstate into many functions, make it better readable}
   + [[file:2.6.22/cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
 * [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch {C::restruct::update_cmos_clock}
@@ -85,7 +85,7 @@
 * [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch {C::perf::msleep}
   + [[file:2.6.22/cdrom-use-mdelay-instead-of-jiffies-loop.patch][2.6.22]]  {MOD::drivers/cdrom}
   - 2.6.23
-* [2.6.22         ] cpuidle-fix-modular-build.patch {C::null}
+* [2.6.22         ] cpuidle-fix-modular-build.patch {C::feature::export module symbol}
   + [[file:2.6.22/cpuidle-fix-modular-build.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
 * [2.6.22         ] s_files-per_cpu-flush-fix.patch {C::fixbug::data lose::semantic::add workqueue to flush files}
