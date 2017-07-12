@@ -72,3 +72,18 @@ Didn't find much ref in linux documentation
 
 - cdrom-use-mdelay-instead-of-jiffies-loop.patch
   > I doubt whether it should be put in perf
+
+- s_files-per_cpu-fluch-fix.patch
+  > just add a function and don't know why data lose is mentioned
+
+- lockstat_bounce.patch
+  - seems inportant, relevant with both lock and cache bouncing
+
+- export symbol details
+
+- lockdep in linux
+
+- softlockup
+
+- mm-lockless-preempt-rt-fixup.patch
+> Maybe very important I think, need to config PREEMPT_RT on
