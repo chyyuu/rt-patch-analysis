@@ -103,7 +103,41 @@ Implicit varieties:
 ### Examples of Memory Barrier Sequences
   - As the example mentioned before, the ```<data_dependency_barrier>``` is used to combine the sequence of update of perception on both CPU. Without it, although the update in the second CPU is expected to execute the Load operation after the Store operation in the first CPU, there is no guarrantee that it will happen.
   - Another example is trying to emphasis that the barrier is a *partial* barrier, but the picture of the sequence is *wrong*.
+### Read MB vs. Load Speculation
+  - Many CPUs speculate with load, and do load operation when the bus is not busy to get better performance.
+  - e.g. Place a read barrier or a data dependency barrier between two load operation will force any value speculatively obtained to be reconsidered to an extent dependent on the type of barrier used, if there is any change took place, the speculated value will just be discarded.
+### Transitivity
+```
+	CPU 1			CPU 2			CPU 3
+	=======================	=======================	=======================
+		{ X = 0, Y = 0 }
+	STORE X=1		LOAD X			STORE Y=1
+				<general barrier>	<general barrier>
+				LOAD Y			LOAD X
+```
+  - Suppose CUP 2's load from X returns 1 and Y returns 0, indicates CPU 2's X load follows CPU 1, CPU2's Y load precedes CPU 3.
+  - And thus a intuitive transitivity is as CPU 2's Y load precedes CPU 3, CPU 3's load X returns 1.
+  - If a load executing on CPU A follows a load from the same variable executing on CPU B, then CPU A's load must either return the same value that CPU B's load did, or must return some later value.
+  - And the general barrier guarrantees this " global transitivity". And read or write barriers do not guarantee this transitivity, because it just guarantees the execution sequence in its own.
+  - And the acquire-release pair guarrantees the local transitivity
 
+## Explicit Kernel Barriers
+### Compiler barrier
+  - ```barrier()```
+    - Prevents the compiler from reordering accesses following the barrier.
+      - One example use for this property is to ease communication between interrupt-handler coder and the code that was interrupted.
+      > Not understand
+    - Within a loop, forces the compiler to load the variables used in that loop's conditional on each pass through that loop.
+    - ```READ_ONCE``` & ```WRITE_ONCE```
+      - Compiler may reorder the loads and stores to the some variable, and in some case, may reorder loads to the same variable.
+```
+    a[0] = x;
+    a[1] = x;
+// May result in the older value of x being stored in a[1] then in a[0]
+// Use READ_ONCE to prevent it
+    a[0] = READ_ONCE(x);
+    a[1] = READ_ONCE(y);
+```
 
 ## Ref
   - [Linux Document](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt)
