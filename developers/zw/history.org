@@ -100,73 +100,73 @@
 * [2.6.22         ] cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch {C::fixbug::??::export acpi_set_cstate_limit}
   + [[file:2.6.22/cpuidle_build_fix_cpuidle_vs_ipw2100_module.patch][2.6.22]] {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch
+* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::restruct::mvoe definition to header file}
   + [[file:2.6.22/i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch][2.6.22]] {MOD::include/asm-i386,arch/i386/kernel,include/asm-i386/mach-default}
   - 2.6.23
-* [2.6.22         ] x86_64-remove-now-useless-hpet-code.patch
+* [2.6.22         ] x86_64-remove-now-useless-hpet-code.patch {C::restruct::remove code}
   + [[file:2.6.22/x86_64-remove-now-useless-hpet-code.patch][2.6.22]] {MOD::arch/x86_64/kernel,dev}
   - 2.6.23
-* [2.6.22         ] sched-cfs-latest.patch
+* [2.6.22         ] sched-cfs-latest.patch {C::restruct::change code in sched.c}
   + [[file:2.6.22/sched-cfs-latest.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] mm-lockless-preempt-rt-fixup.patch
+* [2.6.22         ] mm-lockless-preempt-rt-fixup.patch {C::performance::remove cpu_relax in PREEMPT_RT}
   + [[file:2.6.22/mm-lockless-preempt-rt-fixup.patch][2.6.22]] {MOD::mm,include/linux}
   - 2.6.23
-* [2.6.22         ] timerc-cleanup-recently-introduced-whitespace-damage.patch
+* [2.6.22         ] timerc-cleanup-recently-introduced-whitespace-damage.patch {C::restruct::clean up whitespace}
   + [[file:2.6.22/timerc-cleanup-recently-introduced-whitespace-damage.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch
+* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::??::sync::check ARB_DIS status before reading from ICH deivce}
   + [[file:2.6.22/acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch][2.6.22]] {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] x86_64-apic-whitespace-comment-and-remove-unused-code.patch
+* [2.6.22         ] x86_64-apic-whitespace-comment-and-remove-unused-code.patch {C::restruct::add comment, remove code}
   + [[file:2.6.22/x86_64-apic-whitespace-comment-and-remove-unused-code.patch][2.6.22]] {MOD::arch/x86_64/kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch
+* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::add support for max_cstate limit}
   + [[file:2.6.22/cpuidle_add_support_for_max_cstate_limit.patch][2.6.22]] {MOD::include/linux,drivers/acpi,include/acpi}
   - 2.6.23
-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
+* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::fixbug::??::stop PIT only in periodic or oneshot mode}
   + [[file:2.6.22/i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch][2.6.22]] {MOD::arch/i386/kernel}
   - 2.6.23
-* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch
+* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::no lock/unlock_kernel}
   + [[file:2.6.22/preempt-realtime-drivers-pci-hotplug.patch][2.6.22]] {MOD::drivers/pci/hotplug}
   - 2.6.23
-* [2.6.22         ] arm-imx.patch
+* [2.6.22         ] arm-imx.patch {C::feature::clockevent}
   + [[file:2.6.22/arm-imx.patch][2.6.22]] {MOD::arch/arm/mach-imx}
   - 2.6.23
-* [2.6.22         ] net/input: fix net/rfkill/rfkill-input.c bug on 64-bit systems
+* [2.6.22         ] net/input: fix net/rfkill/rfkill-input.c bug on 64-bit systems {C::fixbug::compiling err::var::irq flags must be unsigned long}
   + [[file:2.6.22/rfkill-input-fix.patch][2.6.22]] {MOD::net/rfkill}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-resume-logic.patch
+* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::??::sync::resume clockevent device before resume tick}
   + [[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]] {MOD::arch/arm/mach-davinci,kernel/time,arch/sparc64/kernel,arch/arm/plat-omap,arch/sh/kernel/timers,arch/i386/kernel,arch/arm/mach-omap1,arch/arm/mach-ixp4xx,include/linux}
   - 2.6.23
-* [2.6.22         ] softlockup-print-regs.patch
+* [2.6.22         ] softlockup-print-regs.patch {C::feature::print regs}
   + [[file:2.6.22/softlockup-print-regs.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch
+* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::restruct::remove shadow variable argument}
   + [[file:2.6.22/timekeeping-fixup-shadow-variable-argument.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] module-pde-race-fixes.patch
+* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::race::introduce helpers}
   + [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]] {MOD::fs/proc,include/linux}
   - 2.6.23
-* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch
+* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch {C::perf::msleep}
   + [[file:2.6.22/cdrom-use-mdelay-instead-of-jiffies-loop.patch][2.6.22]] {MOD::drivers/cdrom}
   - 2.6.23
-* [2.6.22         ] barrier - a scalable synchonisation barrier
+* [2.6.22         ] barrier - a scalable synchonisation barrier {C::perf::simple synchonisation barrier}
   + [[file:2.6.22/barrier.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_ratings_04.patch
+* [2.6.22         ] cpuidle_governor_ratings_04.patch {C::feature::governor rating scheme}
   + [[file:2.6.22/cpuidle_governor_ratings_04.patch][2.6.22]] {MOD::drivers/cpuidle,drivers/cpuidle/governors,include/linux}
   - 2.6.23
-* [2.6.22         ] keep_proc_acpi_power_around_001.patch
+* [2.6.22         ] keep_proc_acpi_power_around_001.patch {C::restruct::maintain interface for powertop}
   + [[file:2.6.22/keep_proc_acpi_power_around_001.patch][2.6.22]] {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_core_cpuidle_infrastructure.patch
+* [2.6.22         ] cpuidle_take2_core_cpuidle_infrastructure.patch {C::feature::cpudile infrasturcture}
   + [[file:2.6.22/cpuidle_take2_core_cpuidle_infrastructure.patch][2.6.22]] {MOD::drivers/cpuidle,drivers,include/linux,arch/i386,arch/x86_64,drivers/cpuidle/governors}
   - 2.6.23
-* [2.6.22         ] lockstat_bounce.patch
+* [2.6.22         ] lockstat_bounce.patch {C::feature::lockstat:measure lock bouncing}
   + [[file:2.6.22/lockstat_bounce.patch][2.6.22]] {MOD::kernel,include/linux}
   - 2.6.23
-* [2.6.22         ] v2.6.21.4-rt11
+* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compiling err::workaround for arch without getnstimeofday()}
   + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]] {MOD::kernel,kernel/time}
   - 2.6.23
 * [2.6.22         ] new-softirq-code-fixlets.patch
