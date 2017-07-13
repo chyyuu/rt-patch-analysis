@@ -84,6 +84,9 @@ def main():
                     continue
                 elif nodes[key].character is None:
                     continue
+                elif '??' in val.character and '??' not in nodes[key].character:
+                    val.character = nodes[key].character
+                    continue
                 elif nodes[key].character == val.character:
                     continue
 
