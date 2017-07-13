@@ -1,4 +1,4 @@
-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::bugfix::PIT malfunction::config err::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
+c* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::bugfix::PIT malfunction::config err::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
   + [[file:2.6.22/i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch][2.6.22]]  {MOD::arch/i386}
   - 2.6.23  {M}
 * [2.6.22         ] clockevents-fix-device-replacement.patch {C::bugfix::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
@@ -211,46 +211,46 @@
 * [2.6.22         ] x86_64-i8259-remove-useless-forward-declaration.patch {C::refactor::rm fun}
   + [[file:2.6.22/x86_64-i8259-remove-useless-forward-declaration.patch][2.6.22]] {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] x86_64-share-hpet-h.patch {C::restruct::hpet.h, share same micro var}
+* [2.6.22         ] x86_64-share-hpet-h.patch {C::refactor::hpet.h, share same micro var}
   + [[file:2.6.22/x86_64-share-hpet-h.patch][2.6.22]] {MOD::include/asm--i386}
   - 2.6.23
 * [2.6.22         ] mm-lockless-preempt-rt-fixup.patch {C::performance::cpu_relax, speculate page and check whether ref changed}
   + [[file:2.6.22/mm-lockless-preempt-rt-fixup.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] pcspkr-use-the-global-pit-lock.patch {C::restruct::i8253_lock}
+* [2.6.22         ] pcspkr-use-the-global-pit-lock.patch {C::feature::replace private PIT lock with clobal PIT lock when CONFIG_X86}
   + [[file:2.6.22/pcspkr-use-the-global-pit-lock.patch][2.6.22]] {MOD::arch/x86_64,drivers/input,include/asm-x86_64}
   - 2.6.23
 * [2.6.22         ] cpuidle_add_cpuidle_force_redetect_devices_api.patch {C::feature::add functions}
   + [[file:2.6.22/cpuidle_add_cpuidle_force_redetect_devices_api.patch][2.6.22]] {MOD::drivers/acpi, drivers/cpuidle, include/linux}
   - 2.6.23
-* [2.6.22         ] rtc.c-build-fix.patch {C::null::compile}
+* [2.6.22         ] rtc.c-build-fix.patch {C::bugfix?::compile}
   + [[file:2.6.22/rtc.c-build-fix.patch][2.6.22]] {MOD::drivers/char}
   - 2.6.23
-* [2.6.22         ] radix-tree: gang_lookup_slot {C::performance::rcu lookup on radix tree}
+* [2.6.22         ] radix-tree: gang_lookup_slot {C::feature::multiple slot lookup on radix tree}
   + [[file:2.6.22/radix-tree-gang_lookup_slot.patch][2.6.22]] {MOD::lib,include/linux}
   - 2.6.23
-* [2.6.22         ] x86_64-apic-whitespace-comment-and-remove-unused-code.patch {C::restruct::add comment,remove code}
+* [2.6.22         ] x86_64-apic-whitespace-comment-and-remove-unused-code.patch {C::refactor::add comment,remove code}
   + [[file:2.6.22/x86_64-apic-whitespace-comment-and-remove-unused-code.patch][2.6.22]] {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] futex-tidy-up-the-code-v2.patch {C::restruct::tidy code}
+* [2.6.22         ] futex-tidy-up-the-code-v2.patch {C::refactor::tidy code, reorganize some code piece into fun}
   + [[file:2.6.22/futex-tidy-up-the-code-v2.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] menu_hrt_compile_fix_001.patch {C::restruct::compile}
+* [2.6.22         ] menu_hrt_compile_fix_001.patch {C::refactor::compile, reorder header file}
   + [[file:2.6.22/menu_hrt_compile_fix_001.patch][2.6.22]] {MOD::drivers/cpuidle}
   - 2.6.23
 * [2.6.22         ] lockstat: hook into spinlock_t, rwlock_t, rwsem and mutex {C::feature::new lockstat functions}
   + [[file:2.6.22/lockstat-hooks.patch][2.6.22]] {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] x86_64-convert-to-cleckevents.patch {C::feature::update to clockevent}
+* [2.6.22         ] x86_64-convert-to-cleckevents.patch {C::refactor::share code of clockevent}
   + [[file:2.6.22/x86_64-convert-to-cleckevents.patch][2.6.22]] {MOD::arch/x86_64,include/asm-x86_64}
   - 2.6.23
-* [2.6.22         ] keep_proc_acpi_power_around_001.patch {C::restruct::maintain interface for powertop}
+* [2.6.22         ] keep_proc_acpi_power_around_001.patch {C::feature::add a time interval val to cx->time?}
   + [[file:2.6.22/keep_proc_acpi_power_around_001.patch][2.6.22]] {MOD::drivers/acpi}
   - 2.6.23
 * [2.6.22         ] i386-hpet-assumes-boot-cpu-is-0.patch {C::fixbug::??::per_cpu var}
   + [[file:2.6.22/i386-hpet-assumes-boot-cpu-is-0.patch][2.6.22]] {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix-fix.patch {C::restruct::compile}
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix-fix.patch {C::refactor::compile}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix-fix.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
 * [2.6.22         ] tick-management-spread-timer-interrupt.patch {C::performance::per_cpu var::adds an extra offset per cpu so the ticks don't line up,drop lock contention}
@@ -259,16 +259,16 @@
 * [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::bugfix::hang::Verify whether hpet counter works during HPET setup}
   + [[file:2.6.22/i386-hpet-check-if-the-counter-works.patch][2.6.22]]
   - 2.6.23
-* [2.6.22         ] cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch {C::feature::export time untile next intr}
+* [2.6.22         ] cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch {C::feature::export time until next intr}
   + [[file:2.6.22/cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch][2.6.22]] {MOD::arch/i386,include/linux,kernel,kernel/time}
   - 2.6.23
-* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::no lock/unlock_kernel}
+* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::rm lock/unlock_kernel}
   + [[file:2.6.22/preempt-realtime-drivers-pci-hotplug.patch][2.6.22]] {MOD::drivers/pci}
   - 2.6.23
-* [2.6.22         ] x86_64-timec-fix-whitespace-wreckage.patch {C::null::no change}
+* [2.6.22         ] x86_64-timec-fix-whitespace-wreckage.patch {C::null::rm whitespace}
   + [[file:2.6.22/x86_64-timec-fix-whitespace-wreckage.patch][2.6.22]] {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::restruct::function}
+* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::bugfix::semantic::local var shadows global var}
   + [[file:2.6.22/timekeeping-fixup-shadow-variable-argument.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
 * [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::bugfix::compile_error}
@@ -277,19 +277,19 @@
 * [2.6.22         ] s_files-per_cpu-rt.patch {C::performance::use get/put_cpu_var_locked to replace get/put_cpu_var}
   + [[file:2.6.22/s_files-per_cpu-rt.patch][2.6.22]] {MOD::fs}
   - 2.6.23
-* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::restruct::compile}
+* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::bugfix::configerr & compilerr?::compile issue when CPU_IDLE is not configured::add precompile}
   + [[file:2.6.22/cpuidle_build_fix_for_not_CPU_IDLE.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::resume/suspend::complete/wait_for_completion}
+* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::resume/suspend&semantic::complete/wait_for_completion&wrong type}
   + [[file:2.6.22/cpuidle_fix_sysfs_related_issue.patch][2.6.22]] {MOD::drivers/acpi,drivers/cpuidle,include/linux}
   - 2.6.23
 * [2.6.22         ] cpuidle_fix_boot_hang.patch {C::fixbug::boot hang::add detach fun in err path}
   + [[file:2.6.22/cpuidle_fix_boot_hang.patch][2.6.22]] {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] x86_64-untangle-asm-hpeth-from-asm-timexh.patch {C::restruct::compile}
+* [2.6.22         ] x86_64-untangle-asm-hpeth-from-asm-timexh.patch {C::refactor::compile}
   + [[file:2.6.22/x86_64-untangle-asm-hpeth-from-asm-timexh.patch][2.6.22]] {MOD::include/asm-x86_64,drivers/char}
   - 2.6.23
-* [2.6.22         ] s_files-barrier.patch {C::fixbug::miss files::barrier_lock/unlock}
+* [2.6.22         ] s_files-barrier.patch {C::fixbug::missing files::barrier_lock/unlock}
   + [[file:2.6.22/s_files-barrier.patch][2.6.22]] {MOD::fs,include/linux}
   - 2.6.23
 * [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::resume fail::NORT, change site of statement}
@@ -300,7 +300,7 @@
   + [[file:2.6.22/x86_64-preparatory-apic-set-lvtt.patch][2.6.22]] {MOD::arch/x86_64}
   M [[file:2.6.23/x86_64-preparatory-apic-set-lvtt.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-late-initialization-of-hpet-after-quirk.patch {C::feature::force hpet}
+* [2.6.22 - 2.6.23] ich-force-hpet-late-initialization-of-hpet-after-quirk.patch {C::feature::enable HPET later during boot, repeat force hpet}
   + [[file:2.6.22/ich-force-hpet-late-initialization-of-hpet-after-quirk.patch][2.6.22]] {MOD::arch/i386,include/asm-i386}
   M [[file:2.6.23/ich-force-hpet-late-initialization-of-hpet-after-quirk.patch][2.6.23]]
   - 2.6.24
@@ -308,19 +308,19 @@
   + [[file:2.6.22/x86_64-prep-idle-loop-for-dynticks.patch][2.6.22]] {MOD::arch/x86_64}
     [[file:2.6.23/x86_64-prep-idle-loop-for-dynticks.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] i386: prepare sharing the hpet code with x86_64 {C::feature::hpet late init}
+* [2.6.22 - 2.6.23] i386: prepare sharing the hpet code with x86_64 {C::refactor::replace previous fun with shared hpet code}
   + [[file:2.6.22/i386-prepare-sharing-hpet-code.patch][2.6.22]] {MOD::arch/i386}
   M [[file:2.6.23/i386-prepare-sharing-hpet-code.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-restructure-hpet-generic-clock-code.patch {C::restruct::hpet timer}
+* [2.6.22 - 2.6.23] ich-force-hpet-restructure-hpet-generic-clock-code.patch {C::refactor::hpet timer}
   + [[file:2.6.22/ich-force-hpet-restructure-hpet-generic-clock-code.patch][2.6.22]] {MOD::arch/i386}
     [[file:2.6.23/ich-force-hpet-restructure-hpet-generic-clock-code.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-ich5-quirk-to-force-detect-enable.patch {C::feature::force enable hpet}
+* [2.6.22 - 2.6.23] ich-force-hpet-ich5-quirk-to-force-detect-enable.patch {C::feature::force enable hpet for ICH5}
   + [[file:2.6.22/ich-force-hpet-ich5-quirk-to-force-detect-enable.patch][2.6.22]] {MOD::arch/i386,include/asm-i386,include/linux}
   M [[file:2.6.23/ich-force-hpet-ich5-quirk-to-force-detect-enable.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] i386: prepare sharing the PIT code {C::restruct::compile}
+* [2.6.22 - 2.6.23] i386: prepare sharing the PIT code {C::refactor::compile}
   + [[file:2.6.22/i386-prepare-sharing-pit-code.patch][2.6.22]] {MOD::arch/i386,arch/x86_64,include/asm-i386,include/asm-x86_64}
   M [[file:2.6.23/i386-prepare-sharing-pit-code.patch][2.6.23]]
   - 2.6.24
@@ -328,7 +328,7 @@
   + [[file:2.6.22/preempt-rt-cs5530-lock-ide-fix.patch][2.6.22]] {MOD::drivers/ide}
     [[file:2.6.23/preempt-rt-cs5530-lock-ide-fix.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable-fix.patch {C::restruct::var}
+* [2.6.22 - 2.6.23] ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable-fix.patch {C::refactor::var type}
   + [[file:2.6.22/ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable-fix.patch][2.6.22]] {MOD::arch/i386}
     [[file:2.6.23/ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable-fix.patch][2.6.23]]
   - 2.6.24
@@ -348,11 +348,11 @@
   + [[file:2.6.22/x86-64-smpboot-whitespace.patch][2.6.22]] {MOD::arch/x86_64}
     [[file:2.6.23/x86-64-smpboot-whitespace.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ACPI: remove the now unused ifdef code {C::feature::use clockevent}
+* [2.6.22 - 2.6.23] ACPI: remove the now unused ifdef code {C::refactor::rm unused code}
   + [[file:2.6.22/acpi-remove-the-useless-ifdef-code.patch][2.6.22]] {MOD::drivers/acpi}
     [[file:2.6.23/acpi-remove-the-useless-ifdef-code.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable.patch {C::performance::repeat force enable HPET}
+* [2.6.22 - 2.6.23] ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable.patch {C::feature::repeat force enable HPET}
   + [[file:2.6.22/ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable.patch][2.6.22]] {MOD::arch/i386,include/asm-i386}
   M [[file:2.6.23/ich-force-hpet-ich7-or-later-quirk-to-force-detect-enable.patch][2.6.23]]
   - 2.6.24
@@ -360,19 +360,19 @@
   + [[file:2.6.22/hpet-force-enable-on-vt8235-37-chipsets.patch][2.6.22]] {MOD::arch/i386}
     [[file:2.6.23/hpet-force-enable-on-vt8235-37-chipsets.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] i386: Remove the useless #ifdef in i8253.h {C::restruct::remove code}
+* [2.6.22 - 2.6.23] i386: Remove the useless #ifdef in i8253.h {C::refactor::remove code}
   + [[file:2.6.22/i386-pit-remove-the-useless-ifdefs.patch][2.6.22]] {MOD::include/asm-i386}
   M [[file:2.6.23/i386-pit-remove-the-useless-ifdefs.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-ich5-quirk-to-force-detect-enable-fix.patch {C::restruct::var}
+* [2.6.22 - 2.6.23] ich-force-hpet-ich5-quirk-to-force-detect-enable-fix.patch {C::refactor::var type}
   + [[file:2.6.22/ich-force-hpet-ich5-quirk-to-force-detect-enable-fix.patch][2.6.22]] {MOD::arch/i386}
     [[file:2.6.23/ich-force-hpet-ich5-quirk-to-force-detect-enable-fix.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] x86_64: Consolidate tsc calibration {C::feature::read tsc, notice SMI disturb}
+* [2.6.22 - 2.6.23] x86_64: Consolidate tsc calibration {C::refactor::gather some functions together into one}
   + [[file:2.6.22/x86_64-consolidate-tsc-calibration.patch][2.6.22]] {MOD::arch/x86_64}
   M [[file:2.6.23/x86_64-consolidate-tsc-calibration.patch][2.6.23]]
   - 2.6.24
-* [2.6.22 - 2.6.23] ich-force-hpet-make-generic-time-capable-of-switching-broadcast-timer.patch {C::feature::auto detect HPET}
+* [2.6.22 - 2.6.23] ich-force-hpet-make-generic-time-capable-of-switching-broadcast-timer.patch {C::feature::auto detect HPET, change to a higher rate one}
   + [[file:2.6.22/ich-force-hpet-make-generic-time-capable-of-switching-broadcast-timer.patch][2.6.22]] {MOD::kernel/time}
     [[file:2.6.23/ich-force-hpet-make-generic-time-capable-of-switching-broadcast-timer.patch][2.6.23]]
   - 2.6.24
@@ -381,7 +381,7 @@
     [[file:2.6.23/inet_hash_bits.patch][2.6.23]]
   m [[file:2.6.24/inet_hash_bits.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] idle-stop-critical-timing.patch {C::performance::???}
+* [2.6.22 - 2.6.24] idle-stop-critical-timing.patch {C::feature::stop latency tracing in acpi_idle_do_entry}
   + [[file:2.6.22/idle-stop-critical-timing.patch][2.6.22]] {MOD::driver/acpi}
     [[file:2.6.23/idle-stop-critical-timing.patch][2.6.23]]
     [[file:2.6.24/idle-stop-critical-timing.patch][2.6.24]]
@@ -411,127 +411,127 @@
     [[file:2.6.23/rcu-preempt-fix-nmi-watchdog.patch][2.6.23]]
     [[file:2.6.24/rcu-preempt-fix-nmi-watchdog.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: fix clockevents for classic CPUs
+* [2.6.22 - 2.6.24] PowerPC: fix clockevents for classic CPUs{C::feature::set a maximum positive value to decrementer, add a clk_event case}
   + [[file:2.6.22/ppc-clockevents-fix.patch][2.6.22]]
     [[file:2.6.23/ppc-clockevents-fix.patch][2.6.23]]
     [[file:2.6.24/ppc-clockevents-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] convert RCU Preempt tasklet into softirq.
+* [2.6.22 - 2.6.24] convert RCU Preempt tasklet into softirq.{C::perf::replace tasklet with softirq}
   + [[file:2.6.22/rcu-tasklet-softirq.patch][2.6.22]]
     [[file:2.6.23/rcu-tasklet-softirq.patch][2.6.23]]
     [[file:2.6.24/rcu-tasklet-softirq.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] ppc-gtod-support.patch
+* [2.6.22 - 2.6.24] ppc-gtod-support.patch{C::feature::convert powerpc time to generic timekeeping}
   + [[file:2.6.22/ppc-gtod-support.patch][2.6.22]]
   M [[file:2.6.23/ppc-gtod-support.patch][2.6.23]]
     [[file:2.6.24/ppc-gtod-support.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] undo-latency-tracing-raw-spinlock-hack.patch
+* [2.6.22 - 2.6.24] undo-latency-tracing-raw-spinlock-hack.patch{C::refactor::rm macro}
   + [[file:2.6.22/undo-latency-tracing-raw-spinlock-hack.patch][2.6.22]]
   M [[file:2.6.23/undo-latency-tracing-raw-spinlock-hack.patch][2.6.23]]
     [[file:2.6.24/undo-latency-tracing-raw-spinlock-hack.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: enable HRT and dynticks support
+* [2.6.22 - 2.6.24] PowerPC: enable HRT and dynticks support{C::feature::enable HRT and dynamic ticks}
   + [[file:2.6.22/ppc-highres-dyntick.patch][2.6.22]]
     [[file:2.6.23/ppc-highres-dyntick.patch][2.6.23]]
     [[file:2.6.24/ppc-highres-dyntick.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] 2.6.21-rt6
+* [2.6.22 - 2.6.24] 2.6.21-rt6{C::feature::add declaration rt_write_trylock_irqsave}
   + [[file:2.6.22/rt-mutex-trylock-export.patch][2.6.22]]
     [[file:2.6.23/rt-mutex-trylock-export.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-trylock-export.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-classic-fixup.patch
+* [2.6.22 - 2.6.24] rcu-classic-fixup.patch{C::feature::add declaration rcu_batches_completed_bh}
   + [[file:2.6.22/rcu-classic-fixup.patch][2.6.22]]
     [[file:2.6.23/rcu-classic-fixup.patch][2.6.23]]
     [[file:2.6.24/rcu-classic-fixup.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracer-one-off-fix.patch
+* [2.6.22 - 2.6.24] latency-tracer-one-off-fix.patch{C::bugfix::??::replace \eq with \geq}
   + [[file:2.6.22/latency-tracer-one-off-fix.patch][2.6.22]]
     [[file:2.6.23/latency-tracer-one-off-fix.patch][2.6.23]]
     [[file:2.6.24/latency-tracer-one-off-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] fix clocksource_timebase.shift value
+* [2.6.22 - 2.6.24] fix clocksource_timebase.shift value{C::bugfix::wrong val::cal shift with jiffy}
   + [[file:2.6.22/ppc-fix-clocksource-timebase-shift.patch][2.6.22]]
     [[file:2.6.23/ppc-fix-clocksource-timebase-shift.patch][2.6.23]]
     [[file:2.6.24/ppc-fix-clocksource-timebase-shift.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] trace-sti-mwait.patch
+* [2.6.22 - 2.6.24] trace-sti-mwait.patch{C::perf::untrace preempt_idle when cpuidle}
   + [[file:2.6.22/trace-sti-mwait.patch][2.6.22]]
     [[file:2.6.23/trace-sti-mwait.patch][2.6.23]]
     [[file:2.6.24/trace-sti-mwait.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-2.patch
+* [2.6.22 - 2.6.24] rcu-2.patch{C::perf::replace tasklet with softirq}
   + [[file:2.6.22/rcu-2.patch][2.6.22]]
     [[file:2.6.23/rcu-2.patch][2.6.23]]
     [[file:2.6.24/rcu-2.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] trace-with-caller-addr.patch
+* [2.6.22 - 2.6.24] trace-with-caller-addr.patch{C::feature::trace hardirq}
   + [[file:2.6.22/trace-with-caller-addr.patch][2.6.22]]
     [[file:2.6.23/trace-with-caller-addr.patch][2.6.23]]
   M [[file:2.6.24/trace-with-caller-addr.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: implement read_persistent_clock()
+* [2.6.22 - 2.6.24] PowerPC: implement read_persistent_clock(){C::feature::read persistent clock in ppc}
   + [[file:2.6.22/ppc-read-persistent-clock.patch][2.6.22]]
   m [[file:2.6.23/ppc-read-persistent-clock.patch][2.6.23]]
     [[file:2.6.24/ppc-read-persistent-clock.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-preempt-fix-rcu-torture.patch
+* [2.6.22 - 2.6.24] rcu-preempt-fix-rcu-torture.patch{C::perf::add config preempt_rcu}
   + [[file:2.6.22/rcu-preempt-fix-rcu-torture.patch][2.6.22]]
     [[file:2.6.23/rcu-preempt-fix-rcu-torture.patch][2.6.23]]
     [[file:2.6.24/rcu-preempt-fix-rcu-torture.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] v2.6.21-rt3
+* [2.6.22 - 2.6.24] v2.6.21-rt3{C::perf or refactor::reorder some code}
   + [[file:2.6.22/latency-measurement-drivers-fix.patch][2.6.22]]
   M [[file:2.6.23/latency-measurement-drivers-fix.patch][2.6.23]]
     [[file:2.6.24/latency-measurement-drivers-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] ns2cyc() result fix
+* [2.6.22 - 2.6.24] ns2cyc() result fix{C::bugfix::compile warning, wrong type
   + [[file:2.6.22/ns2cyc-result-fix.patch][2.6.22]]
     [[file:2.6.23/ns2cyc-result-fix.patch][2.6.23]]
     [[file:2.6.24/ns2cyc-result-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] redo-regparm-option.patch
+* [2.6.22 - 2.6.24] redo-regparm-option.patch{C::::add config and comple flags modified}
   + [[file:2.6.22/redo-regparm-option.patch][2.6.22]]
   M [[file:2.6.23/redo-regparm-option.patch][2.6.23]]
   M [[file:2.6.24/redo-regparm-option.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PPC timebase clocksource is continuous
+* [2.6.22 - 2.6.24] PPC timebase clocksource is continuous{C::refactor::comment fun and white space}
   + [[file:2.6.22/ppc-gtod-support-fix.patch][2.6.22]]
     [[file:2.6.23/ppc-gtod-support-fix.patch][2.6.23]]
     [[file:2.6.24/ppc-gtod-support-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] smaller-trace.patch
+* [2.6.22 - 2.6.24] smaller-trace.patch{C::perf::smaller trace}
   + [[file:2.6.22/smaller-trace.patch][2.6.22]]
     [[file:2.6.23/smaller-trace.patch][2.6.23]]
     [[file:2.6.24/smaller-trace.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] x86-64-traps-move-held-locks-output.patch
+* [2.6.22 - 2.6.24] x86-64-traps-move-held-locks-output.patch{C::refactor?::reorder fun}
   + [[file:2.6.22/x86-64-traps-move-held-locks-output.patch][2.6.22]]
     [[file:2.6.23/x86-64-traps-move-held-locks-output.patch][2.6.23]]
     [[file:2.6.24/x86-64-traps-move-held-locks-output.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-exclude-printk.patch
+* [2.6.22 - 2.6.24] latency-tracing-exclude-printk.patch{C::feature::add config, disable some useless printk detail}
   + [[file:2.6.22/latency-tracing-exclude-printk.patch][2.6.22]]
     [[file:2.6.23/latency-tracing-exclude-printk.patch][2.6.23]]
     [[file:2.6.24/latency-tracing-exclude-printk.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: kill cpu_khz reference
+* [2.6.22 - 2.6.24] PowerPC: kill cpu_khz reference{C::refactor::rm useless var}
   + [[file:2.6.22/ppc-remove-last-cpukhz.patch][2.6.22]]
     [[file:2.6.23/ppc-remove-last-cpukhz.patch][2.6.23]]
     [[file:2.6.24/ppc-remove-last-cpukhz.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] hrtimer-trace.patch
+* [2.6.22 - 2.6.24] hrtimer-trace.patch{C::feature::add hrtimer_trace}
   + [[file:2.6.22/hrtimer-trace.patch][2.6.22]]
     [[file:2.6.23/hrtimer-trace.patch][2.6.23]]
     [[file:2.6.24/hrtimer-trace.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-remove-trace-array.patch
+* [2.6.22 - 2.6.24] latency-tracing-remove-trace-array.patch{C::refactor::rm trace array}
   + [[file:2.6.22/latency-tracing-remove-trace-array.patch][2.6.22]]
   m [[file:2.6.23/latency-tracing-remove-trace-array.patch][2.6.23]]
     [[file:2.6.24/latency-tracing-remove-trace-array.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: remove broken vsyscall code
+* [2.6.22 - 2.6.24] PowerPC: remove broken vsyscall code{C::bugfix::rm broken vsyscalls}
   + [[file:2.6.22/ppc-remove-broken-vsyscall.patch][2.6.22]]
     [[file:2.6.23/ppc-remove-broken-vsyscall.patch][2.6.23]]
     [[file:2.6.24/ppc-remove-broken-vsyscall.patch][2.6.24]]
