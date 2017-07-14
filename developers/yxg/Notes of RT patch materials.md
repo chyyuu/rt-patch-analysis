@@ -142,3 +142,5 @@
 - [Using Promela and Spin to verify parallel algorithms](https://lwn.net/Articles/243851/)
 - [Sleepable RCU](https://lwn.net/Articles/202847/)
 - [Tornado: Maximizing Locality and Concurrency in a Shared Memory Multiprocessor Operating System](https://www.usenix.org/legacy/events/osdi99/full_papers/gamsa/gamsa.pdf)
+- [lrt ibm(1)](https://www.ibm.com/developerworks/cn/linux/l-lrt/part1/index.html)
+- [lrt ibm(2)](https://www.ibm.com/developerworks/cn/linux/l-lrt/part2/#icomments)

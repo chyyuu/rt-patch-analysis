@@ -87,3 +87,25 @@ Didn't find much ref in linux documentation
 
 - mm-lockless-preempt-rt-fixup.patch
 > Maybe very important I think, need to config PREEMPT_RT on
+
+- fastcall cplusplus
+
+- mightsleep
+
+- check all ? and null
+
+- resched
+  - preempt-rt resched delay
+
+- IRQF_NODELAY
+
+- preempt-irqs-x86-64.patch
+  - irqf_nodelay
+    - https://stackoverflow.com/questions/16982703/where-can-i-find-irqf-nodelay-flag-in-linux-kernel
+
+- fix-migrating-softirq.patch
+  - migration
+
+- preempt-realtime-powerpc-b4.patch
+
+- preempt-irqs-ppc-fix-b5.patch
