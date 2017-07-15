@@ -80,6 +80,7 @@ Didn't find much ref in linux documentation
   - seems inportant, relevant with both lock and cache bouncing
 
 - export symbol details
+- rt compat semaphores
 
 - lockdep in linux
 
@@ -109,3 +110,18 @@ Didn't find much ref in linux documentation
 - preempt-realtime-powerpc-b4.patch
 
 - preempt-irqs-ppc-fix-b5.patch
+
+- file:2.6.22/floppy-resume-fix.patch
+  - https://lkml.org/lkml/2006/11/12/92
+
+- ```percpu()```
+
+- preempt: irqs core
+
+- linux highmem
+
+- ```putcpu()```
+
+- file:2.6.22/rt-apis.patch
+- file:2.6.22/preempt-realtime-prevent-idle-boosting.patch
+>not understand
