@@ -1,3 +1,4 @@
+﻿# problems
 - Our problem is not the same with FAST'13. A bigger scope than fs.
   - A concise definition of problem sort is needed, or different and more detail whatever.
  
@@ -17,3 +18,20 @@
   - From some material I read, as it is a system, some changes seem irrelevant with RT do affect RT performance. Do we need to investigate the mechanism？
   
 >> chyyuu: Maybe. We should read all rt patches in one kernel, then maybe we know whether we need to do. 
+
+# 2.6.22
+- Most patches have obvious pattern, easy to be categorized.
+- Cannot distinguish perf or feature, some are new rt-implementation, some may improve rt perf, and a lot of them are twisted together.
+- Content
+  - Most of them are refactor or rt-lized old feature, only a few bugfixes. In the bugfix portion, only few are directly relevant with rt.
+  - cpuidle framework, hrtimer and nohz show up quite a lot
+- rt
+  - Most rt-lize simply replace old spinlock with raw version
+  - api most frequent
+    - raw spinlock
+    - preempt disable/enable
+    - get_cpu_var
+    - resched delay
+    - IRQF_NODELAY
+    - compat sem
+  - might_sleep
