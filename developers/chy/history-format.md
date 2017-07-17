@@ -33,7 +33,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - leak:: 发生数据泄漏
 - irq:: 无法响应/打开/关闭中断，导致系统工作不正确
 - compile:: compiling error
-- idle:: idle OR suspend/resume时间的优化
+- idle:: idle OR suspend/resume相关错误
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
 
 
@@ -68,7 +68,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - irq/softirq:: 中断/软中断相关的修复
 - preempt:: 抢占相关的修复
 - migration:: 迁移相关的修复
-- idle:: idle相关的修复
+- idle:: idle OR suspend/resume相关的修复
 
 
 ## feature related info
