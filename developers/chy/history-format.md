@@ -18,7 +18,7 @@ MEMORY ::= 'resource leak'|'uninit var'|'buf overflow'|...
 ERRORCODE ::= 'compiling err'|'config err'|'runtime err'|'var type'|...
 FIX_METHOD ::= 'hardware'|'lock'|'irq'|'preempt'|'migration'|'other'|...
 PERFORMANCE ::= 'performance'::PERF_METHOD::DESCRIPT
-PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|...
+PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|'mm'|...
 MAINTAIN ::='maintain'::MAINTAIN_METHOD
 MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ```
@@ -53,13 +53,13 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - livelock: 形成了活锁
 
 #### memory
-- resource leak:: 资源/动态分配的内存没有释放
-- uninit var:: 资源/变量没有初始化
-- buf overflow::缓冲区溢出
+- resource_leak:: 资源/动态分配的内存没有释放
+- uninit_var:: 资源/变量没有初始化
+- buf_overflow::缓冲区溢出
 
 #### error code
-- compiling err:: 编译错误
-- config err:: 配置错误
+- compiling_err:: 编译错误
+- config_err:: 配置错误
  
 ### fix method
 - hardware:: 硬件相关的修复
@@ -73,18 +73,28 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 
 ## feature related info
 ### feature method
-- hardware:: 硬件相关特性添加
+- hardware:: 添加硬件相关特性
+- debuginfo:: 添加调试信息
+- idle:: 添加idle OR suspend/resume相关功能
+- hrtimer:添加采用高精度时钟相关功能
+- statistics:: 添加统计信息
+- delaye:: 添加workqueue/softirq相关功能
 
 ## performance related info
 ### performance method
 - hardware:: 硬件相关优化
 - cache:: 优化cache访问
 - msleep:: msleep优化
-- softirq:: softirq相关优化
+- irq/softirq:: irq/softirq相关优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的优化
-- hrtimer:采用高精度时钟
+- hrtimer:采用高精度时钟的优化
+- mm: memory management/kmem_cache相关优化
 
+## maintain related info
+### maintain method
+- refactor:: 重构软件相关
+- donothing:: 什么也没做
 
 ### PATCH_CHANGES
 ```
