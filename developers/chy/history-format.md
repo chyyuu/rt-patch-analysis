@@ -7,20 +7,23 @@ PATCH_TITLE ::= TITLE.patch
 TITLE|DESCRIPT = ['a'..'z','A'..'Z']*|NULL //string or nothing
 CHARACTERISTIC ::='C'
 ASPECT ::= FEATURE|FIXBUG|PERFORMANCE|MAINTAIN
-FEATURE ::= 'feature'::TITLE[::DESCRIPT]
+FEATURE ::= 'feature'::FEATURE_METHOD::DESCRIPT
+FEATURE_METHOD::= 'hardware'|
 FIXBUG ::= 'fixbug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
-BUG_CONSEQUENCE ::='corrupt'|'hang'|'crash'|'leak'|'irq'|'livelock'|'??'|...
+BUG_CONSEQUENCE ::='corrupt'|'hang'|'crash'|'leak'|'irq'|'livelock'|'na'|'??'|...
 BUG_TYPE ::= SEMANTIC|CONCURRENCY|MEMORY|ERRORCODE
-SEMANTIC ::= 'hardware'|'softirq'|'migration'|'preempt'|'irq'|...
+SEMANTIC ::= 'hardware'|'softirq'|'migration'|'preempt'|'irq'|'na'|...
 CONCURRENCY ::= 'atomicity'|'order'|'deadlock'|'livelock'|...
 MEMORY ::= 'resource leak'|'uninit var'|'buf overflow'|...
 ERRORCODE ::= 'compiling err'|'config err'|'runtime err'|'var type'|...
 FIX_METHOD ::= 'hardware'|'lock'|'irq'|'preempt'|'migration'|'other'|...
 PERFORMANCE ::= 'performance'::PERF_METHOD::DESCRIPT
-PERF_METHOD ::= 'cache'|'msleep'|'softirq'|     ...
+PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|...
 MAINTAIN ::='maintain'::MAINTAIN_METHOD
+MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ```
 
+## fixbug related info
 ### bug consequence
 - corrupt:: 系统破坏了保存的数据（主要与文件系统，存储系统相关）
 - hang:: 系统长时间无反应
@@ -29,6 +32,9 @@ MAINTAIN ::='maintain'::MAINTAIN_METHOD
 - crash:: 系统崩溃，但没有破坏保存的数据
 - leak:: 发生数据泄漏
 - irq:: 无法响应/打开/关闭中断，导致系统工作不正确
+- compile:: compiling error
+- idle:: idle OR suspend/resume时间的优化
+- na|??:: Not Available OR Not Applicable 无从得知或不适用
 
 
 ### bug type
@@ -38,6 +44,7 @@ MAINTAIN ::='maintain'::MAINTAIN_METHOD
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
 - irq:: 与设置中断相关的错误
+- na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
 - atomicity:临界区没有保护好共享资源的互斥(mutex)访问
@@ -55,7 +62,29 @@ MAINTAIN ::='maintain'::MAINTAIN_METHOD
 - config err:: 配置错误
  
 ### fix method
-- hardware'|'lock'|'irq'|'preempt'|'migration
+- hardware:: 硬件相关的修复
+- mutex:: 互斥相关的修复
+- sync:: 同步相关的修复
+- irq/softirq:: 中断/软中断相关的修复
+- preempt:: 抢占相关的修复
+- migration:: 迁移相关的修复
+- idle:: idle相关的修复
+
+
+## feature related info
+### feature method
+- hardware:: 硬件相关特性添加
+
+## performance related info
+### performance method
+- hardware:: 硬件相关优化
+- cache:: 优化cache访问
+- msleep:: msleep优化
+- softirq:: softirq相关优化
+- barrier:: barrier相关优化
+- idle:: 缩短idle OR suspend/resume时间的优化
+- hrtimer:采用高精度时钟
+
 
 ### PATCH_CHANGES
 ```
