@@ -4,10 +4,10 @@
 * [2.6.22         ] clockevents-fix-device-replacement.patch {C::bugfix::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
   + [[file:2.6.22/clockevents-fix-device-replacement.patch][2.6.22]]  {kernel} 
   - 2.6.23  {M}
-* [2.6.22         ] barrier - a scalable synchonisation barrier {C::feature::barrier_lock & barrier_lock[avoid cache bouncing]}
+* [2.6.22         ] barrier - a scalable synchonisation barrier {C::performance::barrier::barrier_lock & barrier_lock[avoid cache bouncing]}
   + [[file:2.6.22/barrier.patch][2.6.22]]  {MOD::include/linux} {API::init_barrier, barrier_lock, barrier_sync}
   - 2.6.23  {D}
-* [2.6.22         ] cpuidle_last_measured_004.patch  {C::perf?::add a counter of wakeup early, eliminate the state when threshold exceeded}
+* [2.6.22         ] cpuidle_last_measured_004.patch  {C::performance::idle::add a counter of wakeup early, eliminate the state when threshold exceeded}
   + [[file:2.6.22/cpuidle_last_measured_004.patch][2.6.22]]  {MOD::drivers/cpuidle} {API::menu_select,menu_reflect,menu_scan_devic}
   - 2.6.23  
 * [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::maintain::refactor}
@@ -16,28 +16,28 @@
 * [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::making max_cstate available}
   + [[file:2.6.22/cpuidle_add_support_for_max_cstate_limit.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::maintain::refactor[Use write_trylock_irqsave instead of write_trylock. And remove local_irq_disable things]}
+* [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::maintain::refactor::Use write_trylock_irqsave instead of write_trylock. And remove local_irq_disable things}
   + [[file:2.6.22/use-write_trylock_irqsave-in-ptrace_attach.patch][2.6.22]]  {MOD::kernel/}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::null::add a header file}
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::fixbug::compile::add a header file}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix.patch][2.6.22]]  {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::performance::replace getnstimeofday with other functions}
+* [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::performance::hrtimer::replace getnstimeofday with other functions}
   + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::fixbug::add cond-compile for some arch where tick nohz handling went wrong}
+* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::fixbug::hardware::add cond-compile for some arch where tick nohz handling went wrong}
   + [[file:2.6.22/nohz-fix-nohz-x86-dyntick-idle-handling.patch][2.6.22]]   {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::??::sync::resume clockevent device before resume tick}
+* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::idle::sync::resume clockevent device before resume tick}
   + [[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]]   {MOD::arch/i386,arch/arm,arch/sh,arch/sparc64, kernel/time, include/linux}
   - 2.6.23
-* [2.6.22         ] x86_64-fix-apic-typo.patch {C::null}
+* [2.6.22         ] x86_64-fix-apic-typo.patch {C::maintain::donothing}
   + [[file:2.6.22/x86_64-fix-apic-typo.patch][2.6.22]]  {MOD::include/asm-x86_64}
   - 2.6.23
-* [2.6.22         ] i386-remove-volatile-in-apicc.patch {C::refactor::var::remove volatile feature in static int var}
+* [2.6.22         ] i386-remove-volatile-in-apicc.patch {C::maintain::refactor::remove volatile feature in static int var}
   + [[file:2.6.22/i386-remove-volatile-in-apicc.patch][2.6.22]] {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::slob cache::use kmem_cache,remove global slobfree, anyway, implement some slab mechanism here again}
+* [2.6.22         ] slob-scale-break-out-caches.patch {C::performance::mm::use kmem_cache,remove global slobfree, anyway, implement some slab mechanism here again}
   + [[file:2.6.22/slob-scale-break-out-caches.patch][2.6.22]]  {MOD::mm}
   - 2.6.23
 * [2.6.22         ] highres-improve-debug-output.patch {C::feature::debuginfo::debuginfo for hrtimer and clock events}
@@ -46,46 +46,46 @@
 * [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
   + [[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]  {MOD::dirvers/cpuidle}
   - 2.6.23
-* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::add opt stage, and let the governor to ?reflect on some device}
+* [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::idle::add opt stage, and let the governor to ?reflect on some device}
   + [[file:2.6.22/cpuidle_governor_api_change.patch][2.6.22]]  {MOD::dirvers/cpuidle, include/linux}
   - 2.6.23
-* [2.6.22         ] time-warp-detect.patch {C::feature::semantic::add wrap_check_clock_changed to set timestamp per online cpu 0, and means in fun __get_realtime_clock_ to detected time warp bug}
+* [2.6.22         ] time-warp-detect.patch {C::feature::hrtimer::add wrap_check_clock_changed to set timestamp per online cpu 0, and means in fun __get_realtime_clock_ to detected time warp bug}
   + [[file:2.6.22/time-warp-detect.patch][2.6.22]]  {MOD::kernel,kernel/time, include/linux}
   - 2.6.23
-* [2.6.22         ] preempt-realtime-gtod-fixups.patch {C::perf::disableirq::put read_persistent_clock() outside write_seqlock_irqsave/irqrestore}
+* [2.6.22         ] preempt-realtime-gtod-fixups.patch {C::performance::irq::put read_persistent_clock() outside write_seqlock_irqsave/irqrestore}
   + [[file:2.6.22/preempt-realtime-gtod-fixups.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
 * [2.6.22         ] highres-improve-debug-output-fix.patch {C::feature::debuginfo}
   + [[file:2.6.22/highres-improve-debug-output-fix.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] lockdep-prove-locking.patch {C::feature::add config}
+* [2.6.22         ] lockdep-prove-locking.patch {C::feature::debuginfo}
   + [[file:2.6.22/lockdep-prove-locking.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compiling err::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
+* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compile::config_err::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
   + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]]  {MOD::kernel,kernel/time}
   - 2.6.23
-* [2.6.22         ] spinlock-init-cleanup.patch {C::refactor::spin_lock_init}
+* [2.6.22         ] spinlock-init-cleanup.patch {C::maintain::refactor::spin_lock_init}
   + [[file:2.6.22/spinlock-init-cleanup.patch][2.6.22]]  {MOD::drivers/pci}
   - 2.6.23
-* [2.6.22         ] x86_64-use-generic-cmos-update.patch {C::refactor::set_rtc_mmss}
+* [2.6.22         ] x86_64-use-generic-cmos-update.patch {C::maintain::refactor::set_rtc_mmss}
   + [[file:2.6.22/x86_64-use-generic-cmos-update.patch][2.6.22]]  {MOD::arch/x86_64}
   - 2.6.23
 * [2.6.22         ] cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch {C::maintain::refactor::establish a united API of acpi_driver, divide the cstate into many functions, make it better readable}
   + [[file:2.6.22/cpuidle_take2_hookup_acpi_c-states_driver_with_cpuidle.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch {C::refactor::update_cmos_clock}
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc.patch {C::maintain::refactor::update_cmos_clock}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc.patch][2.6.22]]  {MOD::arch/i386,arch/sparc64,include/asm-i386,kernel/time,include/linux}
   - 2.6.23
-* [2.6.22         ] lockstat: core infrastructure {C::feature::lockstate}
+* [2.6.22         ] lockstat: core infrastructure {C::feature::statistics::lockstate}
   + [[file:2.6.22/lockstat-core.patch][2.6.22]]  {MOD::kernel,include/linux}
   - 2.6.23
-* [2.6.22         ] lockstat: better class name representation {C::feature::printinfo}
+* [2.6.22         ] lockstat: better class name representation {C::feature::debuginfo}
   + [[file:2.6.22/lockstat_class_name.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch {C::perf::msleep}
+* [2.6.22         ] cdrom-use-mdelay-instead-of-jiffies-loop.patch {C::performance::msleep}
   + [[file:2.6.22/cdrom-use-mdelay-instead-of-jiffies-loop.patch][2.6.22]]  {MOD::drivers/cdrom}
   - 2.6.23
-* [2.6.22         ] cpuidle-fix-modular-build.patch {C::feature::export module symbol}
+* [2.6.22         ] cpuidle-fix-modular-build.patch {C::maintain::refactor::export module symbol}
   + [[file:2.6.22/cpuidle-fix-modular-build.patch][2.6.22]]  {MOD::kernel/time}
   - 2.6.23
 * [2.6.22         ] s_files-per_cpu-flush-fix.patch {C::feature::add an init fun for file flush}
