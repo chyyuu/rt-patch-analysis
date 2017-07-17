@@ -67,6 +67,13 @@ class HistoryOrg(PyOrg):
             return out
 
 
+def first_diff(li1, li2):
+    for i, (el1, el2) in enumerate(zip(li1, li2)):
+        if el1 != el2:
+            return i
+    return -1
+
+
 def main():
     orgs = []
     for file in sys.argv[1:]:
@@ -76,6 +83,7 @@ def main():
 
     for key, val in orgs[0].nodes.items():
         files = []
+        pos = sys.maxsize
         for org, file in zip(orgs[1:], sys.argv[2:]):
             nodes = org.nodes
             if key in nodes:
@@ -84,16 +92,22 @@ def main():
                     continue
                 elif nodes[key].character is None:
                     continue
+                elif nodes[key].character == val.character:
+                    continue
+                elif '::' in val.character and '::' in nodes[key].character:
+                    diff_pos = first_diff(val.character.split('::'), nodes[key].character.split('::'))
+                    if diff_pos < pos:
+                        pos = diff_pos
                 elif '??' in val.character and '??' not in nodes[key].character:
                     val.character = nodes[key].character
-                    continue
-                elif nodes[key].character == val.character:
                     continue
 
             files.append(file)
 
+        if pos >= 0 and pos < sys.maxsize:
+            print('conflict on characteristic @ {}'.format(pos))
         if len(files) > 0:
-            print('{} @ {}'.format(val.title, files))
+            print('{} @ {}\n'.format(val.title, files))
 
     orgs[0].save()
 
