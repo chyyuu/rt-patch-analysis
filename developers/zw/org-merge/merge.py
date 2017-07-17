@@ -70,8 +70,8 @@ class HistoryOrg(PyOrg):
 def first_diff(li1, li2):
     for i, (el1, el2) in enumerate(zip(li1, li2)):
         if el1 != el2:
-            return i
-    return -1
+            return i,el1,el2
+    return -1,'',''
 
 
 def main():
@@ -84,6 +84,8 @@ def main():
     for key, val in orgs[0].nodes.items():
         files = []
         pos = sys.maxsize
+        item1=""
+        item2=""
         for org, file in zip(orgs[1:], sys.argv[2:]):
             nodes = org.nodes
             if key in nodes:
@@ -95,17 +97,26 @@ def main():
                 elif nodes[key].character == val.character:
                     continue
                 elif '::' in val.character and '::' in nodes[key].character:
-                    diff_pos = first_diff(val.character.split('::'), nodes[key].character.split('::'))
+                    diff_pos,diff_item1,diff_item2 = first_diff(val.character.split('::'), nodes[key].character.split('::'))
                     if diff_pos < pos:
                         pos = diff_pos
+                        item1 = diff_item1
+                        item2 = diff_item2
                 elif '??' in val.character and '??' not in nodes[key].character:
                     val.character = nodes[key].character
                     continue
 
             files.append(file)
 
-        if pos >= 0 and pos < sys.maxsize:
-            print('first diff {}'.format(pos), end=' ')
+        item_maxsize = 2
+        if not(val.character is None):
+            items=val.character.split('::')
+            if len(items)>1 and items[1]=='fixbug':
+                item_maxsize=4
+
+
+        if pos >= 0 and pos <= item_maxsize:
+            print('first diff {} {}...{}'.format(pos,item1,item2), end=' ')
         if len(files) > 0:
             print('{} @ {}\n'.format(val.title, files))
 
