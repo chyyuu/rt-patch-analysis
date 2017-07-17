@@ -105,7 +105,7 @@ def main():
             files.append(file)
 
         if pos >= 0 and pos < sys.maxsize:
-            print('conflict on characteristic @ {}'.format(pos))
+            print('first diff {}'.format(pos), end=' ')
         if len(files) > 0:
             print('{} @ {}\n'.format(val.title, files))
 
