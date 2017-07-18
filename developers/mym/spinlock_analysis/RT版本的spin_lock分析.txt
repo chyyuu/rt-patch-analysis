@@ -229,8 +229,9 @@ __raw_spin_lock 这个函数的属是always_inline 如果试图编译 kernel/spi
 如果spin_lock(lock)里面的lock类型是raw_spinlock_t，这个时候就会调用__spin_lock函数，如果是spinlock_t类型，则调用_spin_lock宏（即rt_spin_lock函数）
 
 通过对比 __spin_lock 和 _spin_lock（即rt_spin_lock）
-发现rt_spin_lock去掉了将占的功能preempt_disable();
-并且rt_spin_lock还多出了睡眠等待队列的功能
+发现rt_spin_lock没有调用preempt_disable()函数，
+并且rt_spin_lock还多出了睡眠等待队列的功能，
+所以是可以被抢占的。
 
 
 但是RT下面的
