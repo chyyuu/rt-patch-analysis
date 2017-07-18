@@ -7,8 +7,10 @@ PATCH_TITLE ::= TITLE.patch
 TITLE|DESCRIPT = ['a'..'z','A'..'Z']*|NULL //string or nothing
 CHARACTERISTIC ::='C'
 ASPECT ::= FEATURE|FIXBUG|PERFORMANCE|MAINTAIN
+
 FEATURE ::= 'feature'::FEATURE_METHOD::DESCRIPT
-FEATURE_METHOD::= 'hardware'|
+FEATURE_METHOD::= 'hardware'|'debuginfo'|'idle'|'hrtimer'|'statistics'|'delay'
+
 FIXBUG ::= 'fixbug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
 BUG_CONSEQUENCE ::='corrupt'|'hang'|'crash'|'leak'|'irq'|'livelock'|'na'|'??'|...
 BUG_TYPE ::= SEMANTIC|CONCURRENCY|MEMORY|ERRORCODE
@@ -17,8 +19,10 @@ CONCURRENCY ::= 'atomicity'|'order'|'deadlock'|'livelock'|...
 MEMORY ::= 'resource leak'|'uninit var'|'buf overflow'|...
 ERRORCODE ::= 'compiling err'|'config err'|'runtime err'|'var type'|...
 FIX_METHOD ::= 'hardware'|'lock'|'irq'|'preempt'|'migration'|'other'|...
+
 PERFORMANCE ::= 'performance'::PERF_METHOD::DESCRIPT
-PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|'mm'|...
+PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|'mm'|'hrtimer'|...
+
 MAINTAIN ::='maintain'::MAINTAIN_METHOD
 MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ```
@@ -32,7 +36,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - crash:: 系统崩溃，但没有破坏保存的数据
 - leak:: 发生数据泄漏
 - irq:: 无法响应/打开/关闭中断，导致系统工作不正确
-- compile:: compiling error
+- compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
 
@@ -55,6 +59,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 #### memory
 - resource_leak:: 资源/动态分配的内存没有释放
 - uninit_var:: 资源/变量没有初始化
+- typo_var:: 变量类型错误
 - buf_overflow::缓冲区溢出
 
 #### error code
@@ -64,21 +69,24 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ### fix method
 - hardware:: 硬件相关的修复
 - mutex:: 互斥相关的修复
-- sync:: 同步相关的修复
+- sync:: order OR 同步相关的修复
 - irq/softirq:: 中断/软中断相关的修复
 - preempt:: 抢占相关的修复
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
+- memory:: type of var, init var 相关的修复
 
 
 ## feature related info
 ### feature method
 - hardware:: 添加硬件相关特性
 - debuginfo:: 添加调试信息
-- idle:: 添加idle OR suspend/resume相关功能
+- idle:: 添加idle OR suspend/resume OR power manaagement相关功能
 - hrtimer:添加采用高精度时钟相关功能
 - statistics:: 添加统计信息
-- delaye:: 添加workqueue/softirq相关功能
+- delay:: 添加workqueue/softirq相关功能
+- sched: 对调度的修改
+- timer: clock_event等与时钟通知机制有关的功能添加
 
 ## performance related info
 ### performance method
