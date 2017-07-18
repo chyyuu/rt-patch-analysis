@@ -1,0 +1,132 @@
+
+grep CONFIG_PREEMPT ./.config
+内核配置情况
+# CONFIG_PREEMPT_NONE is not set
+CONFIG_PREEMPT_VOLUNTARY=y
+# CONFIG_PREEMPT is not set
+CONFIG_PREEMPT_BKL=y
+
+
+宏定义展开后的结果
+./mm/mmap.i 
+####################
+void unlink_file_vma(struct vm_area_struct *vma)
+{
+ struct file *file = vma->vm_file;
+
+ if (file) {
+  struct address_space *mapping = file->f_mapping;
+  _spin_lock(&mapping->i_mmap_lock);
+  __remove_shared_vm_struct(vma, file, mapping);
+  do {__raw_spin_unlock(&(&mapping->i_mmap_lock)->raw_lock); (void)0; } while (0);
+ }
+}
+
+
+
+spinlock_t结构体分析
+spinlock_t和raw_spinlock_t是兼容的。可以认为是同一种数据结构。
+==================================
+//  include/linux/spinlock_types.h 
+
+typedef struct {
+ raw_spinlock_t raw_lock;
+
+} spinlock_t;
+
+#define SPINLOCK_MAGIC 0xdead4ead
+
+typedef struct {
+ raw_rwlock_t raw_lock;
+
+} rwlock_t;
+
+#define RWLOCK_MAGIC            0xdeaf1eed
+
+
+
+//  include/asm-x86_64/spinlock_types.h
+
+typedef struct {
+ unsigned int slock;
+} raw_spinlock_t;
+
+#define __RAW_SPIN_LOCK_UNLOCKED { 1 }
+
+typedef struct {
+ unsigned int lock;
+} raw_rwlock_t;
+
+#define __RAW_RW_LOCK_UNLOCKED { RW_LOCK_BIAS }
+
+
+
+spin_lock 宏定义分析
+_spin_lock函数只接收spinlock_t类型的参数，不过其类型可以进行自动cast?
+============================================
+// include/linux/spinlock.h
+
+#define spin_lock(lock) _spin_lock(lock)
+
+
+
+//  kernel/spinlock.c
+
+void __lockfunc _spin_lock(spinlock_t *lock)
+{
+        preempt_disable();
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        _raw_spin_lock(lock);
+}
+
+EXPORT_SYMBOL(_spin_lock);
+
+void __lockfunc _write_lock(rwlock_t *lock)
+{
+        preempt_disable();
+        rwlock_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        _raw_write_lock(lock);
+}
+
+EXPORT_SYMBOL(_write_lock);
+
+// include/linux/spinlock.h
+
+
+#define _raw_spin_lock(lock) __raw_spin_lock(&(lock)->raw_lock)
+
+
+//   include/asm-x86_64/spinlock.h
+
+
+static inline __attribute__((always_inline)) void __raw_spin_lock(raw_spinlock_t *lock)
+{
+ asm volatile(
+  "\n1:\t"
+  ".section .smp_locks,\"a\"\n" "  .align 8\n" "  .quad 661f\n" ".previous\n" "661:\n\tlock; " " ; decl %0\n\t"
+  "jns 2f\n"
+  "3:\n"
+  "rep;nop\n\t"
+  "cmpl $0,%0\n\t"
+  "jle 3b\n\t"
+  "jmp 1b\n"
+  "2:\t" : "=m" (lock->slock) : : "memory");
+}
+
+
+
+涉及到的文件
+======================
+include/linux/spinlock_types.h  
+include/asm-x86_64/spinlock_types.h 
+include/linux/spinlock.h 
+kernel/spinlock.c
+
+
+patch的改动情况：
+数据类型的替换：
+spinlock_t  被替换成了raw_spinlock_t
+raw_spinlock_t 被替换成了__raw_spinlock_t
+
+rwlock_t 被替换成了raw_rwlock_t
+raw_rwlock_t被替换成了__raw_rwlock_t

@@ -1,0 +1,370 @@
+内核版本配置情况
+abc@cscw-pc:~/kernel-test/rt-linux-git/2.6.22.1-rt2_out$ grep CONFIG_PREEMPT ./.config 
+# CONFIG_PREEMPT_NONE is not set
+# CONFIG_PREEMPT_VOLUNTARY is not set
+# CONFIG_PREEMPT_DESKTOP is not set
+CONFIG_PREEMPT_RT=y
+CONFIG_PREEMPT=y
+CONFIG_PREEMPT_SOFTIRQS=y
+CONFIG_PREEMPT_HARDIRQS=y
+CONFIG_PREEMPT_BKL=y
+CONFIG_PREEMPT_RCU=y
+CONFIG_PREEMPT_TRACE=y
+
+
+
+###########spin_lcok宏定义分析
+=========================================================
+// include/linux/spinlock.h
+
+#define spin_lock(lock)         PICK_OP(_lock, lock)
+
+#define PICK_OP(op, lock)                                               \
+do {                                                                    \
+        if (TYPE_EQUAL((lock), raw_spinlock_t))                         \
+                __spin##op((raw_spinlock_t *)(lock));                   \
+        else if (TYPE_EQUAL(lock, spinlock_t))                          \
+                _spin##op((spinlock_t *)(lock));                        \
+        else __bad_spinlock_type();                                     \
+} while (0)
+
+
+#define TYPE_EQUAL(lock,type) __builtin_types_compatible_p(typeof(lock), type *)
+
+
+注意区别_ _spin_lock和_spin_lock
+
+其中_spin_lock是一个宏定义，其会被展开成为rt_spin_lock
+_ _spin_lock是一个函数
+
+
+#########_spin_lock宏定义
+//  include/linux/spinlock.h
+
+#define _spin_lock(l) rt_spin_lock(l)
+
+
+// kernel/rtmutex.c
+
+void __lockfunc rt_spin_lock(spinlock_t *lock)
+{
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED_RT(lock, rt_mutex_trylock, __rt_spin_lock);
+}
+EXPORT_SYMBOL(rt_spin_lock);
+
+#define LOCK_CONTENDED_RT(_lock,f_try,f_lock) f_lock(&(_lock)->lock)
+
+LOCK_CONTENDED_RT(lock, rt_mutex_trylock, __rt_spin_lock);
+展开为 __rt_spin_lock(&(lock)->lock)
+
+#define spin_acquire(l,s,t,i) do { } while (0)
+
+
+编译kernel/rtmutex.c
+========================
+void __attribute__((section(".spinlock.text"))) rt_spin_lock(spinlock_t *lock)
+{
+ do { } while (0);
+ __rt_spin_lock(&(lock)->lock);
+}
+
+
+void __attribute__((section(".spinlock.text"))) __rt_spin_lock(struct rt_mutex *lock)
+{
+ rt_spin_lock_fastlock(lock, rt_spin_lock_slowlock);
+}
+
+
+static inline __attribute__((always_inline)) void
+rt_spin_lock_fastlock(struct rt_mutex *lock,
+  void (*slowfn)(struct rt_mutex *lock))
+{
+
+ if (!get_current()->in_printk)
+  do { __might_sleep("/home/abc/kernel-test/rt-linux-git/linux-stable/kernel/rtmutex.c", 636); do { } while (0); } while (0);
+
+ if (__builtin_expect(!!((((__typeof__(*(&lock->owner)))__cmpxchg((&lock->owner),(unsigned long)(((void *)0)), (unsigned long)(get_current()),sizeof(*(&lock->owner)))) == ((void *)0))), 1))
+  do { } while (0);
+ else
+  slowfn(lock); ///这里有一个函数指针 slowfn() 这个函数指针便是 rt_spin_lock_slowlock
+}
+
+
+
+//  kernel/rtmutex.c
+rt_spin_lock_slowlock 函数实现
+=================
+static void __attribute__((noinline)) __attribute__((__section__(".sched.text")))
+rt_spin_lock_slowlock(struct rt_mutex *lock)
+{
+ struct rt_mutex_waiter waiter;
+ unsigned long saved_state, state, flags;
+
+ do { } while (0);
+ waiter.task = ((void *)0);
+
+ do { do { ((void)sizeof(char[1 - 2*!!(sizeof(flags) != sizeof(unsigned long))])); ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); } while (0); flags = ({ unsigned long __ret; if (__builtin_types_compatible_p(typeof((&lock->wait_lock)), raw_spinlock_t *)) __ret = __spin_lock_irqsave((raw_spinlock_t *)(&lock->wait_lock)); else if (__builtin_types_compatible_p(typeof(&lock->wait_lock), spinlock_t *)) __ret = _spin_lock_irqsave((spinlock_t *)(&lock->wait_lock)); else __ret = __bad_spinlock_type(); __ret; }); } while (0);
+ init_lists(lock);
+
+ if (try_to_take_rt_mutex(lock)) {
+  do { do { ((void)sizeof(char[1 - 2*!!(sizeof(flags) != sizeof(unsigned long))])); ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); } while (0); do { if (__builtin_types_compatible_p(typeof((&lock->wait_lock)), raw_spinlock_t *)) __spin_unlock_irqrestore((raw_spinlock_t *)(&lock->wait_lock), flags); else if (__builtin_types_compatible_p(typeof(&lock->wait_lock), spinlock_t *)) rt_spin_unlock((spinlock_t *)(&lock->wait_lock)); else __bad_spinlock_type(); } while (0); } while (0);
+  return;
+ }
+
+ do { if (__builtin_expect(!!((rt_mutex_owner(lock) == get_current())!=0), 0)) do { asm volatile("1:\tud2\n" ".pushsection __bug_table,\"a\"\n" "2:\t.quad 1b, %c0\n" "\t.word %c1, 0\n" "\t.org 2b+%c2\n" ".popsection" : : "i" ("/home/abc/kernel-test/rt-linux-git/linux-stable/kernel/rtmutex.c"), "i" (682), "i" (sizeof(struct bug_entry))); for(;;) ; } while(0); } while(0);
+
+ saved_state = ((__typeof__(*(&get_current()->state)))__xchg((unsigned long)(4),(&get_current()->state),sizeof(*(&get_current()->state))));
+
+ for (;;) {
+  unsigned long saved_flags;
+  int saved_lock_depth = get_current()->lock_depth;
+
+
+  if (try_to_take_rt_mutex(lock))
+   break;
+
+  if (!waiter.task) {
+   task_blocks_on_rt_mutex(lock, &waiter, 0, flags);
+
+   if (__builtin_expect(!!(!waiter.task), 0))
+    continue;
+  }
+
+  saved_flags = get_current()->flags & 0x00000010;
+  get_current()->lock_depth = -1;
+  get_current()->flags &= ~0x00000010;
+  do { do { ((void)sizeof(char[1 - 2*!!(sizeof(flags) != sizeof(unsigned long))])); ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); } while (0); do { if (__builtin_types_compatible_p(typeof((&lock->wait_lock)), raw_spinlock_t *)) __spin_unlock_irqrestore((raw_spinlock_t *)(&lock->wait_lock), flags); else if (__builtin_types_compatible_p(typeof(&lock->wait_lock), spinlock_t *)) rt_spin_unlock((spinlock_t *)(&lock->wait_lock)); else __bad_spinlock_type(); } while (0); } while (0);
+
+  do { } while (0);
+
+  schedule();
+  
+  do { do { ((void)sizeof(char[1 - 2*!!(sizeof(flags) != sizeof(unsigned long))])); ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); } while (0); flags = ({ unsigned long __ret; if (__builtin_types_compatible_p(typeof((&lock->wait_lock)), raw_spinlock_t *)) __ret = __spin_lock_irqsave((raw_spinlock_t *)(&lock->wait_lock)); else if (__builtin_types_compatible_p(typeof(&lock->wait_lock), spinlock_t *)) __ret = _spin_lock_irqsave((spinlock_t *)(&lock->wait_lock)); else __ret = __bad_spinlock_type(); __ret; }); } while (0);
+  get_current()->flags |= saved_flags;
+  get_current()->lock_depth = saved_lock_depth;
+  state = ((__typeof__(*(&get_current()->state)))__xchg((unsigned long)(4),(&get_current()->state),sizeof(*(&get_current()->state))));
+  if (__builtin_expect(!!(state == 0), 0))
+   saved_state = 0;
+ }
+
+ state = ((__typeof__(*(&get_current()->state)))__xchg((unsigned long)(saved_state),(&get_current()->state),sizeof(*(&get_current()->state))));
+ if (__builtin_expect(!!(state == 0), 0))
+  get_current()->state = 0;
+
+ if (__builtin_expect(!!(waiter.task), 0))
+  remove_waiter(lock, &waiter, flags);
+
+ fixup_rt_mutex_waiters(lock);
+
+ do { do { ((void)sizeof(char[1 - 2*!!(sizeof(flags) != sizeof(unsigned long))])); ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); } while (0); do { if (__builtin_types_compatible_p(typeof((&lock->wait_lock)), raw_spinlock_t *)) __spin_unlock_irqrestore((raw_spinlock_t *)(&lock->wait_lock), flags); else if (__builtin_types_compatible_p(typeof(&lock->wait_lock), spinlock_t *)) rt_spin_unlock((spinlock_t *)(&lock->wait_lock)); else __bad_spinlock_type(); } while (0); } while (0);
+
+ do { } while (0);
+}
+
+
+这个函数里面会调用schedule并且有等待队列。
+
+
+###########__spin_lock函数定义
+//  kernel/spinlock.c
+
+void __lockfunc __spin_lock(raw_spinlock_t *lock)
+{
+        preempt_disable();
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED(lock, _raw_spin_trylock, _raw_spin_lock);
+}
+
+EXPORT_SYMBOL(__spin_lock);
+
+
+
+#define preempt_disable() do { inc_preempt_count(); barrier(); } while (0)
+#define inc_preempt_count() add_preempt_count(1)
+
+#define spin_acquire(l,s,t,i) do { } while (0)
+
+#define LOCK_CONTENDED(_lock,try,lock) lock(_lock)
+#define _raw_spin_lock(lock) __raw_spin_lock(&(lock)->raw_lock)
+
+
+LOCK_CONTENDED(lock, _raw_spin_trylock, _raw_spin_lock);
+变成了 _raw_spin_lock(lock)
+然后 _raw_spin_lock(lock)
+变成了 __raw_spin_lock(&(lock)->raw_lock)
+
+编译
+kernel/spinlock.c
+==========================
+void __attribute__((section(".spinlock.text"))) __spin_lock(raw_spinlock_t *lock)
+{
+ do { add_preempt_count(1); __asm__ __volatile__("": : :"memory"); } while (0);
+ do { } while (0);
+ __raw_spin_lock(&(lock)->raw_lock);
+}
+
+
+//   include/asm-x86_64/spinlock.h
+
+static inline __attribute__((always_inline)) void __raw_spin_lock(__raw_spinlock_t *lock)
+{
+ asm volatile(
+  "\n1:\t"
+  ".section .smp_locks,\"a\"\n" "  .align 8\n" "  .quad 661f\n" ".previous\n" "661:\n\tlock; " " ; decl %0\n\t"
+  "jns 2f\n"
+  "3:\n"
+  "rep;nop\n\t"
+  "cmpl $0,%0\n\t"
+  "jle 3b\n\t"
+  "jmp 1b\n"
+  "2:\t" : "=m" (lock->slock) : : "memory");
+}
+
+__raw_spin_lock 这个函数的属是always_inline 如果试图编译 kernel/spinlock.s 查看__raw_spin_lock的汇编格式代码，会发现找不到。
+
+
+#####结论：
+==================================
+如果spin_lock(lock)里面的lock类型是raw_spinlock_t，这个时候就会调用__spin_lock函数，如果是spinlock_t类型，则调用_spin_lock宏（即rt_spin_lock函数）
+
+通过对比 __spin_lock 和 _spin_lock（即rt_spin_lock）
+发现rt_spin_lock去掉了将占的功能preempt_disable();
+并且rt_spin_lock还多出了睡眠等待队列的功能
+
+
+但是RT下面的
+spinlock_t  被替换成了raw_spinlock_t
+raw_spinlock_t 被替换成了__raw_spinlock_t
+那么原来的spinlock_t类型又变成了什么呢？
+
+也就是说原来spin_lock(spinlock_t)类型的函数会调用rt_spin_lock从而"不关闭抢占"，还有等待队列
+原来spin_lock(raw_spinlock_t)类型的函数调用，会继续使用_spin_lock仍然关闭抢占。
+
+
+spinlock_t结构体定义：
+===============================
+
+//  include/linux/rt_lock.h
+typedef struct {
+ struct rt_mutex lock;
+ unsigned int break_lock;
+} spinlock_t;
+
+
+
+typedef struct {
+ struct rt_mutex lock;
+ int read_depth;
+ unsigned int break_lock;
+} rwlock_t;
+
+
+
+
+//   include/linux/rtmutex.h
+struct rt_mutex {
+ raw_spinlock_t wait_lock;
+ struct plist_head wait_list;
+ struct task_struct *owner;
+};
+
+
+//   include/linux/spinlock_types.h
+
+typedef struct {
+ __raw_spinlock_t raw_lock;
+ unsigned int break_lock;
+} raw_spinlock_t;
+
+
+typedef struct {
+ __raw_rwlock_t raw_lock;
+ unsigned int break_lock;
+} raw_rwlock_t;
+
+
+
+//  include/asm-x86_64/spinlock_types.h
+
+typedef struct {
+ unsigned int slock;
+} __raw_spinlock_t;
+
+#define __RAW_SPIN_LOCK_UNLOCKED { 1 }
+
+typedef struct {
+ unsigned int lock;
+} __raw_rwlock_t;
+
+#define __RAW_RW_LOCK_UNLOCKED { RW_LOCK_BIAS }
+
+
+
+
+===================================
+编译一下./mm/mmap.c 看看这里的spin_lock是如何展开的？
+
+make  CFLAGS_KERNEL=-g3 ARCH=x86_64  O=${BUILD_DIR}  V=1 ./mm/mmap.i   >${BUILD_DIR}/make2.log 2>&1
+
+
+宏定义展开后的结果
+./mm/mmap.i 
+####################
+void unlink_file_vma(struct vm_area_struct *vma)
+{
+ struct file *file = vma->vm_file;
+
+ if (file) {
+  struct address_space *mapping = file->f_mapping;
+  do { if (__builtin_types_compatible_p(typeof((&mapping->i_mmap_lock)), raw_spinlock_t *)) __spin_lock((raw_spinlock_t *)(&mapping->i_mmap_lock)); else if (__builtin_types_compatible_p(typeof(&mapping->i_mmap_lock), spinlock_t *)) rt_spin_lock((spinlock_t *)(&mapping->i_mmap_lock)); else __bad_spinlock_type(); } while (0);
+  __remove_shared_vm_struct(vma, file, mapping);
+  do { if (__builtin_types_compatible_p(typeof((&mapping->i_mmap_lock)), raw_spinlock_t *)) __spin_unlock((raw_spinlock_t *)(&mapping->i_mmap_lock)); else if (__builtin_types_compatible_p(typeof(&mapping->i_mmap_lock), spinlock_t *)) rt_spin_unlock((spinlock_t *)(&mapping->i_mmap_lock)); else __bad_spinlock_type(); } while (0);
+ }
+}
+
+
+
+宏定义展开前的结果
+./mm/mmap.c 
+####################
+void unlink_file_vma(struct vm_area_struct *vma)
+{
+        struct file *file = vma->vm_file;
+
+        if (file) {
+                struct address_space *mapping = file->f_mapping;
+                spin_lock(&mapping->i_mmap_lock);
+                __remove_shared_vm_struct(vma, file, mapping);
+                spin_unlock(&mapping->i_mmap_lock);
+        }
+}
+
+
+
+
+spin_lock(&mapping->i_mmap_lock);
+
+PICK_OP(_lock, &mapping->i_mmap_lock)
+
+
+do {                                                                    \
+        if (TYPE_EQUAL((&mapping->i_mmap_lock), raw_spinlock_t))                         \
+                __spin_lock((raw_spinlock_t *)(&mapping->i_mmap_lock));                   \
+        else if (TYPE_EQUAL(&mapping->i_mmap_lock, spinlock_t))                          \
+                _spin_lock((spinlock_t *)(&mapping->i_mmap_lock));                        \
+        else __bad_spinlock_type();                                     \
+} while (0)
+
+#define _spin_lock(l) rt_spin_lock(l)
+
+
+涉及到的文件
+===========
+include/linux/spinlock.h
+kernel/rtmutex.c
+kernel/spinlock.c
+include/linux/rt_lock.h
+include/linux/rtmutex.h
+include/linux/spinlock_types.h
+include/asm-x86_64/spinlock_types.h
