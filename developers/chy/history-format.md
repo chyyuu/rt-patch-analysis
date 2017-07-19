@@ -35,6 +35,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - livelock:: 如果事务T1封锁了数据R,事务T2又请求封锁R，于是T2等待。T3也请求封锁R，当T1释放了R上的封锁后，系统首先批准了T3的请求，T2仍然等待。然后T4又请求封锁R，当T3释放了R上的封锁之后，系统又批准了T的请求......T2可能永远等待，这就是活锁。活锁有一定几率解开。
 - crash:: 系统崩溃，但没有破坏保存的数据
 - leak:: 发生数据泄漏
+- data_err:: 数据处理错误
 - irq:: 无法响应/打开/关闭中断，导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
@@ -42,12 +43,12 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 
 
 ### bug type
-#### semantic
-- hardware:: 硬件初始化/工作流控制逻辑错误
+#### semantics
+- hardware:: 硬件初始化/工作流控制逻辑错误 
 - softirq:: 在软中断工作范围内出现的错误
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
-- irq:: 与设置中断相关的错误
+- irq:: 与设置中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
 - na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
@@ -61,6 +62,8 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - uninit_var:: 资源/变量没有初始化
 - typo_var:: 变量类型错误
 - buf_overflow::缓冲区溢出
+- err_var:: 数据处理/比较错误
+_ err_access:: 用户态访问内核态等类似的程序访问错误
 
 #### error code
 - compiling_err:: 编译错误
@@ -74,19 +77,26 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - preempt:: 抢占相关的修复
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
-- memory:: type of var, init var 相关的修复
-
+- memory:: type of var, init var, var<-->ptr 相关的修复
+- config:: 修复config相关的bug
+- syntax:: 修复编译语法错误
+- semantics:: 修复语义错误(修改代码，删除代码) 如  Don't call mcount from vsyscall_fn's OR PowerPC: remove broken vsyscall cod
+- smallsize:: 减少不必要的代码执行/执行次数等，以优化执行时间
 
 ## feature related info
 ### feature method
 - hardware:: 添加硬件相关特性
-- debuginfo:: 添加调试信息
+- debuginfo:: 添加/减少调试信息
 - idle:: 添加idle OR suspend/resume OR power manaagement相关功能
 - hrtimer:添加采用高精度时钟相关功能
 - statistics:: 添加统计信息
 - delay:: 添加workqueue/softirq相关功能
-- sched: 对调度的修改
-- timer: clock_event等与时钟通知机制有关的功能添加
+- sched:: 对调度的修改
+- timer:: clock_event，time of day, 等与时钟通知机制有关的功能添加
+- lockless:: 无锁设计
+- capability:: 与rt相关的权限设置
+- net:: 对net的修改（hash） inet_hash_bits.patch
+- rtlock:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh...
 
 ## performance related info
 ### performance method
@@ -94,10 +104,12 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - cache:: 优化cache访问
 - msleep:: msleep优化
 - irq/softirq:: irq/softirq相关优化
+- mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock等
 - barrier:: barrier相关优化
-- idle:: 缩短idle OR suspend/resume时间的优化
+- idle:: 缩短idle OR suspend/resume时间的正确计算与优化
 - hrtimer:采用高精度时钟的优化
 - mm: memory management/kmem_cache相关优化
+- percpu_var:: percpu var设计优化
 
 ## maintain related info
 ### maintain method
