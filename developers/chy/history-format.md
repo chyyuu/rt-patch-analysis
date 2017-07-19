@@ -31,11 +31,11 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ### bug consequence
 - corrupt:: 系统破坏了保存的数据（主要与文件系统，存储系统相关）
 - hang:: 系统长时间无反应
-- deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。
+- deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。scheduling in atomic
 - livelock:: 如果事务T1封锁了数据R,事务T2又请求封锁R，于是T2等待。T3也请求封锁R，当T1释放了R上的封锁后，系统首先批准了T3的请求，T2仍然等待。然后T4又请求封锁R，当T3释放了R上的封锁之后，系统又批准了T的请求......T2可能永远等待，这就是活锁。活锁有一定几率解开。
 - crash:: 系统崩溃，但没有破坏保存的数据
 - leak:: 发生数据泄漏
-- data_err:: 数据处理错误
+- data_err:: 数据处理/显示错误
 - irq:: 无法响应/打开/关闭中断，导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
@@ -48,7 +48,9 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - softirq:: 在软中断工作范围内出现的错误
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
+- time:: 时间处理相关的错误
 - irq:: 与设置中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
+- semantics:: 编程逻辑有误
 - na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
@@ -73,15 +75,16 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - hardware:: 硬件相关的修复
 - mutex:: 互斥相关的修复
 - sync:: order OR 同步相关的修复
-- irq/softirq:: 中断/软中断相关的修复
-- preempt:: 抢占相关的修复
+- irq/softirq:: 中断/软中断相关的修复 
+- preempt:: 抢占相关的修复 如 handle accurate time keeping over long delays NEED TO READ
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
 - memory:: type of var, init var, var<-->ptr 相关的修复
 - config:: 修复config相关的bug
 - syntax:: 修复编译语法错误
+- runtime:: add might_sleep() function to find bug on os running.
 - semantics:: 修复语义错误(修改代码，删除代码) 如  Don't call mcount from vsyscall_fn's OR PowerPC: remove broken vsyscall cod
-- smallsize:: 减少不必要的代码执行/执行次数等，以优化执行时间
+
 
 ## feature related info
 ### feature method
@@ -97,6 +100,8 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - capability:: 与rt相关的权限设置
 - net:: 对net的修改（hash） inet_hash_bits.patch
 - rtlock:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh...
+- check:: add runtime check to make it more stable
+- arch:: add new architecture support for RT
 
 ## performance related info
 ### performance method
@@ -105,11 +110,13 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - msleep:: msleep优化
 - irq/softirq:: irq/softirq相关优化
 - mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock等
+- preempt:: preempt相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
 - hrtimer:采用高精度时钟的优化
 - mm: memory management/kmem_cache相关优化
 - percpu_var:: percpu var设计优化
+- smallsize:: 减少不必要的代码执行/执行次数等，以优化执行时间
 
 ## maintain related info
 ### maintain method
