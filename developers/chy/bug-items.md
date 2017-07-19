@@ -222,10 +222,22 @@ feature: easy,  convert
 
 
 https://lwn.net/Articles/106010/
-
+raw_notifier_call_chain
 There are, of course, a few nagging little problems to deal with. Some code in the system really *shouldn't* be preempted while holding a lock. In particular, code which might be in the middle of programming hardware registers, the page table handling code, and the scheduler itself need to be allowed to do their job in peace. It is hard, after all, to imagine a scenario where preempting the scheduler will lead to good things. So a number of places in the kernel cannot be switched from spinlocks to the new mutexes.
 
+在2.6.22的patch:: change die_chain from atomic to raw notifiers中
+atomic_notifier_call_chain --> raw_notifier_call_chain 
+为何需要这样??
 
+
++#ifdef CONFIG_PREEMPT_RCU
++	return rcu_batches_completed();
++#else
+ 	return rcu_batches_completed_bh();
++#endif
+rcu_batches_completed和rcu_batches_completed_bh的区别是啥？
+
+能否确切地知道哪些地方是不能用new mutex来代替已有的spinlock的？
 
 https://lwn.net/Articles/105948/
 
