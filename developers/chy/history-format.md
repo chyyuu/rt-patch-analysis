@@ -63,7 +63,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - resource_leak:: 资源/动态分配的内存没有释放
 - uninit_var:: 资源/变量没有初始化
 - typo_var:: 变量类型错误
-- buf_overflow::缓冲区溢出
+- overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow
 - err_var:: 数据处理/比较错误
 _ err_access:: 用户态访问内核态等类似的程序访问错误
 
@@ -74,7 +74,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 ### fix method
 - hardware:: 硬件相关的修复
 - mutex:: 互斥相关的修复
-- sync:: order OR 同步相关的修复
+- sync/order:: order OR 同步相关的修复
 - irq/softirq:: 中断/软中断相关的修复 
 - preempt:: 抢占相关的修复 如 handle accurate time keeping over long delays NEED TO READ
 - migration:: 迁移相关的修复
@@ -89,19 +89,21 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 ## feature related info
 ### feature method
 - hardware:: 添加硬件相关特性
-- debuginfo:: 添加/减少调试信息
+- debuginfo:: 添加/减少调试/warning信息
 - idle:: 添加idle OR suspend/resume OR power manaagement相关功能
 - hrtimer:添加采用高精度时钟相关功能
 - statistics:: 添加统计信息
 - delay:: 添加workqueue/softirq相关功能
-- sched:: 对调度的修改
+- sched:: 对调度的修改改进
+- mm:: 对内存的修改改进
 - timer:: clock_event，time of day, 等与时钟通知机制有关的功能添加
 - lockless:: 无锁设计
 - capability:: 与rt相关的权限设置
 - net:: 对net的修改（hash） inet_hash_bits.patch
-- rtlock:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh...
+- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op...
 - check:: add runtime check to make it more stable
 - arch:: add new architecture support for RT
+- other:: 不太好归类的， e.g. dont stop box in panic function
 
 ## performance related info
 ### performance method
@@ -109,7 +111,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - cache:: 优化cache访问
 - msleep:: msleep优化
 - irq/softirq:: irq/softirq相关优化
-- mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock等
+- mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock， 减少cirtical section的范围等
 - preempt:: preempt相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
