@@ -36,7 +36,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - crash:: 系统崩溃，但没有破坏保存的数据
 - leak:: 发生数据泄漏
 - data_err:: 数据处理/显示错误
-- irq:: 无法响应/打开/关闭中断，导致系统工作不正确
+- irq/softirq:: 无法响应/打开/关闭中断，softirq执行延迟/挂起，产生大量irq,    导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
@@ -49,7 +49,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
 - time:: 时间处理相关的错误
-- irq:: 与设置中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
+- irq/softirq:: 与设置中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
 - semantics:: 编程逻辑有误
 - na: Not Available OR Not Applicable 无从得知或不适用
 
@@ -88,7 +88,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 
 ## feature related info
 ### feature method
-- hardware:: 添加硬件相关特性
+- hardware:: 添加/删除硬件相关特性
 - debuginfo:: 添加/减少调试/warning信息
 - idle:: 添加idle OR suspend/resume OR power manaagement相关功能
 - hrtimer:添加采用高精度时钟相关功能
@@ -100,10 +100,10 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - lockless:: 无锁设计
 - capability:: 与rt相关的权限设置
 - net:: 对net的修改（hash） inet_hash_bits.patch
-- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op...
+- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub
 - check:: add runtime check to make it more stable
 - arch:: add new architecture support for RT
-- other:: 不太好归类的， e.g. dont stop box in panic function
+- other:: 不太好归类的， e.g. dont stop box in panic function 或 highmem: revert mainline 即恢复到mainline
 
 ## performance related info
 ### performance method
