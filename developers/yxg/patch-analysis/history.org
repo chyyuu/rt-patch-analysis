@@ -596,7 +596,7 @@
   m [[file:2.6.23/preempt-realtime-cfs-accounting-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-cfs-accounting-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-3.patch{C::performance::prermpt::preempt read-side critical section}
+* [2.6.22 - 2.6.24] rcu-3.patch{C::performance::preempt::preempt read-side critical section}
   + [[file:2.6.22/rcu-3.patch][2.6.22]]
   m [[file:2.6.23/rcu-3.patch][2.6.23]]
     [[file:2.6.24/rcu-3.patch][2.6.24]]
