@@ -2,7 +2,8 @@
 We try to analyze and understand rt-patches in linux kernel. 
 
 ## requirement
-[[requirement.md]]
+[requirement](https://github.com/chyyuu/rt-patch-analysis/blob/master/requirement.md)
+
 ## progress
 - read the rt-patches
 - write some scripts to help our analysis
