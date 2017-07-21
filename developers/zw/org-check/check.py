@@ -61,7 +61,7 @@ class Checker(object):
             return False
 
     def feature(self, detail):
-        if len(detail) != 2:
+        if len(detail) != 1 and len(detail) != 2:
             print("FEATURE ::= 'feature'::FEATURE_METHOD::DESCRIPT")
             return False
 
@@ -72,7 +72,7 @@ class Checker(object):
         return True
 
     def fixbug(self, detail):
-        if len(detail) != 4:
+        if len(detail) != 3 and len(detail) != 4:
             print("FIXBUG ::= 'fixbug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT")
             return False
 
@@ -91,7 +91,7 @@ class Checker(object):
         return True
 
     def performance(self, detail):
-        if len(detail) != 2:
+        if len(detail) != 1 and len(detail) != 2:
             print("PERFORMANCE ::= 'performance'::PERF_METHOD::DESCRIPT")
             return False
 
@@ -102,7 +102,7 @@ class Checker(object):
         return True
 
     def maintain(self, detail):
-        if len(detail) < 1 or len(detail) > 2:
+        if len(detail) != 1 and len(detail) != 2:
             print("MAINTAIN ::= 'maintain'::MAINTAIN_METHOD")
             return False
 
