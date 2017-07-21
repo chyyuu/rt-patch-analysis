@@ -1,0 +1,132 @@
+--- rt-patch-analysis/developers/chy/history.org
++++ rt-patch-analysis/developers/zw/history.org
+===================================================================
+
+-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::bugfix::PIT malfunction::config err::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
++* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::fixbug::na::time::semantics::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
+
+-* [2.6.22         ] clockevents-fix-device-replacement.patch {C::bugfix::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
++* [2.6.22         ] clockevents-fix-device-replacement.patch {C::fixbug::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
+
+-* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::making max_cstate available}
++* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::hardware::making max_cstate available}
+
+-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::fixbug::compile::add a header file}
++* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::fixbug::compile::compiling_err::syntax::add a header file}
+
+-* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::fixbug::hardware::add cond-compile for some arch where tick nohz handling went wrong}
++* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch {C::fixbug::na::hardware::hardware::add cond-compile for some arch where tick nohz handling went wrong}
+
+-* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::idle::sync::resume clockevent device before resume tick}
++* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::idle::semantics::sync::resume clockevent device before resume tick}
+
+-* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
++* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::irq::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
+
+-* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compile::config_err::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
++* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compile::config_err::config::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
+
+-* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::crash::order::sync::module reloaded when still need to be use:: add a atomic counter to counting reads and writes in progress}
++* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::crash::order::sync::module reloaded when still need to be used, add a atomic counter to counting reads and writes in progress}
+
+-* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::irq::hardware::check ARB_DIS status before reading from ICH deivce}
++* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::na::irq::hardware::check ARB_DIS status before reading from ICH deivce}
+
+-* [2.6.22         ] cpuidle_warning_fix_002.patch {C::fixbug::na::uninit_var::memory}
++* [2.6.22         ] cpuidle_warning_fix_002.patch {C::fixbug::na::uninit_var::memory::initialize ret}
+
+-* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch {C::mainain::refactor}
++* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch {C::maintain::refactor}
+
+-* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::maintain::nothing::documentation added}
++* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::maintain::donothing::documentation added}
+
+-* [2.6.22         ] rtc.c-build-fix.patch {C::bugfix::compile::compile_err::config}
++* [2.6.22         ] rtc.c-build-fix.patch {C::fixbug::compile::compiling_err::config}
+
+-* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::bugfix::hang::hardware::hardware::Verify whether hpet counter works during HPET setup}
++* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::fixbug::hang::hardware::hardware::Verify whether hpet counter works during HPET setup}
+
+-* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::lock::rm lock/unlock_kernel}
++* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::mutex::rm lock/unlock_kernel}
+
+-* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::bugfix::compile::compiling_err::syntax::local var shadows global var}
++* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::fixbug::compile::compiling_err::syntax::local var shadows global var}
+
+-* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::bugfix::compile::compile_err::syntax}
++* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::fixbug::compile::compiling_err::syntax}
+
+-* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::bugfix::compile::config_err::config:: & compilerr?::compile issue when CPU_IDLE is not configured::add precompile}
++* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::fixbug::compile::config_err::config:: & compilerr?::add precompile}
+
+-* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::data_err::var_err::memory::resume/suspend&semantic::complete/wait_for_completion&wrong type}
++* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::data_err::var_err::memory::complete/wait_for_completion&wrong type}
+
+-* [2.6.22         ] cpuidle_fix_boot_hang.patch {C::fixbug::hang::idle::idle::add detach fun in err path}
++* [2.6.22         ] cpuidle_fix_boot_hang.patch {C::fixbug::hang::semantics::idle::add detach fun in err path}
+
+-* [2.6.22         ] s_files-barrier.patch {C::fixbug::data_err::atomicity::mutex::missing files::barrier_lock/unlock}
++* [2.6.22         ] s_files-barrier.patch {C::fixbug::data_err::atomicity::mutex::barrier_lock/unlock}
+
+-* [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::idle::hardware::hardware::resume fail::NORT, change site of statement}
++* [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::idle::hardware::hardware::nort, change site of statement}
+
+-* [2.6.22 - 2.6.24] IPV6: estalished connections are not shown with "cat /proc/net/tcp6"{C::fixbug::data_err::semantics::semantics::missing out info?::add two var to get val}
++* [2.6.22 - 2.6.24] IPV6: estalished connections are not shown with "cat /proc/net/tcp6" {C::fixbug::data_err::semantics::semantics::add two var to get val}
+
+-* [2.6.22 - 2.6.24] rcu-4.patch{C:maintain::refactor::separate rcu-trace from rcu}
++* [2.6.22 - 2.6.24] rcu-4.patch {C::maintain::refactor::separate rcu-trace from rcu}
+
+-* [2.6.22 - 2.6.25] handle accurate time keeping over long delays{C::fixbug::data_err::time::semantics::update time been preempted leading to clksrc warp::add var to accumulate}
++* [2.6.22 - 2.6.25] handle accurate time keeping over long delays {C::fixbug::data_err::time::semantics::add var to accumulate}
+
+-* [2.6.22 - 2.6.25] More Fixes to TASKLET_STATE_SCHED WARN_ON(){C::fixbug::crash::order::sync::actual bug non exist::add statement}
++* [2.6.22 - 2.6.25] More Fixes to TASKLET_STATE_SCHED WARN_ON() {C::fixbug::crash::order::sync::add statement}
+
+-* [2.6.22 - 2.6.25] rt-mutex-arm-fix.patch{C::feature::semantics::add attribute}
++* [2.6.22 - 2.6.25] rt-mutex-arm-fix.patch {C::performance::cache::add attribute __sched}
+
+-* [2.6.22 - 2.6.26] select-error-leak-fix.patch{C::fixbug::leak::semantics::userspace leak,move label out}
++* [2.6.22 - 2.6.26] select-error-leak-fix.patch {C::fixbug::leak::semantics::semantics::userspace leak,move label out}
+
+-* [2.6.22 - 2.6.26] percpu-locked-powerpc-fixups.patch{C::feature::refactor::change macro used}
++* [2.6.22 - 2.6.26] percpu-locked-powerpc-fixups.patch {C::maintain::refactor::change macro used}
+
+-* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b3.patch{C::fixbug::runtime warning::get the right cpu_mask}
++* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b3.patch {C::fixbug::corrupt::migration::migration::get the right cpu_mask}
+
+-* [2.6.22 - 2.6.26] preempt-realtime-powerpc.patch{C::feature::rtlock}
++* [2.6.22 - 2.6.26] preempt-realtime-powerpc.patch {C::feature::arch}
+
+-* [2.6.22 - 2.6.26] powerpc 2.6.21-rt6: replace preempt_schedule w/ preempt_schedule_irq User-Agent:{C::fixbug::crash::overflow::irq::irq-entry recursion and stack overflow:: replace...}
++* [2.6.22 - 2.6.26] powerpc 2.6.21-rt6: replace preempt_schedule w/ preempt_schedule_irq User-Agent: {C::fixbug::crash::overflow::irq::replace preempt_schedule() with preempt_schedule_irq()}
+
+-* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b6.patch{C::fixbug::crash::irq::irq::boot warning::set soft/hard enable}
++* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b6.patch {C::fixbug::crash::irq::irq::set soft/hard enable}
+
+-* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b5.patch{C::fixbug::crash::hardware::hardwareLLboot time err,rm field}
++* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b5.patch {C::fixbug::crash::hardware::hardware::boot time err, rm field}
+
+-* [2.6.22 - 2.6.26] mm: lockless pagecache lookups{C::performance::lockless:: pagecache lookup}
++* [2.6.22 - 2.6.26] mm: lockless pagecache lookups {C::performance::mutex::pagecache lookup}
+
+-* [2.6.22 - 2.6.26] panic-dont-stop-box.patch{C::maintain::other::comment one fun}
++* [2.6.22 - 2.6.26] panic-dont-stop-box.patch {C::maintain::refactor::comment one fun}
+
+-* [2.6.22 - 2.6.29] floppy: suspend/resume fix{C::feature::idle::suspend fails after resume from APM::add fun}
++* [2.6.22 - 2.6.29] floppy: suspend/resume fix {C::fixbug::idle::hardware::idle::add fun}
+
+-* [2.6.22 - 2.6.29] patches/random-driver-latency-fix.patch{C::performance::preempt::add a extra preempt_enable}
++* [2.6.22 - 2.6.29] patches/random-driver-latency-fix.patch {C::performance::preempt::add an extra preempt_enable}
+
+-* [2.6.22 - 2.6.29] smp: processor id fixups{C::performance::rm preempt disable and replace it with per_cpu_var}
++* [2.6.22 - 2.6.29] smp: processor id fixups {C::performance::preempt::rm preempt disable and replace it with per_cpu_var}
+
+-* [2.6.22 - 2.6.29] x86_64 GTOD: offer scalable vgettimeofday{C::fixbug::data_err::semantics::scalable vgettimeofday independently of tsc synchronize or not}
++* [2.6.22 - 2.6.29] x86_64 GTOD: offer scalable vgettimeofday {C::fixbug::data_err::semantics::semantics::scalable vgettimeofday independently of tsc synchronize or not}
+
+-* [2.6.22 - 2.6.29] Premmpt-RT: Preevent boosting of idle task{C::feature::check::check and avoid boosting?}
++* [2.6.22 - 2.6.29] Premmpt-RT: Prevent boosting of idle task {C::feature::check::check and avoid boosting?}
+
+-* [2.6.22 -   4.11] ide: Do not disable interrupts for PREEMPT-RT{C::feature::rt::nort irq}
++* [2.6.22 -   4.11] ide: Do not disable interrupts for PREEMPT-RT {C::feature::rtsupport::nort irq}
