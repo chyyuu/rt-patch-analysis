@@ -16,7 +16,7 @@ class Checker(object):
                   'preempt', 'migration', 'idle', 'memory', 'config',
                   'syntax', 'runtime', 'semantics'}
 
-    bug_consequence = {'corrupt', 'hang', 'deadlock', 'livelock', 'crash',
+    bug_consequence = {'hwerr', 'corrupt', 'hang', 'deadlock', 'livelock', 'crash',
                        'leak', 'data_err', 'irq', 'softirq', 'compile', 'idle',
                        'na', '??'}
 
@@ -50,8 +50,8 @@ class Checker(object):
         detail = line[2:]
         if aspect == 'feature':
             return self.feature(detail)
-        elif aspect == 'fixbug':
-            return self.fixbug(detail)
+        elif aspect == 'bug':
+            return self.bug(detail)
         elif aspect == 'performance':
             return self.performance(detail)
         elif aspect == 'maintain':
@@ -71,9 +71,9 @@ class Checker(object):
 
         return True
 
-    def fixbug(self, detail):
+    def bug(self, detail):
         if len(detail) != 3 and len(detail) != 4:
-            print("FIXBUG ::= 'fixbug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT")
+            print("BUG ::= 'bug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT")
             return False
 
         if not detail[0] in self.bug_consequence:
@@ -85,7 +85,7 @@ class Checker(object):
             return False
 
         if not detail[2] in self.fix_method:
-            print('Unknown fix method "{}"'.format(detail[1]))
+            print('Unknown fix method "{}"'.format(detail[2]))
             return False
 
         return True
