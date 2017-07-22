@@ -207,6 +207,9 @@ feature: easy,  convert
 
 ## other important item
 
+### cpuidle_hang_fix.patch 
+???
+
 ### pt-rt--core  preempt-realtime-core.patch
 
 ### pt-irqs-core  preempt-irqs-core.patch

@@ -1,34 +1,34 @@
-* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::bugfix::PIT malfunction::config err::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
+* [2.6.22         ] i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch {C::fixbug::hardware::time::hardware::add an "if" statement to config mode PERIODIC or ONESHOT specificly}
   + [[file:2.6.22/i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch][2.6.22]]  {MOD::arch/i386}
   - 2.6.23  {M}
-* [2.6.22         ] clockevents-fix-device-replacement.patch {C::bugfix::::::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
-  + [[file:2.6.22/clockevents-fix-device-replacement.patch][2.6.22]]  {kernel} 
+* [2.6.22         ] clockevents-fix-device-replacement.patch {C::fixbug::hardware::hardware::hardware::add an "else" statement to clear the tick_broadcast_mask when a higher rated device is used}
+  + [[file:2.6.22/clockevents-fix-device-replacement.patch][2.6.22]]  {kernel}
   - 2.6.23  {M}
 * [2.6.22         ] barrier - a scalable synchonisation barrier {C::performance::barrier::barrier_lock & barrier_lock[avoid cache bouncing]}
   + [[file:2.6.22/barrier.patch][2.6.22]]  {MOD::include/linux} {API::init_barrier, barrier_lock, barrier_sync}
   - 2.6.23  {D}
 * [2.6.22         ] cpuidle_last_measured_004.patch  {C::performance::idle::add a counter of wakeup early, eliminate the state when threshold exceeded}
   + [[file:2.6.22/cpuidle_last_measured_004.patch][2.6.22]]  {MOD::drivers/cpuidle} {API::menu_select,menu_reflect,menu_scan_devic}
-  - 2.6.23  
-* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::maintain::refactor}
-  + [[file:2.6.22/i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch][2.6.22]]  {MOD::arch/i386, include/asm-i386} 
   - 2.6.23
-* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::making max_cstate available}
+* [2.6.22         ] i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch {C::maintain::refactor}
+  + [[file:2.6.22/i386-move-pit-function-declarations-and-constants-to-correct-header-file.patch][2.6.22]]  {MOD::arch/i386, include/asm-i386}
+  - 2.6.23
+* [2.6.22         ] cpuidle_add_support_for_max_cstate_limit.patch {C::feature::hardware::making max_cstate available}
   + [[file:2.6.22/cpuidle_add_support_for_max_cstate_limit.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
 * [2.6.22         ] use-write_trylock_irqsave-in-ptrace_attach.patch {C::maintain::refactor::Use write_trylock_irqsave instead of write_trylock. And remove local_irq_disable things}
   + [[file:2.6.22/use-write_trylock_irqsave-in-ptrace_attach.patch][2.6.22]]  {MOD::kernel/}
   - 2.6.23
-* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::fixbug::compile::add a header file}
+* [2.6.22         ] ntp-move-the-cmos-update-code-into-ntpc-fix.patch {C::fixbug::compile::compiling_err::syntax::add a header file}
   + [[file:2.6.22/ntp-move-the-cmos-update-code-into-ntpc-fix.patch][2.6.22]]  {MOD::include/linux}
   - 2.6.23
 * [2.6.22         ] hrtimer-no-getnstimeofday.patch {C::performance::hrtimer::replace getnstimeofday with other functions}
   + [[file:2.6.22/hrtimer-no-getnstimeofday.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch  {C::fixbug::hardware::add cond-compile for some arch where tick nohz handling went wrong}
+* [2.6.22         ] nohz-fix-nohz-x86-dyntick-idle-handling.patch {C::fixbug::crash::hardware::hardware::add cond-compile for some arch where tick nohz handling went wrong}
   + [[file:2.6.22/nohz-fix-nohz-x86-dyntick-idle-handling.patch][2.6.22]]   {MOD::arch/i386}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::idle::sync::resume clockevent device before resume tick}
+* [2.6.22         ] clockevents-fix-resume-logic.patch {C::fixbug::idle::order::sync::resume clockevent device before resume tick}
   + [[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]]   {MOD::arch/i386,arch/arm,arch/sh,arch/sparc64, kernel/time, include/linux}
   - 2.6.23
 * [2.6.22         ] x86_64-fix-apic-typo.patch {C::maintain::donothing}
@@ -43,7 +43,7 @@
 * [2.6.22         ] highres-improve-debug-output.patch {C::feature::debuginfo::debuginfo for hrtimer and clock events}
   + [[file:2.6.22/highres-improve-debug-output.patch][2.6.22]] {MOD::arch/i386, kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
+* [2.6.22         ] cpuidle_hang_fix.patch {C::fixbug::hang::order::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}
   + [[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]  {MOD::dirvers/cpuidle}
   - 2.6.23
 * [2.6.22         ] cpuidle_governor_api_change.patch {C::feature::idle::add opt stage, and let the governor to ?reflect on some device}
@@ -61,7 +61,7 @@
 * [2.6.22         ] lockdep-prove-locking.patch {C::feature::debuginfo}
   + [[file:2.6.22/lockdep-prove-locking.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compile::config_err::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
+* [2.6.22         ] v2.6.21.4-rt11 {C::fixbug::compile::config_err::config::add config, GENERIC_TIME is not supported in some arch, leading to compiling error}
   + [[file:2.6.22/disable-gtod-functions-if-gtod-is-not-there.patch][2.6.22]]  {MOD::kernel,kernel/time}
   - 2.6.23
 * [2.6.22         ] spinlock-init-cleanup.patch {C::maintain::refactor::spin_lock_init}
@@ -94,7 +94,7 @@
 * [2.6.22         ] lockstat_bounce.patch {C::feature::statistics::state and measure lock bouncing}
   + [[file:2.6.22/lockstat_bounce.patch][2.6.22]]  {MOD::kernel, include/linux}
   - 2.6.23
-* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::crash::order::sync::module reloaded when still need to be use:: add a atomic counter to counting reads and writes in progress}
+* [2.6.22         ] module-pde-race-fixes.patch {C::fixbug::crash::order::sync::module reloaded when still need to be used, add a atomic counter to counting reads and writes in progress}
   + [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]]  {MOD::fs/proc,include/linux}
   - 2.6.23
 * [2.6.22         ] cpuidle_take2_core_cpuidle_infrastructure.patch {C::feature::idle::cpudile infrasturcture}
@@ -115,7 +115,7 @@
 * [2.6.22         ] hrtimer-speedup-hrtimer_enqueue.patch {C::performance::hrtimer::speedup hrtimer_enqueue}
   + [[file:2.6.22/hrtimer-speedup-hrtimer_enqueue.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::irq::hardware::check ARB_DIS status before reading from ICH deivce}
+* [2.6.22         ] acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch {C::fixbug::hardware::irq::hardware::check ARB_DIS status before reading from ICH deivce}
   + [[file:2.6.22/acpi-move-timer-broadcast-and-pmtimer-access-before-c3-arbiter-shutdown.patch][2.6.22]]  {MOD::drivers/acpi}
   - 2.6.23
 * [2.6.22         ] lockdep_fixup_annotate.patch {C::feature::debuginfo::fixup annotation}
@@ -139,7 +139,7 @@
 * [2.6.22         ] rt-mutex-spinlock-nested-export-fix.patch {C::maintain::refactor::export __spin_lock_irqsave_nested}
   + [[file:2.6.22/rt-mutex-spinlock-nested-export-fix.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] cpuidle_warning_fix_002.patch {C::fixbug::na::uninit_var::memory}
+* [2.6.22         ] cpuidle_warning_fix_002.patch {C::fixbug::na::uninit_var::memory::initialize ret}
   + [[file:2.6.22/cpuidle_warning_fix_002.patch][2.6.22]]  {MOD::drivers/cpuidle}
   - 2.6.23
 * [2.6.22         ] lockdep: variuos fixes {C::maintain::refactor::various update}
@@ -157,7 +157,7 @@
 * [2.6.22         ] sched-cfs-latest.patch {C::maintain::refactor}
   + [[file:2.6.22/sched-cfs-latest.patch][2.6.22]]  {MOD::kernel}
   - 2.6.23
-* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch {C::mainain::refactor}
+* [2.6.22         ] clockevents-fix-typo-in-acpi_pmc.patch {C::maintain::refactor}
   + [[file:2.6.22/clockevents-fix-typo-in-acpi_pmc.patch][2.6.22]]  {MOD::drivers/clocksource}
   - 2.6.23
 * [2.6.22         ] timerc-cleanup-recently-introduced-whitespace-damage.patch {C::maintain::refactor::replace some of whitespace with tab?}
@@ -172,7 +172,7 @@
 * [2.6.22         ] Clockevents remove clockevents_{release,request}_device {C::maintain::refactor::remove clockevents_release/request_device}
   + [[file:2.6.22/clockevents-remove-unused-code.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::maintain::nothing::documentation added}
+* [2.6.22         ] cpuidle_take2_basic_documentation_for_cpuidle.patch {C::maintain::donothing::documentation added}
   + [[file:2.6.22/cpuidle_take2_basic_documentation_for_cpuidle.patch][2.6.22]] {MOD::Documentation}
   - 2.6.23
 * [2.6.22         ] cpuidle_governor_ratings_04.patch {C::feature::idle::governor rating scheme}
@@ -223,7 +223,7 @@
 * [2.6.22         ] cpuidle_add_cpuidle_force_redetect_devices_api.patch {C::feature::idle::add functions}
   + [[file:2.6.22/cpuidle_add_cpuidle_force_redetect_devices_api.patch][2.6.22]] {MOD::drivers/acpi, drivers/cpuidle, include/linux}
   - 2.6.23
-* [2.6.22         ] rtc.c-build-fix.patch {C::bugfix::compile::compile_err::config}
+* [2.6.22         ] rtc.c-build-fix.patch {C::fixbug::compile::compiling_err::config}
   + [[file:2.6.22/rtc.c-build-fix.patch][2.6.22]] {MOD::drivers/char}
   - 2.6.23
 * [2.6.22         ] radix-tree: gang_lookup_slot {C::feature::lockless::multiple slot lookup on radix tree}
@@ -256,43 +256,43 @@
 * [2.6.22         ] tick-management-spread-timer-interrupt.patch {C::performance::percpu_var::adds an extra offset per cpu so the ticks don't line up,drop lock contention}
   + [[file:2.6.22/tick-management-spread-timer-interrupt.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::bugfix::hang::hardware::hardware::Verify whether hpet counter works during HPET setup}
+* [2.6.22         ] i386-hpet-check-if-the-counter-works.patch{C::fixbug::hang::hardware::hardware::Verify whether hpet counter works during HPET setup}
   + [[file:2.6.22/i386-hpet-check-if-the-counter-works.patch][2.6.22]]
   - 2.6.23
 * [2.6.22         ] cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch {C::feature::idle::export time until next intr}
   + [[file:2.6.22/cpuidle_export_time_until_next_timer_interrupt_using_no_hz.patch][2.6.22]] {MOD::arch/i386,include/linux,kernel,kernel/time}
   - 2.6.23
-* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::lock::rm lock/unlock_kernel}
+* [2.6.22         ] preempt-realtime-drivers-pci-hotplug.patch {C::performance::mutex::rm lock/unlock_kernel}
   + [[file:2.6.22/preempt-realtime-drivers-pci-hotplug.patch][2.6.22]] {MOD::drivers/pci}
   - 2.6.23
 * [2.6.22         ] x86_64-timec-fix-whitespace-wreckage.patch {C::maintain::donothing::rm whitespace}
   + [[file:2.6.22/x86_64-timec-fix-whitespace-wreckage.patch][2.6.22]] {MOD::arch/x86_64}
   - 2.6.23
-* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::bugfix::compile::compiling_err::syntax::local var shadows global var}
+* [2.6.22         ] timekeeping-fixup-shadow-variable-argument.patch {C::fixbug::compile::compiling_err::syntax::local var shadows global var}
   + [[file:2.6.22/timekeeping-fixup-shadow-variable-argument.patch][2.6.22]] {MOD::kernel/time}
   - 2.6.23
-* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::bugfix::compile::compile_err::syntax}
+* [2.6.22         ] cpuidle_ladder_does_not_depend_on_ACPI.patch {C::fixbug::compile::compiling_err::syntax}
   + [[file:2.6.22/cpuidle_ladder_does_not_depend_on_ACPI.patch][2.6.22]] {MOD::drivers/cpuidle}
   - 2.6.23
-* [2.6.22         ] s_files-per_cpu-rt.patch {C::performance::lock::use get/put_cpu_var_locked to replace get/put_cpu_var}
+* [2.6.22         ] s_files-per_cpu-rt.patch {C::performance::mutex::use get/put_cpu_var_locked to replace get/put_cpu_var}
   + [[file:2.6.22/s_files-per_cpu-rt.patch][2.6.22]] {MOD::fs}
   - 2.6.23
-* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::bugfix::compile::config_err::config:: & compilerr?::compile issue when CPU_IDLE is not configured::add precompile}
+* [2.6.22         ] cpuidle_build_fix_for_not_CPU_IDLE.patch {C::fixbug::compile::config_err::config:: & compilerr?::add precompile}
   + [[file:2.6.22/cpuidle_build_fix_for_not_CPU_IDLE.patch][2.6.22]] {MOD::include/linux}
   - 2.6.23
-* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::data_err::var_err::memory::resume/suspend&semantic::complete/wait_for_completion&wrong type}
+* [2.6.22         ] cpuidle_fix_sysfs_related_issue.patch {C::fixbug::data_err::var_err::memory::complete/wait_for_completion&wrong type}
   + [[file:2.6.22/cpuidle_fix_sysfs_related_issue.patch][2.6.22]] {MOD::drivers/acpi,drivers/cpuidle,include/linux}
   - 2.6.23
-* [2.6.22         ] cpuidle_fix_boot_hang.patch {C::fixbug::hang::idle::idle::add detach fun in err path}
+* [2.6.22         ] cpuidle_fix_boot_hang.patch {C::fixbug::hang::semantics::idle::add detach fun in err path}
   + [[file:2.6.22/cpuidle_fix_boot_hang.patch][2.6.22]] {MOD::drivers/cpuidle}
   - 2.6.23
 * [2.6.22         ] x86_64-untangle-asm-hpeth-from-asm-timexh.patch {C::maintain::refactor::compile}
   + [[file:2.6.22/x86_64-untangle-asm-hpeth-from-asm-timexh.patch][2.6.22]] {MOD::include/asm-x86_64,drivers/char}
   - 2.6.23
-* [2.6.22         ] s_files-barrier.patch {C::fixbug::data_err::atomicity::mutex::missing files::barrier_lock/unlock}
+* [2.6.22         ] s_files-barrier.patch {C::fixbug::data_err::atomicity::mutex::barrier_lock/unlock}
   + [[file:2.6.22/s_files-barrier.patch][2.6.22]] {MOD::fs,include/linux}
   - 2.6.23
-* [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::idle::hardware::hardware::resume fail::NORT, change site of statement}
+* [2.6.22 - 2.6.23] ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch {C::fixbug::idle::hardware::hardware::nort, change site of statement}
   + [[file:2.6.22/ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch][2.6.22]] {MOD::arch/i386}
     [[file:2.6.23/ich-force-hpet-ich5-fix-a-bug-with-suspend-resume.patch][2.6.23]]
   - 2.6.24
@@ -411,917 +411,917 @@
     [[file:2.6.23/rcu-preempt-fix-nmi-watchdog.patch][2.6.23]]
     [[file:2.6.24/rcu-preempt-fix-nmi-watchdog.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: fix clockevents for classic CPUs{C::feature::timer::set a maximum positive value to decrementer, add a clk_event case}
+* [2.6.22 - 2.6.24] PowerPC: fix clockevents for classic CPUs {C::feature::timer::set a maximum positive value to decrementer, add a clk_event case}
   + [[file:2.6.22/ppc-clockevents-fix.patch][2.6.22]]
     [[file:2.6.23/ppc-clockevents-fix.patch][2.6.23]]
     [[file:2.6.24/ppc-clockevents-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] convert RCU Preempt tasklet into softirq.{C::performance::softirq::replace tasklet with softirq}
+* [2.6.22 - 2.6.24] convert RCU Preempt tasklet into softirq. {C::performance::softirq::replace tasklet with softirq}
   + [[file:2.6.22/rcu-tasklet-softirq.patch][2.6.22]]
     [[file:2.6.23/rcu-tasklet-softirq.patch][2.6.23]]
     [[file:2.6.24/rcu-tasklet-softirq.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] ppc-gtod-support.patch{C::feature::timer::convert powerpc time to generic timekeeping}
+* [2.6.22 - 2.6.24] ppc-gtod-support.patch {C::feature::timer::convert powerpc time to generic timekeeping}
   + [[file:2.6.22/ppc-gtod-support.patch][2.6.22]]
   M [[file:2.6.23/ppc-gtod-support.patch][2.6.23]]
     [[file:2.6.24/ppc-gtod-support.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] undo-latency-tracing-raw-spinlock-hack.patch{C::maintain::refactor::rm macro}
+* [2.6.22 - 2.6.24] undo-latency-tracing-raw-spinlock-hack.patch {C::maintain::refactor::rm macro}
   + [[file:2.6.22/undo-latency-tracing-raw-spinlock-hack.patch][2.6.22]]
   M [[file:2.6.23/undo-latency-tracing-raw-spinlock-hack.patch][2.6.23]]
     [[file:2.6.24/undo-latency-tracing-raw-spinlock-hack.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: enable HRT and dynticks support{C::feature::idle::enable HRT and dynamic ticks}
+* [2.6.22 - 2.6.24] PowerPC: enable HRT and dynticks support {C::feature::idle::enable HRT and dynamic ticks}
   + [[file:2.6.22/ppc-highres-dyntick.patch][2.6.22]]
     [[file:2.6.23/ppc-highres-dyntick.patch][2.6.23]]
     [[file:2.6.24/ppc-highres-dyntick.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] 2.6.21-rt6{C::feature::rtsupport::add declaration rt_write_trylock_irqsave}
+* [2.6.22 - 2.6.24] 2.6.21-rt6 {C::feature::rtsupport::add declaration rt_write_trylock_irqsave}
   + [[file:2.6.22/rt-mutex-trylock-export.patch][2.6.22]]
     [[file:2.6.23/rt-mutex-trylock-export.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-trylock-export.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-classic-fixup.patch{C::feature::rtsupport::add declaration rcu_batches_completed_bh}
+* [2.6.22 - 2.6.24] rcu-classic-fixup.patch {C::feature::rtsupport::add declaration rcu_batches_completed_bh}
   + [[file:2.6.22/rcu-classic-fixup.patch][2.6.22]]
     [[file:2.6.23/rcu-classic-fixup.patch][2.6.23]]
     [[file:2.6.24/rcu-classic-fixup.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracer-one-off-fix.patch{C::bugfix::data_err::err_var::semantics::replace \eq with \geq}
+* [2.6.22 - 2.6.24] latency-tracer-one-off-fix.patch {C::fixbug::data_err::err_var::semantics::replace \eq with \geq}
   + [[file:2.6.22/latency-tracer-one-off-fix.patch][2.6.22]]
     [[file:2.6.23/latency-tracer-one-off-fix.patch][2.6.23]]
     [[file:2.6.24/latency-tracer-one-off-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] fix clocksource_timebase.shift value{C::bugfix::data_err::config_err::config::call shift with jiffy}
+* [2.6.22 - 2.6.24] fix clocksource_timebase.shift value {C::fixbug::data_err::config_err::config::call shift with jiffy}
   + [[file:2.6.22/ppc-fix-clocksource-timebase-shift.patch][2.6.22]]
     [[file:2.6.23/ppc-fix-clocksource-timebase-shift.patch][2.6.23]]
     [[file:2.6.24/ppc-fix-clocksource-timebase-shift.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] trace-sti-mwait.patch{C::feature::debuginfo::untrace preempt_idle when cpuidle}
+* [2.6.22 - 2.6.24] trace-sti-mwait.patch {C::feature::debuginfo::untrace preempt_idle when cpuidle}
   + [[file:2.6.22/trace-sti-mwait.patch][2.6.22]]
     [[file:2.6.23/trace-sti-mwait.patch][2.6.23]]
     [[file:2.6.24/trace-sti-mwait.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-2.patch{C::performance::softirq::replace tasklet with softirq}
+* [2.6.22 - 2.6.24] rcu-2.patch {C::performance::softirq::replace tasklet with softirq}
   + [[file:2.6.22/rcu-2.patch][2.6.22]]
     [[file:2.6.23/rcu-2.patch][2.6.23]]
     [[file:2.6.24/rcu-2.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] trace-with-caller-addr.patch{C::feature::debuginfo::trace hardirq}
+* [2.6.22 - 2.6.24] trace-with-caller-addr.patch {C::feature::debuginfo::trace hardirq}
   + [[file:2.6.22/trace-with-caller-addr.patch][2.6.22]]
     [[file:2.6.23/trace-with-caller-addr.patch][2.6.23]]
   M [[file:2.6.24/trace-with-caller-addr.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: implement read_persistent_clock(){C::maintain::refactor::rename get_boot_time to read_persistent_clock}
+* [2.6.22 - 2.6.24] PowerPC: implement read_persistent_clock() {C::maintain::refactor::rename get_boot_time to read_persistent_clock}
   + [[file:2.6.22/ppc-read-persistent-clock.patch][2.6.22]]
   m [[file:2.6.23/ppc-read-persistent-clock.patch][2.6.23]]
     [[file:2.6.24/ppc-read-persistent-clock.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-preempt-fix-rcu-torture.patch{C::performance::add config preempt_rcu}
+* [2.6.22 - 2.6.24] rcu-preempt-fix-rcu-torture.patch {C::performance::add config preempt_rcu}
   + [[file:2.6.22/rcu-preempt-fix-rcu-torture.patch][2.6.22]]
     [[file:2.6.23/rcu-preempt-fix-rcu-torture.patch][2.6.23]]
     [[file:2.6.24/rcu-preempt-fix-rcu-torture.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] v2.6.21-rt3{C::maintain::refactor::reorder some code}
+* [2.6.22 - 2.6.24] v2.6.21-rt3 {C::maintain::refactor::reorder some code}
   + [[file:2.6.22/latency-measurement-drivers-fix.patch][2.6.22]]
   M [[file:2.6.23/latency-measurement-drivers-fix.patch][2.6.23]]
     [[file:2.6.24/latency-measurement-drivers-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] ns2cyc() result fix{C::bugfix::compile::compiling_err::syntax:: warning, wrong type
+* [2.6.22 - 2.6.24] ns2cyc() result fix {C::fixbug::compile::compiling_err::syntax:: warning, wrong type
   + [[file:2.6.22/ns2cyc-result-fix.patch][2.6.22]]
     [[file:2.6.23/ns2cyc-result-fix.patch][2.6.23]]
     [[file:2.6.24/ns2cyc-result-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] redo-regparm-option.patch{C::maintain::refactor::add config and comple flags modified}
+* [2.6.22 - 2.6.24] redo-regparm-option.patch {C::maintain::refactor::add config and comple flags modified}
   + [[file:2.6.22/redo-regparm-option.patch][2.6.22]]
   M [[file:2.6.23/redo-regparm-option.patch][2.6.23]]
   M [[file:2.6.24/redo-regparm-option.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PPC timebase clocksource is continuous{C::maintain::refactor::comment fun and white space}
+* [2.6.22 - 2.6.24] PPC timebase clocksource is continuous {C::maintain::refactor::comment fun and white space}
   + [[file:2.6.22/ppc-gtod-support-fix.patch][2.6.22]]
     [[file:2.6.23/ppc-gtod-support-fix.patch][2.6.23]]
     [[file:2.6.24/ppc-gtod-support-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] smaller-trace.patch{C::performance::smallsize::smaller trace}
+* [2.6.22 - 2.6.24] smaller-trace.patch {C::performance::smallsize::smaller trace}
   + [[file:2.6.22/smaller-trace.patch][2.6.22]]
     [[file:2.6.23/smaller-trace.patch][2.6.23]]
     [[file:2.6.24/smaller-trace.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] x86-64-traps-move-held-locks-output.patch{C::maintain::refactor::reorder fun}
+* [2.6.22 - 2.6.24] x86-64-traps-move-held-locks-output.patch {C::maintain::refactor::reorder fun}
   + [[file:2.6.22/x86-64-traps-move-held-locks-output.patch][2.6.22]]
     [[file:2.6.23/x86-64-traps-move-held-locks-output.patch][2.6.23]]
     [[file:2.6.24/x86-64-traps-move-held-locks-output.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-exclude-printk.patch{C::feature::debuginfo::add config, disable some useless printk detail}
+* [2.6.22 - 2.6.24] latency-tracing-exclude-printk.patch {C::feature::debuginfo::add config, disable some useless printk detail}
   + [[file:2.6.22/latency-tracing-exclude-printk.patch][2.6.22]]
     [[file:2.6.23/latency-tracing-exclude-printk.patch][2.6.23]]
     [[file:2.6.24/latency-tracing-exclude-printk.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: kill cpu_khz reference{C::maintain::refactor::rm useless var}
+* [2.6.22 - 2.6.24] PowerPC: kill cpu_khz reference {C::maintain::refactor::rm useless var}
   + [[file:2.6.22/ppc-remove-last-cpukhz.patch][2.6.22]]
     [[file:2.6.23/ppc-remove-last-cpukhz.patch][2.6.23]]
     [[file:2.6.24/ppc-remove-last-cpukhz.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] hrtimer-trace.patch{C::feature::debuginfo::add hrtimer_trace}
+* [2.6.22 - 2.6.24] hrtimer-trace.patch {C::feature::debuginfo::add hrtimer_trace}
   + [[file:2.6.22/hrtimer-trace.patch][2.6.22]]
     [[file:2.6.23/hrtimer-trace.patch][2.6.23]]
     [[file:2.6.24/hrtimer-trace.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-remove-trace-array.patch{C::maintain::refactor::rm trace array}
+* [2.6.22 - 2.6.24] latency-tracing-remove-trace-array.patch {C::maintain::refactor::rm trace array}
   + [[file:2.6.22/latency-tracing-remove-trace-array.patch][2.6.22]]
   m [[file:2.6.23/latency-tracing-remove-trace-array.patch][2.6.23]]
     [[file:2.6.24/latency-tracing-remove-trace-array.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: remove broken vsyscall code{C::bugfix::crash::err_access::semantics::rm broken vsyscalls}
+* [2.6.22 - 2.6.24] PowerPC: remove broken vsyscall code {C::fixbug::crash::err_access::semantics::rm broken vsyscalls}
   + [[file:2.6.22/ppc-remove-broken-vsyscall.patch][2.6.22]]
     [[file:2.6.23/ppc-remove-broken-vsyscall.patch][2.6.23]]
     [[file:2.6.24/ppc-remove-broken-vsyscall.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] Make threshold to print '!' in latency trace variable{C::maintain::refactor::replace val with a var}
+* [2.6.22 - 2.6.24] Make threshold to print '!' in latency trace variable {C::maintain::refactor::replace val with a var}
   + [[file:2.6.22/latency-tracer-variable-threshold.patch][2.6.22]]
     [[file:2.6.23/latency-tracer-variable-threshold.patch][2.6.23]]
     [[file:2.6.24/latency-tracer-variable-threshold.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] add-notrace.patch{C::feature::debuginfo}
+* [2.6.22 - 2.6.24] add-notrace.patch {C::feature::debuginfo}
   + [[file:2.6.22/add-notrace.patch][2.6.22]]
     [[file:2.6.23/add-notrace.patch][2.6.23]]
     [[file:2.6.24/add-notrace.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] ppc-a-2.patch{C::fixbug::compile::compiling_err::semantics::replace unknown field}
+* [2.6.22 - 2.6.24] ppc-a-2.patch {C::fixbug::compile::compiling_err::semantics::replace unknown field}
   + [[file:2.6.22/ppc-a-2.patch][2.6.22]]
     [[file:2.6.23/ppc-a-2.patch][2.6.23]]
     [[file:2.6.24/ppc-a-2.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] paravirt: mark assembly dependencies as fastcall{C::performance::smallsize::add fastcall}
+* [2.6.22 - 2.6.24] paravirt: mark assembly dependencies as fastcall {C::performance::smallsize::add fastcall}
   + [[file:2.6.22/latency-tracing-i386-paravirt-fastcall.patch][2.6.22]]
   M [[file:2.6.23/latency-tracing-i386-paravirt-fastcall.patch][2.6.23]]
   M [[file:2.6.24/latency-tracing-i386-paravirt-fastcall.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracer-printk-fix.patch{C::maintain::refactor}
+* [2.6.22 - 2.6.24] latency-tracer-printk-fix.patch {C::maintain::refactor}
   + [[file:2.6.22/latency-tracer-printk-fix.patch][2.6.22]]
     [[file:2.6.23/latency-tracer-printk-fix.patch][2.6.23]]
     [[file:2.6.24/latency-tracer-printk-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] IPV6: estalished connections are not shown with "cat /proc/net/tcp6"{C::fixbug::data_err::semantics::semantics::missing out info?::add two var to get val}
+* [2.6.22 - 2.6.24] IPV6: estalished connections are not shown with "cat /proc/net/tcp6" {C::fixbug::data_err::semantics::semantics::add two var to get val}
   + [[file:2.6.22/inet-hash-bits-ipv6-fix.patch][2.6.22]]
     [[file:2.6.23/inet-hash-bits-ipv6-fix.patch][2.6.23]]
     [[file:2.6.24/inet-hash-bits-ipv6-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracer-optimize-a-bit.patch{C::performance::preempt::reorder the cond-statement in a macro}
+* [2.6.22 - 2.6.24] latency-tracer-optimize-a-bit.patch {C::performance::preempt::reorder the cond-statement in a macro}
   + [[file:2.6.22/latency-tracer-optimize-a-bit.patch][2.6.22]]
     [[file:2.6.23/latency-tracer-optimize-a-bit.patch][2.6.23]]
     [[file:2.6.24/latency-tracer-optimize-a-bit.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] preempt-realtime-netconsole.patch{C::performance::irq::rm irq_save}
+* [2.6.22 - 2.6.24] preempt-realtime-netconsole.patch {C::performance::irq::rm irq_save}
   + [[file:2.6.22/preempt-realtime-netconsole.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-netconsole.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-netconsole.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] PowerPC: decrementer clockevent driver{C::maintain::refactor::ppc decrementer clkevnt driver}
+* [2.6.22 - 2.6.24] PowerPC: decrementer clockevent driver {C::maintain::refactor::ppc decrementer clkevnt driver}
   + [[file:2.6.22/ppc-clockevents.patch][2.6.22]]
   M [[file:2.6.23/ppc-clockevents.patch][2.6.23]]
     [[file:2.6.24/ppc-clockevents.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-4.patch{C:maintain::refactor::separate rcu-trace from rcu}
+* [2.6.22 - 2.6.24] rcu-4.patch {C::maintain::refactor::separate rcu-trace from rcu}
   + [[file:2.6.22/rcu-4.patch][2.6.22]]
   m [[file:2.6.23/rcu-4.patch][2.6.23]]
     [[file:2.6.24/rcu-4.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-raw-spinlock-hack.patch{C::maintain::refactor::add macro}
+* [2.6.22 - 2.6.24] latency-tracing-raw-spinlock-hack.patch {C::maintain::refactor::add macro}
   + [[file:2.6.22/latency-tracing-raw-spinlock-hack.patch][2.6.22]]
   m [[file:2.6.23/latency-tracing-raw-spinlock-hack.patch][2.6.23]]
     [[file:2.6.24/latency-tracing-raw-spinlock-hack.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] [Patch RT] Fix CFS load balancing for RT tasks{C::feature::sched::add queue task rt to enable balance_rt_tasks when overload}
+* [2.6.22 - 2.6.24] [Patch RT] Fix CFS load balancing for RT tasks {C::feature::sched::add queue task rt to enable balance_rt_tasks when overload}
   + [[file:2.6.22/preempt-realtime-cfs-accounting-fix.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-cfs-accounting-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-cfs-accounting-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-3.patch{C::performance::prermpt::preempt read-side critical section}
+* [2.6.22 - 2.6.24] rcu-3.patch {C::performance::preempt::preempt read-side critical section}
   + [[file:2.6.22/rcu-3.patch][2.6.22]]
   m [[file:2.6.23/rcu-3.patch][2.6.23]]
     [[file:2.6.24/rcu-3.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] preempt-realtime-8139too-rt-irq-flags-fix.patch{C::performance::preempt::replace orig irq with nort version}
+* [2.6.22 - 2.6.24] preempt-realtime-8139too-rt-irq-flags-fix.patch {C::performance::preempt::replace orig irq with nort version}
   + [[file:2.6.22/preempt-realtime-8139too-rt-irq-flags-fix.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-8139too-rt-irq-flags-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-8139too-rt-irq-flags-fix.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] kvm: make vcpu_load/put preemptible{C::performance::preempt::make vcpu preemptible}
+* [2.6.22 - 2.6.24] kvm: make vcpu_load/put preemptible {C::performance::preempt::make vcpu preemptible}
   + [[file:2.6.22/kvm-rt.patch][2.6.22]]
   M [[file:2.6.23/kvm-rt.patch][2.6.23]]
   M [[file:2.6.24/kvm-rt.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] add might_sleep in rt_spin_lock_fastlock{C::fixbug::hang::atomicity::runtime::might_sleep fun in rt_spin_lock_fastlock}
+* [2.6.22 - 2.6.24] add might_sleep in rt_spin_lock_fastlock {C::fixbug::hang::atomicity::runtime::might_sleep fun in rt_spin_lock_fastlock}
   + [[file:2.6.22/rt-mutex-spinlock-might-sleep.patch][2.6.22]]
     [[file:2.6.23/rt-mutex-spinlock-might-sleep.patch][2.6.23]]
     [[file:2.6.24/rt-mutex-spinlock-might-sleep.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] rcu-1.patch{C::maintain::refactor::reorganize code}
+* [2.6.22 - 2.6.24] rcu-1.patch {C::maintain::refactor::reorganize code}
   + [[file:2.6.22/rcu-1.patch][2.6.22]]
   M [[file:2.6.23/rcu-1.patch][2.6.23]]
     [[file:2.6.24/rcu-1.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] dynticks-rcu-rt-fixlet.patch{C:feature::rtsupport::check rcu_need_cpu}
+* [2.6.22 - 2.6.24] dynticks-rcu-rt-fixlet.patch {C::feature::rtsupport::check rcu_need_cpu}
   + [[file:2.6.22/dynticks-rcu-rt-fixlet.patch][2.6.22]]
     [[file:2.6.23/dynticks-rcu-rt-fixlet.patch][2.6.23]]
     [[file:2.6.24/dynticks-rcu-rt-fixlet.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] trace-name-plus.patch{C::maintain::refactor::modify output info}
+* [2.6.22 - 2.6.24] trace-name-plus.patch {C::maintain::refactor::modify output info}
   + [[file:2.6.22/trace-name-plus.patch][2.6.22]]
   m [[file:2.6.23/trace-name-plus.patch][2.6.23]]
     [[file:2.6.24/trace-name-plus.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] radix-tree: use indirect bit{C::feature::rtsupport::indirect rd-tree pointer}
+* [2.6.22 - 2.6.24] radix-tree: use indirect bit {C::feature::rtsupport::indirect rd-tree pointer}
   + [[file:2.6.22/radix-tree-use-indirect-bit.patch][2.6.22]]
     [[file:2.6.23/2.6.21-rc6-lockless2-radix-tree-use-indirect-bit.patch][2.6.23]]
     [[file:2.6.24/2.6.21-rc6-lockless2-radix-tree-use-indirect-bit.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing-i386.patch{C::feature::debuginfo::latency tracing i386}
+* [2.6.22 - 2.6.24] latency-tracing-i386.patch {C::feature::debuginfo::latency tracing i386}
   + [[file:2.6.22/latency-tracing-i386.patch][2.6.22]]
   M [[file:2.6.23/latency-tracing-i386.patch][2.6.23]]
   M [[file:2.6.24/latency-tracing-i386.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] Latency tracer: Reset histogram when preempt_max_latency was reset{C::feature::debuginfo::reset latency histogram}
+* [2.6.22 - 2.6.24] Latency tracer: Reset histogram when preempt_max_latency was reset {C::feature::debuginfo::reset latency histogram}
   + [[file:2.6.22/reset-latency-histogram.patch][2.6.22]]
     [[file:2.6.23/reset-latency-histogram.patch][2.6.23]]
     [[file:2.6.24/reset-latency-histogram.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.24] latency-tracing.patch{C::feature::debuginfo::latency tracing}
+* [2.6.22 - 2.6.24] latency-tracing.patch {C::feature::debuginfo::latency tracing}
   + [[file:2.6.22/latency-tracing.patch][2.6.22]]
   M [[file:2.6.23/latency-tracing.patch][2.6.23]]
   M [[file:2.6.24/latency-tracing.patch][2.6.24]]
   - 2.6.25
-* [2.6.22 - 2.6.25] Fix TASKLET_STATE_SCHED WARN_ON(){C::fixbug::crash::softirq::sync::add an cond-statement}
+* [2.6.22 - 2.6.25] Fix TASKLET_STATE_SCHED WARN_ON() {C::fixbug::crash::softirq::sync::add an cond-statement}
   + [[file:2.6.22/tasklet-fix-preemption-race.patch][2.6.22]]
     [[file:2.6.23/tasklet-fix-preemption-race.patch][2.6.23]]
     [[file:2.6.24/tasklet-fix-preemption-race.patch][2.6.24]]
     [[file:2.6.25/tasklet-fix-preemption-race.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] percpu-locked-powerpc-fixups-a6.patch{C::fixbug::compile::compiling_err::syntax::add macro def}
+* [2.6.22 - 2.6.25] percpu-locked-powerpc-fixups-a6.patch {C::fixbug::compile::compiling_err::syntax::add macro def}
   + [[file:2.6.22/percpu-locked-powerpc-fixups-a6.patch][2.6.22]]
   M [[file:2.6.23/percpu-locked-powerpc-fixups-a6.patch][2.6.23]]
   m [[file:2.6.24/percpu-locked-powerpc-fixups-a6.patch][2.6.24]]
     [[file:2.6.25/percpu-locked-powerpc-fixups-a6.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: rename mcount variable in xmon to xmon_mcount{C::maintain::refactor::raname var}
+* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: rename mcount variable in xmon to xmon_mcount {C::maintain::refactor::raname var}
   + [[file:2.6.22/ppc-rename-xmon-mcount.patch][2.6.22]]
     [[file:2.6.23/ppc-rename-xmon-mcount.patch][2.6.23]]
     [[file:2.6.24/ppc-rename-xmon-mcount.patch][2.6.24]]
     [[file:2.6.25/ppc-rename-xmon-mcount.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] handle accurate time keeping over long delays{C::fixbug::data_err::time::semantics::update time been preempted leading to clksrc warp::add var to accumulate}
+* [2.6.22 - 2.6.25] handle accurate time keeping over long delays {C::fixbug::data_err::time::semantics::add var to accumulate}
   + [[file:2.6.22/rt-time-starvation-fix.patch][2.6.22]]
   M [[file:2.6.23/rt-time-starvation-fix.patch][2.6.23]]
   M [[file:2.6.24/rt-time-starvation-fix.patch][2.6.24]]
   M [[file:2.6.25/rt-time-starvation-fix.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: add a need_resched_delayed() check{C::feature::check::add need resched delay check}
+* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: add a need_resched_delayed() check {C::feature::check::add need resched delay check}
   + [[file:2.6.22/preempt-realtime-ppc-need-resched-delayed.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-ppc-need-resched-delayed.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-ppc-need-resched-delayed.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-ppc-need-resched-delayed.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] preempt-rt: Preliminary SH support{C::feature::arch::rt support for sh cpu}
+* [2.6.22 - 2.6.25] preempt-rt: Preliminary SH support {C::feature::arch::rt support for sh cpu}
   + [[file:2.6.22/preempt-realtime-sh.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-sh.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-sh.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-sh.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] ep93xx-timer-accuracy.patch{C::performance::hrtimer::improve time of day accuracy}
+* [2.6.22 - 2.6.25] ep93xx-timer-accuracy.patch {C::performance::hrtimer::improve time of day accuracy}
   + [[file:2.6.22/ep93xx-timer-accuracy.patch][2.6.22]]
     [[file:2.6.23/ep93xx-timer-accuracy.patch][2.6.23]]
     [[file:2.6.24/ep93xx-timer-accuracy.patch][2.6.24]]
   m [[file:2.6.25/ep93xx-timer-accuracy.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] rcu-various-fixups.patch{C::fixbug::crash::preempt::preempt::add rcu_read lock pair}
+* [2.6.22 - 2.6.25] rcu-various-fixups.patch {C::fixbug::crash::preempt::preempt::add rcu_read lock pair}
   + [[file:2.6.22/rcu-various-fixups.patch][2.6.22]]
   M [[file:2.6.23/rcu-various-fixups.patch][2.6.23]]
     [[file:2.6.24/rcu-various-fixups.patch][2.6.24]]
   M [[file:2.6.25/rcu-various-fixups.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] futex-performance-hack.patch{C::feature::check::add futex_performance hack}
+* [2.6.22 - 2.6.25] futex-performance-hack.patch {C::feature::check::add futex_performance hack}
   + [[file:2.6.22/futex-performance-hack.patch][2.6.22]]
     [[file:2.6.23/futex-performance-hack.patch][2.6.23]]
   M [[file:2.6.24/futex-performance-hack.patch][2.6.24]]
   m [[file:2.6.25/futex-performance-hack.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] futex_performance_hack sysctl build fix{C::feature::check::add precompilefutex_performance_hack sysctl}
+* [2.6.22 - 2.6.25] futex_performance_hack sysctl build fix {C::feature::check::add precompilefutex_performance_hack sysctl}
   + [[file:2.6.22/futex-performance-hack-sysctl-fix.patch][2.6.22]]
     [[file:2.6.23/futex-performance-hack-sysctl-fix.patch][2.6.23]]
   m [[file:2.6.24/futex-performance-hack-sysctl-fix.patch][2.6.24]]
   m [[file:2.6.25/futex-performance-hack-sysctl-fix.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] arm-leds-timer.patch{C::feature::hardware::add fun}
+* [2.6.22 - 2.6.25] arm-leds-timer.patch {C::feature::hardware::add fun}
   + [[file:2.6.22/arm-leds-timer.patch][2.6.22]]
     [[file:2.6.23/arm-leds-timer.patch][2.6.23]]
     [[file:2.6.24/arm-leds-timer.patch][2.6.24]]
     [[file:2.6.25/arm-leds-timer.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] ep93xx-clockevents.patch{C::feature::timer::support clkevnt}
+* [2.6.22 - 2.6.25] ep93xx-clockevents.patch {C::feature::timer::support clkevnt}
   + [[file:2.6.22/ep93xx-clockevents.patch][2.6.22]]
     [[file:2.6.23/ep93xx-clockevents.patch][2.6.23]]
     [[file:2.6.24/ep93xx-clockevents.patch][2.6.24]]
   M [[file:2.6.25/ep93xx-clockevents.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: dummy functions and export _mcount to compile{C::maintain::donothing::add dummy fun}
+* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: dummy functions and export _mcount to compile {C::maintain::donothing::add dummy fun}
   + [[file:2.6.22/ppc-mcount-dummy-functions.patch][2.6.22]]
     [[file:2.6.23/ppc-mcount-dummy-functions.patch][2.6.23]]
   M [[file:2.6.24/ppc-mcount-dummy-functions.patch][2.6.24]]
     [[file:2.6.25/ppc-mcount-dummy-functions.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] add -rt extra-version{C::maintain::donothing::modify version in makefile}
+* [2.6.22 - 2.6.25] add -rt extra-version {C::maintain::donothing::modify version in makefile}
   + [[file:2.6.22/version.patch][2.6.22]]
   M [[file:2.6.23/version.patch][2.6.23]]
   m [[file:2.6.24/version.patch][2.6.24]]
   M [[file:2.6.25/version.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] netfilter-more-debugging.patch{C::maintain::refactor::add more debugging}
+* [2.6.22 - 2.6.25] netfilter-more-debugging.patch {C::maintain::refactor::add more debugging}
   + [[file:2.6.22/netfilter-more-debugging.patch][2.6.22]]
     [[file:2.6.23/netfilter-more-debugging.patch][2.6.23]]
     [[file:2.6.24/netfilter-more-debugging.patch][2.6.24]]
     [[file:2.6.25/netfilter-more-debugging.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] preempt-realtime-powerpc-a7.patch{C::fixbug::compile::compiling_err::syntax::replace local_irq_restore with raw_local_irq_restore}
+* [2.6.22 - 2.6.25] preempt-realtime-powerpc-a7.patch {C::fixbug::compile::compiling_err::syntax::replace local_irq_restore with raw_local_irq_restore}
   + [[file:2.6.22/preempt-realtime-powerpc-a7.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-a7.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-powerpc-a7.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-a7.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: add mcount() and _mcount(){C::feature::debuginfo::add latency trace support}
+* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: add mcount() and _mcount() {C::feature::debuginfo::add latency trace support}
   + [[file:2.6.22/ppc-add-mcount.patch][2.6.22]]
     [[file:2.6.23/ppc-add-mcount.patch][2.6.23]]
   M [[file:2.6.24/ppc-add-mcount.patch][2.6.24]]
   M [[file:2.6.25/ppc-add-mcount.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] preempt-realtime-supress-cpulock-warning.patch{C::feature::debuginfo::add config}
+* [2.6.22 - 2.6.25] preempt-realtime-supress-cpulock-warning.patch {C::feature::debuginfo::add config}
   + [[file:2.6.22/preempt-realtime-supress-cpulock-warning.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-supress-cpulock-warning.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-supress-cpulock-warning.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-supress-cpulock-warning.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] More Fixes to TASKLET_STATE_SCHED WARN_ON(){C::fixbug::crash::order::sync::actual bug non exist::add statement}
+* [2.6.22 - 2.6.25] More Fixes to TASKLET_STATE_SCHED WARN_ON() {C::fixbug::crash::order::sync::add statement}
   + [[file:2.6.22/tasklet-more-fixes.patch][2.6.22]]
     [[file:2.6.23/tasklet-more-fixes.patch][2.6.23]]
     [[file:2.6.24/tasklet-more-fixes.patch][2.6.24]]
     [[file:2.6.25/tasklet-more-fixes.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] arm-cmpxchg-support-armv6.patch{C::feature::hardware::support cmpxchg}
+* [2.6.22 - 2.6.25] arm-cmpxchg-support-armv6.patch {C::feature::hardware::support cmpxchg}
   + [[file:2.6.22/arm-cmpxchg-support-armv6.patch][2.6.22]]
     [[file:2.6.23/arm-cmpxchg-support-armv6.patch][2.6.23]]
     [[file:2.6.24/arm-cmpxchg-support-armv6.patch][2.6.24]]
     [[file:2.6.25/arm-cmpxchg-support-armv6.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] rt-mutex-arm-fix.patch{C::feature::semantics::add attribute}
+* [2.6.22 - 2.6.25] rt-mutex-arm-fix.patch {C::feature::debuginfo::add attribute __sched}
   + [[file:2.6.22/rt-mutex-arm-fix.patch][2.6.22]]
     [[file:2.6.23/rt-mutex-arm-fix.patch][2.6.23]]
     [[file:2.6.24/rt-mutex-arm-fix.patch][2.6.24]]
   M [[file:2.6.25/rt-mutex-arm-fix.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] arm-fix-atomic-cmpxchg.patch{C::fixbug::deadlock::preempt::replace orig irq_save with raw}
+* [2.6.22 - 2.6.25] arm-fix-atomic-cmpxchg.patch {C::fixbug::deadlock::preempt::replace orig irq_save with raw}
   + [[file:2.6.22/arm-fix-atomic-cmpxchg.patch][2.6.22]]
     [[file:2.6.23/arm-fix-atomic-cmpxchg.patch][2.6.23]]
     [[file:2.6.24/arm-fix-atomic-cmpxchg.patch][2.6.24]]
     [[file:2.6.25/arm-fix-atomic-cmpxchg.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] timer patch for ep93xx{C::performance::hardware::add hardware related fun}
+* [2.6.22 - 2.6.25] timer patch for ep93xx {C::performance::hardware::add hardware related fun}
   + [[file:2.6.22/ep93xx-clockevents-fix.patch][2.6.22]]
     [[file:2.6.23/ep93xx-clockevents-fix.patch][2.6.23]]
     [[file:2.6.24/ep93xx-clockevents-fix.patch][2.6.24]]
     [[file:2.6.25/ep93xx-clockevents-fix.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: fix kernel hang and/or  panic{C::fixbug::hang::order::order::restore preempt_none method}
+* [2.6.22 - 2.6.25] powerpc 2.6.21-rt1: fix kernel hang and/or  panic {C::fixbug::hang::order::order::restore preempt_none method}
   + [[file:2.6.22/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] ppc-mark-notrace-mainline.patch{C::feature::debuginfo::add notrace}
+* [2.6.22 - 2.6.25] ppc-mark-notrace-mainline.patch {C::feature::debuginfo::add notrace}
   + [[file:2.6.22/ppc-mark-notrace-mainline.patch][2.6.22]]
     [[file:2.6.23/ppc-mark-notrace-mainline.patch][2.6.23]]
     [[file:2.6.24/ppc-mark-notrace-mainline.patch][2.6.24]]
     [[file:2.6.25/ppc-mark-notrace-mainline.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] write-try-lock-irqsave.patch{C::feature::rtsupport::add macro write_trylock_irqsave}
+* [2.6.22 - 2.6.25] write-try-lock-irqsave.patch {C::feature::rtsupport::add macro write_trylock_irqsave}
   + [[file:2.6.22/write-try-lock-irqsave.patch][2.6.22]]
     [[file:2.6.23/write-try-lock-irqsave.patch][2.6.23]]
     [[file:2.6.24/write-try-lock-irqsave.patch][2.6.24]]
     [[file:2.6.25/write-try-lock-irqsave.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] ppc-add-ppc32-mcount.patch{C::feature::debuginfo::add mcount}
+* [2.6.22 - 2.6.25] ppc-add-ppc32-mcount.patch {C::feature::debuginfo::add mcount}
   + [[file:2.6.22/ppc-add-ppc32-mcount.patch][2.6.22]]
     [[file:2.6.23/ppc-add-ppc32-mcount.patch][2.6.23]]
   M [[file:2.6.24/ppc-add-ppc32-mcount.patch][2.6.24]]
   M [[file:2.6.25/ppc-add-ppc32-mcount.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] latency-tracing-prctl-api-hack.patch{C::feature::debuginfo::add config, modify fun}
+* [2.6.22 - 2.6.25] latency-tracing-prctl-api-hack.patch {C::feature::debuginfo::add config, modify fun}
   + [[file:2.6.22/latency-tracing-prctl-api-hack.patch][2.6.22]]
     [[file:2.6.23/latency-tracing-prctl-api-hack.patch][2.6.23]]
   m [[file:2.6.24/latency-tracing-prctl-api-hack.patch][2.6.24]]
   M [[file:2.6.25/latency-tracing-prctl-api-hack.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] preempt-realtime-ppc-more-resched-fixups.patch{C::feature::rtsupport::preempt, add need_resched_delayed}
+* [2.6.22 - 2.6.25] preempt-realtime-ppc-more-resched-fixups.patch {C::feature::rtsupport::preempt, add need_resched_delayed}
   + [[file:2.6.22/preempt-realtime-ppc-more-resched-fixups.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-ppc-more-resched-fixups.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-ppc-more-resched-fixups.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-ppc-more-resched-fixups.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.25] arm-cmpxchg.patch{C::feature::rtsupport::add cmpxchg}
+* [2.6.22 - 2.6.25] arm-cmpxchg.patch {C::feature::rtsupport::add cmpxchg}
   + [[file:2.6.22/arm-cmpxchg.patch][2.6.22]]
     [[file:2.6.23/arm-cmpxchg.patch][2.6.23]]
     [[file:2.6.24/arm-cmpxchg.patch][2.6.24]]
     [[file:2.6.25/arm-cmpxchg.patch][2.6.25]]
   - 2.6.26
-* [2.6.22 - 2.6.26] posix-cpu-timers-fix.patch{C::feature::check::add cond check}
+* [2.6.22 - 2.6.26] posix-cpu-timers-fix.patch {C::feature::check::add cond check}
   + [[file:2.6.22/posix-cpu-timers-fix.patch][2.6.22]]
     [[file:2.6.23/posix-cpu-timers-fix.patch][2.6.23]]
     [[file:2.6.24/posix-cpu-timers-fix.patch][2.6.24]]
     [[file:2.6.25/posix-cpu-timers-fix.patch][2.6.25]]
     [[file:2.6.26/posix-cpu-timers-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] rt-mutex-mips.patch{C::feature::rtsupport::rt mutex in mips}
+* [2.6.22 - 2.6.26] rt-mutex-mips.patch {C::feature::rtsupport::rt mutex in mips}
   + [[file:2.6.22/rt-mutex-mips.patch][2.6.22]]
   m [[file:2.6.23/rt-mutex-mips.patch][2.6.23]]
   m [[file:2.6.24/rt-mutex-mips.patch][2.6.24]]
     [[file:2.6.25/rt-mutex-mips.patch][2.6.25]]
   M [[file:2.6.26/rt-mutex-mips.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] fix-emac-locking-2.6.16.patch{C::feature::rtsupport::add spinlock in emac}
+* [2.6.22 - 2.6.26] fix-emac-locking-2.6.16.patch {C::feature::rtsupport::add spinlock in emac}
   + [[file:2.6.22/fix-emac-locking-2.6.16.patch][2.6.22]]
     [[file:2.6.23/fix-emac-locking-2.6.16.patch][2.6.23]]
   m [[file:2.6.24/fix-emac-locking-2.6.16.patch][2.6.24]]
     [[file:2.6.25/fix-emac-locking-2.6.16.patch][2.6.25]]
     [[file:2.6.26/fix-emac-locking-2.6.16.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: fix a build breakage by adding __raw_*_relax() macros{C::fixbug::compile::compiling_err::syntax::add missing macros}
+* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: fix a build breakage by adding __raw_*_relax() macros {C::fixbug::compile::compiling_err::syntax::add missing macros}
   + [[file:2.6.22/preempt-realtime-powerpc-add-raw-relax-macros.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-add-raw-relax-macros.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-powerpc-add-raw-relax-macros.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-add-raw-relax-macros.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-add-raw-relax-macros.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] latency-tracing-arm.patch{C::feature::debuginfo::latency tracing arm}
+* [2.6.22 - 2.6.26] latency-tracing-arm.patch {C::feature::debuginfo::latency tracing arm}
   + [[file:2.6.22/latency-tracing-arm.patch][2.6.22]]
   M [[file:2.6.23/latency-tracing-arm.patch][2.6.23]]
   M [[file:2.6.24/latency-tracing-arm.patch][2.6.24]]
   M [[file:2.6.25/latency-tracing-arm.patch][2.6.25]]
   m [[file:2.6.26/latency-tracing-arm.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] select-error-leak-fix.patch{C::fixbug::leak::semantics::userspace leak,move label out}
+* [2.6.22 - 2.6.26] select-error-leak-fix.patch {C::fixbug::leak::semantics::semantics::userspace leak,move label out}
   + [[file:2.6.22/select-error-leak-fix.patch][2.6.22]]
     [[file:2.6.23/select-error-leak-fix.patch][2.6.23]]
     [[file:2.6.24/select-error-leak-fix.patch][2.6.24]]
     [[file:2.6.25/select-error-leak-fix.patch][2.6.25]]
     [[file:2.6.26/select-error-leak-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockdep: prettify output{C::maintain::refactor::modify output}
+* [2.6.22 - 2.6.26] lockdep: prettify output {C::maintain::refactor::modify output}
   + [[file:2.6.22/lockdep-prettify.patch][2.6.22]]
     [[file:2.6.23/lockdep-prettify.patch][2.6.23]]
     [[file:2.6.24/lockdep-prettify.patch][2.6.24]]
     [[file:2.6.25/lockdep-prettify.patch][2.6.25]]
     [[file:2.6.26/lockdep-prettify.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-ppc.patch{C::feature::rtsupport::add need_resched_delayed}
+* [2.6.22 - 2.6.26] preempt-irqs-ppc.patch {C::feature::rtsupport::add need_resched_delayed}
   + [[file:2.6.22/preempt-irqs-ppc.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-ppc.patch][2.6.23]]
   m [[file:2.6.24/preempt-irqs-ppc.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc.patch][2.6.25]]
   M [[file:2.6.26/preempt-irqs-ppc.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] i386-nmi-watchdog-show-regs.patch{C::feature::debuginfo::show reg, rm fun}
+* [2.6.22 - 2.6.26] i386-nmi-watchdog-show-regs.patch {C::feature::debuginfo::show reg, rm fun}
   + [[file:2.6.22/i386-nmi-watchdog-show-regs.patch][2.6.22]]
     [[file:2.6.23/i386-nmi-watchdog-show-regs.patch][2.6.23]]
     [[file:2.6.24/i386-nmi-watchdog-show-regs.patch][2.6.24]]
     [[file:2.6.25/i386-nmi-watchdog-show-regs.patch][2.6.25]]
     [[file:2.6.26/i386-nmi-watchdog-show-regs.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] irq nobody cared workaround for i386{C::bugfix::na::hardware::hardware::add fun, an uncared bug fix is mentioned in the mail}
+* [2.6.22 - 2.6.26] irq nobody cared workaround for i386 {C::fixbug::na::hardware::hardware::add fun, an uncared bug fix is mentioned in the mail}
   + [[file:2.6.22/preempt-irqs-i386-ioapic-mask-quirk.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-i386-ioapic-mask-quirk.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-i386-ioapic-mask-quirk.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-i386-ioapic-mask-quirk.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-i386-ioapic-mask-quirk.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockdep: show held locks when showing a stackdump{C::feature::debuginfo::show held locks when print backtree}
+* [2.6.22 - 2.6.26] lockdep: show held locks when showing a stackdump {C::feature::debuginfo::show held locks when print backtree}
   + [[file:2.6.22/lockdep-show-held-locks.patch][2.6.22]]
     [[file:2.6.23/lockdep-show-held-locks.patch][2.6.23]]
   m [[file:2.6.24/lockdep-show-held-locks.patch][2.6.24]]
   M [[file:2.6.25/lockdep-show-held-locks.patch][2.6.25]]
   m [[file:2.6.26/lockdep-show-held-locks.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch{C::feature::mm::allocates memory required by rt tck}
+* [2.6.22 - 2.6.26] Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch {C::feature::mm::allocates memory required by rt tck}
   + [[file:2.6.22/Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch][2.6.22]]
   m [[file:2.6.23/Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch][2.6.23]]
     [[file:2.6.24/Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch][2.6.24]]
     [[file:2.6.25/Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch][2.6.25]]
     [[file:2.6.26/Add-dev-rmem-device-driver-for-real-time-JVM-testing.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] Allocate-RTSJ-memory-for-TCK-conformance-test.patch{C::feature::mm::allocates memory required by rt tck}
+* [2.6.22 - 2.6.26] Allocate-RTSJ-memory-for-TCK-conformance-test.patch {C::feature::mm::allocates memory required by rt tck}
   + [[file:2.6.22/Allocate-RTSJ-memory-for-TCK-conformance-test.patch][2.6.22]]
   m [[file:2.6.23/Allocate-RTSJ-memory-for-TCK-conformance-test.patch][2.6.23]]
     [[file:2.6.24/Allocate-RTSJ-memory-for-TCK-conformance-test.patch][2.6.24]]
   m [[file:2.6.25/Allocate-RTSJ-memory-for-TCK-conformance-test.patch][2.6.25]]
     [[file:2.6.26/Allocate-RTSJ-memory-for-TCK-conformance-test.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] introduce pause_on_oops_head/tail boot options{C::feature::debuginfo::pause_on_noops options}
+* [2.6.22 - 2.6.26] introduce pause_on_oops_head/tail boot options {C::feature::debuginfo::pause_on_noops options}
   + [[file:2.6.22/pause-on-oops-head-tail.patch][2.6.22]]
     [[file:2.6.23/pause-on-oops-head-tail.patch][2.6.23]]
     [[file:2.6.24/pause-on-oops-head-tail.patch][2.6.24]]
   m [[file:2.6.25/pause-on-oops-head-tail.patch][2.6.25]]
   m [[file:2.6.26/pause-on-oops-head-tail.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockdep: lock_set_subclass - reset a held lock's subclass{C::feature::rtsupport::add fun lock_set_subclass}
+* [2.6.22 - 2.6.26] lockdep: lock_set_subclass - reset a held lock's subclass {C::feature::rtsupport::add fun lock_set_subclass}
   + [[file:2.6.22/lockdep-lock_set_subclass.patch][2.6.22]]
   m [[file:2.6.23/lockdep-lock_set_subclass.patch][2.6.23]]
     [[file:2.6.24/lockdep-lock_set_subclass.patch][2.6.24]]
     [[file:2.6.25/lockdep-lock_set_subclass.patch][2.6.25]]
     [[file:2.6.26/lockdep-lock_set_subclass.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] PowerPC: revert fix for threaded fasteoi IRQ handlers{C::maintain::refactor::rm useless field}
+* [2.6.22 - 2.6.26] PowerPC: revert fix for threaded fasteoi IRQ handlers {C::maintain::refactor::rm useless field}
   + [[file:2.6.22/preempt-irqs-ppc-fix-more-fasteoi.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-fix-more-fasteoi.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-fix-more-fasteoi.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-fix-more-fasteoi.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-ppc-fix-more-fasteoi.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] percpu-locked-powerpc-fixups.patch{C::feature::refactor::change macro used}
+* [2.6.22 - 2.6.26] percpu-locked-powerpc-fixups.patch {C::maintain::refactor::change macro used}
   + [[file:2.6.22/percpu-locked-powerpc-fixups.patch][2.6.22]]
     [[file:2.6.23/percpu-locked-powerpc-fixups.patch][2.6.23]]
     [[file:2.6.24/percpu-locked-powerpc-fixups.patch][2.6.24]]
     [[file:2.6.25/percpu-locked-powerpc-fixups.patch][2.6.25]]
     [[file:2.6.26/percpu-locked-powerpc-fixups.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] apic-dumpstack.patch{C::feature::debuginfo::add dump_stack}
+* [2.6.22 - 2.6.26] apic-dumpstack.patch {C::feature::debuginfo::add dump_stack}
   + [[file:2.6.22/apic-dumpstack.patch][2.6.22]]
     [[file:2.6.23/apic-dumpstack.patch][2.6.23]]
     [[file:2.6.24/apic-dumpstack.patch][2.6.24]]
   m [[file:2.6.25/apic-dumpstack.patch][2.6.25]]
     [[file:2.6.26/apic-dumpstack.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] nf_conntrack-fix-smp-processor-id.patch{C::fixbug::data_err::preempt::preempt::replace with raw}
+* [2.6.22 - 2.6.26] nf_conntrack-fix-smp-processor-id.patch {C::fixbug::data_err::preempt::preempt::replace with raw}
   + [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]]
     [[file:2.6.23/nf_conntrack-fix-smp-processor-id.patch][2.6.23]]
     [[file:2.6.24/nf_conntrack-fix-smp-processor-id.patch][2.6.24]]
   m [[file:2.6.25/nf_conntrack-fix-smp-processor-id.patch][2.6.25]]
     [[file:2.6.26/nf_conntrack-fix-smp-processor-id.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b3.patch{C::fixbug::runtime warning::get the right cpu_mask}
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b3.patch {C::fixbug::crash::migration::migration::get the right cpu_mask}
   + [[file:2.6.22/preempt-realtime-powerpc-b3.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-b3.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-powerpc-b3.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-b3.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-b3.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] s_files-schedule_on_each_cpu_wq.patch{C::maintain::refactor::separate a fun, and add sched_on_each_cpu_wq}
+* [2.6.22 - 2.6.26] s_files-schedule_on_each_cpu_wq.patch {C::maintain::refactor::separate a fun, and add sched_on_each_cpu_wq}
   + [[file:2.6.22/s_files-schedule_on_each_cpu_wq.patch][2.6.22]]
     [[file:2.6.23/s_files-schedule_on_each_cpu_wq.patch][2.6.23]]
   M [[file:2.6.24/s_files-schedule_on_each_cpu_wq.patch][2.6.24]]
   m [[file:2.6.25/s_files-schedule_on_each_cpu_wq.patch][2.6.25]]
     [[file:2.6.26/s_files-schedule_on_each_cpu_wq.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] remove global files_lock{C::performance::mutex}
+* [2.6.22 - 2.6.26] remove global files_lock {C::performance::mutex}
   + [[file:2.6.22/s_files.patch][2.6.22]]
   M [[file:2.6.23/s_files.patch][2.6.23]]
   M [[file:2.6.24/s_files.patch][2.6.24]]
   M [[file:2.6.25/s_files.patch][2.6.25]]
   M [[file:2.6.26/s_files.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] fix-acpi-build-weirdness.patch{C::maintain::donothing::change makefile}
+* [2.6.22 - 2.6.26] fix-acpi-build-weirdness.patch {C::maintain::donothing::change makefile}
   + [[file:2.6.22/fix-acpi-build-weirdness.patch][2.6.22]]
     [[file:2.6.23/fix-acpi-build-weirdness.patch][2.6.23]]
   m [[file:2.6.24/fix-acpi-build-weirdness.patch][2.6.24]]
     [[file:2.6.25/fix-acpi-build-weirdness.patch][2.6.25]]
   m [[file:2.6.26/fix-acpi-build-weirdness.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-i386-idle-poll-loop-fix.patch{C::performance::idle::cpurelax check resched}
+* [2.6.22 - 2.6.26] preempt-irqs-i386-idle-poll-loop-fix.patch {C::performance::idle::cpurelax check resched}
   + [[file:2.6.22/preempt-irqs-i386-idle-poll-loop-fix.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-i386-idle-poll-loop-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-i386-idle-poll-loop-fix.patch][2.6.24]]
   m [[file:2.6.25/preempt-irqs-i386-idle-poll-loop-fix.patch][2.6.25]]
   M [[file:2.6.26/preempt-irqs-i386-idle-poll-loop-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-ppc-ack-irq-fixups.patch{C::fixbug::crash::hardware::hardware::add field}
+* [2.6.22 - 2.6.26] preempt-irqs-ppc-ack-irq-fixups.patch {C::fixbug::crash::hardware::hardware::add field}
   + [[file:2.6.22/preempt-irqs-ppc-ack-irq-fixups.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-ack-irq-fixups.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-ack-irq-fixups.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-ack-irq-fixups.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-ppc-ack-irq-fixups.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-mips.patch{C::feature::rtsupport::preempt mips}
+* [2.6.22 - 2.6.26] preempt-realtime-mips.patch {C::feature::rtsupport::preempt mips}
   + [[file:2.6.22/preempt-realtime-mips.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-mips.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-mips.patch][2.6.24]]
   M [[file:2.6.25/preempt-realtime-mips.patch][2.6.25]]
   M [[file:2.6.26/preempt-realtime-mips.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] (2.6.20-rt3) PowerPC: convert spinlocks into raw{C::featue::rtsupport::replace spinlock with raw}
+* [2.6.22 - 2.6.26] (2.6.20-rt3) PowerPC: convert spinlocks into raw {C::feature::rtsupport::replace spinlock with raw}
   + [[file:2.6.22/preempt-realtime-powerpc-missing-raw-spinlocks.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-powerpc-missing-raw-spinlocks.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-powerpc-missing-raw-spinlocks.patch][2.6.24]]
   m [[file:2.6.25/preempt-realtime-powerpc-missing-raw-spinlocks.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-missing-raw-spinlocks.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] nmi-profiling.patch{C::feature::rtsupport::replace with raw, add config, notrace}
+* [2.6.22 - 2.6.26] nmi-profiling.patch {C::feature::rtsupport::replace with raw, add config, notrace}
   + [[file:2.6.22/nmi-profiling.patch][2.6.22]]
     [[file:2.6.23/nmi-profiling.patch][2.6.23]]
   M [[file:2.6.24/nmi-profiling.patch][2.6.24]]
   M [[file:2.6.25/nmi-profiling.patch][2.6.25]]
     [[file:2.6.26/nmi-profiling.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-powerpc.patch{C::feature::rtlock}
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc.patch {C::feature::arch}
   + [[file:2.6.22/preempt-realtime-powerpc.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-powerpc.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc.patch][2.6.25]]
   M [[file:2.6.26/preempt-realtime-powerpc.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockstat-rt-hooks.patch{C::feature::rtsupport::add lock_contended_rt, replace rt_mutex_lock with it}
+* [2.6.22 - 2.6.26] lockstat-rt-hooks.patch {C::feature::rtsupport::add lock_contended_rt, replace rt_mutex_lock with it}
   + [[file:2.6.22/lockstat-rt-hooks.patch][2.6.22]]
   m [[file:2.6.23/lockstat-rt-hooks.patch][2.6.23]]
     [[file:2.6.24/lockstat-rt-hooks.patch][2.6.24]]
   m [[file:2.6.25/lockstat-rt-hooks.patch][2.6.25]]
     [[file:2.6.26/lockstat-rt-hooks.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-x86-64.patch{C::feature::rtsupport::add IRQF_NODELAY}
+* [2.6.22 - 2.6.26] preempt-irqs-x86-64.patch {C::feature::rtsupport::add IRQF_NODELAY}
   + [[file:2.6.22/preempt-irqs-x86-64.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-x86-64.patch][2.6.23]]
   M [[file:2.6.24/preempt-irqs-x86-64.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-x86-64.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-x86-64.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-arm-pxa.patch{C::feature::rtsupport::add macros}
+* [2.6.22 - 2.6.26] preempt-realtime-arm-pxa.patch {C::feature::rtsupport::add macros}
   + [[file:2.6.22/preempt-realtime-arm-pxa.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-pxa.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-arm-pxa.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-arm-pxa.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-arm-pxa.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] fix-migrating-softirq.patch{C::fixbug::hang::migration::migration::restrict irq migration}
+* [2.6.22 - 2.6.26] fix-migrating-softirq.patch {C::fixbug::hang::migration::migration::restrict irq migration}
   + [[file:2.6.22/fix-migrating-softirq.patch][2.6.22]]
     [[file:2.6.23/fix-migrating-softirq.patch][2.6.23]]
     [[file:2.6.24/fix-migrating-softirq.patch][2.6.24]]
     [[file:2.6.25/fix-migrating-softirq.patch][2.6.25]]
     [[file:2.6.26/fix-migrating-softirq.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockstat_bounce_rt.patch{C::performance::mutex::move lock_acquired out}
+* [2.6.22 - 2.6.26] lockstat_bounce_rt.patch {C::performance::mutex::move lock_acquired out}
   + [[file:2.6.22/lockstat_bounce_rt.patch][2.6.22]]
     [[file:2.6.23/lockstat_bounce_rt.patch][2.6.23]]
     [[file:2.6.24/lockstat_bounce_rt.patch][2.6.24]]
     [[file:2.6.25/lockstat_bounce_rt.patch][2.6.25]]
     [[file:2.6.26/lockstat_bounce_rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] powerpc 2.6.21-rt6: replace preempt_schedule w/ preempt_schedule_irq User-Agent:{C::fixbug::crash::overflow::irq::irq-entry recursion and stack overflow:: replace...}
+* [2.6.22 - 2.6.26] powerpc 2.6.21-rt6: replace preempt_schedule w/ preempt_schedule_irq User-Agent: {C::fixbug::crash::overflow::irq::replace preempt_schedule() with preempt_schedule_irq()}
   + [[file:2.6.22/preempt-irqs-ppc-preempt-schedule-irq-entry-fix.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-preempt-schedule-irq-entry-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-preempt-schedule-irq-entry-fix.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-preempt-schedule-irq-entry-fix.patch][2.6.25]]
   M [[file:2.6.26/preempt-irqs-ppc-preempt-schedule-irq-entry-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lockdep-more-entries.patch{C::maintain::refactor::increase val of two macros}
+* [2.6.22 - 2.6.26] lockdep-more-entries.patch {C::maintain::refactor::increase val of two macros}
   + [[file:2.6.22/lockdep-more-entries.patch][2.6.22]]
     [[file:2.6.23/lockdep-more-entries.patch][2.6.23]]
     [[file:2.6.24/lockdep-more-entries.patch][2.6.24]]
     [[file:2.6.25/lockdep-more-entries.patch][2.6.25]]
     [[file:2.6.26/lockdep-more-entries.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: convert spinlocks to raw ones for Celleb.{C::feature::rtsupport::replace with raw lock}
+* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: convert spinlocks to raw ones for Celleb. {C::feature::rtsupport::replace with raw lock}
   + [[file:2.6.22/preempt-realtime-powerpc-celleb-raw-spinlocks.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-celleb-raw-spinlocks.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-powerpc-celleb-raw-spinlocks.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-celleb-raw-spinlocks.patch][2.6.25]]
   m [[file:2.6.26/preempt-realtime-powerpc-celleb-raw-spinlocks.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b6.patch{C::fixbug::crash::irq::irq::boot warning::set soft/hard enable}
+* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b6.patch {C::fixbug::crash::irq::irq::set soft/hard enable}
   + [[file:2.6.22/preempt-irqs-ppc-fix-b6.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-fix-b6.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-fix-b6.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-fix-b6.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-ppc-fix-b6.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] reduce pagetable-freeing latencies{C::performance::preempt::reduce latency}
+* [2.6.22 - 2.6.26] reduce pagetable-freeing latencies {C::performance::preempt::reduce latency}
   + [[file:2.6.22/mm-fix-latency.patch][2.6.22]]
     [[file:2.6.23/mm-fix-latency.patch][2.6.23]]
   m [[file:2.6.24/mm-fix-latency.patch][2.6.24]]
     [[file:2.6.25/mm-fix-latency.patch][2.6.25]]
     [[file:2.6.26/mm-fix-latency.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b4.patch{C::fixbug::crash::preempt::preempt::preempt_disable added}
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b4.patch {C::fixbug::crash::preempt::preempt::preempt_disable added}
   + [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-b4.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-powerpc-b4.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-b4.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-b4.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b5.patch{C::fixbug::crash::hardware::hardwareLLboot time err,rm field}
+* [2.6.22 - 2.6.26] preempt-irqs-ppc-fix-b5.patch {C::fixbug::crash::hardware::hardware::boot time err, rm field}
   + [[file:2.6.22/preempt-irqs-ppc-fix-b5.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-ppc-fix-b5.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-ppc-fix-b5.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-ppc-fix-b5.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-ppc-fix-b5.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] mm: speculative get page{C::performance::mm::speculative get page}
+* [2.6.22 - 2.6.26] mm: speculative get page {C::performance::mm::speculative get page}
   + [[file:2.6.22/mm-speculative-get-page.patch][2.6.22]]
   M [[file:2.6.23/2.6.21-rc6-lockless6-speculative-get-page.patch][2.6.23]]
     [[file:2.6.24/2.6.21-rc6-lockless6-speculative-get-page.patch][2.6.24]]
   m [[file:2.6.25/2.6.21-rc6-lockless6-speculative-get-page.patch][2.6.25]]
   M [[file:2.6.26/2.6.21-rc6-lockless6-speculative-get-page.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] nmi-driven profiling for /proc/profile{C::feature::debuginfo::nmi profiling}
+* [2.6.22 - 2.6.26] nmi-driven profiling for /proc/profile {C::feature::debuginfo::nmi profiling}
   + [[file:2.6.22/nmi-profiling-base.patch][2.6.22]]
   m [[file:2.6.23/nmi-profiling-base.patch][2.6.23]]
   M [[file:2.6.24/nmi-profiling-base.patch][2.6.24]]
   M [[file:2.6.25/nmi-profiling-base.patch][2.6.25]]
   M [[file:2.6.26/nmi-profiling-base.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] ppc-gtod-notrace-fix.patch{C::feature::debuginfo::add notrace}
+* [2.6.22 - 2.6.26] ppc-gtod-notrace-fix.patch {C::feature::debuginfo::add notrace}
   + [[file:2.6.22/ppc-gtod-notrace-fix.patch][2.6.22]]
     [[file:2.6.23/ppc-gtod-notrace-fix.patch][2.6.23]]
   m [[file:2.6.24/ppc-gtod-notrace-fix.patch][2.6.24]]
     [[file:2.6.25/ppc-gtod-notrace-fix.patch][2.6.25]]
     [[file:2.6.26/ppc-gtod-notrace-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] lock_list - a fine grain locked double linked list{C::feature::rtsupport::lock double link list}
+* [2.6.22 - 2.6.26] lock_list - a fine grain locked double linked list {C::feature::rtsupport::lock double link list}
   + [[file:2.6.22/lock_list.patch][2.6.22]]
   M [[file:2.6.23/lock_list.patch][2.6.23]]
   m [[file:2.6.24/lock_list.patch][2.6.24]]
     [[file:2.6.25/lock_list.patch][2.6.25]]
   m [[file:2.6.26/lock_list.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-supress-nohz-softirq-warning.patch{C::feature::debuginfo::add preempt rt config}
+* [2.6.22 - 2.6.26] preempt-realtime-supress-nohz-softirq-warning.patch {C::feature::debuginfo::add preempt rt config}
   + [[file:2.6.22/preempt-realtime-supress-nohz-softirq-warning.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-supress-nohz-softirq-warning.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-supress-nohz-softirq-warning.patch][2.6.24]]
   m [[file:2.6.25/preempt-realtime-supress-nohz-softirq-warning.patch][2.6.25]]
   m [[file:2.6.26/preempt-realtime-supress-nohz-softirq-warning.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] latency-measurement-drivers.patch{C::feature::debuginfo::add latency measurement driver}
+* [2.6.22 - 2.6.26] latency-measurement-drivers.patch {C::feature::debuginfo::add latency measurement driver}
   + [[file:2.6.22/latency-measurement-drivers.patch][2.6.22]]
   m [[file:2.6.23/latency-measurement-drivers.patch][2.6.23]]
     [[file:2.6.24/latency-measurement-drivers.patch][2.6.24]]
   M [[file:2.6.25/latency-measurement-drivers.patch][2.6.25]]
     [[file:2.6.26/latency-measurement-drivers.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] mm: lockless pagecache lookups{C::performance::lockless:: pagecache lookup}
+* [2.6.22 - 2.6.26] mm: lockless pagecache lookups {C::performance::mutex::pagecache lookup}
   + [[file:2.6.22/mm-lockless-pagecache-lookups.patch][2.6.22]]
   M [[file:2.6.23/2.6.21-rc6-lockless7-lockless-pagecache-lookups.patch][2.6.23]]
   M [[file:2.6.24/2.6.21-rc6-lockless7-lockless-pagecache-lookups.patch][2.6.24]]
   M [[file:2.6.25/2.6.21-rc6-lockless7-lockless-pagecache-lookups.patch][2.6.25]]
     [[file:2.6.26/2.6.21-rc6-lockless7-lockless-pagecache-lookups.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-x86-64-ioapic-mask-quirk.patch{C::feature::rtsupport::add fun}
+* [2.6.22 - 2.6.26] preempt-irqs-x86-64-ioapic-mask-quirk.patch {C::feature::rtsupport::add fun}
   + [[file:2.6.22/preempt-irqs-x86-64-ioapic-mask-quirk.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-x86-64-ioapic-mask-quirk.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-x86-64-ioapic-mask-quirk.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-x86-64-ioapic-mask-quirk.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-x86-64-ioapic-mask-quirk.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-debug-sysctl.patch{C::feature::debuginfo::add config, add fun, and kinds of field}
+* [2.6.22 - 2.6.26] preempt-realtime-debug-sysctl.patch {C::feature::debuginfo::add config, add fun, and kinds of field}
   + [[file:2.6.22/preempt-realtime-debug-sysctl.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-debug-sysctl.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-debug-sysctl.patch][2.6.24]]
   M [[file:2.6.25/preempt-realtime-debug-sysctl.patch][2.6.25]]
   M [[file:2.6.26/preempt-realtime-debug-sysctl.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b2.patch{C::fixbug::crash::preempt::preempt::replace with raw}
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b2.patch {C::fixbug::crash::preempt::preempt::replace with raw}
   + [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-b2.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-powerpc-b2.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-b2.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-b2.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] fix-softirq-checks-for-non-rt-preempt-hardirq.patch{C::maintain::refactor::change config}
+* [2.6.22 - 2.6.26] fix-softirq-checks-for-non-rt-preempt-hardirq.patch {C::maintain::refactor::change config}
   + [[file:2.6.22/fix-softirq-checks-for-non-rt-preempt-hardirq.patch][2.6.22]]
     [[file:2.6.23/fix-softirq-checks-for-non-rt-preempt-hardirq.patch][2.6.23]]
     [[file:2.6.24/fix-softirq-checks-for-non-rt-preempt-hardirq.patch][2.6.24]]
     [[file:2.6.25/fix-softirq-checks-for-non-rt-preempt-hardirq.patch][2.6.25]]
     [[file:2.6.26/fix-softirq-checks-for-non-rt-preempt-hardirq.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] s_files: free_write_pipe() fix{C::fixbug::data_err::order::sync::add cleanup var}
+* [2.6.22 - 2.6.26] s_files: free_write_pipe() fix {C::fixbug::data_err::order::sync::add cleanup var}
   + [[file:2.6.22/s_files-pipe-fix.patch][2.6.22]]
     [[file:2.6.23/s_files-pipe-fix.patch][2.6.23]]
     [[file:2.6.24/s_files-pipe-fix.patch][2.6.24]]
     [[file:2.6.25/s_files-pipe-fix.patch][2.6.25]]
   M [[file:2.6.26/s_files-pipe-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] softirq preemption: optimization{C::performance::softirq::allowing hardirq context to pick up softirq processing}
+* [2.6.22 - 2.6.26] softirq preemption: optimization {C::performance::softirq::allowing hardirq context to pick up softirq processing}
   + [[file:2.6.22/new-softirq-code.patch][2.6.22]]
   M [[file:2.6.23/new-softirq-code.patch][2.6.23]]
     [[file:2.6.24/new-softirq-code.patch][2.6.24]]
   M [[file:2.6.25/new-softirq-code.patch][2.6.25]]
     [[file:2.6.26/new-softirq-code.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] nf_conntrack-weird-crash-fix.patch{C::fixbug::crash::uninit_var::memory::init per cpu spin_lock}
+* [2.6.22 - 2.6.26] nf_conntrack-weird-crash-fix.patch {C::fixbug::crash::uninit_var::memory::init per cpu spin_lock}
   + [[file:2.6.22/nf_conntrack-weird-crash-fix.patch][2.6.22]]
   m [[file:2.6.23/nf_conntrack-weird-crash-fix.patch][2.6.23]]
     [[file:2.6.24/nf_conntrack-weird-crash-fix.patch][2.6.24]]
     [[file:2.6.25/nf_conntrack-weird-crash-fix.patch][2.6.25]]
     [[file:2.6.26/nf_conntrack-weird-crash-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] x86_64: do not enable the NMI watchdog by default{C::feature::hardware::disable default nmi watchdog}
+* [2.6.22 - 2.6.26] x86_64: do not enable the NMI watchdog by default {C::feature::hardware::disable default nmi watchdog}
   + [[file:2.6.22/nmi-watchdog-disable.patch][2.6.22]]
     [[file:2.6.23/nmi-watchdog-disable.patch][2.6.23]]
   m [[file:2.6.24/nmi-watchdog-disable.patch][2.6.24]]
   M [[file:2.6.25/nmi-watchdog-disable.patch][2.6.25]]
   M [[file:2.6.26/nmi-watchdog-disable.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] latency-tracing-ppc.patch{C::feature::debuginfo::add notrace on some fun in ppc}
+* [2.6.22 - 2.6.26] latency-tracing-ppc.patch {C::feature::debuginfo::add notrace on some fun in ppc}
   + [[file:2.6.22/latency-tracing-ppc.patch][2.6.22]]
   M [[file:2.6.23/latency-tracing-ppc.patch][2.6.23]]
   M [[file:2.6.24/latency-tracing-ppc.patch][2.6.24]]
     [[file:2.6.25/latency-tracing-ppc.patch][2.6.25]]
     [[file:2.6.26/latency-tracing-ppc.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-sound.patch{C::feature::debuginfo::invoke user_trace_stop}
+* [2.6.22 - 2.6.26] preempt-realtime-sound.patch {C::feature::debuginfo::invoke user_trace_stop}
   + [[file:2.6.22/preempt-realtime-sound.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-sound.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-sound.patch][2.6.24]]
   M [[file:2.6.25/preempt-realtime-sound.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-sound.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] rt-mutex-ppc-fix-a5.patch{C::fixbug::compile::compiling_err::semantics::replace with raw}
+* [2.6.22 - 2.6.26] rt-mutex-ppc-fix-a5.patch {C::fixbug::compile::compiling_err::semantics::replace with raw}
   + [[file:2.6.22/rt-mtex-ppc-fix-a5.patch][2.6.22]]
     [[file:2.6.23/rt-mutex-ppc-fix-a5.patch][2.6.23]]
     [[file:2.6.24/rt-mutex-ppc-fix-a5.patch][2.6.24]]
     [[file:2.6.25/rt-mutex-ppc-fix-a5.patch][2.6.25]]
     [[file:2.6.26/rt-mutex-ppc-fix-a5.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-ia64.patch{C::feature::rtsupport::rt ia64}
+* [2.6.22 - 2.6.26] preempt-realtime-ia64.patch {C::feature::rtsupport::rt ia64}
   + [[file:2.6.22/preempt-realtime-ia64.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-ia64.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-ia64.patch][2.6.24]]
   M [[file:2.6.25/preempt-realtime-ia64.patch][2.6.25]]
   M [[file:2.6.26/preempt-realtime-ia64.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: reduce scheduling latency by changing tlb flush size{C::performance::smallsize::pend flush tlb}
+* [2.6.22 - 2.6.26] powerpc 2.6.21-rt1: reduce scheduling latency by changing tlb flush size {C::performance::smallsize::pend flush tlb}
   + [[file:2.6.22/preempt-realtime-powerpc-tlb-batching.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-tlb-batching.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-powerpc-tlb-batching.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-tlb-batching.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-tlb-batching.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-profiling.patch{C::feature::debuginfo::add check prof_pid}
+* [2.6.22 - 2.6.26] preempt-realtime-profiling.patch {C::feature::debuginfo::add check prof_pid}
   + [[file:2.6.22/preempt-realtime-profiling.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-profiling.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-profiling.patch][2.6.24]]
   m [[file:2.6.25/preempt-realtime-profiling.patch][2.6.25]]
   m [[file:2.6.26/preempt-realtime-profiling.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] percpu-locked-netfilter2.patch{C::feature::rtsupport::lock some percpu var}
+* [2.6.22 - 2.6.26] percpu-locked-netfilter2.patch {C::feature::rtsupport::lock some percpu var}
   + [[file:2.6.22/percpu-locked-netfilter2.patch][2.6.22]]
   m [[file:2.6.23/percpu-locked-netfilter2.patch][2.6.23]]
     [[file:2.6.24/percpu-locked-netfilter2.patch][2.6.24]]
   m [[file:2.6.25/percpu-locked-netfilter2.patch][2.6.25]]
     [[file:2.6.26/percpu-locked-netfilter2.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] panic-dont-stop-box.patch{C::maintain::other::comment one fun}
+* [2.6.22 - 2.6.26] panic-dont-stop-box.patch {C::maintain::refactor::comment one fun}
   + [[file:2.6.22/panic-dont-stop-box.patch][2.6.22]]
     [[file:2.6.23/panic-dont-stop-box.patch][2.6.23]]
     [[file:2.6.24/panic-dont-stop-box.patch][2.6.24]]
     [[file:2.6.25/panic-dont-stop-box.patch][2.6.25]]
     [[file:2.6.26/panic-dont-stop-box.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-realtime-powerpc-update.patch{C::feature::rtsupport::replace with some preempt api}
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc-update.patch {C::feature::rtsupport::replace with some preempt api}
   + [[file:2.6.22/preempt-realtime-powerpc-update.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-powerpc-update.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-powerpc-update.patch][2.6.24]]
     [[file:2.6.25/preempt-realtime-powerpc-update.patch][2.6.25]]
     [[file:2.6.26/preempt-realtime-powerpc-update.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] arm-latency-tracer-support.patch{C::feature::debuginfo::add support of latency tracing}
+* [2.6.22 - 2.6.26] arm-latency-tracer-support.patch {C::feature::debuginfo::add support of latency tracing}
   + [[file:2.6.22/arm-latency-tracer-support.patch][2.6.22]]
     [[file:2.6.23/arm-latency-tracer-support.patch][2.6.23]]
     [[file:2.6.24/arm-latency-tracer-support.patch][2.6.24]]
   m [[file:2.6.25/arm-latency-tracer-support.patch][2.6.25]]
     [[file:2.6.26/arm-latency-tracer-support.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] preempt-irqs-mips.patch{C::feature::rtsupport::add IRQF_NODELAY to field}
+* [2.6.22 - 2.6.26] preempt-irqs-mips.patch {C::feature::rtsupport::add IRQF_NODELAY to field}
   + [[file:2.6.22/preempt-irqs-mips.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-mips.patch][2.6.23]]
   M [[file:2.6.24/preempt-irqs-mips.patch][2.6.24]]
     [[file:2.6.25/preempt-irqs-mips.patch][2.6.25]]
     [[file:2.6.26/preempt-irqs-mips.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] rt-mutex-ppc.patch{C::feature::rtsupport::rename some fun, add fun}
+* [2.6.22 - 2.6.26] rt-mutex-ppc.patch {C::feature::rtsupport::rename some fun, add fun}
   + [[file:2.6.22/rt-mutex-ppc.patch][2.6.22]]
   m [[file:2.6.23/rt-mutex-ppc.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-ppc.patch][2.6.24]]
   M [[file:2.6.25/rt-mutex-ppc.patch][2.6.25]]
   M [[file:2.6.26/rt-mutex-ppc.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] hrtimers-overrun-api.patch{C::feature::rtsupport::hrtimer overrun}
+* [2.6.22 - 2.6.26] hrtimers-overrun-api.patch {C::feature::rtsupport::hrtimer overrun}
   + [[file:2.6.22/hrtimers-overrun-api.patch][2.6.22]]
     [[file:2.6.23/hrtimers-overrun-api.patch][2.6.23]]
     [[file:2.6.24/hrtimers-overrun-api.patch][2.6.24]]
   m [[file:2.6.25/hrtimers-overrun-api.patch][2.6.25]]
     [[file:2.6.26/hrtimers-overrun-api.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.26] rcu-hrt-fixups.patch{C::feature::rtsupport::replace irq_able with irq_restore pairs, add fun rcu advance callbacks}
+* [2.6.22 - 2.6.26] rcu-hrt-fixups.patch {C::feature::rtsupport::replace irq_able with irq_restore pairs, add fun rcu advance callbacks}
   + [[file:2.6.22/rcu-hrt-fixups.patch][2.6.22]]
   M [[file:2.6.23/rcu-hrt-fixups.patch][2.6.23]]
     [[file:2.6.24/rcu-hrt-fixups.patch][2.6.24]]
   M [[file:2.6.25/rcu-hrt-fixups.patch][2.6.25]]
   m [[file:2.6.26/rcu-hrt-fixups.patch][2.6.26]]
   - 2.6.29
-* [2.6.22 - 2.6.29] msi: suspend resume workaround{C::feature::check::warning when get_irq_msi fail}
+* [2.6.22 - 2.6.29] msi: suspend resume workaround {C::feature::check::warning when get_irq_msi fail}
   + [[file:2.6.22/msi-suspend-resume-workaround.patch][2.6.22]]
     [[file:2.6.23/msi-suspend-resume-workaround.patch][2.6.23]]
   M [[file:2.6.24/msi-suspend-resume-workaround.patch][2.6.24]]
@@ -1329,7 +1329,7 @@
     [[file:2.6.26/msi-suspend-resume-workaround.patch][2.6.26]]
     [[file:2.6.29/msi-suspend-resume-workaround.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] tasklet: busy loop hack{C::maintain::refactor::move a fun, add msleep(1)?}
+* [2.6.22 - 2.6.29] tasklet: busy loop hack {C::maintain::refactor::move a fun, add msleep(1)?}
   + [[file:2.6.22/tasklet-busy-loop-hack.patch][2.6.22]]
   m [[file:2.6.23/tasklet-busy-loop-hack.patch][2.6.23]]
     [[file:2.6.24/tasklet-busy-loop-hack.patch][2.6.24]]
@@ -1337,7 +1337,7 @@
     [[file:2.6.26/tasklet-busy-loop-hack.patch][2.6.26]]
   m [[file:2.6.29/tasklet-busy-loop-hack.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime rcu{C::feature::rtsupport::replace with raw}
+* [2.6.22 - 2.6.29] preempt: realtime rcu {C::feature::rtsupport::replace with raw}
   + [[file:2.6.22/preempt-realtime-rcu.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-rcu.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-rcu.patch][2.6.24]]
@@ -1345,7 +1345,7 @@
   M [[file:2.6.26/preempt-realtime-rcu.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-rcu.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] rt: mutex core{C::feature::rtsupport::rt mutex}
+* [2.6.22 - 2.6.29] rt: mutex core {C::feature::rtsupport::rt mutex}
   + [[file:2.6.22/rt-mutex-core.patch][2.6.22]]
   M [[file:2.6.23/rt-mutex-core.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-core.patch][2.6.24]]
@@ -1353,7 +1353,7 @@
   M [[file:2.6.26/rt-mutex-core.patch][2.6.26]]
   M [[file:2.6.29/rt-mutex-core.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: irqs timer{C::feature::rtsupport::add case softirq resched}
+* [2.6.22 - 2.6.29] preempt: irqs timer {C::feature::rtsupport::add case softirq resched}
   + [[file:2.6.22/preempt-irqs-timer.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-timer.patch][2.6.23]]
   m [[file:2.6.24/preempt-irqs-timer.patch][2.6.24]]
@@ -1361,7 +1361,7 @@
   m [[file:2.6.26/preempt-irqs-timer.patch][2.6.26]]
   M [[file:2.6.29/preempt-irqs-timer.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/preempt-irqs-hrtimer.patch{C::feature::rtsupport::add wait and wake timer pairs, wake up after the timer callback function finished execution}
+* [2.6.22 - 2.6.29] patches/preempt-irqs-hrtimer.patch {C::feature::rtsupport::add wait and wake timer pairs, wake up after the timer callback function finished execution}
   + [[file:2.6.22/preempt-irqs-hrtimer.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-hrtimer.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-hrtimer.patch][2.6.24]]
@@ -1369,7 +1369,7 @@
     [[file:2.6.26/preempt-irqs-hrtimer.patch][2.6.26]]
   M [[file:2.6.29/preempt-irqs-hrtimer.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/print-might-sleep-hack.patch{C::feature::rtsupport::add printk might_sleep}
+* [2.6.22 - 2.6.29] patches/print-might-sleep-hack.patch {C::feature::rtsupport::add printk might_sleep}
   + [[file:2.6.22/print-might-sleep-hack.patch][2.6.22]]
     [[file:2.6.23/print-might-sleep-hack.patch][2.6.23]]
   m [[file:2.6.24/print-might-sleep-hack.patch][2.6.24]]
@@ -1377,7 +1377,7 @@
     [[file:2.6.26/print-might-sleep-hack.patch][2.6.26]]
   m [[file:2.6.29/print-might-sleep-hack.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] arm-preempt-config.patch{C::feature::rtsupport::Kconfig source from Kconfig.preempt}
+* [2.6.22 - 2.6.29] arm-preempt-config.patch {C::feature::rtsupport::Kconfig source from Kconfig.preempt}
   + [[file:2.6.22/arm-preempt-config.patch][2.6.22]]
   M [[file:2.6.23/arm-preempt-config.patch][2.6.23]]
     [[file:2.6.24/arm-preempt-config.patch][2.6.24]]
@@ -1385,7 +1385,7 @@
     [[file:2.6.26/arm-preempt-config.patch][2.6.26]]
   m [[file:2.6.29/arm-preempt-config.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime net{C::feature::rtsupport::replace with raw}
+* [2.6.22 - 2.6.29] preempt: realtime net {C::feature::rtsupport::replace with raw}
   + [[file:2.6.22/preempt-realtime-net.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-net.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-net.patch][2.6.24]]
@@ -1393,7 +1393,7 @@
   M [[file:2.6.26/preempt-realtime-net.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-net.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] rt-friendly per-cpu pages{C::feature::rtsupport::add fun with rt api, replace original}
+* [2.6.22 - 2.6.29] rt-friendly per-cpu pages {C::feature::rtsupport::add fun with rt api, replace original}
   + [[file:2.6.22/rt-page_alloc.patch][2.6.22]]
   m [[file:2.6.23/rt-page_alloc.patch][2.6.23]]
   M [[file:2.6.24/rt-page_alloc.patch][2.6.24]]
@@ -1401,7 +1401,7 @@
   m [[file:2.6.26/rt-page_alloc.patch][2.6.26]]
   M [[file:2.6.29/rt-page_alloc.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] x86_64: tsc sync irqflags fix{C::feature::rtsupport::irq_enable}
+* [2.6.22 - 2.6.29] x86_64: tsc sync irqflags fix {C::feature::rtsupport::irq_enable}
   + [[file:2.6.22/x86_64-tsc-sync-irqflags-fix.patch][2.6.22]]
     [[file:2.6.23/x86_64-tsc-sync-irqflags-fix.patch][2.6.23]]
     [[file:2.6.24/x86_64-tsc-sync-irqflags-fix.patch][2.6.24]]
@@ -1409,7 +1409,7 @@
     [[file:2.6.26/x86_64-tsc-sync-irqflags-fix.patch][2.6.26]]
     [[file:2.6.29/x86_64-tsc-sync-irqflags-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/cputimer-thread-rt_A0.patch{C::feature::timer::restore posix timer}
+* [2.6.22 - 2.6.29] patches/cputimer-thread-rt_A0.patch {C::feature::timer::restore posix timer}
   + [[file:2.6.22/cputimer-thread-rt_A0.patch][2.6.22]]
   m [[file:2.6.23/cputimer-thread-rt_A0.patch][2.6.23]]
   m [[file:2.6.24/cputimer-thread-rt_A0.patch][2.6.24]]
@@ -1417,7 +1417,7 @@
     [[file:2.6.26/cputimer-thread-rt_A0.patch][2.6.26]]
   M [[file:2.6.29/cputimer-thread-rt_A0.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/rt-slab-new.patch{C::feature::rtsupport::replace old irq with rt}
+* [2.6.22 - 2.6.29] patches/rt-slab-new.patch {C::feature::rtsupport::replace old irq with rt}
   + [[file:2.6.22/rt-slab-new.patch][2.6.22]]
   M [[file:2.6.23/rt-slab-new.patch][2.6.23]]
   M [[file:2.6.24/rt-slab-new.patch][2.6.24]]
@@ -1425,7 +1425,7 @@
   M [[file:2.6.26/rt-slab-new.patch][2.6.26]]
   M [[file:2.6.29/rt-slab-new.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime irqs{C::feature::rtsupport::replace with rt, nort, raw etc}
+* [2.6.22 - 2.6.29] preempt: realtime irqs {C::feature::rtsupport::replace with rt, nort, raw etc}
   + [[file:2.6.22/preempt-realtime-irqs.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-irqs.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-irqs.patch][2.6.24]]
@@ -1433,7 +1433,7 @@
     [[file:2.6.26/preempt-realtime-irqs.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-irqs.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/percpu-locked-netfilter.patch{C::feature::rtsupport::replace with raw and add per_cpu_lock}
+* [2.6.22 - 2.6.29] patches/percpu-locked-netfilter.patch {C::feature::rtsupport::replace with raw and add per_cpu_lock}
   + [[file:2.6.22/percpu-locked-netfilter.patch][2.6.22]]
     [[file:2.6.23/percpu-locked-netfilter.patch][2.6.23]]
     [[file:2.6.24/percpu-locked-netfilter.patch][2.6.24]]
@@ -1441,7 +1441,7 @@
     [[file:2.6.26/percpu-locked-netfilter.patch][2.6.26]]
   m [[file:2.6.29/percpu-locked-netfilter.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime warn and bug on{C::feature::rtsupport::add more bug entry macros}
+* [2.6.22 - 2.6.29] preempt: realtime warn and bug on {C::feature::rtsupport::add more bug entry macros}
   + [[file:2.6.22/preempt-realtime-warn-and-bug-on.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-warn-and-bug-on.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-warn-and-bug-on.patch][2.6.24]]
@@ -1449,7 +1449,7 @@
     [[file:2.6.26/preempt-realtime-warn-and-bug-on.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-warn-and-bug-on.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] rt: mutex x86 64{C::feature::rtsupport::replace with raw, add sched delayed}
+* [2.6.22 - 2.6.29] rt: mutex x86 64 {C::feature::rtsupport::replace with raw, add sched delayed}
   + [[file:2.6.22/rt-mutex-x86-64.patch][2.6.22]]
   M [[file:2.6.23/rt-mutex-x86-64.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-x86-64.patch][2.6.24]]
@@ -1457,7 +1457,7 @@
   M [[file:2.6.26/rt-mutex-x86-64.patch][2.6.26]]
   M [[file:2.6.29/rt-mutex-x86-64.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/preempt-realtime-x86_64.patch{C::feature::rtsupport::add preempt}
+* [2.6.22 - 2.6.29] patches/preempt-realtime-x86_64.patch {C::feature::rtsupport::add preempt}
   + [[file:2.6.22/preempt-realtime-x86_64.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-x86_64.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-x86_64.patch][2.6.24]]
@@ -1465,7 +1465,7 @@
   M [[file:2.6.26/preempt-realtime-x86_64.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-x86_64.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] floppy: suspend/resume fix{C::feature::idle::suspend fails after resume from APM::add fun}
+* [2.6.22 - 2.6.29] floppy: suspend/resume fix {C::fixbug::idle::hardware::idle::add fun}
   + [[file:2.6.22/floppy-resume-fix.patch][2.6.22]]
     [[file:2.6.23/floppy-resume-fix.patch][2.6.23]]
     [[file:2.6.24/floppy-resume-fix.patch][2.6.24]]
@@ -1473,7 +1473,7 @@
     [[file:2.6.26/floppy-resume-fix.patch][2.6.26]]
     [[file:2.6.29/floppy-resume-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] call reboot notifier list when doing an emergency reboot{C::fixbug::hang::preempt::preempt::add emergency restart}
+* [2.6.22 - 2.6.29] call reboot notifier list when doing an emergency reboot {C::fixbug::hang::preempt::preempt::add emergency restart}
   + [[file:2.6.22/fix-emergency-reboot.patch][2.6.22]]
   m [[file:2.6.23/fix-emergency-reboot.patch][2.6.23]]
     [[file:2.6.24/fix-emergency-reboot.patch][2.6.24]]
@@ -1481,7 +1481,7 @@
     [[file:2.6.26/fix-emergency-reboot.patch][2.6.26]]
   m [[file:2.6.29/fix-emergency-reboot.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] add rt stats to /proc/stat{C::feature::statistics::add rt stat to procfs}
+* [2.6.22 - 2.6.29] add rt stats to /proc/stat {C::feature::statistics::add rt stat to procfs}
   + [[file:2.6.22/kstat-add-rt-stats.patch][2.6.22]]
   M [[file:2.6.23/kstat-add-rt-stats.patch][2.6.23]]
   M [[file:2.6.24/kstat-add-rt-stats.patch][2.6.24]]
@@ -1489,7 +1489,7 @@
     [[file:2.6.26/kstat-add-rt-stats.patch][2.6.26]]
   M [[file:2.6.29/kstat-add-rt-stats.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] rt-mutex-arm.patch{C::feature::rtsupport::replace with rt api, rename, add fastcall}
+* [2.6.22 - 2.6.29] rt-mutex-arm.patch {C::feature::rtsupport::replace with rt api, rename, add fastcall}
   + [[file:2.6.22/rt-mutex-arm.patch][2.6.22]]
   m [[file:2.6.23/rt-mutex-arm.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-arm.patch][2.6.24]]
@@ -1497,7 +1497,7 @@
   M [[file:2.6.26/rt-mutex-arm.patch][2.6.26]]
   M [[file:2.6.29/rt-mutex-arm.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] hrtimer: no printk{C::maintain::refactor::rm two printk in rt}
+* [2.6.22 - 2.6.29] hrtimer: no printk {C::maintain::refactor::rm two printk in rt}
   + [[file:2.6.22/hrtimer-no-printk.patch][2.6.22]]
     [[file:2.6.23/hrtimer-no-printk.patch][2.6.23]]
   M [[file:2.6.24/hrtimer-no-printk.patch][2.6.24]]
@@ -1505,7 +1505,7 @@
     [[file:2.6.26/hrtimer-no-printk.patch][2.6.26]]
     [[file:2.6.29/hrtimer-no-printk.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] dont: unmask io_apic{C::feature::rtsupport::add cond check}
+* [2.6.22 - 2.6.29] dont: unmask io_apic {C::feature::rtsupport::add cond check}
   + [[file:2.6.22/dont-unmask-io_apic.patch][2.6.22]]
     [[file:2.6.23/dont-unmask-io_apic.patch][2.6.23]]
     [[file:2.6.24/dont-unmask-io_apic.patch][2.6.24]]
@@ -1513,7 +1513,7 @@
     [[file:2.6.26/dont-unmask-io_apic.patch][2.6.26]]
   M [[file:2.6.29/dont-unmask-io_apic.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/jbd_assertions_smp_only.patch{C::maintain::refactor::unify api when smp or not}
+* [2.6.22 - 2.6.29] patches/jbd_assertions_smp_only.patch {C::maintain::refactor::unify api when smp or not}
   + [[file:2.6.22/jbd_assertions_smp_only.patch][2.6.22]]
     [[file:2.6.23/jbd_assertions_smp_only.patch][2.6.23]]
   m [[file:2.6.24/jbd_assertions_smp_only.patch][2.6.24]]
@@ -1521,7 +1521,7 @@
     [[file:2.6.26/jbd_assertions_smp_only.patch][2.6.26]]
     [[file:2.6.29/jbd_assertions_smp_only.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] neptune: no at keyboard{C::feature::other::check imput}
+* [2.6.22 - 2.6.29] neptune: no at keyboard {C::feature::other::check input}
   + [[file:2.6.22/neptune-no-at-keyboard.patch][2.6.22]]
     [[file:2.6.23/neptune-no-at-keyboard.patch][2.6.23]]
     [[file:2.6.24/neptune-no-at-keyboard.patch][2.6.24]]
@@ -1529,7 +1529,7 @@
     [[file:2.6.26/neptune-no-at-keyboard.patch][2.6.26]]
     [[file:2.6.29/neptune-no-at-keyboard.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] net: core preempt fix{C::performance::preempt::move fun out of preempt_disable}
+* [2.6.22 - 2.6.29] net: core preempt fix {C::performance::preempt::move fun out of preempt_disable}
   + [[file:2.6.22/net-core-preempt-fix.patch][2.6.22]]
     [[file:2.6.23/net-core-preempt-fix.patch][2.6.23]]
     [[file:2.6.24/net-core-preempt-fix.patch][2.6.24]]
@@ -1537,7 +1537,7 @@
     [[file:2.6.26/net-core-preempt-fix.patch][2.6.26]]
     [[file:2.6.29/net-core-preempt-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm-footbridge.patch{C::feature::rtsupport::replace with raw}
+* [2.6.22 - 2.6.29] preempt-realtime-arm-footbridge.patch {C::feature::rtsupport::replace with raw}
   + [[file:2.6.22/preempt-realtime-arm-footbridge.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-footbridge.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm-footbridge.patch][2.6.24]]
@@ -1545,7 +1545,7 @@
     [[file:2.6.26/preempt-realtime-arm-footbridge.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-arm-footbridge.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime ipc{C::feature::rtsupport::disable preempt, rm some mb}
+* [2.6.22 - 2.6.29] preempt: realtime ipc {C::feature::rtsupport::disable preempt, rm some mb}
   + [[file:2.6.22/preempt-realtime-ipc.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-ipc.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-ipc.patch][2.6.24]]
@@ -1553,7 +1553,7 @@
     [[file:2.6.26/preempt-realtime-ipc.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-ipc.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/rt-kmap-scale-fix.patch{C::fixbug::deadlock::deadlock::semantics::keeping a free count & tracking kmap users}
+* [2.6.22 - 2.6.29] patches/rt-kmap-scale-fix.patch {C::fixbug::deadlock::deadlock::semantics::keeping a free count & tracking kmap users}
   + [[file:2.6.22/rt-kmap-scale-fix.patch][2.6.22]]
     [[file:2.6.23/rt-kmap-scale-fix.patch][2.6.23]]
     [[file:2.6.24/rt-kmap-scale-fix.patch][2.6.24]]
@@ -1561,7 +1561,7 @@
     [[file:2.6.26/rt-kmap-scale-fix.patch][2.6.26]]
     [[file:2.6.29/rt-kmap-scale-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/loopback-revert.patch{C::performance::preempt::replace get_cpu_var with per_cpu}
+* [2.6.22 - 2.6.29] patches/loopback-revert.patch {C::performance::preempt::replace get_cpu_var with per_cpu}
   + [[file:2.6.22/loopback-revert.patch][2.6.22]]
     [[file:2.6.23/loopback-revert.patch][2.6.23]]
   M [[file:2.6.24/loopback-revert.patch][2.6.24]]
@@ -1569,7 +1569,7 @@
     [[file:2.6.26/loopback-revert.patch][2.6.26]]
   m [[file:2.6.29/loopback-revert.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: irqs core{C::feature::rtsupport::preempt irqs}
+* [2.6.22 - 2.6.29] preempt: irqs core {C::feature::rtsupport::preempt irqs}
   + [[file:2.6.22/preempt-irqs-core.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-core.patch][2.6.23]]
   M [[file:2.6.24/preempt-irqs-core.patch][2.6.24]]
@@ -1577,7 +1577,7 @@
   m [[file:2.6.26/preempt-irqs-core.patch][2.6.26]]
   M [[file:2.6.29/preempt-irqs-core.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime timer{C::feature::rtsupport::replace with raw and nort, add some fun}
+* [2.6.22 - 2.6.29] preempt: realtime timer {C::feature::rtsupport::replace with raw and nort, add some fun}
   + [[file:2.6.22/preempt-realtime-timer.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-timer.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-timer.patch][2.6.24]]
@@ -1585,7 +1585,7 @@
   M [[file:2.6.26/preempt-realtime-timer.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-timer.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/irda-fix.patch{C::fixbug::crash::uninit_var::semantics::spinlock init after memcpy}
+* [2.6.22 - 2.6.29] patches/irda-fix.patch {C::fixbug::crash::uninit_var::semantics::spinlock init after memcpy}
   + [[file:2.6.22/irda-fix.patch][2.6.22]]
     [[file:2.6.23/irda-fix.patch][2.6.23]]
     [[file:2.6.24/irda-fix.patch][2.6.24]]
@@ -1593,7 +1593,7 @@
     [[file:2.6.26/irda-fix.patch][2.6.26]]
     [[file:2.6.29/irda-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm-shark.patch{C::feature::rtsupport::replace with raw}
+* [2.6.22 - 2.6.29] preempt-realtime-arm-shark.patch {C::feature::rtsupport::replace with raw}
   + [[file:2.6.22/preempt-realtime-arm-shark.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-shark.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm-shark.patch][2.6.24]]
@@ -1601,7 +1601,7 @@
     [[file:2.6.26/preempt-realtime-arm-shark.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-arm-shark.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime sched{C::feature::rtsupport::rt sched}
+* [2.6.22 - 2.6.29] preempt: realtime sched {C::feature::rtsupport::rt sched}
   + [[file:2.6.22/preempt-realtime-sched.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-sched.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-sched.patch][2.6.24]]
@@ -1609,7 +1609,7 @@
   M [[file:2.6.26/preempt-realtime-sched.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-sched.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime core{C::feature::rtsupport::mostly some rt config, replace with some rt api, add some preempt_disable}
+* [2.6.22 - 2.6.29] preempt: realtime core {C::feature::rtsupport::mostly some rt config, replace with some rt api, add some preempt_disable}
   + [[file:2.6.22/preempt-realtime-core.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-core.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-core.patch][2.6.24]]
@@ -1617,7 +1617,7 @@
   M [[file:2.6.26/preempt-realtime-core.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-core.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] spinlock: trylock cleanup sungem{C::maintain::refactor::replace local_irq and spin_trylock with spin_trylock_irqsave}
+* [2.6.22 - 2.6.29] spinlock: trylock cleanup sungem {C::maintain::refactor::replace local_irq and spin_trylock with spin_trylock_irqsave}
   + [[file:2.6.22/spinlock-trylock-cleanup-sungem.patch][2.6.22]]
     [[file:2.6.23/spinlock-trylock-cleanup-sungem.patch][2.6.23]]
     [[file:2.6.24/spinlock-trylock-cleanup-sungem.patch][2.6.24]]
@@ -1625,7 +1625,7 @@
     [[file:2.6.26/spinlock-trylock-cleanup-sungem.patch][2.6.26]]
     [[file:2.6.29/spinlock-trylock-cleanup-sungem.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime fs block{C::feature::rtsupport::add some irq_disable pair, reimplement some locks, and add some fun}
+* [2.6.22 - 2.6.29] preempt: realtime fs block {C::feature::rtsupport::add some irq_disable pair, reimplement some locks, and add some fun}
   + [[file:2.6.22/preempt-realtime-fs-block.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-fs-block.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-fs-block.patch][2.6.24]]
@@ -1633,7 +1633,7 @@
   M [[file:2.6.26/preempt-realtime-fs-block.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-fs-block.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime i386{C::feature::rtsupport::rt i386}
+* [2.6.22 - 2.6.29] preempt: realtime i386 {C::feature::rtsupport::rt i386}
   + [[file:2.6.22/preempt-realtime-i386.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-i386.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-i386.patch][2.6.24]]
@@ -1641,7 +1641,7 @@
   M [[file:2.6.26/preempt-realtime-i386.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-i386.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] highmem: revert mainline{C::feature::other::rm fun}
+* [2.6.22 - 2.6.29] highmem: revert mainline {C::feature::other::rm fun}
   + [[file:2.6.22/highmem-revert-mainline.patch][2.6.22]]
     [[file:2.6.23/highmem-revert-mainline.patch][2.6.23]]
     [[file:2.6.24/highmem-revert-mainline.patch][2.6.24]]
@@ -1649,7 +1649,7 @@
     [[file:2.6.26/highmem-revert-mainline.patch][2.6.26]]
   m [[file:2.6.29/highmem-revert-mainline.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/tasklet-redesign.patch{C::maintain::refactor::redesign tasklet}
+* [2.6.22 - 2.6.29] patches/tasklet-redesign.patch {C::maintain::refactor::redesign tasklet}
   + [[file:2.6.22/tasklet-redesign.patch][2.6.22]]
     [[file:2.6.23/tasklet-redesign.patch][2.6.23]]
     [[file:2.6.24/tasklet-redesign.patch][2.6.24]]
@@ -1657,7 +1657,7 @@
   M [[file:2.6.26/tasklet-redesign.patch][2.6.26]]
   M [[file:2.6.29/tasklet-redesign.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/random-driver-latency-fix.patch{C::performance::preempt::add a extra preempt_enable}
+* [2.6.22 - 2.6.29] patches/random-driver-latency-fix.patch {C::performance::preempt::add an extra preempt_enable}
   + [[file:2.6.22/random-driver-latency-fix.patch][2.6.22]]
     [[file:2.6.23/random-driver-latency-fix.patch][2.6.23]]
     [[file:2.6.24/random-driver-latency-fix.patch][2.6.24]]
@@ -1665,7 +1665,7 @@
   m [[file:2.6.26/random-driver-latency-fix.patch][2.6.26]]
     [[file:2.6.29/random-driver-latency-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/serial-locking-rt-cleanup.patch{C::maintain::refactor::unify spin_trylock and irq_save}
+* [2.6.22 - 2.6.29] patches/serial-locking-rt-cleanup.patch {C::maintain::refactor::unify spin_trylock and irq_save}
   + [[file:2.6.22/serial-locking-rt-cleanup.patch][2.6.22]]
   m [[file:2.6.23/serial-locking-rt-cleanup.patch][2.6.23]]
     [[file:2.6.24/serial-locking-rt-cleanup.patch][2.6.24]]
@@ -1673,7 +1673,7 @@
     [[file:2.6.26/serial-locking-rt-cleanup.patch][2.6.26]]
     [[file:2.6.29/serial-locking-rt-cleanup.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/kmap-atomic-prepare.patch{C::feature::preempt::add preempt_enable}
+* [2.6.22 - 2.6.29] patches/kmap-atomic-prepare.patch {C::feature::preempt::add preempt_enable}
   + [[file:2.6.22/kmap-atomic-prepare.patch][2.6.22]]
   m [[file:2.6.23/kmap-atomic-prepare.patch][2.6.23]]
     [[file:2.6.24/kmap-atomic-prepare.patch][2.6.24]]
@@ -1681,7 +1681,7 @@
   M [[file:2.6.26/kmap-atomic-prepare.patch][2.6.26]]
   M [[file:2.6.29/kmap-atomic-prepare.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] RT_utsname{C::maintain::donothing::makefile}
+* [2.6.22 - 2.6.29] RT_utsname {C::maintain::donothing::makefile}
   + [[file:2.6.22/RT_utsname.patch][2.6.22]]
     [[file:2.6.23/RT_utsname.patch][2.6.23]]
   M [[file:2.6.24/RT_utsname.patch][2.6.24]]
@@ -1689,7 +1689,7 @@
     [[file:2.6.26/RT_utsname.patch][2.6.26]]
   m [[file:2.6.29/RT_utsname.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime loopback{C::feature::rtsupport::replace with disable preempt api}
+* [2.6.22 - 2.6.29] preempt: realtime loopback {C::feature::rtsupport::replace with disable preempt api}
   + [[file:2.6.22/preempt-realtime-loopback.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-loopback.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-loopback.patch][2.6.24]]
@@ -1697,7 +1697,7 @@
     [[file:2.6.26/preempt-realtime-loopback.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-loopback.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] smp: processor id fixups{C::performance::rm preempt disable and replace it with per_cpu_var}
+* [2.6.22 - 2.6.29] smp: processor id fixups {C::performance::preempt::rm preempt disable and replace it with per_cpu_var}
   + [[file:2.6.22/smp-processor-id-fixups.patch][2.6.22]]
     [[file:2.6.23/smp-processor-id-fixups.patch][2.6.23]]
   M [[file:2.6.24/smp-processor-id-fixups.patch][2.6.24]]
@@ -1705,7 +1705,7 @@
     [[file:2.6.26/smp-processor-id-fixups.patch][2.6.26]]
   M [[file:2.6.29/smp-processor-id-fixups.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime printk{C::feature::rtsupport::rt printk, replace with raw and add some preempt}
+* [2.6.22 - 2.6.29] preempt: realtime printk {C::feature::rtsupport::rt printk, replace with raw and add some preempt}
   + [[file:2.6.22/preempt-realtime-printk.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-printk.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-printk.patch][2.6.24]]
@@ -1713,7 +1713,7 @@
   M [[file:2.6.26/preempt-realtime-printk.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-printk.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] timer: freq tweaks{C::maintain::refactor::modify dummy fun, add iteration}
+* [2.6.22 - 2.6.29] timer: freq tweaks {C::maintain::refactor::modify dummy fun, add iteration}
   + [[file:2.6.22/timer-freq-tweaks.patch][2.6.22]]
     [[file:2.6.23/timer-freq-tweaks.patch][2.6.23]]
   m [[file:2.6.24/timer-freq-tweaks.patch][2.6.24]]
@@ -1721,7 +1721,7 @@
     [[file:2.6.26/timer-freq-tweaks.patch][2.6.26]]
     [[file:2.6.29/timer-freq-tweaks.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] gtod: optimize{C::performance::smallsize::return when jiffies eqs last_tick, maybe kind of refactor i guess}
+* [2.6.22 - 2.6.29] gtod: optimize {C::performance::smallsize::return when jiffies eqs last_tick, maybe kind of refactor i guess}
   + [[file:2.6.22/gtod-optimize.patch][2.6.22]]
   m [[file:2.6.23/gtod-optimize.patch][2.6.23]]
     [[file:2.6.24/gtod-optimize.patch][2.6.24]]
@@ -1729,7 +1729,7 @@
     [[file:2.6.26/gtod-optimize.patch][2.6.26]]
     [[file:2.6.29/gtod-optimize.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/rt-mutex-compat-semaphores.patch{C::feature::rtsupport::replace with compat semaphores}
+* [2.6.22 - 2.6.29] patches/rt-mutex-compat-semaphores.patch {C::feature::rtsupport::replace with compat semaphores}
   + [[file:2.6.22/rt-mutex-compat-semaphores.patch][2.6.22]]
   M [[file:2.6.23/rt-mutex-compat-semaphores.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-compat-semaphores.patch][2.6.24]]
@@ -1737,7 +1737,7 @@
   M [[file:2.6.26/rt-mutex-compat-semaphores.patch][2.6.26]]
   M [[file:2.6.29/rt-mutex-compat-semaphores.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] lockdep-rt: annotate PREEMPT_RT DEFINE_MUTEX{C::feature::rtsupport::rename, replace with raw}
+* [2.6.22 - 2.6.29] lockdep-rt: annotate PREEMPT_RT DEFINE_MUTEX {C::feature::rtsupport::rename, replace with raw}
   + [[file:2.6.22/lockdep-rt-mutex.patch][2.6.22]]
     [[file:2.6.23/lockdep-rt-mutex.patch][2.6.23]]
     [[file:2.6.24/lockdep-rt-mutex.patch][2.6.24]]
@@ -1745,7 +1745,7 @@
     [[file:2.6.26/lockdep-rt-mutex.patch][2.6.26]]
     [[file:2.6.29/lockdep-rt-mutex.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm.patch{C::feature::rtsupport::replace api, add field}
+* [2.6.22 - 2.6.29] preempt-realtime-arm.patch {C::feature::rtsupport::replace api, add field}
   + [[file:2.6.22/preempt-realtime-arm.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-arm.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm.patch][2.6.24]]
@@ -1753,7 +1753,7 @@
   M [[file:2.6.26/preempt-realtime-arm.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-arm.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] cputimer: thread rt fix{C::maintain::refactor::move codes}
+* [2.6.22 - 2.6.29] cputimer: thread rt fix {C::maintain::refactor::move codes}
   + [[file:2.6.22/cputimer-thread-rt-fix.patch][2.6.22]]
     [[file:2.6.23/cputimer-thread-rt-fix.patch][2.6.23]]
     [[file:2.6.24/cputimer-thread-rt-fix.patch][2.6.24]]
@@ -1761,7 +1761,7 @@
     [[file:2.6.26/cputimer-thread-rt-fix.patch][2.6.26]]
   M [[file:2.6.29/cputimer-thread-rt-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] x86_64 GTOD: offer scalable vgettimeofday{C::fixbug::data_err::semantics::scalable vgettimeofday independently of tsc synchronize or not}
+* [2.6.22 - 2.6.29] x86_64 GTOD: offer scalable vgettimeofday {C::fixbug::data_err::semantics::semantics::scalable vgettimeofday independently of tsc synchronize or not}
   + [[file:2.6.22/x86-64-tscless-vgettimeofday.patch][2.6.22]]
   M [[file:2.6.23/x86-64-tscless-vgettimeofday.patch][2.6.23]]
   M [[file:2.6.24/x86-64-tscless-vgettimeofday.patch][2.6.24]]
@@ -1769,7 +1769,7 @@
     [[file:2.6.26/x86-64-tscless-vgettimeofday.patch][2.6.26]]
     [[file:2.6.29/x86-64-tscless-vgettimeofday.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime console{C::maintain::refactor::add var}
+* [2.6.22 - 2.6.29] preempt: realtime console {C::maintain::refactor::add var}
   + [[file:2.6.22/preempt-realtime-console.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-console.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-console.patch][2.6.24]]
@@ -1777,7 +1777,7 @@
     [[file:2.6.26/preempt-realtime-console.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-console.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/kprobes-preempt-fix.patch{C::performance::preempt::replace preempt_enable_no_resched preempt_enable with each other}
+* [2.6.22 - 2.6.29] patches/kprobes-preempt-fix.patch {C::performance::preempt::replace preempt_enable_no_resched preempt_enable with each other}
   + [[file:2.6.22/kprobes-preempt-fix.patch][2.6.22]]
     [[file:2.6.23/kprobes-preempt-fix.patch][2.6.23]]
     [[file:2.6.24/kprobes-preempt-fix.patch][2.6.24]]
@@ -1785,7 +1785,7 @@
     [[file:2.6.26/kprobes-preempt-fix.patch][2.6.26]]
     [[file:2.6.29/kprobes-preempt-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] NOHZ: local_softirq_pending with tickless{C::fixbug::softirq::softirq::softirq::replace fun}
+* [2.6.22 - 2.6.29] NOHZ: local_softirq_pending with tickless {C::fixbug::softirq::softirq::softirq::replace fun}
   + [[file:2.6.22/preempt-realtime-net-softirq-fixups.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-net-softirq-fixups.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-net-softirq-fixups.patch][2.6.24]]
@@ -1793,7 +1793,7 @@
     [[file:2.6.26/preempt-realtime-net-softirq-fixups.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-net-softirq-fixups.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] move: native irq{C::fixbug::irq::irq::irq::add init and check}
+* [2.6.22 - 2.6.29] move: native irq {C::fixbug::irq::irq::irq::add init and check}
   + [[file:2.6.22/move-native-irq.patch][2.6.22]]
     [[file:2.6.23/move-native-irq.patch][2.6.23]]
     [[file:2.6.24/move-native-irq.patch][2.6.24]]
@@ -1801,7 +1801,7 @@
     [[file:2.6.26/move-native-irq.patch][2.6.26]]
   m [[file:2.6.29/move-native-irq.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-irqs-arm.patch{C::feature::rtsupport::add nodelay to field}
+* [2.6.22 - 2.6.29] preempt-irqs-arm.patch {C::feature::rtsupport::add nodelay to field}
   + [[file:2.6.22/preempt-irqs-arm.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-arm.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-arm.patch][2.6.24]]
@@ -1809,7 +1809,7 @@
     [[file:2.6.26/preempt-irqs-arm.patch][2.6.26]]
     [[file:2.6.29/preempt-irqs-arm.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime mm{C::feature::rtsupport::rt mm}
+* [2.6.22 - 2.6.29] preempt: realtime mm {C::feature::rtsupport::rt mm}
   + [[file:2.6.22/preempt-realtime-mm.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-mm.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-mm.patch][2.6.24]]
@@ -1817,7 +1817,7 @@
     [[file:2.6.26/preempt-realtime-mm.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-mm.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime compile fixes{C::maintain::refactor::reorder attribute}
+* [2.6.22 - 2.6.29] preempt: realtime compile fixes {C::maintain::refactor::reorder attribute}
   + [[file:2.6.22/preempt-realtime-compile-fixes.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-compile-fixes.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-compile-fixes.patch][2.6.24]]
@@ -1825,7 +1825,7 @@
     [[file:2.6.26/preempt-realtime-compile-fixes.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-compile-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] paravirt: function pointer fix{C::maintain::refactor::add a wrap and config}
+* [2.6.22 - 2.6.29] paravirt: function pointer fix {C::maintain::refactor::add a wrap and config}
   + [[file:2.6.22/paravirt-function-pointer-fix.patch][2.6.22]]
   m [[file:2.6.23/paravirt-function-pointer-fix.patch][2.6.23]]
   m [[file:2.6.24/paravirt-function-pointer-fix.patch][2.6.24]]
@@ -1833,7 +1833,7 @@
     [[file:2.6.26/paravirt-function-pointer-fix.patch][2.6.26]]
   m [[file:2.6.29/paravirt-function-pointer-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/rt-apis.patch{C::feature::rtsupport::add rt apis}
+* [2.6.22 - 2.6.29] patches/rt-apis.patch {C::feature::rtsupport::add rt apis}
   + [[file:2.6.22/rt-apis.patch][2.6.22]]
   m [[file:2.6.23/rt-apis.patch][2.6.23]]
     [[file:2.6.24/rt-apis.patch][2.6.24]]
@@ -1841,7 +1841,7 @@
     [[file:2.6.26/rt-apis.patch][2.6.26]]
   m [[file:2.6.29/rt-apis.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/preempt-realtime-warn-and-bug-on-fix.patch{C::fixbug::compile::compiling_err::syntax::enclose with __ASSEMBLY__}
+* [2.6.22 - 2.6.29] patches/preempt-realtime-warn-and-bug-on-fix.patch {C::fixbug::compile::compiling_err::syntax::enclose with __ASSEMBLY__}
   + [[file:2.6.22/preempt-realtime-warn-and-bug-on-fix.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-warn-and-bug-on-fix.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-warn-and-bug-on-fix.patch][2.6.24]]
@@ -1849,7 +1849,7 @@
     [[file:2.6.26/preempt-realtime-warn-and-bug-on-fix.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-warn-and-bug-on-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] clean up the page fault disabling logic{C::maintain::refactor::disable pagefault cleanup, add cond check, rm mb and preempt check resched in pagefault}
+* [2.6.22 - 2.6.29] clean up the page fault disabling logic {C::maintain::refactor::disable pagefault cleanup, add cond check, rm mb and preempt check resched in pagefault}
   + [[file:2.6.22/pagefault-disable-cleanup.patch][2.6.22]]
   m [[file:2.6.23/pagefault-disable-cleanup.patch][2.6.23]]
     [[file:2.6.24/pagefault-disable-cleanup.patch][2.6.24]]
@@ -1857,7 +1857,7 @@
     [[file:2.6.26/pagefault-disable-cleanup.patch][2.6.26]]
   M [[file:2.6.29/pagefault-disable-cleanup.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] replace: bugon by warn on{C::maintain::refactor}
+* [2.6.22 - 2.6.29] replace: bugon by warn on {C::maintain::refactor}
   + [[file:2.6.22/replace-bugon-by-warn-on.patch][2.6.22]]
   m [[file:2.6.23/replace-bugon-by-warn-on.patch][2.6.23]]
     [[file:2.6.24/replace-bugon-by-warn-on.patch][2.6.24]]
@@ -1865,7 +1865,7 @@
     [[file:2.6.26/replace-bugon-by-warn-on.patch][2.6.26]]
     [[file:2.6.29/replace-bugon-by-warn-on.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] softirq: per cpu assumptions fixes{C::maintain::refactor::transfer var instead of get it inside the fun, replace with raw}
+* [2.6.22 - 2.6.29] softirq: per cpu assumptions fixes {C::maintain::refactor::transfer var instead of get it inside the fun, replace with raw}
   + [[file:2.6.22/softirq-per-cpu-assumptions-fixes.patch][2.6.22]]
   M [[file:2.6.23/softirq-per-cpu-assumptions-fixes.patch][2.6.23]]
     [[file:2.6.24/softirq-per-cpu-assumptions-fixes.patch][2.6.24]]
@@ -1881,7 +1881,7 @@
     [[file:2.6.26/preempt-irqs-i386.patch][2.6.26]]
   M [[file:2.6.29/preempt-irqs-i386.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/ioapic-fix-too-fast-clocks.patch{C::fixbug::irq::irq::irq::add upper bound check to avoid clocks to go too fast}
+* [2.6.22 - 2.6.29] patches/ioapic-fix-too-fast-clocks.patch {C::fixbug::irq::irq::irq::add upper bound check to avoid clocks to go too fast}
   + [[file:2.6.22/ioapic-fix-too-fast-clocks.patch][2.6.22]]
     [[file:2.6.23/ioapic-fix-too-fast-clocks.patch][2.6.23]]
     [[file:2.6.24/ioapic-fix-too-fast-clocks.patch][2.6.24]]
@@ -1889,7 +1889,7 @@
     [[file:2.6.26/ioapic-fix-too-fast-clocks.patch][2.6.26]]
   m [[file:2.6.29/ioapic-fix-too-fast-clocks.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime supress rtc printk{C::maintain::refactor::enclose warning with config}
+* [2.6.22 - 2.6.29] preempt: realtime supress rtc printk {C::maintain::refactor::enclose warning with config}
   + [[file:2.6.22/preempt-realtime-supress-rtc-printk.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-supress-rtc-printk.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-supress-rtc-printk.patch][2.6.24]]
@@ -1897,7 +1897,7 @@
     [[file:2.6.26/preempt-realtime-supress-rtc-printk.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-supress-rtc-printk.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/gcc-warnings-shut-up.patch{C::maintain::refactor::add init, reduce gcc warning}
+* [2.6.22 - 2.6.29] patches/gcc-warnings-shut-up.patch {C::maintain::refactor::add init, reduce gcc warning}
   + [[file:2.6.22/gcc-warnings-shut-up.patch][2.6.22]]
   M [[file:2.6.23/gcc-warnings-shut-up.patch][2.6.23]]
   M [[file:2.6.24/gcc-warnings-shut-up.patch][2.6.24]]
@@ -1905,7 +1905,7 @@
   M [[file:2.6.26/gcc-warnings-shut-up.patch][2.6.26]]
   m [[file:2.6.29/gcc-warnings-shut-up.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime acpi{C::feature::rtsupport::rt acpi}
+* [2.6.22 - 2.6.29] preempt: realtime acpi {C::feature::rtsupport::rt acpi}
   + [[file:2.6.22/preempt-realtime-acpi.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-acpi.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-acpi.patch][2.6.24]]
@@ -1913,7 +1913,7 @@
   m [[file:2.6.26/preempt-realtime-acpi.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-acpi.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: rt no slub{C::feature::rtsupport::rm slub from rt}
+* [2.6.22 - 2.6.29] preempt: rt no slub {C::feature::rtsupport::rm slub from rt}
   + [[file:2.6.22/preempt-rt-no-slub.patch][2.6.22]]
     [[file:2.6.23/preempt-rt-no-slub.patch][2.6.23]]
     [[file:2.6.24/preempt-rt-no-slub.patch][2.6.24]]
@@ -1921,7 +1921,7 @@
     [[file:2.6.26/preempt-rt-no-slub.patch][2.6.26]]
     [[file:2.6.29/preempt-rt-no-slub.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/bh-uptodate-lock.patch{C::feature::rtsupport::replace api, add buginfo}
+* [2.6.22 - 2.6.29] patches/bh-uptodate-lock.patch {C::feature::rtsupport::replace api, add buginfo}
   + [[file:2.6.22/bh-uptodate-lock.patch][2.6.22]]
     [[file:2.6.23/bh-uptodate-lock.patch][2.6.23]]
   M [[file:2.6.24/bh-uptodate-lock.patch][2.6.24]]
@@ -1929,7 +1929,7 @@
   m [[file:2.6.26/bh-uptodate-lock.patch][2.6.26]]
     [[file:2.6.29/bh-uptodate-lock.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] kmap: atomic i386 fix{C::feature::mm::::add pagefault disable, and reorder mightsleep}
+* [2.6.22 - 2.6.29] kmap: atomic i386 fix {C::feature::mm::add pagefault disable, and reorder mightsleep}
   + [[file:2.6.22/kmap-atomic-i386-fix.patch][2.6.22]]
     [[file:2.6.23/kmap-atomic-i386-fix.patch][2.6.23]]
     [[file:2.6.24/kmap-atomic-i386-fix.patch][2.6.24]]
@@ -1937,7 +1937,7 @@
     [[file:2.6.26/kmap-atomic-i386-fix.patch][2.6.26]]
   M [[file:2.6.29/kmap-atomic-i386-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm-bagde4.patch{C::maintain::refactor::reorder code}
+* [2.6.22 - 2.6.29] preempt-realtime-arm-bagde4.patch {C::maintain::refactor::reorder code}
   + [[file:2.6.22/preempt-realtime-arm-bagde4.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-bagde4.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm-bagde4.patch][2.6.24]]
@@ -1945,7 +1945,7 @@
     [[file:2.6.26/preempt-realtime-arm-bagde4.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-arm-bagde4.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/bh-state-lock.patch{C::fixbug::deadlock::deadlock::mutex::add another spinlock to track buffer header}
+* [2.6.22 - 2.6.29] patches/bh-state-lock.patch {C::fixbug::deadlock::deadlock::mutex::add another spinlock to track buffer header}
   + [[file:2.6.22/bh-state-lock.patch][2.6.22]]
     [[file:2.6.23/bh-state-lock.patch][2.6.23]]
     [[file:2.6.24/bh-state-lock.patch][2.6.24]]
@@ -1953,7 +1953,7 @@
     [[file:2.6.26/bh-state-lock.patch][2.6.26]]
     [[file:2.6.29/bh-state-lock.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: irqs Kconfig{C::feature::rtsupport::add Kconfig options}
+* [2.6.22 - 2.6.29] preempt: irqs Kconfig {C::feature::rtsupport::add Kconfig options}
   + [[file:2.6.22/preempt-irqs-Kconfig.patch][2.6.22]]
   M [[file:2.6.23/preempt-irqs-Kconfig.patch][2.6.23]]
   m [[file:2.6.24/preempt-irqs-Kconfig.patch][2.6.24]]
@@ -1961,7 +1961,7 @@
     [[file:2.6.26/preempt-irqs-Kconfig.patch][2.6.26]]
   M [[file:2.6.29/preempt-irqs-Kconfig.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime rawlocks{C::feature::rtsupport::replace with raw lock}
+* [2.6.22 - 2.6.29] preempt: realtime rawlocks {C::feature::rtsupport::replace with raw lock}
   + [[file:2.6.22/preempt-realtime-rawlocks.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-rawlocks.patch][2.6.23]]
   m [[file:2.6.24/preempt-realtime-rawlocks.patch][2.6.24]]
@@ -1969,7 +1969,7 @@
   m [[file:2.6.26/preempt-realtime-rawlocks.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtime-rawlocks.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] mm: remove kmap_lock{C::feature::mm::rm lock}
+* [2.6.22 - 2.6.29] mm: remove kmap_lock {C::feature::mm::rm lock}
   + [[file:2.6.22/highmem_rewrite.patch][2.6.22]]
     [[file:2.6.23/highmem_rewrite.patch][2.6.23]]
     [[file:2.6.24/highmem_rewrite.patch][2.6.24]]
@@ -1977,7 +1977,7 @@
     [[file:2.6.26/highmem_rewrite.patch][2.6.26]]
   M [[file:2.6.29/highmem_rewrite.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime init show enabled debugs{C::feature::rtsupport::add buginfo}
+* [2.6.22 - 2.6.29] preempt: realtime init show enabled debugs {C::feature::rtsupport::add buginfo}
   + [[file:2.6.22/preempt-realtime-init-show-enabled-debugs.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-init-show-enabled-debugs.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-init-show-enabled-debugs.patch][2.6.24]]
@@ -1985,7 +1985,7 @@
     [[file:2.6.26/preempt-realtime-init-show-enabled-debugs.patch][2.6.26]]
   m [[file:2.6.29/preempt-realtime-init-show-enabled-debugs.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/percpu-locked-mm.patch{C::feature::rtsupport::add and replace with percpu lock}
+* [2.6.22 - 2.6.29] patches/percpu-locked-mm.patch {C::feature::rtsupport::add and replace with percpu lock}
   + [[file:2.6.22/percpu-locked-mm.patch][2.6.22]]
   M [[file:2.6.23/percpu-locked-mm.patch][2.6.23]]
   M [[file:2.6.24/percpu-locked-mm.patch][2.6.24]]
@@ -1993,7 +1993,7 @@
   M [[file:2.6.26/percpu-locked-mm.patch][2.6.26]]
   M [[file:2.6.29/percpu-locked-mm.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm-integrator.patch{C::feature::rtsupport::replace with raw lock}
+* [2.6.22 - 2.6.29] preempt-realtime-arm-integrator.patch {C::feature::rtsupport::replace with raw lock}
   + [[file:2.6.22/preempt-realtime-arm-integrator.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-integrator.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm-integrator.patch][2.6.24]]
@@ -2001,7 +2001,7 @@
     [[file:2.6.26/preempt-realtime-arm-integrator.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-arm-integrator.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-realtime-arm-ixp4xx.patch{C::feature:rtsupport:::replace with raw lock}
+* [2.6.22 - 2.6.29] preempt-realtime-arm-ixp4xx.patch {C::feature::rtsupport::replace with raw lock}
   + [[file:2.6.22/preempt-realtime-arm-ixp4xx.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-arm-ixp4xx.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-arm-ixp4xx.patch][2.6.24]]
@@ -2009,7 +2009,7 @@
     [[file:2.6.26/preempt-realtime-arm-ixp4xx.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-arm-ixp4xx.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] highmem: redo mainline{C::maintain::refactor::restore flush unused warning} 
+* [2.6.22 - 2.6.29] highmem: redo mainline {C::maintain::refactor::restore flush unused warning}
   + [[file:2.6.22/highmem-redo-mainline.patch][2.6.22]]
     [[file:2.6.23/highmem-redo-mainline.patch][2.6.23]]
     [[file:2.6.24/highmem-redo-mainline.patch][2.6.24]]
@@ -2017,7 +2017,7 @@
     [[file:2.6.26/highmem-redo-mainline.patch][2.6.26]]
     [[file:2.6.29/highmem-redo-mainline.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/vortex-fix.patch{C::performance::preempt::replace api, rm locks}
+* [2.6.22 - 2.6.29] patches/vortex-fix.patch {C::performance::preempt::replace api, rm locks}
   + [[file:2.6.22/vortex-fix.patch][2.6.22]]
     [[file:2.6.23/vortex-fix.patch][2.6.23]]
     [[file:2.6.24/vortex-fix.patch][2.6.24]]
@@ -2025,7 +2025,7 @@
   M [[file:2.6.26/vortex-fix.patch][2.6.26]]
     [[file:2.6.29/vortex-fix.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime input{C::feature::rtsupport::replace with rt api}
+* [2.6.22 - 2.6.29] preempt: realtime input {C::feature::rtsupport::replace with rt api}
   + [[file:2.6.22/preempt-realtime-input.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-input.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-input.patch][2.6.24]]
@@ -2033,7 +2033,7 @@
     [[file:2.6.26/preempt-realtime-input.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-input.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] Premmpt-RT: Preevent boosting of idle task{C::feature::check::check and avoid boosting?}
+* [2.6.22 - 2.6.29] Premmpt-RT: Prevent boosting of idle task {C::feature::check::check and avoid boosting?}
   + [[file:2.6.22/preempt-realtime-prevent-idle-boosting.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-prevent-idle-boosting.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-prevent-idle-boosting.patch][2.6.24]]
@@ -2041,7 +2041,7 @@
     [[file:2.6.26/preempt-realtime-prevent-idle-boosting.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-prevent-idle-boosting.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt: realtime usb{C::feature::rtsupport::replace with rt}
+* [2.6.22 - 2.6.29] preempt: realtime usb {C::feature::rtsupport::replace with rt}
   + [[file:2.6.22/preempt-realtime-usb.patch][2.6.22]]
   M [[file:2.6.23/preempt-realtime-usb.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-usb.patch][2.6.24]]
@@ -2049,7 +2049,7 @@
   M [[file:2.6.26/preempt-realtime-usb.patch][2.6.26]]
     [[file:2.6.29/preempt-realtime-usb.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] serial: slow machines{C::performance::smallsize::enclose some code into rt precompile}
+* [2.6.22 - 2.6.29] serial: slow machines {C::performance::smallsize::enclose some code into rt precompile}
   + [[file:2.6.22/serial-slow-machines.patch][2.6.22]]
     [[file:2.6.23/serial-slow-machines.patch][2.6.23]]
     [[file:2.6.24/serial-slow-machines.patch][2.6.24]]
@@ -2057,7 +2057,7 @@
     [[file:2.6.26/serial-slow-machines.patch][2.6.26]]
     [[file:2.6.29/serial-slow-machines.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] preempt-irqs-arm-fix-oprofile.patch{C::feature::hardware::add nodelay}
+* [2.6.22 - 2.6.29] preempt-irqs-arm-fix-oprofile.patch {C::feature::hardware::add nodelay}
   + [[file:2.6.22/preempt-irqs-arm-fix-oprofile.patch][2.6.22]]
     [[file:2.6.23/preempt-irqs-arm-fix-oprofile.patch][2.6.23]]
     [[file:2.6.24/preempt-irqs-arm-fix-oprofile.patch][2.6.24]]
@@ -2065,7 +2065,7 @@
     [[file:2.6.26/preempt-irqs-arm-fix-oprofile.patch][2.6.26]]
     [[file:2.6.29/preempt-irqs-arm-fix-oprofile.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] rt: mutex i386{C::feature::rtsupport::rt mutex i386}
+* [2.6.22 - 2.6.29] rt: mutex i386 {C::feature::rtsupport::rt mutex i386}
   + [[file:2.6.22/rt-mutex-i386.patch][2.6.22]]
   m [[file:2.6.23/rt-mutex-i386.patch][2.6.23]]
   M [[file:2.6.24/rt-mutex-i386.patch][2.6.24]]
@@ -2073,7 +2073,7 @@
   M [[file:2.6.26/rt-mutex-i386.patch][2.6.26]]
   M [[file:2.6.29/rt-mutex-i386.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] patches/disable-irqpoll.patch{C::feature::check::rm fun, warning not support in rt}
+* [2.6.22 - 2.6.29] patches/disable-irqpoll.patch {C::feature::check::rm fun, warning not support in rt}
   + [[file:2.6.22/disable-irqpoll.patch][2.6.22]]
     [[file:2.6.23/disable-irqpoll.patch][2.6.23]]
     [[file:2.6.24/disable-irqpoll.patch][2.6.24]]
@@ -2081,7 +2081,7 @@
     [[file:2.6.26/disable-irqpoll.patch][2.6.26]]
     [[file:2.6.29/disable-irqpoll.patch][2.6.29]]
   - 3.0
-* [2.6.22 - 2.6.29] i386: mark atomic irq ops raw{C::feature::rtsupport::replace with raw spinlock}
+* [2.6.22 - 2.6.29] i386: mark atomic irq ops raw {C::feature::rtsupport::replace with raw spinlock}
   + [[file:2.6.22/i386-mark-atomic-irq-ops-raw.patch][2.6.22]]
     [[file:2.6.23/i386-mark-atomic-irq-ops-raw.patch][2.6.23]]
     [[file:2.6.24/i386-mark-atomic-irq-ops-raw.patch][2.6.24]]
@@ -2089,7 +2089,7 @@
     [[file:2.6.26/i386-mark-atomic-irq-ops-raw.patch][2.6.26]]
     [[file:2.6.29/i386-mark-atomic-irq-ops-raw.patch][2.6.29]]
   - 3.0
-* [2.6.22 -    3.0] lock debugging: clean up rtmutex-debug.h{C::maintain::refactor}
+* [2.6.22 -    3.0] lock debugging: clean up rtmutex-debug.h {C::maintain::refactor}
   + [[file:2.6.22/rtmutex-debug.h-cleanup.patch][2.6.22]]
     [[file:2.6.23/rtmutex-debug.h-cleanup.patch][2.6.23]]
     [[file:2.6.24/rtmutex-debug.h-cleanup.patch][2.6.24]]
@@ -2098,7 +2098,7 @@
     [[file:2.6.29/rtmutex-debug.h-cleanup.patch][2.6.29]]
     [[file:3.0/lock-debugging-clean-up-rtmutex-debug.h.patch][3.0]]
   - 3.2
-* [2.6.22 -   3.12] drivers/net: tulip_remove_one needs to call pci_disable_device(){C::feature::hardware::disable device pdev}
+* [2.6.22 -   3.12] drivers/net: tulip_remove_one needs to call pci_disable_device() {C::feature::hardware::disable device pdev}
   + [[file:2.6.22/preempt-realtime-net-drivers.patch][2.6.22]]
     [[file:2.6.23/preempt-realtime-net-drivers.patch][2.6.23]]
     [[file:2.6.24/preempt-realtime-net-drivers.patch][2.6.24]]
@@ -2113,7 +2113,7 @@
     [[file:3.10/drivers-net-tulip-add-missing-pci-disable.patch][3.10]]
     [[file:3.12/drivers-net-tulip-add-missing-pci-disable.patch][3.12]]
   - 3.14
-* [2.6.22 -   4.11] ide: Do not disable interrupts for PREEMPT-RT{C::feature::rt::nort irq}
+* [2.6.22 -   4.11] ide: Do not disable interrupts for PREEMPT-RT {C::feature::rtsupport::nort irq}
   + [[file:2.6.22/preempt-realtime-ide.patch][2.6.22]]
   m [[file:2.6.23/preempt-realtime-ide.patch][2.6.23]]
   M [[file:2.6.24/preempt-realtime-ide.patch][2.6.24]]
@@ -2136,7 +2136,7 @@
     [[file:4.8/ide-use-nort-local-irq-variants.patch][4.8]]
     [[file:4.9/ide-use-nort-local-irq-variants.patch][4.9]]
     [[file:4.11/ide-use-nort-local-irq-variants.patch][4.11]]
-* [2.6.22 -   4.11] drivers/net: Use disable_irq_nosync() in 8139too{C::feature::rtsupport::replace with irq nosync}
+* [2.6.22 -   4.11] drivers/net: Use disable_irq_nosync() in 8139too {C::feature::rtsupport::replace with irq nosync}
   + [[file:2.6.22/netpoll-8139too-fix.patch][2.6.22]]
     [[file:2.6.23/netpoll-8139too-fix.patch][2.6.23]]
     [[file:2.6.24/netpoll-8139too-fix.patch][2.6.24]]
@@ -8859,7 +8859,7 @@
   + [[file:4.0/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.0]]
     [[file:4.1/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the 
+* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the
   + [[file:4.0/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.0]]
     [[file:4.1/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.1]]
   - 4.4
@@ -8871,7 +8871,7 @@
   + [[file:4.0/0014-uaccess-decouple-preemption-from-the-pagefault-logic.patch][4.0]]
     [[file:4.1/0014-uaccess-decouple-preemption-from-the-pagefault-logic.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, uaccess: Update comments to clarify that preemption doesn't have 
+* [   4.0 -    4.1] sched/preempt, uaccess: Update comments to clarify that preemption doesn't have
   + [[file:4.0/0003-uaccess-clarify-that-uaccess-may-only-sleep-if-pagef.patch][4.0]]
     [[file:4.1/0003-uaccess-clarify-that-uaccess-may-only-sleep-if-pagef.patch][4.1]]
   - 4.4

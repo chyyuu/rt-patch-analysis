@@ -33,12 +33,13 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - hang:: 系统长时间无反应
 - deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。scheduling in atomic
 - livelock:: 如果事务T1封锁了数据R,事务T2又请求封锁R，于是T2等待。T3也请求封锁R，当T1释放了R上的封锁后，系统首先批准了T3的请求，T2仍然等待。然后T4又请求封锁R，当T3释放了R上的封锁之后，系统又批准了T的请求......T2可能永远等待，这就是活锁。活锁有一定几率解开。
-- crash:: 系统崩溃，但没有破坏保存的数据
+- crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM...
 - leak:: 发生数据泄漏
 - data_err:: 数据处理/显示错误
 - irq/softirq:: 无法响应/打开/关闭中断，softirq执行延迟/挂起，产生大量irq,    导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
+- hardware:: hardware malfunction. 硬件/外设不能正常工作  e.g.  i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
 
 
