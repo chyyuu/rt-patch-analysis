@@ -6,12 +6,12 @@ BEGIN_VERSION|END_VERSION ::= [2..4].[0..18].[22..29]
 PATCH_TITLE ::= TITLE.patch 
 TITLE|DESCRIPT = ['a'..'z','A'..'Z']*|NULL //string or nothing
 CHARACTERISTIC ::='C'
-ASPECT ::= FEATURE|FIXBUG|PERFORMANCE|MAINTAIN
+ASPECT ::= FEATURE|BUG|PERFORMANCE|MAINTAIN
 
 FEATURE ::= 'feature'::FEATURE_METHOD::DESCRIPT
 FEATURE_METHOD::= 'hardware'|'debuginfo'|'idle'|'hrtimer'|'statistics'|'delay'
 
-FIXBUG ::= 'fixbug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
+BUG ::= 'bug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
 BUG_CONSEQUENCE ::='corrupt'|'hang'|'crash'|'leak'|'irq'|'livelock'|'na'|'??'|...
 BUG_TYPE ::= SEMANTIC|CONCURRENCY|MEMORY|ERRORCODE
 SEMANTIC ::= 'hardware'|'softirq'|'migration'|'preempt'|'irq'|'na'|...
@@ -27,7 +27,7 @@ MAINTAIN ::='maintain'::MAINTAIN_METHOD
 MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ```
 
-## fixbug related info
+## bug related info
 ### bug consequence
 - corrupt:: 系统破坏了保存的数据（主要与文件系统，存储系统相关）
 - hang:: 系统长时间无反应
@@ -36,10 +36,10 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM...
 - leak:: 发生数据泄漏
 - data_err:: 数据处理/显示错误
-- irq/softirq:: 无法响应/打开/关闭中断，softirq执行延迟/挂起，产生大量irq,    导致系统工作不正确
+- irq/softirq:: not-irq/softirq-safe 无法响应/打开/关闭中断(包括nmi)，softirq执行延迟/挂起，产生大量irq,  导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
-- hardware:: hardware malfunction. 硬件/外设不能正常工作  e.g.  i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
+- hwerr:: hardware malfunction. 硬件/外设不能正常工作  e.g.  i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
 
 

@@ -207,6 +207,12 @@ feature: easy,  convert
 
 ## other important item
 
+###  change die_chain from atomic to raw notifiers
+??? NMI-safe
+	return atomic_notifier_chain_unregister(&die_chain, nb);
+	return raw_notifier_chain_unregister(&die_chain, nb);
+区别是啥？
+
 ### cpuidle_hang_fix.patch 
 ???
 

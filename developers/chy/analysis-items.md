@@ -87,6 +87,16 @@ Returns the spinlock corresponding to the specified per-CPU variable for the spe
 #### per_cpu_locked(var, cpu)
 Returns the specified per-CPU variable for the specified CPU as an lvalue, but without acquiring the lock, presumably because you have already acquired the lock but need to get another reference to the variable. Or perhaps because you are making an RCU-read-side reference to the variable, and therefore do not need to acquire the lock.
 
+#### rcu related
++#ifdef CONFIG_PREEMPT_RCU
++	return rcu_batches_completed();
++#else
+ 	return rcu_batches_completed_bh();
++#endif
+ }
+ 
+区别是？
+
 ### Interrupt Handlers
 
 #### SA_NODELAY
