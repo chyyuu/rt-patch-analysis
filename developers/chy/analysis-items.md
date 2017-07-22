@@ -407,6 +407,22 @@ atomic_notifier chains are note NMIsafe in rt
 
 NMI context, NMI safe 的含义？？
 
+https://www.ibm.com/developerworks/cn/linux/l-cn-apei/ 
+高级平台错误接口在 Linux 平台上的应用
+
+值得注意的是，由于 NMI context 的特殊性，譬如关中断，在 x86_64 上使用特殊的栈帧等，因此对于 HEST/GHES 而言，如果处于 NMI context，处理要格外小心。譬如不可以调用 printk 进行打印输出（printk 在调用时会持有一把锁，如果在 NMI 中调用 printk 可能会因为 NMI 抢占本 CPU 上其他中断处理中的 printk 操作而造成死锁），因而也不可以在 NMI 中使用其他加锁操作，而要使用无锁操作（lock-less）。这些细节和 APEI 本身没有直接关联，有兴趣的读者可以通过阅读相关的代码自行分析。以下以 GHES 中 NMI 类型的错误处理为例来说明整个 GHES 的处理过程。
+
+https://github.com/torvalds/linux/commit/42a0bb3f71383b457a7db362f1c69e7afb96732b
+
+printk/nmi: generic solution for safe printk in NMI
+printk() takes some locks and could not be used a safe way in NMI
+context.
+
+The chance of a deadlock is real especially when printing stacks from
+all CPUs.  This particular problem has been addressed on x86 by the
+commit a9edc88 ("x86/nmi: Perform a safe NMI stack trace on all
+CPUs").
+
 ```
 
 Note that there already are several messages printed in NMI context:
