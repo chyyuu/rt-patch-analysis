@@ -67,7 +67,7 @@ inside the RTpatch的学习记录：
 1. 查一下：PREEMPT_COUNT 实现机制。
 
 
-## 2017.7.24 patch分析分工
+## 2017.7.24 patch analysis job alloct
 ```
 2.6.23 patch number:  zw
 397
