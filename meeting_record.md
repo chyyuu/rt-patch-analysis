@@ -67,4 +67,48 @@ inside the RTpatch的学习记录：
 1. 查一下：PREEMPT_COUNT 实现机制。
 
 
-
+## 2017.7.24 patch分析分工
+```
+2.6.23 patch number:  zw
+397
+2.6.24 patch number:  mym
+484
+2.6.25 patch number:  yxg
+369
+2.6.26 patch number:  zzm
+403
+2.6.29 patch number:  zw
+267
+3.0 patch number:     mym
+235
+3.10 patch number:   yxg
+276
+3.12 patch number:    zzm
+281
+3.14 patch number:    zw
+314
+3.18 patch number:   mym
+311
+3.2 patch number:   yxg
+250
+3.4 patch number:   zzm
+245
+3.6 patch number:  zw
+254
+3.8 patch number:   mym
+283
+4.0 patch number:  yxg
+346
+4.1 patch number:   zzm
+267
+4.11 patch number:  zw
+388
+4.4 patch number:  mym
+256
+4.6 patch number:   yxg
+286
+4.8 patch number:   zzm
+291
+4.9 patch number:    yxg
+288
+```
