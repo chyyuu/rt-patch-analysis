@@ -127,3 +127,5 @@ Didn't find much ref in linux documentation
 >not understand
 
 - replace with raw
+
+- anon sem

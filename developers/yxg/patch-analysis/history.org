@@ -4263,58 +4263,58 @@
 * [   3.0         ] rtc: Fix hrtimer deadlock{C::bug::deadlock::deadlock::semantics::add fun to disable timer here, not a real fix}
   + [[file:3.0/rtc-fix-hrtimer-deadlock.patch][3.0]]
   - 3.2
-* [   3.0         ] xfs: Convert mr_lock to rw_anon_semaphore
+* [   3.0         ] xfs: Convert mr_lock to rw_anon_semaphore{C::feature::rtsupport::replace with anon sem}
   + [[file:3.0/xfs-convert-mr-lock-to-rw-anon.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Move blk_schedule_flush_plug() out of __schedule()
+* [   3.0         ] sched: Move blk_schedule_flush_plug() out of __schedule(){C::feature::rtsupport::preempt::remove fun into schedule, rm irq and preempt wrap around}
   + [[file:3.0/sched-move-blk_schedule_flush_plug-out-of-__schedule.patch][3.0]]
   - 3.2
-* [   3.0         ] video: Convert vga console lock to raw_spinlock
+* [   3.0         ] video: Convert vga console lock to raw_spinlock{C::feature::rtsupport::make printk atomic}
   + [[file:3.0/video-convert-vga-console-lock-to-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] drm-sigh.patch
+* [   3.0         ] drm-sigh.patch{C::feature::rtsupport::rm preempt disable in gpu drm}
   + [[file:3.0/drm-sigh.patch][3.0]]
   - 3.2
-* [   3.0         ] percpu_counter: Convert to raw_spinlock
+* [   3.0         ] percpu_counter: Convert to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/percpu-cpunter-raw-lock.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: remove useles get_cpu() in sched_fork()
+* [   3.0         ] sched: remove useles get_cpu() in sched_fork(){C::feature::rtsupport?::said to rm useless preempt disable}
   + [[file:3.0/sched-remove-useless-preempt-disable-in-sched-fork.patch][3.0]]
   - 3.2
-* [   3.0         ] rtc: Handle errors correctly in rtc_irq_set_state()
+* [   3.0         ] rtc: Handle errors correctly in rtc_irq_set_state(){}{C::feature::errhandle::release spinlock when meet err}
   + [[file:3.0/rtc-deal-with-errors-correctly.patch][3.0]]
   - 3.2
-* [   3.0         ] highmem: Explicitely disable preemption
+* [   3.0         ] highmem: Explicitely disable preemption{C::feature::rtsupport::enclose pagefault_disable with explicit preempt_disable}
   + [[file:3.0/highmem-explicitly-disable-preemption.patch][3.0]]
   - 3.2
-* [   3.0         ] rwsem: Make inner lock raw
+* [   3.0         ] rwsem: Make inner lock raw{C::feature::rtsupport::replace with raw}
   + [[file:3.0/rwsem-make-inner-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] fs: jdb/jbd2: Put identical code in a common header
+* [   3.0         ] fs: jdb/jbd2: Put identical code in a common header{C::maintain::refactor::merge the shared codes}
   + [[file:3.0/jdb-shared-state-bits.patch][3.0]]
   - 3.2
-* [   3.0         ] fs: Convert i_alloc_sem to rw_anon_semaphore
+* [   3.0         ] fs: Convert i_alloc_sem to rw_anon_semaphore{C::feature::rtsupport::replace with raw}
   + [[file:3.0/fs-convert-i-alloc-sem-to-rw-anon.patch][3.0]]
   - 3.2
-* [   3.0         ] watchdog-madness.patch
+* [   3.0         ] watchdog-madness.patch{C::bug::??::rm static, add set scheduler fun}
   + [[file:3.0/watchdog-madness.patch][3.0]]
   - 3.2
-* [   3.0         ] mips: sibyte: Add missing irq_mask function
+* [   3.0         ] mips: sibyte: Add missing irq_mask function{C::bug::??::rename a field}
   + [[file:3.0/mips-sibyte-fix-irq-chip.patch][3.0]]
   - 3.2
-* [   3.0         ] sched-show-state-no-task-list-lock.patch
+* [   3.0         ] sched-show-state-no-task-list-lock.patch{C::feature::lock::replace rd_lock with rcu_read_lock}
   + [[file:3.0/sched-show-state-no-task-list-lock.patch][3.0]]
   - 3.2
-* [   3.0         ] plist-remove-spinlock-types-dependency.patch
+* [   3.0         ] plist-remove-spinlock-types-dependency.patch{C::maintain::refactor::rm spinlock types dependency}
   + [[file:3.0/plist-remove-spinlock-types-dependency.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Rename rt_mutex_setprio to task_setprio
+* [   3.0         ] sched: Rename rt_mutex_setprio to task_setprio{C::maintain::refactor::rename var}
   + [[file:3.0/sched-rename-=rtmutex-set-prio-to-task-setprio.patch][3.0]]
   - 3.2
-* [   3.0         ] x86: mce: Convert cmci_discover_lock to raw_spinlock
+* [   3.0         ] x86: mce: Convert cmci_discover_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/x86-mce-cmc-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] rw_semaphores: Add rw_anon_semaphores
+* [   3.0         ] rw_semaphores: Add rw_anon_semaphores{C::feature::rtsupport::anon sem::implement anonymous sem to make convertion to rt easier}
   + [[file:3.0/rwsem-implement-anon-rwsems.patch][3.0]]
   - 3.2
 * [   3.0         ] ide: Fix irq flags madness
