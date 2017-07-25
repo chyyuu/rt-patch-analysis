@@ -4170,13 +4170,13 @@
 * [   3.0         ] sched: Convert thread_group_cputimer lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/sched-thread-group-cputimer-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] floppy: Use timer_del_sync() in init cleanup path{C::fixbug::crash::hardware::sync::add barrier in time related fun in floppy driver}
+* [   3.0         ] floppy: Use timer_del_sync() in init cleanup path{C::bug::crash::hardware::sync::add barrier in time related fun in floppy driver}
   + [[file:3.0/drivers-floppy-use-timer-del-sync.patch][3.0]]
   - 3.2
 * [   3.0         ] x86-iommu-rt-aware.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.0/dmar-make-register-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] ftrace-hash-fix.patch{C::fixbug::data err::semantics::add and replace old fun}
+* [   3.0         ] ftrace-hash-fix.patch{C::bug::data err::semantics::add and replace old fun}
   + [[file:3.0/ftrace-hash-fix.patch][3.0]]
   - 3.2
 * [   3.0         ] ACPI: Convert c3_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
@@ -4206,10 +4206,10 @@
 * [   3.0         ] printk: Convert logbuf_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/prink-convert-logbuf-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING{C::fixbug::leak::resource leak::sementic::add pointer to record the resourse to be freed}
+* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING{C::bug::leak::resource leak::sementic::add pointer to record the resourse to be freed}
   + [[file:3.0/perf-x86-no-kfree-in-cpu_starting.patch][3.0]]
   - 3.2
-* [   3.0         ] fs: Add missing rcu protection for __task_cred() in sys_ioprio_get{C::fixbug::data_err::atomicity::mutex::enclose with rcu_read_lock}
+* [   3.0         ] fs: Add missing rcu protection for __task_cred() in sys_ioprio_get{C::bug::data_err::atomicity::mutex::enclose with rcu_read_lock}
   + [[file:3.0/fs-add-missing-rcu-protection.patch][3.0]]
   - 3.2
 * [   3.0         ] rtc: Limit frequency{C::feature::hrtimer::check freq upper bound}
@@ -4233,7 +4233,7 @@
 * [   3.0         ] ARM: raw_lock conversions{C::feature::rtsupport::replace with raw}
   + [[file:3.0/arm-raw_lock-conversions.patch][3.0]]
   - 3.2
-* [   3.0         ] drivers/dca: Convert dca_lock to a raw spinlock{C::fixbug::??::preempt::preempt::replace with raw}
+* [   3.0         ] drivers/dca: Convert dca_lock to a raw spinlock{C::bug::??::preempt::preempt::replace with raw}
   + [[file:3.0/drivers-dca-convert-dcalock-to-raw.patch][3.0]]
   - 3.2
 * [   3.0         ] semaphore: Make inner lock raw{C::feature::rtsupport::replace with raw}
@@ -4260,7 +4260,7 @@
 * [   3.0         ] fs: btrfs locking workaround for preempt -rt{C::feature::rtsupport::add config}
   + [[file:3.0/fs-btrfs-locking-workaround-for-preempt-rt.patch][3.0]]
   - 3.2
-* [   3.0         ] rtc: Fix hrtimer deadlock{C::fixbug::deadlock::deadlock::semantics::add fun to disable timer here, not a real fix}
+* [   3.0         ] rtc: Fix hrtimer deadlock{C::bug::deadlock::deadlock::semantics::add fun to disable timer here, not a real fix}
   + [[file:3.0/rtc-fix-hrtimer-deadlock.patch][3.0]]
   - 3.2
 * [   3.0         ] xfs: Convert mr_lock to rw_anon_semaphore
