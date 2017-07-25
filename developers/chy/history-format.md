@@ -91,7 +91,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 ### feature method
 - hardware:: 添加/删除硬件相关特性
 - debuginfo:: 添加/减少调试/warning信息
-- idle:: 添加idle OR suspend/resume OR power manaagement相关功能
+- idle:: 添加idle OR suspend/resume OR power management相关功能
 - hrtimer:添加采用高精度时钟相关功能
 - statistics:: 添加统计信息
 - delay:: 添加workqueue/softirq相关功能
