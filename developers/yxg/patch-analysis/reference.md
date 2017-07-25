@@ -125,3 +125,5 @@ Didn't find much ref in linux documentation
 - file:2.6.22/rt-apis.patch
 - file:2.6.22/preempt-realtime-prevent-idle-boosting.patch
 >not understand
+
+- replace with raw

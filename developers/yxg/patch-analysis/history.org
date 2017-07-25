@@ -4158,109 +4158,109 @@
     [[file:4.8/posix-timers-no-broadcast.patch][4.8]]
     [[file:4.9/posix-timers-no-broadcast.patch][4.9]]
     [[file:4.11/posix-timers-no-broadcast.patch][4.11]]
-* [   3.0         ] dmar-make-qi-lock-raw.patch
+* [   3.0         ] dmar-make-qi-lock-raw.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.0/dmar-make-qi-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] mips: Allow irq threading
+* [   3.0         ] mips: Allow irq threading{C::feature::rtsupport::enable rt thrd, add reverse dependency entry in Kconfig}
   + [[file:3.0/mips-allow-irq-threading.patch][3.0]]
   - 3.2
-* [   3.0         ] rtmutex: Cleanup the debug code
+* [   3.0         ] rtmutex: Cleanup the debug code{C::refactor::rm some debuginfo, replace rt_trace_on with debug_locks}
   + [[file:3.0/rtmutex-debug-cleanup.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Convert thread_group_cputimer lock to raw_spinlock
+* [   3.0         ] sched: Convert thread_group_cputimer lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/sched-thread-group-cputimer-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] floppy: Use timer_del_sync() in init cleanup path
+* [   3.0         ] floppy: Use timer_del_sync() in init cleanup path{C::fixbug::crash::hardware::sync::add barrier in time related fun in floppy driver}
   + [[file:3.0/drivers-floppy-use-timer-del-sync.patch][3.0]]
   - 3.2
-* [   3.0         ] x86-iommu-rt-aware.patch
+* [   3.0         ] x86-iommu-rt-aware.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.0/dmar-make-register-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] ftrace-hash-fix.patch
+* [   3.0         ] ftrace-hash-fix.patch{C::fixbug::data err::semantics::add and replace old fun}
   + [[file:3.0/ftrace-hash-fix.patch][3.0]]
   - 3.2
-* [   3.0         ] ACPI: Convert c3_lock to raw_spinlock
+* [   3.0         ] ACPI: Convert c3_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/acpi-convert-c3lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] trace: Convert various locks to raw_spinlock
+* [   3.0         ] trace: Convert various locks to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/trace-convert-various-locks-to-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] dmar-mark-dmar-irq-no-thread.patch
+* [   3.0         ] dmar-mark-dmar-irq-no-thread.patch{C::feature::rtsupport::add IRQF_NO_THREAD when request irq}
   + [[file:3.0/dmar-mark-dmar-irq-no-thread.patch][3.0]]
   - 3.2
-* [   3.0         ] latencytop: Convert latency_lock to raw_spinlock
+* [   3.0         ] latencytop: Convert latency_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/latency-top-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] oprofile: Convert orpofilefs lock to raw_spinlock
+* [   3.0         ] oprofile: Convert orpofilefs lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/oprofile-fslock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] timer_stats: Convert table_lock to raw_spin_lock
+* [   3.0         ] timer_stats: Convert table_lock to raw_spin_lock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/timer-stats-raw-table-lock.patch][3.0]]
   - 3.2
-* [   3.0         ] local-bh-migrate.patch
+* [   3.0         ] local-bh-migrate.patch{C::feature::rtsupport::move fun into rt-full on, add enclose some fun with rt-config}
   + [[file:3.0/rcu-disable-the-rcu-bh-stuff-for-rt.patch][3.0]]
   - 3.2
-* [   3.0         ] MIPS: Mark cascade and low level interrupts IRQF_NO_THREAD
+* [   3.0         ] MIPS: Mark cascade and low level interrupts IRQF_NO_THREAD{C::feature::rtsupport::add nothread field in irq to avoid threading}
   + [[file:3.0/mips-mark-cascade-interrupts-nothread.patch][3.0]]
   - 3.2
-* [   3.0         ] printk: Convert logbuf_lock to raw_spinlock
+* [   3.0         ] printk: Convert logbuf_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/prink-convert-logbuf-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING
+* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING{C::fixbug::leak::resource leak::sementic::add pointer to record the resourse to be freed}
   + [[file:3.0/perf-x86-no-kfree-in-cpu_starting.patch][3.0]]
   - 3.2
-* [   3.0         ] fs: Add missing rcu protection for __task_cred() in sys_ioprio_get
+* [   3.0         ] fs: Add missing rcu protection for __task_cred() in sys_ioprio_get{C::fixbug::data_err::atomicity::mutex::enclose with rcu_read_lock}
   + [[file:3.0/fs-add-missing-rcu-protection.patch][3.0]]
   - 3.2
-* [   3.0         ] rtc: Limit frequency
+* [   3.0         ] rtc: Limit frequency{C::feature::hrtimer::check freq upper bound}
   + [[file:3.0/rtc-limit-frequency.patch][3.0]]
   - 3.2
-* [   3.0         ] rtc: rtc-tegra: Use proper lock initializer
+* [   3.0         ] rtc: rtc-tegra: Use proper lock initializer{C::maintain::refactor::use another fun to init tegra_rtc_lock}
   + [[file:3.0/rtc-tegra-lock-init.patch][3.0]]
   - 3.2
-* [   3.0         ] powerpc: Convert uic->lock to raw_spinlock
+* [   3.0         ] powerpc: Convert uic->lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/powerpc-uic-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Convert cgroups release_list_lock to raw_spinlock
+* [   3.0         ] sched: Convert cgroups release_list_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/sched-convert-cgroups-release-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] highmem-rt.patch
+* [   3.0         ] highmem-rt.patch{C::feature::rtsupport::highmem::no rt when highmem on}
   + [[file:3.0/x86-no-highmem-with-rt.patch][3.0]]
   - 3.2
-* [   3.0         ] mm: memory: Efficient ZAP block size
+* [   3.0         ] mm: memory: Efficient ZAP block size{C::feature::rtsupport::add comment, preemptible when rt-full}
   + [[file:3.0/mm-memory-rt.patch][3.0]]
   - 3.2
-* [   3.0         ] ARM: raw_lock conversions
+* [   3.0         ] ARM: raw_lock conversions{C::feature::rtsupport::replace with raw}
   + [[file:3.0/arm-raw_lock-conversions.patch][3.0]]
   - 3.2
-* [   3.0         ] drivers/dca: Convert dca_lock to a raw spinlock
+* [   3.0         ] drivers/dca: Convert dca_lock to a raw spinlock{C::fixbug::??::preempt::preempt::replace with raw}
   + [[file:3.0/drivers-dca-convert-dcalock-to-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] semaphore: Make inner lock raw
+* [   3.0         ] semaphore: Make inner lock raw{C::feature::rtsupport::replace with raw}
   + [[file:3.0/sema-make-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] sched-copy-cpumask-in-one-place.patch
+* [   3.0         ] sched-copy-cpumask-in-one-place.patch{C::maintain::refactor::merge codes}
   + [[file:3.0/sched-copy-cpumask-in-one-place.patch][3.0]]
   - 3.2
-* [   3.0         ] pci-intr-remapping-make-irte-lock-raw.patch
+* [   3.0         ] pci-intr-remapping-make-irte-lock-raw.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.0/pci-intr-remapping-make-irte-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] mips: ftrace: Fix the CONFIG_DYNAMIC_FTRACE=n compile
+* [   3.0         ] mips: ftrace: Fix the CONFIG_DYNAMIC_FTRACE=n compile{C::maintain?::refactor(I guess maybe it is fix compile err here)}
   + [[file:3.0/mips-ftrace-fix-non-dynamic-crappola.patch][3.0]]
   - 3.2
-* [   3.0         ] MIPS: Loongson: Mark cascade interrupts IRQF_NO_THREAD
+* [   3.0         ] MIPS: Loongson: Mark cascade interrupts IRQF_NO_THREAD{C::feature::rtsupport::irq no thread}
   + [[file:3.0/mips-loongson-mark-cascade-interrupts-non-thread.patch][3.0]]
   - 3.2
-* [   3.0         ] netfilter-wtf.patch
+* [   3.0         ] netfilter-wtf.patch{C::maintain::refactor::init with fun}
   + [[file:3.0/net-netfilter-use-proper-rw-init.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Warn on rt throttling
+* [   3.0         ] sched: Warn on rt throttling{C::maintain::warning info}
   + [[file:3.0/sched-warn-on-throttle.patch][3.0]]
   - 3.2
-* [   3.0         ] fs: btrfs locking workaround for preempt -rt
+* [   3.0         ] fs: btrfs locking workaround for preempt -rt{C::feature::rtsupport::add config}
   + [[file:3.0/fs-btrfs-locking-workaround-for-preempt-rt.patch][3.0]]
   - 3.2
-* [   3.0         ] rtc: Fix hrtimer deadlock
+* [   3.0         ] rtc: Fix hrtimer deadlock{C::fixbug::deadlock::deadlock::semantics::add fun to disable timer here, not a real fix}
   + [[file:3.0/rtc-fix-hrtimer-deadlock.patch][3.0]]
   - 3.2
 * [   3.0         ] xfs: Convert mr_lock to rw_anon_semaphore
