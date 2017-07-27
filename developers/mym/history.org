@@ -3683,109 +3683,109 @@
 * [2.6.26         ] sched-prioritize-non-migrating-rt-tasks.patch{C::feature::rtsupport::sched: prioritize non-migratable tasks over migratable}
   + [[file:2.6.26/sched-prioritize-non-migrating-rt-tasks.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] Fix a previously reverted "fix"
+* [2.6.26         ] fix-a-previously-reverted-fix.patch {C::bug::hang::irq::?::preempt_schedule_irq}
   + [[file:2.6.26/fix-a-previously-reverted-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] 2.6.25.4-rt2 (native_sched_clock() booboo)
+* [2.6.26         ] native-sched-clock-booboo.patch {C::bug::compile::compiling_err::syntax::fix return value}
   + [[file:2.6.26/native-sched-clock-booboo.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] 2.6.25.4-rt4
+* [2.6.26         ] trace-eip2ip.patch {C::bug::compile::?::syntax:: change eip to ip}
   + [[file:2.6.26/trace-eip2ip.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] add framework for multi readers on rwsems
+* [2.6.26         ] rwsems-multiple-readers.patch{C::feature::rtsupport::rw_mutex add framework for multi readers on rwsems}
   + [[file:2.6.26/rwsems-multiple-readers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: fix pi_list race conditions
+* [2.6.26         ]rwlock-fixes.patch{C::bug::?::race::race::rwlock: fix pi_list race conditions} 
   + [[file:2.6.26/rwlock-fixes.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] Compile warning rtmutex code on 2.6.24.7-rt8 (CC:LKML added)
+* [2.6.26         ] rtmutex-rwlock-cmpxchg-typecast.patch {C::bug::compile::compiling_err::syntax::Compile warning rtmutex code  type cast}
   + [[file:2.6.26/rtmutex-rwlock-cmpxchg-typecast.patch][2.6.26]]
   - 2.6.29
-* [2.6.26 - 2.6.29] realtime: preempt warn about tracing
+* [2.6.26 - 2.6.29] realtime-preempt-warn-about-tracing.patch {C::maintain::refactor::realtime: preempt warn about tracing}
   + [[file:2.6.26/realtime-preempt-warn-about-tracing.patch][2.6.26]]
   M [[file:2.6.29/realtime-preempt-warn-about-tracing.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] optimize rt lock wakeup
+* [2.6.26 - 2.6.29] adaptive-optimize-rt-lock-wakeup.patch{C::performance::mutex::optimize rt lock wakeup}
   + [[file:2.6.26/adaptive-optimize-rt-lock-wakeup.patch][2.6.26]]
     [[file:2.6.29/adaptive-optimize-rt-lock-wakeup.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/raw-spinlocks-for-nmi-print.patch
+* [2.6.26 - 2.6.29] raw-spinlocks-for-nmi-print.patch {C::bug::data_err::atomicity::mutex::change spinlock to be raw spinlock when serializing prints from NMI}
   + [[file:2.6.26/raw-spinlocks-for-nmi-print.patch][2.6.26]]
   M [[file:2.6.29/raw-spinlocks-for-nmi-print.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] adjust pi_lock usage in wakeup
+* [2.6.26 - 2.6.29] adaptive-adjust-pi-wakeup.patch {C::performance::pi_lock::adjust pi_lock usage in wakeup}
   + [[file:2.6.26/adaptive-adjust-pi-wakeup.patch][2.6.26]]
     [[file:2.6.29/adaptive-adjust-pi-wakeup.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] gitignore scripts/testlpp
+* [2.6.26 - 2.6.29]git-ignore-script-lpp.patch {C::maintain::gitignore:: gitignore scripts/testlpp}
   + [[file:2.6.26/git-ignore-script-lpp.patch][2.6.26]]
     [[file:2.6.29/git-ignore-script-lpp.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched: wake_up_idle_cpu rt
+* [2.6.26 - 2.6.29] sched: wake_up_idle_cpu rt {C::bug::?::use raw_smp_processor_id() instead of smp_processor_id() }
   + [[file:2.6.26/sched-wake_up_idle_cpu-rt.patch][2.6.26]]
     [[file:2.6.29/sched-wake_up_idle_cpu-rt.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/rtmutex-rearrange.patch
+* [2.6.26 - 2.6.29] rtmutex-rearrange.patch {C::maintain::refactor::rearrange rt_spin_lock_slowlock sleeping code}
   + [[file:2.6.26/rtmutex-rearrange.patch][2.6.26]]
     [[file:2.6.29/rtmutex-rearrange.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] fix-adaptive-hack.patch
+* [2.6.26 - 2.6.29] fix-adaptive-hack.patch{C::bug::?::fix-adaptive-hack}
   + [[file:2.6.26/fix-adaptive-hack.patch][2.6.26]]
     [[file:2.6.29/fix-adaptive-hack.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] ARM: OMAP: remove unnecessary locking in clk_get_rate()
+* [2.6.26 - 2.6.29] arm-omap-05.patch{C::bug::deadlock::deadlock::  ARM: OMAP: remove unnecessary locking in clk_get_rate()}
   + [[file:2.6.26/arm-omap-05.patch][2.6.26]]
     [[file:2.6.29/arm-omap-05.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] rtmutex: break out early on first run
+* [2.6.26 - 2.6.29] adaptive-earlybreak-on-steal.patch {C::bug::?::rtmutex: break out early on first run}
   + [[file:2.6.26/adaptive-earlybreak-on-steal.patch][2.6.26]]
     [[file:2.6.29/adaptive-earlybreak-on-steal.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] remove the extra call to try_to_take_lock
+* [2.6.26 - 2.6.29] adapt-remove-extra-try-to-lock.patch {C::performance::smallsize::remove the extra call to try_to_take_lock}
   + [[file:2.6.26/adapt-remove-extra-try-to-lock.patch][2.6.26]]
     [[file:2.6.29/adapt-remove-extra-try-to-lock.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch
+* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch {C::bug::?::race::sched-fix-dequeued-race}
   + [[file:2.6.26/sched-fix-dequeued-race.patch][2.6.26]]
   m [[file:2.6.29/sched-fix-dequeued-race.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/rtmutex-lateral-steal.patch
+* [2.6.26 - 2.6.29] rtmutex-lateral-steal.patch{C::performance::allow rt-mutex lock-stealing to include lateral priority} 
   + [[file:2.6.26/rtmutex-lateral-steal.patch][2.6.26]]
     [[file:2.6.29/rtmutex-lateral-steal.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] rtmutex - remove double xchg
+* [2.6.26 - 2.6.29] rtmutex-remove-xchg.patch {C::performance::smallsize:: rtmutex - remove double xchg}
   + [[file:2.6.26/rtmutex-remove-xchg.patch][2.6.26]]
     [[file:2.6.29/rtmutex-remove-xchg.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/revert-preempt-bkl-revert.patch
+* [2.6.26 - 2.6.29] revert-preempt-bkl-revert.patch {C::performance::regression::BKL: revert back to the old spinlock implementation}
   + [[file:2.6.26/revert-preempt-bkl-revert.patch][2.6.26]]
   m [[file:2.6.29/revert-preempt-bkl-revert.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched: make task->oncpu available in all configurations
+* [2.6.26 - 2.6.29] adaptive-task-oncpu.patch{C::feature::sched::sched: make task->oncpu available in all configurations}
   + [[file:2.6.26/adaptive-task-oncpu.patch][2.6.26]]
   m [[file:2.6.29/adaptive-task-oncpu.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/bz235099-idle-load-fix.patch
+* [2.6.26 - 2.6.29] bz235099-idle-load-fix.patch {C::bug::data_err::semantics::semantics::fix for load average calculation} 
   + [[file:2.6.26/bz235099-idle-load-fix.patch][2.6.26]]
   M [[file:2.6.29/bz235099-idle-load-fix.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] Fix CONFIG_DEBUG_RT_MUTEX lock underflow warnings
+* [2.6.26 - 2.6.29]fix-config-debug-rt-mutex-lock-underflow-warnings.patch {C::bug::data_err::atomicity::converts lock_count to a atomic_t}
   + [[file:2.6.26/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.26]]
   m [[file:2.6.29/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/fix_vdso_gtod_vsyscall64_2.patch
+* [2.6.26 - 2.6.29]fix_vdso_gtod_vsyscall64_2.patch {C::performance::hrtimer:: enforces the 1ms resolution}
   + [[file:2.6.26/fix_vdso_gtod_vsyscall64_2.patch][2.6.26]]
   m [[file:2.6.29/fix_vdso_gtod_vsyscall64_2.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] adaptive spinlocks lite
+* [2.6.26 - 2.6.29] adaptive-spinlock-lite-v2.patch {C::performance::hrtimer::adaptive spinlocks lite}
   + [[file:2.6.26/adaptive-spinlock-lite-v2.patch][2.6.26]]
   m [[file:2.6.29/adaptive-spinlock-lite-v2.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] nfs: fix missing preemption check
+* [2.6.26 - 2.6.29] nfs-stats-miss-preemption.patch {C::bug::performance regression::preemption::preempt::nfs: fix missing preemption check}
   + [[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]
   m [[file:2.6.29/nfs-stats-miss-preemption.patch][2.6.29]]
   - 3.0
-* [2.6.26 -    3.8] generic: Use raw local irq variant for generic cmpxchg
+* [2.6.26 -    3.8] generic-cmpxchg-use-raw-local-irq-variant.patch{{C::bug::hwerr::irq::hardware::generic: Use raw local irq variant for generic cmpxchg}
   + [[file:2.6.26/generic-cmpxchg-use-raw-local-irq-variant.patch][2.6.26]]
     [[file:2.6.29/generic-cmpxchg-use-raw-local-irq-variant.patch][2.6.29]]
     [[file:3.0/generic-cmpxchg-use-raw-local-irq.patch][3.0]]
@@ -3794,7 +3794,7 @@
     [[file:3.6/generic-cmpxchg-use-raw-local-irq.patch][3.6]]
     [[file:3.8/generic-cmpxchg-use-raw-local-irq.patch][3.8]]
   - 3.10
-* [2.6.26 -   3.12] usb: Use local_irq_*_nort() variants
+* [2.6.26 -   3.12] sub-dont-disable-irqs.patch{{C::performance::smallsize::rt: dont disable irqs in usb}
   + [[file:2.6.26/sub-dont-disable-irqs.patch][2.6.26]]
     [[file:2.6.29/sub-dont-disable-irqs.patch][2.6.29]]
   m [[file:3.0/usb-hcd-use-local-irq-nort.patch][3.0]]
