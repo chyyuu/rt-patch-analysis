@@ -67,4 +67,68 @@ inside the RTpatch的学习记录：
 1. 查一下：PREEMPT_COUNT 实现机制。
 
 
+## 2017.7.24 patch analysis job alloct
+```
+各个版本的patch数量
+~/kernel-test/rt-patch-analysis/developers/chy$ grep "^* \[" ./history.org  | cut -b 1-9 | uniq -c
+    374 * [2.6.22
+    120 * [2.6.23
+    126 * [2.6.24
+     47 * [2.6.25
+     92 * [2.6.26
+     92 * [2.6.29
+    217 * [   3.0
+     76 * [   3.2
+     19 * [   3.4
+     30 * [   3.6
+     51 * [   3.8
+     28 * [  3.10
+     21 * [  3.12
+     47 * [  3.14
+     19 * [  3.18
+     47 * [   4.0
+     10 * [   4.1
+     16 * [   4.4
+     41 * [   4.6
+     22 * [   4.8
+     17 * [   4.9
+    114 * [  4.11
 
+总共patch数量	
+~/kernel-test/rt-patch-analysis/developers/chy$ grep "^* \[" ./history.org  | cut -b 1-9 | wc -l
+1626
+一共有1626个ptach
+
+
+
+1626-374=1252 还剩1252个patch没有看
+1252/4=313	 每人大概看313个
+
+任务分工情况
+    120 * [2.6.23 zw
+    126 * [2.6.24 zw
+     47 * [2.6.25 zw
+     92 * [2.6.26 mym
+     92 * [2.6.29 mym
+    217 * [   3.0 yxg
+     76 * [   3.2 yxg
+     19 * [   3.4 yxg
+     30 * [   3.6 yxg
+     51 * [   3.8 mym
+     28 * [  3.10 mym 
+     21 * [  3.12 mym
+     47 * [  3.14 mym
+     19 * [  3.18 zzm
+     47 * [   4.0 zzm
+     10 * [   4.1 zzm
+     16 * [   4.4 zzm
+     41 * [   4.6 zzm
+     22 * [   4.8 zzm
+     17 * [   4.9 zzm
+    114 * [  4.11 zzm
+
+zw:293
+mym:331
+yxg:342
+zzm:286
+```
