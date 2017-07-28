@@ -10,7 +10,7 @@ class Checker(object):
 
     feature_method = {'hardware', 'debuginfo', 'idle', 'hrtimer', 'statistics',
                       'delay', 'sched', 'mm', 'timer', 'lockless', 'capability',
-                      'net', 'rtsupport', 'check', 'arch', 'other'}
+                      'net', 'power', 'rtsupport', 'check', 'arch', 'other'}
 
     fix_method = {'hardware', 'mutex', 'sync', 'order', 'irq', 'softirq',
                   'preempt', 'migration', 'idle', 'memory', 'config',
@@ -18,7 +18,7 @@ class Checker(object):
 
     bug_consequence = {'hwerr', 'corrupt', 'hang', 'deadlock', 'livelock', 'crash',
                        'leak', 'data_err', 'irq', 'softirq', 'compile', 'idle',
-                       'na', '??'}
+                       'rtlatency', 'na', '??'}
 
     performance_method = {'hardware', 'cache', 'msleep', 'irq', 'softirq',
                           'mutex', 'preempt', 'barrier', 'idle', 'hrtimer',

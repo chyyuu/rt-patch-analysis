@@ -36,6 +36,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM...
 - leak:: 发生数据泄漏
 - data_err:: 数据处理/显示错误
+- rtlatency:: unexpected realtime latencies
 - irq/softirq:: not-irq/softirq-safe 无法响应/打开/关闭中断(包括nmi)，softirq执行延迟/挂起，产生大量irq,  导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
@@ -46,11 +47,10 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ### bug type
 #### semantics
 - hardware:: 硬件初始化/工作流控制逻辑错误 
-- softirq:: 在软中断工作范围内出现的错误
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
 - time:: 时间处理相关的错误
-- irq/softirq:: 与设置中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
+- irq/softirq:: 与设置中断/软中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
 - semantics:: 编程逻辑有误
 - na: Not Available OR Not Applicable 无从得知或不适用
 
@@ -104,6 +104,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op, anon sem, seqlock...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub
 - check:: add runtime check to make it more stable
 - arch:: add new architecture support for RT
+- power:: 节能
 - other:: 不太好归类的， e.g. dont stop box in panic function 或 highmem: revert mainline 即恢复到mainline
 
 ## performance related info
@@ -123,7 +124,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 
 ## maintain related info
 ### maintain method
-- refactor:: 重构软件相关
+- refactor:: 重构软件相关,包括调整位置，删除无用代码(unused code)
 - donothing:: 什么也没做
 
 ### PATCH_CHANGES
