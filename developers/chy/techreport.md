@@ -420,7 +420,7 @@ The second change applies per-CPU variables to the slab allocator, as an alterna
 - [Threaded Interrupts Approaches, October 2004](http://lwn.net/Articles/106010/) 
 
 - [Threaded Interrupts Debate, June 2005](http://lwn.net/Articles/138174/)
-
+- [Linux 死锁检测模块 Lockdep 简介](http://blog.jobbole.com/100078/)
   ​
 
 - [• http://en.wikipedia.org/wiki/RCU

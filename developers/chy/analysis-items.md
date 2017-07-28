@@ -90,11 +90,11 @@ Returns the specified per-CPU variable for the specified CPU as an lvalue, but w
 #### rcu related
 +#ifdef CONFIG_PREEMPT_RCU
 +	return rcu_batches_completed();
-+#else
- 	return rcu_batches_completed_bh();
-+#endif
- }
- 
+   +#else
+    return rcu_batches_completed_bh();
+   +#endif
+    }
+
 区别是？
 
 ### Interrupt Handlers
@@ -442,3 +442,199 @@ bottom half机制的设计有两方面的需求，一个是性能，一个是易
 为了性能，同一类型的softirq有可能在不同的CPU上并发执行，这给使用者带来了极大的痛苦，因为驱动工程师在撰写softirq的回调函数的时候要考虑重入，考虑并发，要引入同步机制。但是，为了性能，我们必须如此。 
 
 如果是tasklet的情况会如何呢？为何tasklet性能不如softirq呢？如果一个tasklet在processor A上被调度执行，那么它永远也不会同时在processor B上执行，也就是说，tasklet是串行执行的
+
+
+
+# 已有（进入mainline）实时补丁
+
+## 自愿抢占cond_resched()
+
+这个函数具有主动被调度的作用。为了及时响应实时过程，需要中断线程化，而在中断线程化的过程中，需要调用cond_resched 这个函数。在目前的内核代码中，一般在读磁盘前（或者其它可能费时操作前），会调用这个函数。
+
+4.1.2 有695处调用 cond_resched()
+
+## 抢占补丁
+
+抢占内核假设：如果执行代码不在中断处理例层或没有自旋锁保护，那么进程发现切换是安全的。
+
+
+
+上述两步可提高响应能力（软实时），但无法保障最大响应延迟。所以需要irq线程化，高精度时钟，实时调度，临界区可抢占。
+
+
+
+## 中断线程化
+
+当一个中断到达时，你不会运行中断处理程序代码。你只是唤醒相应的内核线程，它运行处理程序。这有两个优点：内核线程可以中断，并且它会显示在进程列表中，有自己的 PID。所以你可以把低优先级的放在不重要的中断上，高优先级的放在重要的用户态任务上。
+
+
+
+## 高精度时钟
+
+基于clockevent框架，用户结构clock_gettime, clock_nanosleep，以ns为时间单位。
+
+
+
+## 实时调度
+
+CFS 调度O(log n)
+
+
+
+## 临界区可抢占
+
+对于有些内核数据结构，寄存器，非线程化的中断处理例程中存在的临界区，不能被打断。引入了lockdep机制来动态检查自锁和非顺序锁引起的死锁问题。
+
+lockdep 2006年引入  https://lwn.net/Articles/185666/
+
+http://blog.jobbole.com/100078/
+
+Linux 提供了检测死锁的机制，主要分为 D 状态死锁和 R 状态死锁。
+
+- **D 状态死锁**进程等待 I/O 资源无法得到满足，长时间（系统默认配置 120 秒）处于 TASK_UNINTERRUPTIBLE 睡眠状态，这种状态下进程不响应异步信号（包括 kill -9）。如：进程与外设硬件的交互（如 read），通常使用这种状态来保证进程与设备的交互过程不被打断，否则设备可能处于不可控的状态。对于这种死锁的检测 Linux 提供的是 hung task 机制，MTK 也提供 hang detect 机制来检测 Android 系统 hang 机问题。触发该问题成因比较复杂多样，可能因为 synchronized_irq、mutex lock、内存不足等。D 状态死锁只是局部多进程间互锁，一般来说只是 hang 机、冻屏，机器某些功能没法使用，但不会导致没喂狗，而被狗咬死。
+- **R 状态死锁**进程长时间（系统默认配置 60 秒）处于 TASK_RUNNING 状态垄断 CPU 而不发生切换，一般情况下是进程关抢占或关中断后长时候执行任务、死循环，此时往往会导致多 CPU 间互锁，整个系统无法正常调度，导致喂狗线程无法执行，无法喂狗而最终看门狗复位的重启。该问题多为原子操作，spinlock 等 CPU 间并发操作处理不当造成。本文所介绍的 Lockdep 死锁检测工具检测的死锁类型就是 R 状态死锁。
+
+**常见错误**
+
+- AA: 重复上锁
+- ABBA: 曾经使用 AB 顺序上锁，又使用 BA 上锁
+- ABBCCA: 这种类型是 ABBA 的扩展。AB 顺序 , AB 顺序，CA 顺序。这种锁人工很难发现。
+- 多次 unlock
+
+lockdep 操作的基本单元并非单个的锁实例，而是锁类（lock-class）
+
+ spin_lock()
+
+        ↓
+
+    raw_spin_lock()
+
+        ↓
+
+    _raw_spin_lock() @kernel/spinlock.c
+
+        ↓
+
+    __raw_spin_lock() @include/linux/spinlock_api_smp.h
+
+        → preempt_disable();
+
+        → spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+
+                ↓
+
+            lock_acquire() → __lock_acquire() → __lock_acquire()
+
+            __lock_acquire() 是 lockdep 死锁检测的核心，所有原理中描述的死锁错误都是在这里检测的。如果出错，最终会调用 print_xxx_bug() 函数。
+
+        → LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+
+### lockdep 检查规则
+
+lockdep 跟踪每个锁类的自身状态，也跟踪各个锁类之间的依赖关系，通过一系列的验证规则，以确保锁类状态和锁类之间的依赖总是正确的。另外，锁类一旦在初次使用时被注册，那么后续就会一直存在，所有它的具体实例都会关联到它。
+
+锁类有 4n + 1 种不同的使用历史状态：
+
+其中的 4 是指：
+
+- ‘ever held in STATE context’ –> 该锁曾在 STATE 上下文被持有过
+- ‘ever held as readlock in STATE context’ –> 该锁曾在 STATE 上下文被以读锁形式持有过
+- ‘ever held with STATE enabled’ –> 该锁曾在启用 STATE 的情况下被持有过
+- ‘ever held as readlock with STATE enabled’ –> 该锁曾在启用 STATE 的情况下被以读锁形式持有过
+
+其中的 n 也就是 STATE 状态的个数：
+
+- hardirq –> 硬中断
+- softirq –> 软中断
+- reclaim_fs –> fs 回收
+
+其中的 1 是：
+
+- ever used [ == !unused ] –> 不属于上面提到的任何特殊情况，仅仅只是表示该锁曾经被使用过
+
+当触发 lockdep 检测锁的安全规则时，会在 log 中提示对应的状态位信息。比如
+
+```
+       modprobe/2287 is trying to acquire lock:
+        (&sio_locks[i].lock){-.-...}, at: [<c02867fd>] mutex_lock+0x21/0x24
+
+       but task is already holding lock:
+        (&sio_locks[i].lock){-.-...}, at: [<c02867fd>] mutex_lock+0x21/0x24
+```
+
+注意大括号内的符号，一共有 6 个字符，分别对应 STATE 和 STATE-read 这六种（因为目前每个 STATE 有 3 种不同含义）情况，各个字符代表的含义分别如下：
+
+- ’.’ 表示在在进程上下文，在 irq 关闭时获得一把锁
+- ’-‘ 表示在中断上下文，获得一把锁
+- ’+’ 表示在 irq 打开时获得一把锁
+- ’?’ 表示在中断上下文，在 irq 打开时获得一把锁
+
+#### **单锁状态规则（Single-lock state rules）**
+
+- 一个软中断不安全 (softirq-unsafe) 的锁类也是硬中断不安全 (hardirq-unsafe) 的锁类。
+- 对于任何一个锁类，它不可能同时是 hardirq-safe 和 hardirq-unsafe，也不可能同时是 softirq-safe 和 softirq-unsafe，即这两对对应状态是互斥的。
+
+关于四个harirq/softirq_safe/unsafe名称的概念如下 :
+
+- ever held in hard interrupt context (hardirq-safe);
+- ever held in soft interrupt context (softirg-safe);
+- ever held in hard interrupt with interrupts enabled (hardirq-unsafe);
+- ever held with soft interrupts and hard interrupts enabled (softirq-unsafe);
+
+#### 多锁依赖规则（Multi-lock dependency rules）
+
+- 同一个锁类不能被获取两次，否则会导致递归死锁（AA）。
+- 不能以不同的顺序获取两个锁类，即 ABBA
+- 同一个锁实例在任何两个锁类之间，嵌套获取锁的状态前后需要保持一致
+
+这意味着，如果同一个锁实例，在某些地方是 hardirq-safe（即采用 spin_lock_irqsave(…)），而在某些地方又是 hardirq-unsafe（即采用 spin_lock(…)），那么就存在死锁的风险。这应该容易理解，比如在进程上下文中持有锁 A，并且锁 A 是 hardirq-unsafe，如果此时触发硬中断，而硬中断处理函数又要去获取锁 A，那么就导致了死锁。后面会有例子分析。
+
+在锁类状态发生变化时，进行如下几个规则检测，判断是否存在潜在死锁。比较简单，就是判断 hardirq-safe 和 hardirq-unsafe 以 及 softirq-safe 和 softirq-unsafe 是否发生了碰撞，直接引用英文，如下：
+
+- if a new hardirq-safe lock is discovered, we check whether it took any hardirq-unsafe lock in the past.
+- if a new softirq-safe lock is discovered, we check whether it took any softirq-unsafe lock in the past.
+- if a new hardirq-unsafe lock is discovered, we check whether any hardirq-safe lock took it in the past.
+- if a new softirq-unsafe lock is discovered, we check whether any softirq-safe lock took it in the past.
+
+所以要注意嵌套获取锁前后的状态需要保持一致，避免死锁风险。
+
+#### 出错处理
+
+当检测到死锁风险时，lockdep 会打印下面几种类型的风险提示，更完整的 LOG 会在下面例子中展示。
+
+- [ INFO: possible circular locking dependency detected ] // 圆形锁，获取锁的顺序异常（ABBA）
+- [ INFO: %s-safe -> %s-unsafe lock order detected ] // 获取从 safe 的锁类到 unsafe 的锁类的操作
+- [ INFO: possible recursive locking detected ] // 重复去获取同类锁（AA）
+- [ INFO: inconsistent lock state ] // 锁的状态前后不一致
+- [ INFO: possible irq lock inversion dependency detected ] // 嵌套获取锁的状态前后需要保持一致，即 [hardirq-safe] -> [hardirq-unsafe]，[softirq-safe] -> [softirq-unsafe] 会警报死锁风险
+- [ INFO: suspicious RCU usage. ] // 可疑的 RCU 用法
+
+
+
+### mutex
+
+The mutex subsystem checks and enforces the following rules:
+
+    - Only one task can hold the mutex at a time.
+    - Only the owner can unlock the mutex.
+    - Multiple unlocks are not permitted.
+    - Recursive locking/unlocking is not permitted.
+    - A mutex must only be initialized via the API (see below).
+    - A task may not exit with a mutex held.
+    - Memory areas where held locks reside must not be freed.
+    - Held mutexes must not be reinitialized.
+    - Mutexes may not be used in hardware or software interrupt
+      contexts such as tasklets and timers.
+
+These semantics are fully enforced when CONFIG DEBUG_MUTEXES is enabled.
+In addition, the mutex debugging code also implements a number of other
+features that make lock debugging easier and faster:
+
+    - Uses symbolic names of mutexes, whenever they are printed
+      in debug output.
+    - Point-of-acquire tracking, symbolic lookup of function names,
+      list of all locks held in the system, printout of them.
+    - Owner tracking.
+    - Detects self-recursing locks and prints out all relevant info.
+    - Detects multi-task circular deadlocks and prints out all affected
+      locks and tasks (and only those tasks).
