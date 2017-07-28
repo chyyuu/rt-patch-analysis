@@ -101,7 +101,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - lockless:: 无锁设计
 - capability:: 与rt相关的权限设置
 - net:: 对net的修改（hash） inet_hash_bits.patch
-- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op, anon sem, seqlock...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub
+- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op, anon sem, seqlock, get/put_cpu_light...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub
 - check:: add runtime check to make it more stable
 - arch:: add new architecture support for RT
 - power:: 节能
