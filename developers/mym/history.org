@@ -3509,7 +3509,7 @@
 * [2.6.26         ] trace-ktime-scalar.patch{C::maintain::refactor::ftrace: print ktime values in readable form}
   + [[file:2.6.26/trace-ktime-scalar.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables {C::bug::preempt::Fix preempt unsafe paths accessing per_cpu variables}
+* [2.6.26         ] ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables {C::bug::?::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}
   + [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-fix-get-kprobe-wreckage {C::bug::compile::compiling_err::syntax::add a get_kprobe function }
@@ -3524,22 +3524,22 @@
 * [2.6.26         ] arm-omap-02.patch {C::bug::compile::compiling_err::syntax::RT: wrap BUILD_CHECK_IRQ_FLAGS}
   + [[file:2.6.26/arm-omap-02.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-protect-reader_lock_count.patch {C::bug::preempt::rwlock protect reader_lock_count}
+* [2.6.26         ] rwlock-protect-reader_lock_count.patch {C::bug::data_err::atomicity::atomicity::rwlock protect reader_lock_count}
   + [[file:2.6.26/rwlock-protect-reader_lock_count.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-compile-fixes.patch {C::bug::compile::compiling_err::syntax:: remove call to stop tracer}
   + [[file:2.6.26/ftrace-compile-fixes.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] m68knommu_fixes_ontop_of_v2.6.26.patch {?}
+* [2.6.26         ] m68knommu_fixes_ontop_of_v2.6.26.patch {C::?}
   + [[file:2.6.26/m68knommu_fixes_ontop_of_v2.6.26.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::migration::sched: fix cpupri hotplug support}
+* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::oops::migration::migration::sched: fix cpupri hotplug support}
   + [[file:2.6.26/sched-cpupri-hotplug-support.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ]  rwlocks-multiple-readers.patch   {C::feature::rtsupport::adds the managment for rwlocks to have multiple readers}
   + [[file:2.6.26/rwlocks-multiple-readers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] radix-tree-lockdep-plus1.patch {C::bug::data_err::semantics::array was off by 1}
+* [2.6.26         ] radix-tree-lockdep-plus1.patch {C::bug::data_err::semantics::semantics::array was off by 1}
   + [[file:2.6.26/radix-tree-lockdep-plus1.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] pmtmr-override.patch   {C::feature::hardware::pmtmr: allow command line override of ioport}
@@ -3560,7 +3560,7 @@
 * [2.6.26         ] ftrace-function-record-nop.patch {C::maintain::refactor::ftrace: define function trace nop}
   + [[file:2.6.26/ftrace-function-record-nop.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] {C::feature::statistics::keeps track of all reader locks that are held for a task}
+* [2.6.26         ] multi-reader-account.patch{C::feature::statistics::keeps track of all reader locks that are held for a task}
   + [[file:2.6.26/multi-reader-account.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] rwlock-slowunlock-mutex-fix2.patch {C::bug::?::preempt::rt_read_slowunlock:If readers still own this lock, then we need  to update the pi_list too}
@@ -3569,10 +3569,10 @@
 * [2.6.26         ] ftrace-m68knommu-generic-stacktrace-function.patch {C::feature::debuginfo::provides the generic stack trace interface}
   + [[file:2.6.26/ftrace-m68knommu-generic-stacktrace-function.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] {C::feature::debuginfo::Stop tracing, when we run into an oops/bug.}
+* [2.6.26         ] powerpc-ftrace-stop-on-oops.patch{C::feature::debuginfo::Stop tracing, when we run into an oops/bug.}
   + [[file:2.6.26/powerpc-ftrace-stop-on-oops.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] preempt-realtime-ftrace-disable-ftraced.patch{?}
+* [2.6.26         ] preempt-realtime-ftrace-disable-ftraced.patch{C::?}
   + [[file:2.6.26/preempt-realtime-ftrace-disable-ftraced.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-fix-header.patch {C::bug::compile::compiling_err::syntax::add a header file,fix to handle compiling debugging without CONFIG_FTRACE}
