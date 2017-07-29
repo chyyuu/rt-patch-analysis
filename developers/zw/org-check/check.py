@@ -13,7 +13,7 @@ class Checker(object):
                       'net', 'power', 'rtsupport', 'check', 'arch', 'other'}
 
     fix_method = {'hardware', 'mutex', 'sync', 'order', 'irq', 'softirq',
-                  'preempt', 'migration', 'idle', 'memory', 'config',
+                  'preempt', 'migration', 'idle', 'memory', 'config', 'sched', 
                   'syntax', 'runtime', 'semantics'}
 
     bug_consequence = {'hwerr', 'corrupt', 'hang', 'deadlock', 'livelock', 'crash',
@@ -22,7 +22,7 @@ class Checker(object):
 
     performance_method = {'hardware', 'cache', 'msleep', 'irq', 'softirq',
                           'mutex', 'preempt', 'barrier', 'idle', 'hrtimer',
-                          'mm', 'percpu_var', 'smallsize'}
+                          'mm', 'percpu_var', 'smallsize', 'migration'}
 
     maintain_method = {'refactor', 'donothing'}
 

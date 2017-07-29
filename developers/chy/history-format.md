@@ -56,7 +56,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 
 #### concurrency
 - atomicity:临界区没有保护好共享资源的互斥(mutex)访问
-- order: 没有确保执行的顺序性(sync)
+- order: 没有确保执行的顺序性(sync,barrier),或者barrier工作无效了。如  [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers
 - deadlock: 形成了死锁
 - livelock: 形成了活锁
 
@@ -64,7 +64,8 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - resource_leak:: 资源/动态分配的内存没有释放
 - uninit_var:: 资源/变量没有初始化
 - typo_var:: 变量类型错误
-- overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow
+- overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow刘明明 <eva980636@126.com>, eva980636 <eva980636@163.com>
+
 - err_var:: 数据处理/比较错误
 _ err_access:: 用户态访问内核态等类似的程序访问错误
 
@@ -81,6 +82,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
 - memory:: type of var, init var, var<-->ptr 相关的修复
+- sched:: 调度相关的修复（主要集中在kernel/sched*.c）
 - config:: 修复config相关的bug
 - syntax:: 修复编译语法错误
 - runtime:: add might_sleep() function to find bug on os running.
@@ -115,6 +117,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - irq/softirq:: irq/softirq相关优化
 - mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock， 减少cirtical section的范围等
 - preempt:: preempt相关的优化
+- migration:: 与migration相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
 - hrtimer:采用高精度时钟的优化
