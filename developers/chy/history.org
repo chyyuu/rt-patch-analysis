@@ -3160,7 +3160,7 @@ markers}
     [[file:2.6.25/ppc-hacks-to-allow-rt-to-run-kernbench.patch][2.6.25]]
   M [[file:2.6.26/ppc-hacks-to-allow-rt-to-run-kernbench.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] rcu-preempt-boost-fix.patch {???C::bug::deadlock::preempt::preempt::add careful checks}
+* [2.6.24 - 2.6.26] rcu-preempt-boost-fix.patch {C::bug::deadlock::preempt::preempt::add careful checks}
   + [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]]
   M [[file:2.6.25/rcu-preempt-boost-fix.patch][2.6.25]]
     [[file:2.6.26/rcu-preempt-boost-fix.patch][2.6.26]]
@@ -3340,23 +3340,23 @@ markers}
 * [2.6.25         ] fix-irq-flags-size.patch {C::maintain::refactor::change unsigned int to unsigned long}
   + [[file:2.6.25/fix-irq-flags-size.patch][2.6.25]]
   - 2.6.26
-* [2.6.25         ] disable-sched-rt-groups.patch {C::bug::hang::na::semantics::temporary disable sched_rt groups}
+* [2.6.25         ] disable-sched-rt-groups.patch {C::bug::hang::sched::sched::temporary disable sched_rt groups}
   + [[file:2.6.25/disable-sched-rt-groups.patch][2.6.25]]
   - 2.6.26
-* [2.6.25         ] ftrace: unlock the mutex on reading failure {C::bug::deadlock::deadlock::semantics::unlock the mutex on reading failure}
+* [2.6.25         ] ftrace: unlock the mutex on reading failure {C::bug::deadlock::deadlock::mutex::unlock the mutex on reading failure}
   + [[file:2.6.25/ftrace-unlock-mutex-in-output.patch][2.6.25]]
   - 2.6.26
 * [2.6.25         ] ftrace-remove-print-of-max.patch {C::bug::deadlock::deadlock::semantics::remove printks from trace irqsoff}
   + [[file:2.6.25/ftrace-remove-print-of-max.patch][2.6.25]]
   - 2.6.26
-* [2.6.25         ] pcounter-percpu-protect.patch {C::bug::data_err::migration::migration::add protection to per_cpu variables in pcounter addition}
+* [2.6.25         ] pcounter-percpu-protect.patch {C::bug::data_err::preempt::preempt::add protection to per_cpu variables in pcounter addition}
   + [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]]
   - 2.6.26
 * [2.6.25         ] ftrace: avoid lockdep annotation problems {C::bug::data_err::order::order::move the capturing of the timestamp outside of the raw spinlocks
 of ftrace}
   + [[file:2.6.25/ftrace-handle-time-outside-of-lockdep.patch][2.6.25]]
   - 2.6.26
-* [2.6.25         ] RESEND: fix cpus_allowed settings {C::bug::na::semantics::semantics::fix cpus_allowed settings}
+* [2.6.25         ] RESEND: fix cpus_allowed settings {C::bug::rtlatency::semantics::semantics::fix cpus_allowed settings}
   + [[file:2.6.25/kthread-cpus-allowed-init.patch][2.6.25]]
   - 2.6.26
 * [2.6.25 - 2.6.26] fix oops in root-domain code during repartitioning {C::feature::mm::defer kfree until outside the critical section}
@@ -3371,7 +3371,7 @@ of ftrace}
   + [[file:2.6.25/preempt-trace.patch][2.6.25]]
     [[file:2.6.26/preempt-trace.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.26] genhd-protect-percpu-var.patch {C::bug::data_err::migration::migration::protect use of smp_processor_id in genhd.h with preempt disable}
+* [2.6.25 - 2.6.26] genhd-protect-percpu-var.patch {C::bug::data_err::preempt::preempt::protect use of smp_processor_id in genhd.h with preempt disable}
   + [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]]
   m [[file:2.6.26/genhd-protect-percpu-var.patch][2.6.26]]
   - 2.6.29
@@ -3387,7 +3387,7 @@ of ftrace}
   + [[file:2.6.25/sched-clock-nmi.patch][2.6.25]]
   M [[file:2.6.26/sched-clock-nmi.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.26] ftrace: avoid lockdep recursion {C::bug::na::semantics::semantics::changes local_irq_save to preempt_disable}
+* [2.6.25 - 2.6.26] ftrace: avoid lockdep recursion {C::bug::crash::semantics::semantics::changes local_irq_save to preempt_disable}
   + [[file:2.6.25/ftrace-use-preempt-disable-not-irq-disable.patch][2.6.25]]
   M [[file:2.6.26/ftrace-use-preempt-disable-not-irq-disable.patch][2.6.26]]
   - 2.6.29
@@ -3447,7 +3447,7 @@ of ftrace}
   + [[file:2.6.25/cycles-to-ns-trace-fix.patch][2.6.25]]
   m [[file:2.6.26/cycles-to-ns-trace-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.26] avoid deadlock related with PG_nonewrefs and swap_lock {C::bug::deadlock::deadlock::semantics::add spin_unlock}
+* [2.6.25 - 2.6.26] avoid deadlock related with PG_nonewrefs and swap_lock {C::bug::deadlock::deadlock::mutex::add spin_unlock}
   + [[file:2.6.25/rt-avoid-deadlock-in-swap.patch][2.6.25]]
     [[file:2.6.26/rt-avoid-deadlock-in-swap.patch][2.6.26]]
   - 2.6.29
@@ -3459,12 +3459,12 @@ of ftrace}
   + [[file:2.6.25/preempt-realtime-ftrace.patch][2.6.25]]
   M [[file:2.6.26/preempt-realtime-ftrace.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.29] apic: level smp affinity {C::??}
+* [2.6.25 - 2.6.29] apic: level smp affinity {C::feature::rtsupport::irq affinity on cpu}
   + [[file:2.6.25/apic-level-smp-affinity.patch][2.6.25]]
     [[file:2.6.26/apic-level-smp-affinity.patch][2.6.26]]
   M [[file:2.6.29/apic-level-smp-affinity.patch][2.6.29]]
   - 3.0
-* [2.6.25 - 2.6.29] deadlock on 2.6.24.3-rt3 {C::bug::deadlock::deadlock::semantics::add spin_unlock}
+* [2.6.25 - 2.6.29] deadlock on 2.6.24.3-rt3 {C::bug::deadlock::deadlock::mutex::add spin_unlock}
   + [[file:2.6.25/swap-spinlock-fix.patch][2.6.25]]
     [[file:2.6.26/swap-spinlock-fix.patch][2.6.26]]
   m [[file:2.6.29/swap-spinlock-fix.patch][2.6.29]]
@@ -3479,12 +3479,12 @@ of ftrace}
     [[file:2.6.26/timer-warning-fix.patch][2.6.26]]
   M [[file:2.6.29/preempt-realtimer-timer-non-rt-warning-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.25 - 2.6.29] aacraid: compat sem {C::??}
+* [2.6.25 - 2.6.29] aacraid: compat sem {C::maintain::refactor:: semaphore --> compat_semaphore}
   + [[file:2.6.25/aacraid-compat-sem.patch][2.6.25]]
     [[file:2.6.26/aacraid-compat-sem.patch][2.6.26]]
     [[file:2.6.29/aacraid-compat-sem.patch][2.6.29]]
   - 3.0
-* [2.6.25 - 2.6.29] fix printk in atomic hack {C::deadlock::deadlock::mutex::skips releasing the lock if in printk - atomic and not the lock owner}
+* [2.6.25 - 2.6.29] fix printk in atomic hack {C::bug::deadlock::deadlock::mutex::skips releasing the lock if in printk - atomic and not the lock owner}
   + [[file:2.6.25/printk-in-atomic-hack-fix.patch][2.6.25]]
     [[file:2.6.26/printk-in-atomic-hack-fix.patch][2.6.26]]
     [[file:2.6.29/printk-in-atomic-hack-fix.patch][2.6.29]]

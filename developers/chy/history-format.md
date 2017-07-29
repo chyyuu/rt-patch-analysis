@@ -49,6 +49,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - hardware:: 硬件初始化/工作流控制逻辑错误 
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
+- sched:: 与线程/进程调度相关的错误 （主要集中在kernel/sched*.c）
 - time:: 时间处理相关的错误
 - irq/softirq:: 与设置中断/软中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
 - semantics:: 编程逻辑有误

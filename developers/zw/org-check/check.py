@@ -27,7 +27,7 @@ class Checker(object):
     maintain_method = {'refactor', 'donothing'}
 
     semantic = {'hardware', 'softirq', 'migration', 'preempt',
-                'time', 'irq', 'semantics', 'na'}
+                'time', 'irq', 'sched', 'semantics', 'na'}
 
     concurrency = {'atomicity', 'order', 'deadlock', 'livelock'}
 
