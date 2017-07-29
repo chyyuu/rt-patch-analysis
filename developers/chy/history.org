@@ -2842,13 +2842,13 @@ execution of pending interrupts}
 * [2.6.24         ] sched: RT balancing: include current CPU {C::maintain::refactor::include current CPU in search}
   + [[file:2.6.24/0012-sched-RT-balancing-include-current-CPU.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] sched: dynamically update the root-domain span/online maps {C::bug::idle::semantics::dynamically update the root-domain span/online maps}
+* [2.6.24         ] sched: dynamically update the root-domain span/online maps {C::performance::idle::dynamically update the root-domain span/online maps}
   + [[file:2.6.24/dynamically-update-root-domain-span-online-maps.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] preempt_max_latency to microseconds {C::maintain::refactor::use microseconds instead of cycles}
   + [[file:2.6.24/latency-trace-convert-back-to-ms.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] kvm: check need_resched() inside the irq disabled region {C::bug::na::irq::irq::check need_resched() inside the irq_disabled region}
+* [2.6.24         ] kvm: check need_resched() inside the irq disabled region {C::bug::rtlatency::irq::irq::check need_resched() inside the irq_disabled region}
   + [[file:2.6.24/kvm-fix-preemption-bug.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] sched: no need for 'affine wakeup' balancing in {C::performance::smallsize::skip unnecessary check}
@@ -2911,7 +2911,7 @@ execution of pending interrupts}
 * [2.6.24         ] sched: pre-route RT tasks on wakeup {C::feature::sched::optimized low-priority wakeup path}
   + [[file:2.6.24/0013-sched-pre-route-RT-tasks-on-wakeup.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] sched: RT-balance, avoid overloading {C::performance::cache::wake RT tasks up on another runqueue when possible}
+* [2.6.24         ] sched: RT-balance, avoid overloading {C::performance::cache::wake RT tasks up on another runqueue when possible, so rt task still in the same cpu for hot cache,tlb,etc.}
   + [[file:2.6.24/0016-sched-RT-balance-avoid-overloading.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] sched: RT-balance, optimize {C::performance::smallsize::skip search if only one CPU is available}
@@ -2941,7 +2941,7 @@ execution of pending interrupts}
 * [2.6.24         ] sched: de-SCHED_OTHER-ize the RT path {C::feature::sched::create a new sched_class interface for pre-wakeup routing decisions}
   + [[file:2.6.24/0010-sched-de-SCHED_OTHER-ize-the-RT-path.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] [yanmin_zhang@linux.intel.com: aim7 -30% regression in 2.6.24-rc1] {C::bug::na::semantics::semantics::allocate memory on higher address}
+* [2.6.24         ] [yanmin_zhang@linux.intel.com: aim7 -30% regression in 2.6.24-rc1] {C::bug::rtlatency::semantics::semantics::allocate memory on higher address}
   + [[file:2.6.24/latency-tracer-arch-low-address.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] sched: disable standard balancer for RT tasks {C::feature::sched::remove standard balancer for RT tasks}
@@ -3001,7 +3001,7 @@ execution of pending interrupts}
 * [2.6.24         ] sched: remove leftover debugging {C::performance::smallsize::remove leftover debugging}
   + [[file:2.6.24/0026-sched-remove-leftover-debugging.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] Revert Softdisable for simple irqs. {C::bug::na::semantics::semantics::reverts the masking in the simple handler}
+* [2.6.24         ] Revert Softdisable for simple irqs. {C::bug::irq::irq::irq::reverts the masking in the simple handler}
   + [[file:2.6.24/revert-handle-simple-irq-soft-disable.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] sched: add rt-overload tracking {C::feature::sched::add an RT overload accounting system}
@@ -3016,7 +3016,7 @@ execution of pending interrupts}
 * [2.6.24         ] sched: add RT task pushing {C::feature::sched::algorithm to push extra RT tasks off a runqueue to other CPU runqueues}
   + [[file:2.6.24/0003-sched-add-RT-task-pushing.patch][2.6.24]]
   - 2.6.25
-* [2.6.24         ] don't panic on failed bootmem alloc {C::feature::other::don't panic on failed bootmem alloc}
+* [2.6.24         ] don't panic on failed bootmem alloc {C::bug::crash::semantics::semantics::don't panic on failed bootmem alloc}
   + [[file:2.6.24/latency-tracer-dont-panic-on-failed-bootmem-alloc.patch][2.6.24]]
   - 2.6.25
 * [2.6.24         ] sched: remove some old cpuset logic {C::performance::smallsize::remove some old cpuset logic}
@@ -3039,7 +3039,7 @@ markers}
   + [[file:2.6.24/irq-flags-unsigned-long.patch][2.6.24]]
     [[file:2.6.25/irq-flags-unsigned-long.patch][2.6.25]]
   - 2.6.26
-* [2.6.24 - 2.6.25] kvm: move the apic timer migration {C::bug::hang::preempt::semantics::move the apic timer migration}
+* [2.6.24 - 2.6.25] kvm: move the apic timer migration {C::bug::crash::preempt::semantics::move the apic timer migration}
   + [[file:2.6.24/kvm-lapic-migrate-latency-fix.patch][2.6.24]]
     [[file:2.6.25/kvm-lapic-migrate-latency-fix.patch][2.6.25]]
   - 2.6.26
@@ -3056,11 +3056,11 @@ markers}
   + [[file:2.6.24/page-alloc-use-real-time-pcp-locking-for-page-draining.patch][2.6.24]]
     [[file:2.6.25/page-alloc-use-real-time-pcp-locking-for-page-draining.patch][2.6.25]]
   - 2.6.26
-* [2.6.24 - 2.6.25] kvm: add need_resched_delayed() {C::bug::na::semantics::semantics::loose condition}
+* [2.6.24 - 2.6.25] kvm: add need_resched_delayed() {C::performance::preempt::loose condition}
   + [[file:2.6.24/kvm-preempt-rt-resched-delayed.patch][2.6.24]]
     [[file:2.6.25/kvm-preempt-rt-resched-delayed.patch][2.6.25]]
   - 2.6.26
-* [2.6.24 - 2.6.26] rt: PI-workqueue: propagate prio for delayed work {C::bug::data_err::semantics::semantics::propagate prio for delayed work}
+* [2.6.24 - 2.6.26] rt: PI-workqueue: propagate prio for delayed work {C::feature::rtsupport::propagate prio for delayed work}
   + [[file:2.6.24/rt-delayed-prio.patch][2.6.24]]
   m [[file:2.6.25/rt-delayed-prio.patch][2.6.25]]
   m [[file:2.6.26/rt-delayed-prio.patch][2.6.26]]
@@ -3070,17 +3070,17 @@ markers}
     [[file:2.6.25/mips-change-raw-spinlock-type.patch][2.6.25]]
     [[file:2.6.26/mips-change-raw-spinlock-type.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] send-nmi-all-preempt-disable.patch {C::bug::na::preempt::preempt::preempt disable}
+* [2.6.24 - 2.6.26] send-nmi-all-preempt-disable.patch {C::performance::preempt::preempt disable}
   + [[file:2.6.24/send-nmi-all-preempt-disable.patch][2.6.24]]
     [[file:2.6.25/send-nmi-all-preempt-disable.patch][2.6.25]]
     [[file:2.6.26/send-nmi-all-preempt-disable.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers {C::??}
+* [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers {C::bug::rtlatency::order::sync::The solution used is to nest plist structures.}
   + [[file:2.6.24/rt-workqueue-barrier.patch][2.6.24]]
     [[file:2.6.25/rt-workqueue-barrier.patch][2.6.25]]
   m [[file:2.6.26/rt-workqueue-barrier.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] rt: list_splice2 {C::feature::other::introduce list_splice2{,_tail}()}
+* [2.6.24 - 2.6.26] rt: list_splice2 {C::feature::rtsupport::introduce list_splice2--,_tail--(), see patch rt: PI-workqueue: fix barriers}
   + [[file:2.6.24/rt-list-mods.patch][2.6.24]]
     [[file:2.6.25/rt-list-mods.patch][2.6.25]]
   M [[file:2.6.26/rt-list-mods.patch][2.6.26]]
@@ -3095,7 +3095,7 @@ markers}
     [[file:2.6.25/ppc32_notrace_init_functions.patch][2.6.25]]
   M [[file:2.6.26/ppc32_notrace_init_functions.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] rt: PI-workqueue: wait_on_work() fixup {C::bug::na::??}
+* [2.6.24 - 2.6.26] rt: PI-workqueue: wait_on_work() fixup {C::bug::rtlatency::order::sync::using a wait_queue to target at a worklet in a nested list}
   + [[file:2.6.24/rt-wq-barrier-fix.patch][2.6.24]]
     [[file:2.6.25/rt-wq-barrier-fix.patch][2.6.25]]
     [[file:2.6.26/rt-wq-barrier-fix.patch][2.6.26]]
@@ -3110,7 +3110,7 @@ markers}
     [[file:2.6.25/ppc-make-tlb-batch-64-only.patch][2.6.25]]
     [[file:2.6.26/ppc-make-tlb-batch-64-only.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] local_irq_save_nort-in-swap.patch {C::??}
+* [2.6.24 - 2.6.26] local_irq_save_nort-in-swap.patch {C::feature::rtsupport:: change local_irq_save/restore to local_irq_save/restore_nort}
   + [[file:2.6.24/local_irq_save_nort-in-swap.patch][2.6.24]]
     [[file:2.6.25/local_irq_save_nort-in-swap.patch][2.6.25]]
     [[file:2.6.26/local_irq_save_nort-in-swap.patch][2.6.26]]
@@ -3140,7 +3140,7 @@ markers}
     [[file:2.6.25/arm-compile-fix.patch][2.6.25]]
     [[file:2.6.26/arm-compile-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] Disable running softirqs from hardirqs completely! {C::feature::softirq::disable running softirqs from hardirqs}
+* [2.6.24 - 2.6.26] Disable running softirqs from hardirqs completely! {C::feature::rtsupport::disable running softirqs from hardirqs}
   + [[file:2.6.24/disable-run-softirq-from-hardirq-completely.patch][2.6.24]]
     [[file:2.6.25/disable-run-softirq-from-hardirq-completely.patch][2.6.25]]
     [[file:2.6.26/disable-run-softirq-from-hardirq-completely.patch][2.6.26]]
@@ -3160,7 +3160,7 @@ markers}
     [[file:2.6.25/ppc-hacks-to-allow-rt-to-run-kernbench.patch][2.6.25]]
   M [[file:2.6.26/ppc-hacks-to-allow-rt-to-run-kernbench.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] rcu-preempt-boost-fix.patch {C::bug::deadlock::preempt::preempt::add careful checks}
+* [2.6.24 - 2.6.26] rcu-preempt-boost-fix.patch {???C::bug::deadlock::preempt::preempt::add careful checks}
   + [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]]
   M [[file:2.6.25/rcu-preempt-boost-fix.patch][2.6.25]]
     [[file:2.6.26/rcu-preempt-boost-fix.patch][2.6.26]]
@@ -3185,7 +3185,7 @@ markers}
     [[file:2.6.25/rt-plist-mods.patch][2.6.25]]
     [[file:2.6.26/rt-plist-mods.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.26] 2.6.24-rc7-rt1 {C::bug::idle::hardware::idle::return directly on single-core CPU}
+* [2.6.24 - 2.6.26] 2.6.24-rc7-rt1 {C::bug::idle::semantics::sched::return directly on single-core CPU}
   + [[file:2.6.24/hack-fix-rt-migration.patch][2.6.24]]
   M [[file:2.6.25/hack-fix-rt-migration.patch][2.6.25]]
     [[file:2.6.26/hack-fix-rt-migration.patch][2.6.26]]
@@ -3205,7 +3205,7 @@ markers}
   M [[file:2.6.25/sched-use-a-2d-bitmap-search-prio-cpu.patch][2.6.25]]
   m [[file:2.6.26/sched-use-a-2d-bitmap-search-prio-cpu.patch][2.6.26]]
   - 2.6.29
-* [2.6.24 - 2.6.29] handle IRQ_PENDING for simple irq handler {C::bug::irq::semantics::semantics::handle IRQ_PENDING for simple irq handler}
+* [2.6.24 - 2.6.29] handle IRQ_PENDING for simple irq handler {C::bug::irq::irq::irq::handle IRQ_PENDING for simple irq handler}
   + [[file:2.6.24/handle-pending-in-simple-irq.patch][2.6.24]]
     [[file:2.6.25/handle-pending-in-simple-irq.patch][2.6.25]]
     [[file:2.6.26/handle-pending-in-simple-irq.patch][2.6.26]]
@@ -3259,7 +3259,7 @@ markers}
     [[file:2.6.26/drain-all-local-pages-via-sched.patch][2.6.26]]
   M [[file:2.6.29/drain-all-local-pages-via-sched.patch][2.6.29]]
   - 3.0
-* [2.6.24 - 2.6.29] Fix plist initialisation for CONFIG_DEBUG_PI_LIST {C::feature::refactor::change argument type of marco}
+* [2.6.24 - 2.6.29] Fix plist initialisation for CONFIG_DEBUG_PI_LIST {C::feature::rtsupport::change argument type of marco}
   + [[file:2.6.24/lock-init-plist-fix.patch][2.6.24]]
     [[file:2.6.25/lock-init-plist-fix.patch][2.6.25]]
     [[file:2.6.26/lock-init-plist-fix.patch][2.6.26]]
@@ -3277,19 +3277,19 @@ markers}
     [[file:2.6.26/plist-debug.patch][2.6.26]]
     [[file:2.6.29/plist-debug.patch][2.6.29]]
   - 3.0
-* [2.6.24 - 2.6.29] Fix rt preempt slab NUMA freeing {C::bug::na::migration::migration::keeping this_cpu/node/slabp in sync}
+* [2.6.24 - 2.6.29] Fix rt preempt slab NUMA freeing {C::performance::migration::keeping this_cpu/node/slabp in sync}
   + [[file:2.6.24/numa-slab-freeing.patch][2.6.24]]
     [[file:2.6.25/numa-slab-freeing.patch][2.6.25]]
     [[file:2.6.26/numa-slab-freeing.patch][2.6.26]]
     [[file:2.6.29/numa-slab-freeing.patch][2.6.29]]
   - 3.0
-* [2.6.24 - 2.6.29] Preemption problem in kernel RT    Patch] {C::??}
+* [2.6.24 - 2.6.29] Preemption problem in kernel RT    Patch] {C::bug::rtlatency::migration::migration:: change preempt problem in net code}
   + [[file:2.6.24/dev-queue-xmit-preempt-fix.patch][2.6.24]]
     [[file:2.6.25/dev-queue-xmit-preempt-fix.patch][2.6.25]]
     [[file:2.6.26/dev-queue-xmit-preempt-fix.patch][2.6.26]]
   M [[file:2.6.29/dev-queue-xmit-preempt-fix.patch][2.6.29]]
   - 3.0
-* [2.6.24 - 2.6.29] rt: sched groups {C::??}
+* [2.6.24 - 2.6.29] rt: sched groups {C::feature::rtsupport::define release_list_lock as raw_spinlock}
   + [[file:2.6.24/rt-sched-groups.patch][2.6.24]]
     [[file:2.6.25/rt-sched-groups.patch][2.6.25]]
     [[file:2.6.26/rt-sched-groups.patch][2.6.26]]
@@ -3403,7 +3403,7 @@ of ftrace}
   + [[file:2.6.25/event-tracer-syscall-i386.patch][2.6.25]]
   M [[file:2.6.26/event-tracer-syscall-i386.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.26] x86_64: send NMI after nmi_show_regs on {C::bug::order::order::order::send NMI after nmi_show_regs on}
+* [2.6.25 - 2.6.26] x86_64: send NMI after nmi_show_regs on {C::bug::crash::order::order::send NMI after nmi_show_regs on}
   + [[file:2.6.25/nmi-watchdog-fix-1.patch][2.6.25]]
     [[file:2.6.26/nmi-watchdog-fix-1.patch][2.6.26]]
   - 2.6.29
@@ -3435,7 +3435,7 @@ of ftrace}
   + [[file:2.6.25/cache_pci_find_capability.patch][2.6.25]]
   m [[file:2.6.26/cache_pci_find_capability.patch][2.6.26]]
   - 2.6.29
-* [2.6.25 - 2.6.26] x86: nmi_watchdog NMI needed for irq_show_regs_callback() {C::bug::order::order::order::change nmi_watchdog fucntion}
+* [2.6.25 - 2.6.26] x86: nmi_watchdog NMI needed for irq_show_regs_callback() {C::bug::crash::order::order::change nmi_watchdog fucntion}
   + [[file:2.6.25/nmi-watchdog-fix-3.patch][2.6.25]]
     [[file:2.6.26/nmi-watchdog-fix-3.patch][2.6.26]]
   - 2.6.29
