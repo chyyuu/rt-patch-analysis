@@ -3500,16 +3500,16 @@
 * [2.6.26         ] rwlock-torture-no-rt.patch {C::bug::compile::compiling_err::syntax::fix torture test to handle non-rt, access undefined struct member }
   + [[file:2.6.26/rwlock-torture-no-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlocks-fix-no-preempt-rt.patch {C::bug::?::the addition of RT_RW_READER broke the non PREEMPT_RT case}
+* [2.6.26         ] rwlocks-fix-no-preempt-rt.patch {C::bug::data_err::atomicity::mutex::the addition of RT_RW_READER broke the non PREEMPT_RT case}
   + [[file:2.6.26/rwlocks-fix-no-preempt-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ]rt-rwlock-conservative-locking.patch {C::bug:: ? ::rwlock: be more conservative in locking reader_lock_count}
+* [2.6.26         ]rt-rwlock-conservative-locking.patch {C::bug::data_err::atomicity::mutex::rwlock: be more conservative in locking reader_lock_count}
   + [[file:2.6.26/rt-rwlock-conservative-locking.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] trace-ktime-scalar.patch{C::maintain::refactor::ftrace: print ktime values in readable form}
   + [[file:2.6.26/trace-ktime-scalar.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables {C::bug::?::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}
+* [2.6.26         ] ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables {C::bug::data_err::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}
   + [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-fix-get-kprobe-wreckage {C::bug::compile::compiling_err::syntax::add a get_kprobe function }
@@ -3524,7 +3524,7 @@
 * [2.6.26         ] arm-omap-02.patch {C::bug::compile::compiling_err::syntax::RT: wrap BUILD_CHECK_IRQ_FLAGS}
   + [[file:2.6.26/arm-omap-02.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-protect-reader_lock_count.patch {C::bug::data_err::atomicity::atomicity::rwlock protect reader_lock_count}
+* [2.6.26         ] rwlock-protect-reader_lock_count.patch {C::bug::data_err::atomicity::mutex::rwlock protect reader_lock_count}
   + [[file:2.6.26/rwlock-protect-reader_lock_count.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-compile-fixes.patch {C::bug::compile::compiling_err::syntax:: remove call to stop tracer}
@@ -3533,7 +3533,7 @@
 * [2.6.26         ] m68knommu_fixes_ontop_of_v2.6.26.patch {C::?}
   + [[file:2.6.26/m68knommu_fixes_ontop_of_v2.6.26.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::oops::migration::migration::sched: fix cpupri hotplug support}
+* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::oops?::migration::migration::sched: fix cpupri hotplug support}
   + [[file:2.6.26/sched-cpupri-hotplug-support.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ]  rwlocks-multiple-readers.patch   {C::feature::rtsupport::adds the managment for rwlocks to have multiple readers}
@@ -3548,7 +3548,7 @@
 * [2.6.26         ] rtmutex-debug-fix.patch {C::feature::debuginfo::add task_free info}
   + [[file:2.6.26/rtmutex-debug-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ]rwlock-prio-fix.patch {C::bug::?::preempt::rwlock: reset prio on unlocks and wakeups}
+* [2.6.26         ]rwlock-prio-fix.patch {C::bug::?::mutex::mutex::rwlock: reset prio on unlocks and wakeups}
   + [[file:2.6.26/rwlock-prio-fix.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-document-event-tracer.patch{C::maintain::document:: add  ftrace-document-event-tracer}
@@ -3563,7 +3563,7 @@
 * [2.6.26         ] multi-reader-account.patch{C::feature::statistics::keeps track of all reader locks that are held for a task}
   + [[file:2.6.26/multi-reader-account.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-slowunlock-mutex-fix2.patch {C::bug::?::preempt::rt_read_slowunlock:If readers still own this lock, then we need  to update the pi_list too}
+* [2.6.26         ] rwlock-slowunlock-mutex-fix2.patch {C::bug::?::semantics::semantics::rt_read_slowunlock:If readers still own this lock, then we need  to update the pi_list too}
   + [[file:2.6.26/rwlock-slowunlock-mutex-fix2.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-m68knommu-generic-stacktrace-function.patch {C::feature::debuginfo::provides the generic stack trace interface}
@@ -3578,7 +3578,7 @@
 * [2.6.26         ] ftrace-fix-header.patch {C::bug::compile::compiling_err::syntax::add a header file,fix to handle compiling debugging without CONFIG_FTRACE}
   + [[file:2.6.26/ftrace-fix-header.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace-preempt-trace-check.patch {C::bug::data_err?::semantics::ftrace: only trace preempt off with preempt tracer}
+* [2.6.26         ] ftrace-preempt-trace-check.patch {C::bug::data_err?::semantics::semantics::ftrace: only trace preempt off with preempt tracer}
   + [[file:2.6.26/ftrace-preempt-trace-check.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] ftrace-trace-sched.patch {C::feature::debuginfo::trace sched.c}
@@ -3611,13 +3611,13 @@
 * [2.6.26         ] ftrace-record-comm-on-ctrl.patch {C::feature::debuginfo::ftrace: record comm on function ctrl change}
   + [[file:2.6.26/ftrace-record-comm-on-ctrl.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] lockstat-fix-contention-points.patch {C::bug::?::?::lockstat: fix contention points}
+* [2.6.26         ] lockstat-fix-contention-points.patch {C::bug::?::semantics::semantics::lockstat: fix contention points}
   + [[file:2.6.26/lockstat-fix-contention-points.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ]preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch{C::bug::hwerr::irq::hardware::m68knommu: make timer interrupt non threaded}
   + [[file:2.6.26/preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] trace-do-not-wakeup-when-irqs-disabled.patch  {C::bug::?::?::trace do not wakeup when irqs disabled}
+* [2.6.26         ] trace-do-not-wakeup-when-irqs-disabled.patch {C::bug::?::irq::irq::trace do not wakeup when irqs disabled in the PREEMPT_RT case.}
   + [[file:2.6.26/trace-do-not-wakeup-when-irqs-disabled.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] trace_hist-latediv.patch  {C::maintain::refactor::trace_hist late  div }
@@ -3644,10 +3644,10 @@
 * [2.6.26         ] rt-mutex-use-inline.patch {C::maintain::refactor::rt-mutex-use-inline }
   + [[file:2.6.26/rt-mutex-use-inline.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched-nr-migrate-lower-default-preempt-rt.patch {C::performance::sched::migration::make sched-nr-migrate default value lower }
+* [2.6.26         ] sched-nr-migrate-lower-default-preempt-rt.patch {C::performance::migration::make sched-nr-migrate default value lower }
   + [[file:2.6.26/sched-nr-migrate-lower-default-preempt-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlocks-default-nr-readers-nr-cpus.patch{C::performance::?::Limit the number of readers to number of CPUS by default}
+* [2.6.26         ] rwlocks-default-nr-readers-nr-cpus.patch{C::performance::mutex::Limit the number of readers to number of CPUS by default}
   + [[file:2.6.26/rwlocks-default-nr-readers-nr-cpus.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] multi-reader-limit.patch {C::feature::?::implement reader limit on read write locks}
@@ -3665,7 +3665,7 @@
 * [2.6.26         ] ftrace-document-update1.patch {C::maintain::document:: ftrace: document updates}
   + [[file:2.6.26/ftrace-document-update1.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace-hotplug-fix.patch {C::bug::crash::hardware::hardware:::hardware::disable the function tracer when bringing up a new CPU.}
+* [2.6.26         ] ftrace-hotplug-fix.patch {C::bug::crash::hardware::hardware:::disable the function tracer when bringing up a new CPU.}
   + [[file:2.6.26/ftrace-hotplug-fix.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] sched-cpupri-priocount.patch {C::bug::data_err::semantics::semantics::rounding error off by one}
@@ -3674,7 +3674,7 @@
 * [2.6.26         ] lockdep-avoid-fork-waring.patch {C::bug::?::semantics::semantics::The preprocessor condition }
   + [[file:2.6.26/lockdep-avoid-fork-waring.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-pi-lock-reader.patch {C::bug::data_err::?::rwlock-pi-lock-reader}
+* [2.6.26         ] rwlock-pi-lock-reader.patch {C::bug::data_err::atomicity::mutex::rwlock-pi-lock-reader}
   + [[file:2.6.26/rwlock-pi-lock-reader.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] idle-fix.patch{C::bug::hwerr::irq::hardware::nohz: prevent tick stop outside of the idle loop}
@@ -3683,19 +3683,19 @@
 * [2.6.26         ] sched-prioritize-non-migrating-rt-tasks.patch{C::feature::rtsupport::sched: prioritize non-migratable tasks over migratable}
   + [[file:2.6.26/sched-prioritize-non-migrating-rt-tasks.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] fix-a-previously-reverted-fix.patch {C::bug::hang::irq::?::preempt_schedule_irq}
+* [2.6.26         ] fix-a-previously-reverted-fix.patch {C::bug::hang::irq::irq::preempt_schedule_irq}
   + [[file:2.6.26/fix-a-previously-reverted-fix.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] native-sched-clock-booboo.patch {C::bug::compile::compiling_err::syntax::fix return value}
   + [[file:2.6.26/native-sched-clock-booboo.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] trace-eip2ip.patch {C::bug::compile::?::syntax:: change eip to ip}
+* [2.6.26         ] trace-eip2ip.patch {C::bug::?::semantics::semantics::change eip to ip}
   + [[file:2.6.26/trace-eip2ip.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] rwsems-multiple-readers.patch{C::feature::rtsupport::rw_mutex add framework for multi readers on rwsems}
   + [[file:2.6.26/rwsems-multiple-readers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ]rwlock-fixes.patch{C::bug::?::race::race::rwlock: fix pi_list race conditions} 
+* [2.6.26         ]rwlock-fixes.patch{C::bug::?::mutex::mutex::rwlock: fix pi_list race conditions} 
   + [[file:2.6.26/rwlock-fixes.patch][2.6.26]]
   - 2.6.29
 * [2.6.26         ] rtmutex-rwlock-cmpxchg-typecast.patch {C::bug::compile::compiling_err::syntax::Compile warning rtmutex code  type cast}
@@ -3713,7 +3713,7 @@
   + [[file:2.6.26/raw-spinlocks-for-nmi-print.patch][2.6.26]]
   M [[file:2.6.29/raw-spinlocks-for-nmi-print.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] adaptive-adjust-pi-wakeup.patch {C::performance::pi_lock::adjust pi_lock usage in wakeup}
+* [2.6.26 - 2.6.29] adaptive-adjust-pi-wakeup.patch {C::performance::mutex::adjust pi_lock usage in wakeup}
   + [[file:2.6.26/adaptive-adjust-pi-wakeup.patch][2.6.26]]
     [[file:2.6.29/adaptive-adjust-pi-wakeup.patch][2.6.29]]
   - 3.0
@@ -3721,7 +3721,7 @@
   + [[file:2.6.26/git-ignore-script-lpp.patch][2.6.26]]
     [[file:2.6.29/git-ignore-script-lpp.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched: wake_up_idle_cpu rt {C::bug::?::use raw_smp_processor_id() instead of smp_processor_id() }
+* [2.6.26 - 2.6.29] sched-wake_up_idle_cpu-rt.patch {C::bug::?::use raw_smp_processor_id() instead of smp_processor_id() }
   + [[file:2.6.26/sched-wake_up_idle_cpu-rt.patch][2.6.26]]
     [[file:2.6.29/sched-wake_up_idle_cpu-rt.patch][2.6.29]]
   - 3.0
@@ -3733,7 +3733,7 @@
   + [[file:2.6.26/fix-adaptive-hack.patch][2.6.26]]
     [[file:2.6.29/fix-adaptive-hack.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] arm-omap-05.patch{C::bug::deadlock::deadlock::  ARM: OMAP: remove unnecessary locking in clk_get_rate()}
+* [2.6.26 - 2.6.29] arm-omap-05.patch{C::bug::deadlock::deadlock::semantics::  ARM: OMAP: remove unnecessary locking in clk_get_rate()}
   + [[file:2.6.26/arm-omap-05.patch][2.6.26]]
     [[file:2.6.29/arm-omap-05.patch][2.6.29]]
   - 3.0
@@ -3745,11 +3745,11 @@
   + [[file:2.6.26/adapt-remove-extra-try-to-lock.patch][2.6.26]]
     [[file:2.6.29/adapt-remove-extra-try-to-lock.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch {C::bug::?::race::sched-fix-dequeued-race}
+* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch {C::bug::?::sched::sched::sched-fix-dequeued-race}
   + [[file:2.6.26/sched-fix-dequeued-race.patch][2.6.26]]
   m [[file:2.6.29/sched-fix-dequeued-race.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] rtmutex-lateral-steal.patch{C::performance::allow rt-mutex lock-stealing to include lateral priority} 
+* [2.6.26 - 2.6.29] rtmutex-lateral-steal.patch{C::performance::mutex::allow rt-mutex lock-stealing to include lateral priority}
   + [[file:2.6.26/rtmutex-lateral-steal.patch][2.6.26]]
     [[file:2.6.29/rtmutex-lateral-steal.patch][2.6.29]]
   - 3.0
@@ -3757,7 +3757,7 @@
   + [[file:2.6.26/rtmutex-remove-xchg.patch][2.6.26]]
     [[file:2.6.29/rtmutex-remove-xchg.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] revert-preempt-bkl-revert.patch {C::performance::regression::BKL: revert back to the old spinlock implementation}
+* [2.6.26 - 2.6.29] revert-preempt-bkl-revert.patch {C::performance::mutex::BKL: revert back to the old spinlock implementation}
   + [[file:2.6.26/revert-preempt-bkl-revert.patch][2.6.26]]
   m [[file:2.6.29/revert-preempt-bkl-revert.patch][2.6.29]]
   - 3.0
@@ -3769,7 +3769,7 @@
   + [[file:2.6.26/bz235099-idle-load-fix.patch][2.6.26]]
   M [[file:2.6.29/bz235099-idle-load-fix.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29]fix-config-debug-rt-mutex-lock-underflow-warnings.patch {C::bug::data_err::atomicity::converts lock_count to a atomic_t}
+* [2.6.26 - 2.6.29]fix-config-debug-rt-mutex-lock-underflow-warnings.patch {C::bug::data_err::atomicity::mutex::converts lock_count to a atomic_t}
   + [[file:2.6.26/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.26]]
   m [[file:2.6.29/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.29]]
   - 3.0
@@ -3781,7 +3781,7 @@
   + [[file:2.6.26/adaptive-spinlock-lite-v2.patch][2.6.26]]
   m [[file:2.6.29/adaptive-spinlock-lite-v2.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] nfs-stats-miss-preemption.patch {C::bug::performance regression::preemption::preempt::nfs: fix missing preemption check}
+* [2.6.26 - 2.6.29] nfs-stats-miss-preemption.patch {C::bug::rtlatency::preempt::preempt::nfs: fix missing preemption check}
   + [[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]
   m [[file:2.6.29/nfs-stats-miss-preemption.patch][2.6.29]]
   - 3.0
