@@ -7089,44 +7089,44 @@
     [[file:4.8/patch-to-introduce-rcu-bh-qs-where-safe-from-softirq.patch][4.8]]
   m [[file:4.9/patch-to-introduce-rcu-bh-qs-where-safe-from-softirq.patch][4.9]]
   m [[file:4.11/patch-to-introduce-rcu-bh-qs-where-safe-from-softirq.patch][4.11]]
-* [   3.4         ] lglock/rt: Use non-rt for_each_cpu() in -rt code
+* [   3.4         ] lglock/rt: Use non-rt for_each_cpu() in -rt code{C::feature::rtsupport::lglock callback implementation}
   + [[file:3.4/rfc-lglock-rt-use-non-rt-for_each_cpu-in-rt-code.patch][3.4]]
   - 3.6
-* [   3.4         ] ring-buffer/rt: Check for irqs disabled before grabbing reader lock
+* [   3.4         ] ring-buffer/rt: Check for irqs disabled before grabbing reader lock{C::feature::rtsupport::add irq check}
   + [[file:3.4/rfc-ring-buffer-rt-check-for-irqs-disabled-before-grabbing-reader-lock.patch][3.4]]
   - 3.6
-* [   3.4         ] timer: Fix hotplug for -rt
+* [   3.4         ] timer: Fix hotplug for -rt{C::feature::rtsupport::disable sleep in CPU_DEAD}
   + [[file:3.4/rfc-timer-fix-hotplug-for-rt.patch][3.4]]
   - 3.6
-* [   3.4         ] futex/rt: Fix possible lockup when taking pi_lock in proxy handler
+* [   3.4         ] futex/rt: Fix possible lockup when taking pi_lock in proxy handler{C::feature::rtsupport::replace with irq disabled}
   + [[file:3.4/rfc-futex-rt-fix-possible-lockup-when-taking-pi_lock-in-proxy-handler.patch][3.4]]
   - 3.6
-* [   3.4 -    3.6] rcu: Fix build break
+* [   3.4 -    3.6] rcu: Fix build break{C::bug::compile::compiler_err::syntex::restrict precompile section}
   + [[file:3.4/rcu-fix-build-break.patch][3.4]]
   m [[file:3.6/rcu-fix-build-break.patch][3.6]]
   - 3.8
-* [   3.4 -    3.6] timekeeping: Split xtime_lock
+* [   3.4 -    3.6] timekeeping: Split xtime_lock{C::maintain::refactor::split fun}
   + [[file:3.4/timekeeping-split-xtime-lock.patch][3.4]]
   M [[file:3.6/timekeeping-split-xtime-lock.patch][3.6]]
   - 3.8
-* [   3.4 -    3.8] arm-omap-make-wakeupgen_lock-raw.patch
+* [   3.4 -    3.8] arm-omap-make-wakeupgen_lock-raw.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.4/arm-omap-make-wakeupgen_lock-raw.patch][3.4]]
   m [[file:3.6/arm-omap-make-wakeupgen_lock-raw.patch][3.6]]
     [[file:3.8/arm-omap-make-wakeupgen_lock-raw.patch][3.8]]
   - 3.10
-* [   3.4 -    3.8] ntp: Make ntp_lock raw.
+* [   3.4 -    3.8] ntp: Make ntp_lock raw.{C::feature::rtsupport::replace with raw}
   + [[file:3.4/ntp-make-ntp-lock-raw-sigh.patch][3.4]]
   m [[file:3.6/ntp-make-ntp-lock-raw-sigh.patch][3.6]]
     [[file:3.8/ntp-make-ntp-lock-raw-sigh.patch][3.8]]
   - 3.10
-* [   3.4 -   3.12] sched/rt: Fix wait_task_interactive() to test rt_spin_lock state
+* [   3.4 -   3.12] sched/rt: Fix wait_task_interactive() to test rt_spin_lock state{C::bug::data_err::preempt?::preempt::add state check}
   + [[file:3.4/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.4]]
     [[file:3.6/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.6]]
     [[file:3.8/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.8]]
     [[file:3.10/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.10]]
     [[file:3.12/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.12]]
   - 3.14
-* [   3.4 -    4.1] x86: Do not disable preemption in int3 on 32bit
+* [   3.4 -    4.1] x86: Do not disable preemption in int3 on 32bit{C::feature::rtsupport::do dot disable preempt}
   + [[file:3.4/fix-rt-int3-x86_32-3.2-rt.patch][3.4]]
     [[file:3.6/fix-rt-int3-x86_32-3.2-rt.patch][3.6]]
   M [[file:3.8/fix-rt-int3-x86_32-3.2-rt.patch][3.8]]
@@ -7137,7 +7137,7 @@
   m [[file:4.0/fix-rt-int3-x86_32-3.2-rt.patch][4.0]]
   m [[file:4.1/fix-rt-int3-x86_32-3.2-rt.patch][4.1]]
   - 4.4
-* [   3.4 -   4.11] futex: Fix bug on when a requeued RT task times out
+* [   3.4 -   4.11] futex: Fix bug on when a requeued RT task times out{C::bug::deadlock::deadlock::semantic::add macro and specific check}
   + [[file:3.4/futex-requeue-pi-fix.patch][3.4]]
   M [[file:3.6/futex-requeue-pi-fix.patch][3.6]]
     [[file:3.8/futex-requeue-pi-fix.patch][3.8]]
@@ -7152,7 +7152,7 @@
     [[file:4.8/futex-requeue-pi-fix.patch][4.8]]
     [[file:4.9/futex-requeue-pi-fix.patch][4.9]]
   m [[file:4.11/futex-requeue-pi-fix.patch][4.11]]
-* [   3.4 -   4.11] net: Use cpu_chill() instead of cpu_relax()
+* [   3.4 -   4.11] net: Use cpu_chill() instead of cpu_relax(){C::bug::hang::preempt::preempt::use cpu_chill instead}
   + [[file:3.4/net-use-cpu-chill.patch][3.4]]
     [[file:3.6/net-use-cpu-chill.patch][3.6]]
     [[file:3.8/net-use-cpu-chill.patch][3.8]]
@@ -7167,7 +7167,7 @@
   m [[file:4.8/net-use-cpu-chill.patch][4.8]]
     [[file:4.9/net-use-cpu-chill.patch][4.9]]
     [[file:4.11/net-use-cpu-chill.patch][4.11]]
-* [   3.4 -   4.11] fs: dcache: Use cpu_chill() in trylock loops
+* [   3.4 -   4.11] fs: dcache: Use cpu_chill() in trylock loops{C::bug::hang::preempt::preempt::use cpu_chill instead}
   + [[file:3.4/fs-dcache-use-cpu-chill-in-trylock-loops.patch][3.4]]
     [[file:3.6/fs-dcache-use-cpu-chill-in-trylock-loops.patch][3.6]]
   m [[file:3.8/fs-dcache-use-cpu-chill-in-trylock-loops.patch][3.8]]
@@ -7182,7 +7182,7 @@
   M [[file:4.8/fs-dcache-use-cpu-chill-in-trylock-loops.patch][4.8]]
     [[file:4.9/fs-dcache-use-cpu-chill-in-trylock-loops.patch][4.9]]
   m [[file:4.11/fs-dcache-use-cpu-chill-in-trylock-loops.patch][4.11]]
-* [   3.4 -   4.11] genirq: Allow disabling of softirq processing in irq thread context
+* [   3.4 -   4.11] genirq: Allow disabling of softirq processing in irq thread context{C::performance::irq::Allow disabling of softirq processing in irq thread context}
   + [[file:3.4/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.4]]
   m [[file:3.6/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.6]]
     [[file:3.8/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.8]]
@@ -7197,7 +7197,7 @@
     [[file:4.8/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.8]]
     [[file:4.9/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.9]]
     [[file:4.11/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.11]]
-* [   3.4 -   4.11] timer-fd: Prevent live lock
+* [   3.4 -   4.11] timer-fd: Prevent live lock{C::bug::livelock::livelock::semantic::wait for return before cpu_relax}
   + [[file:3.4/timer-fd-avoid-live-lock.patch][3.4]]
     [[file:3.6/timer-fd-avoid-live-lock.patch][3.6]]
     [[file:3.8/timer-fd-avoid-live-lock.patch][3.8]]
@@ -7212,7 +7212,7 @@
     [[file:4.8/timer-fd-avoid-live-lock.patch][4.8]]
     [[file:4.9/timer-fd-avoid-live-lock.patch][4.9]]
     [[file:4.11/timer-fd-avoid-live-lock.patch][4.11]]
-* [   3.4 -   4.11] seqlock: Prevent rt starvation
+* [   3.4 -   4.11] seqlock: Prevent rt starvation{C::bug::deadlock::deadlock::preempt::add fun to check and block}}
   + [[file:3.4/seqlock-prevent-rt-starvation.patch][3.4]]
     [[file:3.6/seqlock-prevent-rt-starvation.patch][3.6]]
   M [[file:3.8/seqlock-prevent-rt-starvation.patch][3.8]]
@@ -7227,7 +7227,7 @@
     [[file:4.8/seqlock-prevent-rt-starvation.patch][4.8]]
     [[file:4.9/seqlock-prevent-rt-starvation.patch][4.9]]
   M [[file:4.11/seqlock-prevent-rt-starvation.patch][4.11]]
-* [   3.4 -   4.11] rt: Introduce cpu_chill()
+* [   3.4 -   4.11] rt: Introduce cpu_chill(){C::feature::rtsupport::implement cpu chill}
   + [[file:3.4/rt-introduce-cpu-chill.patch][3.4]]
     [[file:3.6/rt-introduce-cpu-chill.patch][3.6]]
     [[file:3.8/rt-introduce-cpu-chill.patch][3.8]]
@@ -7242,7 +7242,7 @@
     [[file:4.8/rt-introduce-cpu-chill.patch][4.8]]
     [[file:4.9/rt-introduce-cpu-chill.patch][4.9]]
     [[file:4.11/rt-introduce-cpu-chill.patch][4.11]]
-* [   3.4 -   4.11] cpu: Make hotplug.lock a "sleeping" spinlock on RT
+* [   3.4 -   4.11] cpu: Make hotplug.lock a "sleeping" spinlock on RT{C::feature::rtsupport::implement hotplug with spinlock in rt}
   + [[file:3.4/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][3.4]]
     [[file:3.6/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][3.6]]
   m [[file:3.8/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][3.8]]
@@ -7257,7 +7257,7 @@
   M [[file:4.8/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][4.8]]
   m [[file:4.9/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][4.9]]
     [[file:4.11/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][4.11]]
-* [   3.4 -   4.11] signal/x86: Delay calling signals in atomic
+* [   3.4 -   4.11] signal/x86: Delay calling signals in atomic{C::feature::signal::add fun}
   + [[file:3.4/oleg-signal-rt-fix.patch][3.4]]
   M [[file:3.6/oleg-signal-rt-fix.patch][3.6]]
   M [[file:3.8/oleg-signal-rt-fix.patch][3.8]]
