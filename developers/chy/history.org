@@ -8654,39 +8654,39 @@ of ftrace}
     [[file:4.8/rcu-make-RCU_BOOST-default-on-RT.patch][4.8]]
     [[file:4.9/rcu-make-RCU_BOOST-default-on-RT.patch][4.9]]
     [[file:4.11/rcu-make-RCU_BOOST-default-on-RT.patch][4.11]]
-* [  3.18         ] disable preempt lazy on x86-64
-  + [[file:3.18/disable-preempt-lazy-on-x86-64.patch][3.18]]
+* [  3.18         ] disable preempt lazy on x86-64 {C::bug::compile::config_err::config::disable preempt lazy}
+  + [[file:3.18/disable-preempt-lazy-on-x86-64.patch][3.18]] {MOD::arch/x86}
   - 4.0
-* [  3.18 -    4.0] Revert "timers: do not raise softirq unconditionally"
-  + [[file:3.18/Revert-timers-do-not-raise-softirq-unconditionally.patch][3.18]]
+* [  3.18 -    4.0] Revert "timers: do not raise softirq unconditionally"{C::bug::softirq::time::softirq::revert hrtimer}
+  + [[file:3.18/Revert-timers-do-not-raise-softirq-unconditionally.patch][3.18]] {MOD::include/linux,kernel/time}
     [[file:4.0/Revert-timers-do-not-raise-softirq-unconditionally.patch][4.0]]
   - 4.1
-* [  3.18 -    4.0] Revert "migrate_disable pushd down in atomic_dec_and_spin_lock"
+* [  3.18 -    4.0] Revert "migrate_disable pushd down in atomic_dec_and_spin_lock"{C::bug::data_err::migration::migration::reorder migrate_disable???}
   + [[file:3.18/Revert-migrate_disable-pushd-down-in-atomic_dec_and_.patch][3.18]]
     [[file:4.0/Revert-migrate_disable-pushd-down-in-atomic_dec_and_.patch][4.0]]
   - 4.1
-* [  3.18 -    4.0] timer: do not spin_trylock() on UP
+* [  3.18 -    4.0] timer: do not spin_trylock() on UP {C::feature::debuginfo::do not spin_trylock}
   + [[file:3.18/timer-do-not-spin_trylock-on-UP.patch][3.18]]
     [[file:4.0/timer-do-not-spin_trylock-on-UP.patch][4.0]]
   - 4.1
-* [  3.18 -    4.0] rwlock: disable migration before taking a lock
+* [  3.18 -    4.0] rwlock: disable migration before taking a lock {C::bug::crash::migration::migration::reorder migration_disable}
   + [[file:3.18/rwlock-disable-migration-before-taking-a-lock.patch][3.18]]
     [[file:4.0/rwlock-disable-migration-before-taking-a-lock.patch][4.0]]
   - 4.1
-* [  3.18 -    4.0] sched: Do not clear PF_NO_SETAFFINITY flag in select_fallback_rq()
+* [  3.18 -    4.0] sched: Do not clear PF_NO_SETAFFINITY flag in select_fallback_rq() {C::bug::crash::migration::semantics::do not clear PF_NO_SETAFFINITY}
   + [[file:3.18/sched-do-not-clear-pf_no_setaffinity-flag-in-select_fallback_rq.patch][3.18]]
     [[file:4.0/sched-do-not-clear-pf_no_setaffinity-flag-in-select_fallback_rq.patch][4.0]]
   - 4.1
-* [  3.18 -    4.0] rwsem-rt: Do not allow readers to nest
+* [  3.18 -    4.0] rwsem-rt: Do not allow readers to nest{C::feature::rtsupport::rwsems in rt-preempt do not nest}
   + [[file:3.18/rwsem-rt-Do-not-allow-readers-to-nest.patch][3.18]]
     [[file:4.0/rwsem-rt-Do-not-allow-readers-to-nest.patch][4.0]]
   - 4.1
-* [  3.18 -    4.1] gpio: omap: use raw locks for locking
+* [  3.18 -    4.1] gpio: omap: use raw locks for locking{C::feature::rtsupport::replace with raw}
   + [[file:3.18/gpio-omap-use-raw-locks-for-locking.patch][3.18]]
   M [[file:4.0/gpio-omap-use-raw-locks-for-locking.patch][4.0]]
   m [[file:4.1/gpio-omap-use-raw-locks-for-locking.patch][4.1]]
   - 4.4
-* [  3.18 -    4.8] stomp-machine: create lg_global_trylock_relax() primitive
+* [  3.18 -    4.8] stomp-machine: create lg_global_trylock_relax() primitive {C::feature::rtsupport::replace with lg_global_trylock_relax()}
   + [[file:3.18/stomp-machine-create-lg_global_trylock_relax-primiti.patch][3.18]]
     [[file:4.0/stomp-machine-create-lg_global_trylock_relax-primiti.patch][4.0]]
     [[file:4.1/stomp-machine-create-lg_global_trylock_relax-primiti.patch][4.1]]
@@ -8694,7 +8694,7 @@ of ftrace}
     [[file:4.6/stomp-machine-create-lg_global_trylock_relax-primiti.patch][4.6]]
   m [[file:4.8/stomp-machine-create-lg_global_trylock_relax-primiti.patch][4.8]]
   - 4.9
-* [  3.18 -    4.8] blk-mq: revert raw locks, post pone notifier to POST_DEAD
+* [  3.18 -    4.8] blk-mq: revert raw locks, post pone notifier to POST_DEAD {C::performance::preempt::replaced raw}
   + [[file:3.18/blk-mq-revert-raw-locks-post-pone-notifier-to-POST_D.patchto-POST_D.patch][3.18]]
   m [[file:4.0/blk-mq-revert-raw-locks-post-pone-notifier-to-POST_D.patchto-POST_D.patch][4.0]]
     [[file:4.1/blk-mq-revert-raw-locks-post-pone-notifier-to-POST_D.patchto-POST_D.patch][4.1]]
@@ -8702,7 +8702,7 @@ of ftrace}
     [[file:4.6/blk-mq-revert-raw-locks-post-pone-notifier-to-POST_D.patchto-POST_D.patch][4.6]]
     [[file:4.8/blk-mq-revert-raw-locks-post-pone-notifier-to-POST_D.patchto-POST_D.patch][4.8]]
   - 4.9
-* [  3.18 -    4.8] stomp-machine: use lg_global_trylock_relax() to dead with stop_cpus_lock lglock
+* [  3.18 -    4.8] stomp-machine: use lg_global_trylock_relax() to dead with stop_cpus_lock lglock {C::performance::preempt::replace with lg_global_trylock_relax() and add other code}
   + [[file:3.18/stomp-machine-use-lg_global_trylock_relax-to-dead-wi.patch][3.18]]
     [[file:4.0/stomp-machine-use-lg_global_trylock_relax-to-dead-wi.patch][4.0]]
     [[file:4.1/stomp-machine-use-lg_global_trylock_relax-to-dead-wi.patch][4.1]]
@@ -8710,7 +8710,7 @@ of ftrace}
   M [[file:4.6/stomp-machine-use-lg_global_trylock_relax-to-dead-wi.patch][4.6]]
     [[file:4.8/stomp-machine-use-lg_global_trylock_relax-to-dead-wi.patch][4.8]]
   - 4.9
-* [  3.18 -   4.11] workqueue: Prevent deadlock/stall on RT
+* [  3.18 -   4.11] workqueue: Prevent deadlock/stall on RT {C::bug::deadlock::deadlock::preempt::add preempt_enable/disable pairs ,call worker cord unconditionally}
   + [[file:3.18/workqueue-prevent-deadlock-stall.patch][3.18]]
     [[file:4.0/workqueue-prevent-deadlock-stall.patch][4.0]]
     [[file:4.1/workqueue-prevent-deadlock-stall.patch][4.1]]
@@ -8719,7 +8719,7 @@ of ftrace}
     [[file:4.8/workqueue-prevent-deadlock-stall.patch][4.8]]
     [[file:4.9/workqueue-prevent-deadlock-stall.patch][4.9]]
     [[file:4.11/workqueue-prevent-deadlock-stall.patch][4.11]]
-* [  3.18 -   4.11] mm/workingset: Do not protect workingset_shadow_nodes with irq off
+* [  3.18 -   4.11] mm/workingset: Do not protect workingset_shadow_nodes with irq off {C::maintain::refactor::replaced with local_lock,rename fun()}
   + [[file:3.18/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][3.18]]
   M [[file:4.0/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][4.0]]
     [[file:4.1/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][4.1]]
@@ -8728,7 +8728,7 @@ of ftrace}
   M [[file:4.8/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][4.8]]
   m [[file:4.9/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][4.9]]
   M [[file:4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][4.11]]
-* [  3.18 -   4.11] block/mq: don't complete requests via IPI
+* [  3.18 -   4.11] block/mq: don't complete requests via IPI {C::feature::rtsupport::add completion into workqueue}
   + [[file:3.18/block-mq-don-t-complete-requests-via-IPI.patch][3.18]]
   M [[file:4.0/block-mq-don-t-complete-requests-via-IPI.patch][4.0]]
   M [[file:4.1/block-mq-don-t-complete-requests-via-IPI.patch][4.1]]
@@ -8737,7 +8737,7 @@ of ftrace}
   m [[file:4.8/block-mq-don-t-complete-requests-via-IPI.patch][4.8]]
   m [[file:4.9/block-mq-don-t-complete-requests-via-IPI.patch][4.9]]
   M [[file:4.11/block-mq-don-t-complete-requests-via-IPI.patch][4.11]]
-* [  3.18 -   4.11] block/mq: do not invoke preempt_disable()
+* [  3.18 -   4.11] block/mq: do not invoke preempt_disable() {C::performance::preempt::replaceed with migrate_disable() and get_cpu_light()}
   + [[file:3.18/block-mq-drop-preempt-disable.patch][3.18]]
   M [[file:4.0/block-mq-drop-preempt-disable.patch][4.0]]
     [[file:4.1/block-mq-drop-preempt-disable.patch][4.1]]
@@ -8746,7 +8746,7 @@ of ftrace}
     [[file:4.8/block-mq-drop-preempt-disable.patch][4.8]]
   m [[file:4.9/block-mq-drop-preempt-disable.patch][4.9]]
   m [[file:4.11/block-mq-drop-preempt-disable.patch][4.11]]
-* [  3.18 -   4.11] mm/memcontrol: Replace local_irq_disable with local locks
+* [  3.18 -   4.11] mm/memcontrol: Replace local_irq_disable with local locks {C::performance::mutex::Replace local_irq_disable with local locks}
   + [[file:3.18/mm-memcontrol-do_not_disable_irq.patch][3.18]]
   m [[file:4.0/mm-memcontrol-do_not_disable_irq.patch][4.0]]
   M [[file:4.1/mm-memcontrol-do_not_disable_irq.patch][4.1]]
@@ -8755,7 +8755,7 @@ of ftrace}
   m [[file:4.8/mm-memcontrol-do_not_disable_irq.patch][4.8]]
     [[file:4.9/mm-memcontrol-do_not_disable_irq.patch][4.9]]
   m [[file:4.11/mm-memcontrol-do_not_disable_irq.patch][4.11]]
-* [  3.18 -   4.11] cgroups: use simple wait in css_release()
+* [  3.18 -   4.11] cgroups: use simple wait in css_release() {C::bug::crash::deadlock::mutex::add simple_wait_queue}
   + [[file:3.18/cgroups-use-simple-wait-in-css_release.patch][3.18]]
     [[file:4.0/cgroups-use-simple-wait-in-css_release.patch][4.0]]
     [[file:4.1/cgroups-use-simple-wait-in-css_release.patch][4.1]]
@@ -8764,7 +8764,7 @@ of ftrace}
   M [[file:4.8/cgroups-use-simple-wait-in-css_release.patch][4.8]]
     [[file:4.9/cgroups-use-simple-wait-in-css_release.patch][4.9]]
   m [[file:4.11/cgroups-use-simple-wait-in-css_release.patch][4.11]]
-* [  3.18 -   4.11] block: blk-mq: Use swait
+* [  3.18 -   4.11] block: blk-mq: Use swait {C::bug::crash::deadlock::mutex::replace with swait}
   + [[file:3.18/block-blk-mq-use-swait.patch][3.18]]
   M [[file:4.0/block-blk-mq-use-swait.patch][4.0]]
   m [[file:4.1/block-blk-mq-use-swait.patch][4.1]]
@@ -8773,7 +8773,7 @@ of ftrace}
     [[file:4.8/block-blk-mq-use-swait.patch][4.8]]
     [[file:4.9/block-blk-mq-use-swait.patch][4.9]]
   M [[file:4.11/block-blk-mq-use-swait.patch][4.11]]
-* [  3.18 -   4.11] work-simple: Simple work queue implemenation
+* [  3.18 -   4.11] work-simple: Simple work queue implemenation{C::feature::rtsupport::simple work queue implemenation}
   + [[file:3.18/work-simple-Simple-work-queue-implemenation.patch][3.18]]
     [[file:4.0/work-simple-Simple-work-queue-implemenation.patch][4.0]]
     [[file:4.1/work-simple-Simple-work-queue-implemenation.patch][4.1]]
@@ -8782,119 +8782,119 @@ of ftrace}
   M [[file:4.8/work-simple-Simple-work-queue-implemenation.patch][4.8]]
     [[file:4.9/work-simple-Simple-work-queue-implemenation.patch][4.9]]
   m [[file:4.11/work-simple-Simple-work-queue-implemenation.patch][4.11]]
-* [   4.0         ] rtmutex.c: Fix incorrect waiter check
-  + [[file:4.0/rtmutex.c-Fix-incorrect-waiter-check.patch][4.0]]
+* [   4.0         ] rtmutex.c: Fix incorrect waiter check{C::bug::na::na::mutex::fix waiter check}
+  + [[file:4.0/rtmutex.c-Fix-incorrect-waiter-check.patch][4.0]
   - 4.1
-* [   4.0         ] Revert "rwsem-rt: Do not allow readers to nest"
+* [   4.0         ] Revert "rwsem-rt: Do not allow readers to nest"{C::feature::rtsupport::do not allow readers nest}
   + [[file:4.0/Revert-rwsem-rt-Do-not-allow-readers-to-nest.patch][4.0]]
   - 4.1
-* [   4.0         ] locking: ww_mutex: fix ww_mutex vs self-deadlock
+* [   4.0         ] locking: ww_mutex: fix ww_mutex vs self-deadlock{C::feature::rtsupport::add ww_mutex}
   + [[file:4.0/locking-ww_mutex-fix-ww_mutex-vs-self-deadlock.patch][4.0]]
   - 4.1
-* [   4.0         ] rt, nohz_full: fix nohz_full for PREEMPT_RT_FULL
+* [   4.0         ] rt, nohz_full: fix nohz_full for PREEMPT_RT_FULL{C::feature::rtsupport::fix nohz_full}
   + [[file:4.0/rt-nohz_full-fix-nohz_full-for-PREEMPT_RT_FULL.patch][4.0]]
   - 4.1
-* [   4.0         ] rt,locking: fix __ww_mutex_lock_interruptible() lockdep annotation
+* [   4.0         ] rt,locking: fix __ww_mutex_lock_interruptible() lockdep annotation{C::maintain::refactor::replace with mutex_acquir_nest()}
   + [[file:4.0/rtmutex-ww_mutex_fix_ww_mutex_lock_interruptible_lockdep_annotation.patch][4.0]]
   - 4.1
-* [   4.0         ] xfs: Disable percpu SB on PREEMPT_RT_FULL
+* [   4.0         ] xfs: Disable percpu SB on PREEMPT_RT_FULL {C::bug::compile::config_err::config::add config}
   + [[file:4.0/xfs-Disable-percpu-SB-on-PREEMPT_RT_FULL.patch][4.0]]
   - 4.1
-* [   4.0         ] rtmutex: enable deadlock detection in ww_mutex_lock functions
+* [   4.0         ] rtmutex: enable deadlock detection in ww_mutex_lock functions{C::feature::check::correct potential deadlock}
   + [[file:4.0/rtmutex-enable-deadlock-detection-in-ww_mutex_lock-f.patch][4.0]]
   - 4.1
-* [   4.0         ] irq_work: Hide access to hirq_work_list in PREEMPT_RT_FULL
+* [   4.0         ] irq_work: Hide access to hirq_work_list in PREEMPT_RT_FULL{C::performance::smallsize::add #ifdef}
   + [[file:4.0/irq_work-Hide-access-to-hirq_work_list-in-PREEMPT_RT.patch][4.0]]
   - 4.1
-* [   4.0         ] irq_work: Delegate non-immediate irq work to ksoftirqd
+* [   4.0         ] irq_work: Delegate non-immediate irq work to ksoftirqd{C::bug::deadlock::deadlock::softirq::delegate non-immediate irq work to ksoftirqd}
   + [[file:4.0/irq_work_Delegate_non-immediate_irq_work_to_ksoftirqd.patch][4.0]]
   - 4.1
-* [   4.0         ] kernel/irq_work: fix no_hz deadlock
+* [   4.0         ] kernel/irq_work: fix no_hz deadlock{C::bug::deadlock::deadlock::irq::upstream}
   + [[file:4.0/kernel-irq_work-fix-no_hz-deadlock.patch][4.0]]
   - 4.1
-* [   4.0 -    4.1] sched/preempt, mm/kmap: Explicitly disable/enable preemption in kmap_atomic_*
+* [   4.0 -    4.1] sched/preempt, mm/kmap: Explicitly disable/enable preemption in kmap_atomic_*{C::performance::preempt::add preempt disable/enable pairs}
   + [[file:4.0/0004-mm-explicitly-disable-enable-preemption-in-kmap_atom.patch][4.0]]
     [[file:4.1/0004-mm-explicitly-disable-enable-preemption-in-kmap_atom.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_op_inuser() expl
+* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_op_inuser() expl{}{C::performance::preempt::add preempt disable/enable pairs}
   + [[file:4.0/0011-arm-futex-UP-futex_atomic_op_inuser-relies-on-disabl.patch][4.0]]
     [[file:4.1/0011-arm-futex-UP-futex_atomic_op_inuser-relies-on-disabl.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] arm64: Mark PMU interrupt IRQF_NO_THREAD
+* [   4.0 -    4.1] arm64: Mark PMU interrupt IRQF_NO_THREAD{C::maintain::refactor::add IRQF_NO_THREAD}
   + [[file:4.0/0001-arm64-Mark-PMU-interrupt-IRQF_NO_THREAD.patch][4.0]]
     [[file:4.1/0001-arm64-Mark-PMU-interrupt-IRQF_NO_THREAD.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic
+* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic{C::performance::preempt::explicit preempt disable/enable}
   + [[file:4.0/0010-arm-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on.patch][4.0]]
     [[file:4.1/0010-arm-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mm/fault, drm/i915: Use pagefault_disabled() to check for disabled pagefaults
+* [   4.0 -    4.1] mm/fault, drm/i915: Use pagefault_disabled() to check for disabled pagefaults{C::maintain::refactor::replace with disabled pagefaults}
   + [[file:4.0/0007-drm-i915-use-pagefault_disabled-to-check-for-disable.patch][4.0]]
     [[file:4.1/0007-drm-i915-use-pagefault_disabled-to-check-for-disable.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, MIPS: Properly lock access to the FPU
+* [   4.0 -    4.1] sched/preempt, MIPS: Properly lock access to the FPU{}{C::maintain::refactor::combination codes}
   + [[file:4.0/0013-mips-properly-lock-access-to-the-fpu.patch][4.0]]
     [[file:4.1/0013-mips-properly-lock-access-to-the-fpu.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, mm/kmap, MIPS: Disable preemption in kmap_coherent() explicitly
+* [   4.0 -    4.1] sched/preempt, mm/kmap, MIPS: Disable preemption in kmap_coherent() explicitly{C::performance::preempt::explicit preempt disable/enable }
   + [[file:4.0/0005-mips-kmap_coherent-relies-on-disabled-preemption.patch][4.0]]
     [[file:4.1/0005-mips-kmap_coherent-relies-on-disabled-preemption.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, futex: Update comments to clarify that preemption doesn't have to
+* [   4.0 -    4.1] sched/preempt, futex: Update comments to clarify that preemption doesn't have to{C::maintain::donothing::update comments}
   + [[file:4.0/0012-futex-clarify-that-preemption-doesn-t-have-to-be-dis.patch][4.0]]
     [[file:4.1/0012-futex-clarify-that-preemption-doesn-t-have-to-be-dis.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic() e
+* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic() e{C::performance::preempt::explicit preempt disable/enable}
   + [[file:4.0/0009-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on-dis.patch][4.0]]
     [[file:4.1/0009-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on-dis.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, mm/fault: Count pagefault_disable() levels in pagefault_disabled
+* [   4.0 -    4.1] sched/preempt, mm/fault: Count pagefault_disable() levels in pagefault_disabled{C::feature::statistics::add a separate counter to count pagefault_disable() calls}
   + [[file:4.0/0001-uaccess-count-pagefault_disable-levels-in-pagefault_.patch][4.0]]
     [[file:4.1/0001-uaccess-count-pagefault_disable-levels-in-pagefault_.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mm, uaccess: trigger might_sleep() in might_fault() with disabled pagefaults
+* [   4.0 -    4.1] mm, uaccess: trigger might_sleep() in might_fault() with disabled pagefaults{C::bug::deadlock::semantics::semantics::add makro to call __might_faults}
   + [[file:4.0/0002-mm-uaccess-trigger-might_sleep-in-might_fault-with-d.patch][4.0]]
     [[file:4.1/0002-mm-uaccess-trigger-might_sleep-in-might_fault-with-d.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] ARM: cmpxchg: define __HAVE_ARCH_CMPXCHG for armv6 and later
+* [   4.0 -    4.1] ARM: cmpxchg: define __HAVE_ARCH_CMPXCHG for armv6 and later{C::maintain::refactor::add define}
   + [[file:4.0/ARM-cmpxchg-define-__HAVE_ARCH_CMPXCHG-for-armv6-and.patch][4.0]]
     [[file:4.1/ARM-cmpxchg-define-__HAVE_ARCH_CMPXCHG-for-armv6-and.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mmc: sdhci: don't provide hard irq handler
+* [   4.0 -    4.1] mmc: sdhci: don't provide hard irq handler{C::performance::irq::push irq handler into the threaded mode}
   + [[file:4.0/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.0]]
     [[file:4.1/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the
+* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the {C::bug::data_err::semantics::semantics::use faulthandler_disable() replaced in_atomic()}
   + [[file:4.0/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.0]]
     [[file:4.1/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_op_inuser() explicit
+* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_op_inuser() explicit{C::performance::mutex::add preempt_disable/enable ensure mutual exclusion}
   + [[file:4.0/0008-futex-UP-futex_atomic_op_inuser-relies-on-disabled-p.patch][4.0]]
     [[file:4.1/0008-futex-UP-futex_atomic_op_inuser-relies-on-disabled-p.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, mm/fault: Decouple preemption from the page fault logic
+* [   4.0 -    4.1] sched/preempt, mm/fault: Decouple preemption from the page fault logic{C::maintain::refactor::remove code}
   + [[file:4.0/0014-uaccess-decouple-preemption-from-the-pagefault-logic.patch][4.0]]
     [[file:4.1/0014-uaccess-decouple-preemption-from-the-pagefault-logic.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, uaccess: Update comments to clarify that preemption doesn't have
+* [   4.0 -    4.1] sched/preempt, uaccess: Update comments to clarify that preemption doesn't have {C::maintain::donothing::add comments}
   + [[file:4.0/0003-uaccess-clarify-that-uaccess-may-only-sleep-if-pagef.patch][4.0]]
     [[file:4.1/0003-uaccess-clarify-that-uaccess-may-only-sleep-if-pagef.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] arm64: Allow forced irq threading
+* [   4.0 -    4.1] arm64: Allow forced irq threading{C::feature::arch::add IRQ_FORCED_THREADING config in arm64}
   + [[file:4.0/0002-arm64-Allow-forced-irq-threading.patch][4.0]]
     [[file:4.1/0002-arm64-Allow-forced-irq-threading.patch][4.1]]
   - 4.4
-* [   4.0 -    4.4] KVM: use simple waitqueue for vcpu->wq
+* [   4.0 -    4.4] KVM: use simple waitqueue for vcpu->wq {C::feature::sched::use simple waitqueue for vcpu}
   + [[file:4.0/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.0]]
   m [[file:4.1/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.1]]
   M [[file:4.4/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.4]]
   - 4.6
-* [   4.0 -    4.4] block/mq: drop per ctx cpu_lock
+* [   4.0 -    4.4] block/mq: drop per ctx cpu_lock{C::maintain::refactor::remove per ctx cpu_lock}
   + [[file:4.0/block-mq-drop-per-ctx-cpu_lock.patch][4.0]]
     [[file:4.1/block-mq-drop-per-ctx-cpu_lock.patch][4.1]]
   M [[file:4.4/block-mq-drop-per-ctx-cpu_lock.patch][4.4]]
   - 4.6
-* [   4.0 -   4.11] sunrpc: Make svc_xprt_do_enqueue() use get_cpu_light()
+* [   4.0 -   4.11] sunrpc: Make svc_xprt_do_enqueue() use get_cpu_light(){C::maintain::refactor::conver the get_cpu() to get_cpu_light()}
   + [[file:4.0/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.0]]
     [[file:4.1/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.1]]
     [[file:4.4/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.4]]
@@ -8902,7 +8902,7 @@ of ftrace}
     [[file:4.8/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.8]]
     [[file:4.9/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.9]]
     [[file:4.11/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.11]]
-* [   4.0 -   4.11] hotplug: Use set_cpus_allowed_ptr() in sync_unplug_thread()
+* [   4.0 -   4.11] hotplug: Use set_cpus_allowed_ptr() in sync_unplug_thread(){C::maintain::refactor::rename fun}
   + [[file:4.0/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.0]]
     [[file:4.1/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.1]]
     [[file:4.4/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.4]]
@@ -8910,7 +8910,7 @@ of ftrace}
     [[file:4.8/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.8]]
     [[file:4.9/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.9]]
     [[file:4.11/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.11]]
-* [   4.0 -   4.11] cpufreq: drop K8's driver from beeing selected
+* [   4.0 -   4.11] cpufreq: drop K8's driver from beeing selected{C::maintain::refactor::add config}
   + [[file:4.0/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.0]]
     [[file:4.1/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.1]]
     [[file:4.4/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.4]]
@@ -8918,7 +8918,7 @@ of ftrace}
     [[file:4.8/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.8]]
     [[file:4.9/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.9]]
     [[file:4.11/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.11]]
-* [   4.0 -   4.11] slub: Disable SLUB_CPU_PARTIAL
+* [   4.0 -   4.11] slub: Disable SLUB_CPU_PARTIAL{C::maintain::refactor::add config}
   + [[file:4.0/slub-disable-SLUB_CPU_PARTIAL.patch][4.0]]
     [[file:4.1/slub-disable-SLUB_CPU_PARTIAL.patch][4.1]]
     [[file:4.4/slub-disable-SLUB_CPU_PARTIAL.patch][4.4]]
@@ -8926,7 +8926,7 @@ of ftrace}
     [[file:4.8/slub-disable-SLUB_CPU_PARTIAL.patch][4.8]]
     [[file:4.9/slub-disable-SLUB_CPU_PARTIAL.patch][4.9]]
     [[file:4.11/slub-disable-SLUB_CPU_PARTIAL.patch][4.11]]
-* [   4.0 -   4.11] fs/aio: simple simple work
+* [   4.0 -   4.11] fs/aio: simple simple work{C::maintain::refactor::replace with swork}
   + [[file:4.0/fs-aio-simple-simple-work.patch][4.0]]
   m [[file:4.1/fs-aio-simple-simple-work.patch][4.1]]
     [[file:4.4/fs-aio-simple-simple-work.patch][4.4]]
@@ -8934,7 +8934,7 @@ of ftrace}
   M [[file:4.8/fs-aio-simple-simple-work.patch][4.8]]
     [[file:4.9/fs-aio-simple-simple-work.patch][4.9]]
   m [[file:4.11/fs-aio-simple-simple-work.patch][4.11]]
-* [   4.0 -   4.11] x86: UV: raw_spinlock conversion
+* [   4.0 -   4.11] x86: UV: raw_spinlock conversion{C::maintain::refactor::rename raw spin lock}
   + [[file:4.0/x86-UV-raw_spinlock-conversion.patch][4.0]]
     [[file:4.1/x86-UV-raw_spinlock-conversion.patch][4.1]]
     [[file:4.4/x86-UV-raw_spinlock-conversion.patch][4.4]]
@@ -8942,7 +8942,7 @@ of ftrace}
   M [[file:4.8/x86-UV-raw_spinlock-conversion.patch][4.8]]
   m [[file:4.9/x86-UV-raw_spinlock-conversion.patch][4.9]]
   M [[file:4.11/x86-UV-raw_spinlock-conversion.patch][4.11]]
-* [   4.0 -   4.11] lockdep: selftest: fix warnings due to missing PREEMPT_RT conditionals
+* [   4.0 -   4.11] lockdep: selftest: fix warnings due to missing PREEMPT_RT conditionals{C::bug::compile::config_err::config::add ifndef}
   + [[file:4.0/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.0]]
     [[file:4.1/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.1]]
     [[file:4.4/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.4]]
@@ -8950,7 +8950,7 @@ of ftrace}
     [[file:4.8/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.8]]
     [[file:4.9/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.9]]
     [[file:4.11/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.11]]
-* [   4.0 -   4.11] arch/arm64: Add lazy preempt support
+* [   4.0 -   4.11] arch/arm64: Add lazy preempt support{C::feature::arch::add lazy preempt support for arm64}
   + [[file:4.0/arch-arm64-Add-lazy-preempt-support.patch][4.0]]
   M [[file:4.1/arch-arm64-Add-lazy-preempt-support.patch][4.1]]
   m [[file:4.4/arch-arm64-Add-lazy-preempt-support.patch][4.4]]
@@ -8958,7 +8958,7 @@ of ftrace}
   M [[file:4.8/arch-arm64-Add-lazy-preempt-support.patch][4.8]]
   M [[file:4.9/arch-arm64-Add-lazy-preempt-support.patch][4.9]]
   M [[file:4.11/arch-arm64-Add-lazy-preempt-support.patch][4.11]]
-* [   4.0 -   4.11] sas-ata/isci: dont't disable interrupts in qc_issue handler
+* [   4.0 -   4.11] sas-ata/isci: dont't disable interrupts in qc_issue handler{C::performance::preempt::use loacl_irq_save_nort() do not disable irq}
   + [[file:4.0/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.0]]
     [[file:4.1/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.1]]
     [[file:4.4/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.4]]
@@ -8966,7 +8966,7 @@ of ftrace}
     [[file:4.8/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.8]]
     [[file:4.9/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.9]]
     [[file:4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.11]]
-* [   4.0 -   4.11] thermal: Defer thermal wakups to threads
+* [   4.0 -   4.11] thermal: Defer thermal wakups to threads{C::feature::sched::defer thermal wakups}
   + [[file:4.0/thermal-Defer-thermal-wakups-to-threads.patch][4.0]]
   M [[file:4.1/thermal-Defer-thermal-wakups-to-threads.patch][4.1]]
     [[file:4.4/thermal-Defer-thermal-wakups-to-threads.patch][4.4]]
@@ -8974,7 +8974,7 @@ of ftrace}
   M [[file:4.8/thermal-Defer-thermal-wakups-to-threads.patch][4.8]]
     [[file:4.9/thermal-Defer-thermal-wakups-to-threads.patch][4.9]]
   M [[file:4.11/thermal-Defer-thermal-wakups-to-threads.patch][4.11]]
-* [   4.0 -   4.11] memcontrol: Prevent scheduling while atomic in cgroup code
+* [   4.0 -   4.11] memcontrol: Prevent scheduling while atomic in cgroup code{C::maintain::refactor::replace with get/put_cpu_light()}
   + [[file:4.0/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.0]]
     [[file:4.1/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.1]]
     [[file:4.4/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.4]]
@@ -8982,7 +8982,7 @@ of ftrace}
   M [[file:4.8/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.8]]
     [[file:4.9/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.9]]
     [[file:4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.11]]
-* [   4.0 -   4.11] snd/pcm: fix snd_pcm_stream_lock*() irqs_disabled() splats
+* [   4.0 -   4.11] snd/pcm: fix snd_pcm_stream_lock*() irqs_disabled() splats{C::performance::mutex::replace with nort lock}
   + [[file:4.0/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.0]]
     [[file:4.1/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.1]]
     [[file:4.4/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.4]]
@@ -8990,7 +8990,7 @@ of ftrace}
     [[file:4.8/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.8]]
     [[file:4.9/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.9]]
     [[file:4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.11]]
-* [   4.0 -   4.11] ARM: enable irq in translation/section permission fault handlers
+* [   4.0 -   4.11] ARM: enable irq in translation/section permission fault handlers{C::performance::irq::enable irq}
   + [[file:4.0/ARM-enable-irq-in-translation-section-permission-fau.patch][4.0]]
     [[file:4.1/ARM-enable-irq-in-translation-section-permission-fau.patch][4.1]]
     [[file:4.4/ARM-enable-irq-in-translation-section-permission-fau.patch][4.4]]
@@ -8998,7 +8998,7 @@ of ftrace}
     [[file:4.8/ARM-enable-irq-in-translation-section-permission-fau.patch][4.8]]
     [[file:4.9/ARM-enable-irq-in-translation-section-permission-fau.patch][4.9]]
     [[file:4.11/ARM-enable-irq-in-translation-section-permission-fau.patch][4.11]]
-* [   4.0 -   4.11] powerpc/kvm: Disable in-kernel MPIC emulation for PREEMPT_RT_FULL
+* [   4.0 -   4.11] powerpc/kvm: Disable in-kernel MPIC emulation for PREEMPT_RT_FULL{C::maintain::refactor::add !PREEMPT_RT_FULL config}
   + [[file:4.0/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.0]]
     [[file:4.1/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.1]]
     [[file:4.4/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.4]]
@@ -9006,7 +9006,7 @@ of ftrace}
     [[file:4.8/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.8]]
     [[file:4.9/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.9]]
     [[file:4.11/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.11]]
-* [   4.0 -   4.11] x86/mce: use swait queue for mce wakeups
+* [   4.0 -   4.11] x86/mce: use swait queue for mce wakeups{C::feature::sched::use swait queue for mce}
   + [[file:4.0/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.0]]
     [[file:4.1/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.1]]
     [[file:4.4/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.4]]
@@ -9014,7 +9014,7 @@ of ftrace}
   M [[file:4.8/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.8]]
   m [[file:4.9/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.9]]
   m [[file:4.11/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.11]]
-* [   4.0 -   4.11] KVM: lapic: mark LAPIC timer handler as irqsafe
+* [   4.0 -   4.11] KVM: lapic: mark LAPIC timer handler as irqsafe{C::feature::hrtimer::lapic timer handler}
   + [[file:4.0/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.0]]
     [[file:4.1/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.1]]
   M [[file:4.4/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.4]]
@@ -9022,687 +9022,687 @@ of ftrace}
     [[file:4.8/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.8]]
     [[file:4.9/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.9]]
     [[file:4.11/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.11]]
-* [   4.0 -   4.11] sched/deadline: dl_task_timer has to be irqsafe
-  + [[file:4.0/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.0]]
+* [   4.0 -   4.11] sched/deadline: dl_task_timer has to be irqsafe{C::maintain::refactor::add init timer->irqsafe}
+  + [[file:4.0/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.0]] 
     [[file:4.1/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.1]]
     [[file:4.4/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.4]]
     [[file:4.6/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.6]]
     [[file:4.8/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.8]]
     [[file:4.9/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.9]]
   m [[file:4.11/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.11]]
-* [   4.1         ] futex: Implement lockless wakeups
+* [   4.1         ] futex: Implement lockless wakeups{C::feature::lockless::lockless wakeups}
   + [[file:4.1/0002-futex-Implement-lockless-wakeups.patch][4.1]]
   - 4.4
-* [   4.1         ] sched: Implement lockless wake-queues
+* [   4.1         ] sched: Implement lockless wake-queues{C::feature::lockless::lockless wakeups queues}
   + [[file:4.1/0001-sched-Implement-lockless-wake-queues.patch][4.1]]
   - 4.4
-* [   4.1         ] futex: avoid double wake up in PI futex wait / wake on -RT
+* [   4.1         ] futex: avoid double wake up in PI futex wait / wake on -RT{C::performance::mutex::avoid double wake up}
   + [[file:4.1/futex-avoid-double-wake-up-in-PI-futex-wait-wake-on-.patch][4.1]]
   - 4.4
-* [   4.1         ] mm/slub: move slab initialization into irq enabled region
+* [   4.1         ] mm/slub: move slab initialization into irq enabled region{C::feature::mm::make allocated slab not visible to enable irq}
   + [[file:4.1/mm-slub-move-slab-initialization-into-irq-enabled-region.patch][4.1]]
   - 4.4
-* [   4.1         ] ASoC: Intel: sst: use ; instead of , at the of a C statement
+* [   4.1         ] ASoC: Intel: sst: use ; instead of , at the of a C statement{C::maintain::donothing}
   + [[file:4.1/ASoC-Intel-sst-use-instead-of-at-the-of-a-C-statemen.patch][4.1]]
   - 4.4
-* [   4.1         ] ipc/mqueue: Implement lockless pipelined wakeups
+* [   4.1         ] ipc/mqueue: Implement lockless pipelined wakeups{C::feature::lockless:: lockless pipelined wakeup}
   + [[file:4.1/0004-ipc-mqueue-Implement-lockless-pipelined-wakeups.patch][4.1]]
   - 4.4
-* [   4.1 -   4.11] Intrduce migrate_disable() + cpu_light()
+* [   4.1 -   4.11] Intrduce migrate_disable() + cpu_light(){C::feature::hardware::add migrate_disable and cpu_light()}
   + [[file:4.1/introduce_migrate_disable_cpu_light.patch][4.1]]
   M [[file:4.4/introduce_migrate_disable_cpu_light.patch][4.4]]
   M [[file:4.6/introduce_migrate_disable_cpu_light.patch][4.6]]
   m [[file:4.8/introduce_migrate_disable_cpu_light.patch][4.8]]
   m [[file:4.9/introduce_migrate_disable_cpu_light.patch][4.9]]
     [[file:4.11/introduce_migrate_disable_cpu_light.patch][4.11]]
-* [   4.1 -   4.11] i915: bogus warning from i915 when running on PREEMPT_RT
+* [   4.1 -   4.11] i915: bogus warning from i915 when running on PREEMPT_RT{C::maintain::refactor::rename function}
   + [[file:4.1/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.1]]
   m [[file:4.4/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.4]]
     [[file:4.6/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.6]]
   m [[file:4.8/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.8]]
     [[file:4.9/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.9]]
   m [[file:4.11/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][4.11]]
-* [   4.1 -   4.11] irqwork: push most work into softirq context
+* [   4.1 -   4.11] irqwork: push most work into softirq context{C::performance::softirq::push most work into softirq context }
   + [[file:4.1/irqwork-push_most_work_into_softirq_context.patch][4.1]]
   m [[file:4.4/irqwork-push_most_work_into_softirq_context.patch][4.4]]
   M [[file:4.6/irqwork-push_most_work_into_softirq_context.patch][4.6]]
   m [[file:4.8/irqwork-push_most_work_into_softirq_context.patch][4.8]]
     [[file:4.9/irqwork-push_most_work_into_softirq_context.patch][4.9]]
     [[file:4.11/irqwork-push_most_work_into_softirq_context.patch][4.11]]
-* [   4.1 -   4.11] powerpc: ps3/device-init.c - adapt to completions using swait vs wait
+* [   4.1 -   4.11] powerpc: ps3/device-init.c - adapt to completions using swait vs wait{C::maintain::refactor::replace with swait}
   + [[file:4.1/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.1]]
     [[file:4.4/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.4]]
     [[file:4.6/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.6]]
     [[file:4.8/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.8]]
     [[file:4.9/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.9]]
     [[file:4.11/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][4.11]]
-* [   4.4         ] ARM: OMAP2: Drop the concept of certain power domains not being able to lose con
+* [   4.4         ] ARM: OMAP2: Drop the concept of certain power domains not being able to lose context {C::maintain::refactor::drop the concept of some power domains code}
   + [[file:4.4/0009-ARM-OMAP2-Drop-the-concept-of-certain-power-domains-.patch][4.4]]
   - 4.6
-* [   4.4         ] mm/rmap: retry lock check in anon_vma_free()
+* [   4.4         ] mm/rmap: retry lock check in anon_vma_free(){C::feature::mm::add retry lock check , msleep()}
   + [[file:4.4/mm-rmap-retry-lock-check-in-anon_vma_free.patch_vma_free.patch][4.4]]
   - 4.6
-* [   4.4 -    4.6] rtmutex: Use chainwalking control enum
+* [   4.4 -    4.6] rtmutex: Use chainwalking control enum{C::maintain::refactor::refactor function}
   + [[file:4.4/rtmutex-Use-chainwalking-control-enum.patch][4.4]]
   m [[file:4.6/rtmutex-Use-chainwalking-control-enum.patch][4.6]]
   - 4.8
-* [   4.4 -    4.8] ipc/msg: Implement lockless pipelined wakeups
+* [   4.4 -    4.8] ipc/msg: Implement lockless pipelined wakeups{C::feature::lockless::lockless pipelined wakeups}
   + [[file:4.4/ipc-msg-Implement-lockless-pipelined-wakeups.patch][4.4]]
     [[file:4.6/ipc-msg-Implement-lockless-pipelined-wakeups.patch][4.6]]
     [[file:4.8/ipc-msg-Implement-lockless-pipelined-wakeups.patch][4.8]]
   - 4.9
-* [   4.4 -    4.8] dump stack: don't disable preemption during trace
+* [   4.4 -    4.8] dump stack: don't disable preemption during trace{C::bug::hang::preempt::preempt::replace with get_cpu_light(),migrate_disable()}
   + [[file:4.4/dump-stack-don-t-disable-preemption-during-trace.patch][4.4]]
   M [[file:4.6/dump-stack-don-t-disable-preemption-during-trace.patch][4.6]]
   m [[file:4.8/dump-stack-don-t-disable-preemption-during-trace.patch][4.8]]
   - 4.9
-* [   4.4 -   4.11] arm64/xen: Make XEN depend on !RT
+* [   4.4 -   4.11] arm64/xen: Make XEN depend on !RT{C::maintain::refactor::add !PREEMPT_RT_FULL config for xen}
   + [[file:4.4/arm64-xen--Make-XEN-depend-on-non-rt.patch][4.4]]
   m [[file:4.6/arm64-xen--Make-XEN-depend-on-non-rt.patch][4.6]]
     [[file:4.8/arm64-xen--Make-XEN-depend-on-non-rt.patch][4.8]]
     [[file:4.9/arm64-xen--Make-XEN-depend-on-non-rt.patch][4.9]]
     [[file:4.11/arm64-xen--Make-XEN-depend-on-non-rt.patch][4.11]]
-* [   4.4 -   4.11] latency_hist: Update sched_wakeup probe
+* [   4.4 -   4.11] latency_hist: Update sched_wakeup probe{C::maintain::refactor::remove success}
   + [[file:4.4/latency_hist-update-sched_wakeup-probe.patch][4.4]]
     [[file:4.6/latency_hist-update-sched_wakeup-probe.patch][4.6]]
     [[file:4.8/latency_hist-update-sched_wakeup-probe.patch][4.8]]
     [[file:4.9/latency_hist-update-sched_wakeup-probe.patch][4.9]]
     [[file:4.11/latency_hist-update-sched_wakeup-probe.patch][4.11]]
-* [   4.4 -   4.11] locking: locktorture: Do NOT include rwlock.h directly
+* [   4.4 -   4.11] locking: locktorture: Do NOT include rwlock.h directly{C::maintain::refactor::remove header file}
   + [[file:4.4/locking-locktorture-Do-NOT-include-rwlock.h-directly.patch][4.4]]
     [[file:4.6/locking-locktorture-Do-NOT-include-rwlock.h-directly.patch][4.6]]
     [[file:4.8/locking-locktorture-Do-NOT-include-rwlock.h-directly.patch][4.8]]
     [[file:4.9/locking-locktorture-Do-NOT-include-rwlock.h-directly.patch][4.9]]
     [[file:4.11/locking-locktorture-Do-NOT-include-rwlock.h-directly.patch][4.11]]
-* [   4.4 -   4.11] ARM: smp: Move clear_tasks_mm_cpumask() call to __cpu_die()
+* [   4.4 -   4.11] ARM: smp: Move clear_tasks_mm_cpumask() call to __cpu_die(){C::bug::hang::semantics::semantics::Move clear_tasks_mm_cpumask() call to __cpu_die()}
   + [[file:4.4/rfc-arm-smp-__cpu_disable-fix-sleeping-function-called-from-invalid-context.patch][4.4]]
     [[file:4.6/rfc-arm-smp-__cpu_disable-fix-sleeping-function-called-from-invalid-context.patch][4.6]]
     [[file:4.8/rfc-arm-smp-__cpu_disable-fix-sleeping-function-called-from-invalid-context.patch][4.8]]
     [[file:4.9/rfc-arm-smp-__cpu_disable-fix-sleeping-function-called-from-invalid-context.patch][4.9]]
   m [[file:4.11/rfc-arm-smp-__cpu_disable-fix-sleeping-function-called-from-invalid-context.patch][4.11]]
-* [   4.4 -   4.11] hrtimer: enfore 64byte alignment
+* [   4.4 -   4.11] hrtimer: enfore 64byte alignment{C::maintain::refactor::remove HRTIMER_CLOCK_BASE_ALIGN compile}
   + [[file:4.4/hrtimer-enfore-64byte-alignment.patch][4.4]]
     [[file:4.6/hrtimer-enfore-64byte-alignment.patch][4.6]]
     [[file:4.8/hrtimer-enfore-64byte-alignment.patch][4.8]]
     [[file:4.9/hrtimer-enfore-64byte-alignment.patch][4.9]]
     [[file:4.11/hrtimer-enfore-64byte-alignment.patch][4.11]]
-* [   4.4 -   4.11] rtmutex: trylock is okay on -RT
+* [   4.4 -   4.11] rtmutex: trylock is okay on -RT{C::feature::debuginfo::add WARN_ON}
   + [[file:4.4/rtmutex-trylock-is-okay-on-RT.patch][4.4]]
     [[file:4.6/rtmutex-trylock-is-okay-on-RT.patch][4.6]]
   M [[file:4.8/rtmutex-trylock-is-okay-on-RT.patch][4.8]]
     [[file:4.9/rtmutex-trylock-is-okay-on-RT.patch][4.9]]
     [[file:4.11/rtmutex-trylock-is-okay-on-RT.patch][4.11]]
-* [   4.4 -   4.11] pid.h: include atomic.h
+* [   4.4 -   4.11] pid.h: include atomic.h{C::maintain::refactor::add header file}
   + [[file:4.4/pid.h-include-atomic.h.patch][4.4]]
     [[file:4.6/pid.h-include-atomic.h.patch][4.6]]
     [[file:4.8/pid.h-include-atomic.h.patch][4.8]]
     [[file:4.9/pid.h-include-atomic.h.patch][4.9]]
   m [[file:4.11/pid.h-include-atomic.h.patch][4.11]]
-* [   4.4 -   4.11] net/core/cpuhotplug: Drain input_pkt_queue lockless
+* [   4.4 -   4.11] net/core/cpuhotplug: Drain input_pkt_queue lockless{C::bug::crash::uninit_var::memory::replace related function}
   + [[file:4.4/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][4.4]]
     [[file:4.6/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][4.6]]
     [[file:4.8/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][4.8]]
     [[file:4.9/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][4.9]]
     [[file:4.11/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][4.11]]
-* [   4.4 -   4.11] irqwork: Move irq safe work to irq context
+* [   4.4 -   4.11] irqwork: Move irq safe work to irq context{C::bug::softirq::softirq::order::Move irq safe work to irq context}
   + [[file:4.4/irqwork-Move-irq-safe-work-to-irq-context.patch][4.4]]
     [[file:4.6/irqwork-Move-irq-safe-work-to-irq-context.patch][4.6]]
   m [[file:4.8/irqwork-Move-irq-safe-work-to-irq-context.patch][4.8]]
     [[file:4.9/irqwork-Move-irq-safe-work-to-irq-context.patch][4.9]]
     [[file:4.11/irqwork-Move-irq-safe-work-to-irq-context.patch][4.11]]
-* [   4.4 -   4.11] x86/signal: delay calling signals on 32bit
+* [   4.4 -   4.11] x86/signal: delay calling signals on 32bit{C::maintain::refactor::remove compiling condition}
   + [[file:4.4/x86-signal-delay-calling-signals-on-32bit.patch][4.4]]
     [[file:4.6/x86-signal-delay-calling-signals-on-32bit.patch][4.6]]
     [[file:4.8/x86-signal-delay-calling-signals-on-32bit.patch][4.8]]
     [[file:4.9/x86-signal-delay-calling-signals-on-32bit.patch][4.9]]
     [[file:4.11/x86-signal-delay-calling-signals-on-32bit.patch][4.11]]
-* [   4.4 -   4.11] rbtree: don't include the rcu header
+* [   4.4 -   4.11] rbtree: don't include the rcu header{C::maintain::refactor::move RCU header from header file into c file}
   + [[file:4.4/rtmutex_dont_include_rcu.patch][4.4]]
     [[file:4.6/rtmutex_dont_include_rcu.patch][4.6]]
   M [[file:4.8/rtmutex_dont_include_rcu.patch][4.8]]
     [[file:4.9/rtmutex_dont_include_rcu.patch][4.9]]
     [[file:4.11/rtmutex_dont_include_rcu.patch][4.11]]
-* [   4.6         ] sched: use tsk_cpus_allowed() instead of accessing ->cpus_allowed
+* [   4.6         ] sched: use tsk_cpus_allowed() instead of accessing ->cpus_allowed{C::maintain::refactor::use tsk_cpus_allowed() instead of cpus_allowed()}
   + [[file:4.6/sched-use-tsk_cpus_allowed-instead-of-accessing-cpus.patch][4.6]]
   - 4.8
-* [   4.6         ] ARM: imx: always use TWD on IMX6Q
+* [   4.6         ] ARM: imx: always use TWD on IMX6Q{C::maintain::refactor::add config}
   + [[file:4.6/ARM-imx-always-use-TWD-on-IMX6Q.patch][4.6]]
   - 4.8
-* [   4.6         ] crypto/ccp: remove rwlocks_types.h
+* [   4.6         ] crypto/ccp: remove rwlocks_types.h{C::maintain::refactor::remove rwlocks_types.h}
   + [[file:4.6/crypto-ccp-remove-rwlocks_types.h.patch][4.6]]
   - 4.8
-* [   4.6         ] infiniband/ulp/ipoib: remove pkey_mutex
+* [   4.6         ] infiniband/ulp/ipoib: remove pkey_mutex{C::maintain::refactor::remove pkey_mutex}
   + [[file:4.6/infiniband-ulp-ipoib-remove-pkey_mutex.patch][4.6]]
   - 4.8
-* [   4.6         ] rcu: disable more spots of rcu_bh
+* [   4.6         ] rcu: disable more spots of rcu_bh{C::performance::smallsize::add #ifndef}
   + [[file:4.6/rcu-disable-more-spots-of-rcu_bh.patch][4.6]]
   - 4.8
-* [   4.6         ] arm+arm64: lazy-preempt: add TIF_NEED_RESCHED_LAZY to _TIF_WORK_MASK
+* [   4.6         ] arm+arm64: lazy-preempt: add TIF_NEED_RESCHED_LAZY to _TIF_WORK_MASK{C::maintain::refactor::add compile condition }
   + [[file:4.6/arm-arm64-lazy-preempt-add-TIF_NEED_RESCHED_LAZY-to-.patch][4.6]]
   - 4.8
-* [   4.6         ] preempt-lazy: Add the lazy-preemption check to preempt_schedule()
+* [   4.6         ] preempt-lazy: Add the lazy-preemption check to preempt_schedule(){C::feature::check::Add the lazy-preemption check to preempt_schedule()}
   + [[file:4.6/preempt-lazy-check-preempt_schedule.patch][4.6]]
   - 4.8
-* [   4.6         ] sched: provide a tsk_nr_cpus_allowed() helper
+* [   4.6         ] sched: provide a tsk_nr_cpus_allowed() helper{C::maintain::refactor}
   + [[file:4.6/sched-provide-a-tsk_nr_cpus_allowed-helper.patch][4.6]]
   - 4.8
-* [   4.6         ] rcu/torture: Comment out rcu_bh ops on PREEMPT_RT_FULL
+* [   4.6         ] rcu/torture: Comment out rcu_bh ops on PREEMPT_RT_FULL{C::maintain::donothing::Comment out rcu_bh ops on PREEMPT_RT_FULL}
   + [[file:4.6/rcutorture-comment-out-rcu_bh-ops-on-PREEMPT_RT_FULL.patch][4.6]]
   - 4.8
-* [   4.6         ] rtmutex: push down migrate_disable() into rt_spin_lock()
+* [   4.6         ] rtmutex: push down migrate_disable() into rt_spin_lock(){C::maintain::refactor}
   + [[file:4.6/rtmutex-push-down-migrate_disable-into-rt_spin_lock.patch][4.6]]
   - 4.8
-* [   4.6 -    4.8] locking/lglocks: Use preempt_enable/disable_nort() in lg_double_[un]lock
+* [   4.6 -    4.8] locking/lglocks: Use preempt_enable/disable_nort() in lg_double_[un]lock{C::maintain::refactor::replace with _nort()}
   + [[file:4.6/lockinglglocks_Use_preempt_enabledisable_nort()_in_lg_double_locklg_double_unlock.patch][4.6]]
     [[file:4.8/lockinglglocks_Use_preempt_enabledisable_nort.patch][4.8]]
   - 4.9
-* [   4.6 -    4.8] mm/zsmalloc: Use get/put_cpu_light in zs_map_object()/zs_unmap_object()
+* [   4.6 -    4.8] mm/zsmalloc: Use get/put_cpu_light in zs_map_object()/zs_unmap_object(){C::maintain::refactor::Use get/put_cpu_light}
   + [[file:4.6/mm-zsmalloc-Use-get-put_cpu_light-in-zs_map_object-z.patch][4.6]]
   M [[file:4.8/mm-zsmalloc-Use-get-put_cpu_light-in-zs_map_object-z.patch][4.8]]
   - 4.9
-* [   4.6 -    4.8] net: Make synchronize_rcu_expedited() conditional on !RT_FULL
+* [   4.6 -    4.8] net: Make synchronize_rcu_expedited() conditional on !RT_FULL{C::maintain::refactor::forbid synchronize_rcu_expedited() on RT_FULL}
   + [[file:4.6/net__Make_synchronize-rcu_expedited_conditional-on-non-rt.patch][4.6]]
     [[file:4.8/net__Make_synchronize-rcu_expedited_conditional-on-non-rt.patch][4.8]]
   - 4.9
-* [   4.6 -   4.11] mm: rt: Fix generic kmap_atomic for RT
+* [   4.6 -   4.11] mm: rt: Fix generic kmap_atomic for RT{C::bug::crash::na::preempt::got converted to the _nort() variant}
   + [[file:4.6/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][4.6]]
     [[file:4.8/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][4.8]]
     [[file:4.9/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][4.9]]
     [[file:4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][4.11]]
-* [   4.6 -   4.11] net/core: protect users of napi_alloc_cache against reentrance
+* [   4.6 -   4.11] net/core: protect users of napi_alloc_cache against reentrance{C::bug::corrupt::atomicity::mutex::uses a local lock}
   + [[file:4.6/net-core-protect-users-of-napi_alloc_cache-against-r.patch][4.6]]
     [[file:4.8/net-core-protect-users-of-napi_alloc_cache-against-r.patch][4.8]]
     [[file:4.9/net-core-protect-users-of-napi_alloc_cache-against-r.patch][4.9]]
   M [[file:4.11/net-core-protect-users-of-napi_alloc_cache-against-r.patch][4.11]]
-* [   4.6 -   4.11] rt/locking: Reenable migration accross schedule
+* [   4.6 -   4.11] rt/locking: Reenable migration accross schedule{C::bug::deadlock::order::order::Reenable migration accross schedule}
   + [[file:4.6/rt-locking-Reenable-migration-accross-schedule.patch][4.6]]
   m [[file:4.8/rt-locking-Reenable-migration-accross-schedule.patch][4.8]]
     [[file:4.9/rt-locking-Reenable-migration-accross-schedule.patch][4.9]]
   m [[file:4.11/rt-locking-Reenable-migration-accross-schedule.patch][4.11]]
-* [   4.6 -   4.11] net: move xmit_recursion to per-task variable on -RT
+* [   4.6 -   4.11] net: move xmit_recursion to per-task variable on -RT{C::feature::debuginfo::moves the counter to per task instead xmit_recursion}
   + [[file:4.6/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][4.6]]
   M [[file:4.8/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][4.8]]
     [[file:4.9/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][4.9]]
   M [[file:4.11/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][4.11]]
-* [   4.6 -   4.11] iommu/amd: Use WARN_ON_NORT in __attach_device()
+* [   4.6 -   4.11] iommu/amd: Use WARN_ON_NORT in __attach_device(){C::maintain::refactor::use WARN_ON_NONRT() to remove warning}
   + [[file:4.6/iommu-amd--Use-WARN_ON_NORT.patch][4.6]]
     [[file:4.8/iommu-amd--Use-WARN_ON_NORT.patch][4.8]]
     [[file:4.9/iommu-amd--Use-WARN_ON_NORT.patch][4.9]]
     [[file:4.11/iommu-amd--Use-WARN_ON_NORT.patch][4.11]]
-* [   4.6 -   4.11] tick/broadcast: Make broadcast hrtimer irqsafe
+* [   4.6 -   4.11] tick/broadcast: Make broadcast hrtimer irqsafe{C::performance::hrtimer::add irqsafe = true}
   + [[file:4.6/tick-broadcast--Make-hrtimer-irqsafe.patch][4.6]]
     [[file:4.8/tick-broadcast--Make-hrtimer-irqsafe.patch][4.8]]
     [[file:4.9/tick-broadcast--Make-hrtimer-irqsafe.patch][4.9]]
     [[file:4.11/tick-broadcast--Make-hrtimer-irqsafe.patch][4.11]]
-* [   4.6 -   4.11] rtmutex: Handle non enqueued waiters gracefully
+* [   4.6 -   4.11] rtmutex: Handle non enqueued waiters gracefully{C::bug::crash::semantics::semantics::add and change if_condition}
   + [[file:4.6/rtmutex--Handle-non-enqueued-waiters-gracefully.patch][4.6]]
     [[file:4.8/rtmutex--Handle-non-enqueued-waiters-gracefully.patch][4.8]]
     [[file:4.9/rtmutex--Handle-non-enqueued-waiters-gracefully.patch][4.9]]
   m [[file:4.11/rtmutex--Handle-non-enqueued-waiters-gracefully.patch][4.11]]
-* [   4.6 -   4.11] KVM: arm/arm64: downgrade preempt_disable()d region to migrate_disable()
+* [   4.6 -   4.11] KVM: arm/arm64: downgrade preempt_disable()d region to migrate_disable(){C::feature::rtsupport::add preemptible region}
   + [[file:4.6/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][4.6]]
     [[file:4.8/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][4.8]]
     [[file:4.9/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][4.9]]
     [[file:4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][4.11]]
-* [   4.6 -   4.11] drm,i915: Use local_lock/unlock_irq() in intel_pipe_update_start/end()
+* [   4.6 -   4.11] drm,i915: Use local_lock/unlock_irq() in intel_pipe_update_start/end(){C::maintain::refactor::replace local_irq_enable with local_unlock_irq()}
   + [[file:4.6/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][4.6]]
   m [[file:4.8/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][4.8]]
   m [[file:4.9/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][4.9]]
     [[file:4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][4.11]]
-* [   4.6 -    4.9] sc16is7xx: Drop bogus use of IRQF_ONESHOT
+* [   4.6 -    4.9] sc16is7xx: Drop bogus use of IRQF_ONESHOT{C::bug::deadlock::na::irq::remove IRQF_ONESHOT parameter}
   + [[file:4.6/sc16is7xx_Drop_bogus_use_of_IRQF_ONESHOT.patch][4.6]]
     [[file:4.8/sc16is7xx_Drop_bogus_use_of_IRQF_ONESHOT.patch][4.8]]
     [[file:4.9/sc16is7xx_Drop_bogus_use_of_IRQF_ONESHOT.patch][4.9]]
   - 4.11
-* [   4.6 -   4.11] ptrace: don't open IRQs in ptrace_freeze_traced() too early
+* [   4.6 -   4.11] ptrace: don't open IRQs in ptrace_freeze_traced() too early{C::performance::irq::add flags parameter to delayed opening interrupt}
   + [[file:4.6/ptrace-don-t-open-IRQs-in-ptrace_freeze_traced-too-e.patch][4.6]]
     [[file:4.8/ptrace-don-t-open-IRQs-in-ptrace_freeze_traced-too-e.patch][4.8]]
     [[file:4.9/ptrace-don-t-open-IRQs-in-ptrace_freeze_traced-too-e.patch][4.9]]
     [[file:4.11/ptrace-don-t-open-IRQs-in-ptrace_freeze_traced-too-e.patch][4.11]]
-* [   4.6 -   4.11] clockevents/drivers/timer-atmel-pit: fix double free_irq
+* [   4.6 -   4.11] clockevents/drivers/timer-atmel-pit: fix double free_irq{C::bug::irq::irq::irq::fix double free_irq}
   + [[file:4.6/clockevents-drivers-timer-atmel-pit-fix-double-free_.patch][4.6]]
     [[file:4.8/clockevents-drivers-timer-atmel-pit-fix-double-free_.patch][4.8]]
     [[file:4.9/clockevents-drivers-timer-atmel-pit-fix-double-free_.patch][4.9]]
     [[file:4.11/clockevents-drivers-timer-atmel-pit-fix-double-free_.patch][4.11]]
-* [   4.6 -   4.11] list_bl: fixup bogus lockdep warning
+* [   4.6 -   4.11] list_bl: fixup bogus lockdep warning{C::bug::data_err::semantics::semantics::prevent the lockdep class object share}
   + [[file:4.6/list_bl-fixup-bogus-lockdep-warning.patch][4.6]]
     [[file:4.8/list_bl-fixup-bogus-lockdep-warning.patch][4.8]]
     [[file:4.9/list_bl-fixup-bogus-lockdep-warning.patch][4.9]]
     [[file:4.11/list_bl-fixup-bogus-lockdep-warning.patch][4.11]]
-* [   4.6 -   4.11] trace/latency-hist: Consider new argument when probing the sched_switch tracer
+* [   4.6 -   4.11] trace/latency-hist: Consider new argument when probing the sched_switch tracer{C::maintain::refactor::add var}
   + [[file:4.6/trace-latency-hist-Consider-new-argument-when-probin.patch][4.6]]
     [[file:4.8/trace-latency-hist-Consider-new-argument-when-probin.patch][4.8]]
     [[file:4.9/trace-latency-hist-Consider-new-argument-when-probin.patch][4.9]]
     [[file:4.11/trace-latency-hist-Consider-new-argument-when-probin.patch][4.11]]
-* [   4.6 -   4.11] kernel: softirq: unlock with irqs on
+* [   4.6 -   4.11] kernel: softirq: unlock with irqs on{C::bug::irq::irq::irq::add local_irq_enable/disable pairs}
   + [[file:4.6/kernel-softirq-unlock-with-irqs-on.patch][4.6]]
     [[file:4.8/kernel-softirq-unlock-with-irqs-on.patch][4.8]]
     [[file:4.9/kernel-softirq-unlock-with-irqs-on.patch][4.9]]
     [[file:4.11/kernel-softirq-unlock-with-irqs-on.patch][4.11]]
-* [   4.6 -   4.11] drivers/block/zram: Replace bit spinlocks with rtmutex for -rt
+* [   4.6 -   4.11] drivers/block/zram: Replace bit spinlocks with rtmutex for -rt{C::feature::rtsupport::Replace bit spinlocks with rtmutex }
   + [[file:4.6/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][4.6]]
   m [[file:4.8/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][4.8]]
     [[file:4.9/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][4.9]]
   m [[file:4.11/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][4.11]]
-* [   4.6 -   4.11] mm: backing-dev: don't disable IRQs in wb_congested_put()
+* [   4.6 -   4.11] mm: backing-dev: don't disable IRQs in wb_congested_put(){C::feature::mm::add irq region}
   + [[file:4.6/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][4.6]]
     [[file:4.8/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][4.8]]
     [[file:4.9/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][4.9]]
     [[file:4.11/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][4.11]]
-* [   4.6 -   4.11] trace: Use rcuidle version for preemptoff_hist trace point
+* [   4.6 -   4.11] trace: Use rcuidle version for preemptoff_hist trace point{C::bug::data_err::semantics::semantics::replace trace_preempt_off to rcuidle}
   + [[file:4.6/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.6]]
     [[file:4.8/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.8]]
     [[file:4.9/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.9]]
     [[file:4.11/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.11]]
-* [   4.6 -   4.11] net: dev: always take qdisc's busylock in __dev_xmit_skb()
+* [   4.6 -   4.11] net: dev: always take qdisc's busylock in __dev_xmit_skb(){C::bug::hang::preempt::mutex::add busylock}
   + [[file:4.6/net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch][4.6]]
   m [[file:4.8/net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch][4.8]]
     [[file:4.9/net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch][4.9]]
     [[file:4.11/net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch][4.11]]
-* [   4.6 -   4.11] genirq: update irq_set_irqchip_state documentation
+* [   4.6 -   4.11] genirq: update irq_set_irqchip_state documentation{C::maintain::donothing::add comment}
   + [[file:4.6/genirq-update-irq_set_irqchip_state-documentation.patch][4.6]]
     [[file:4.8/genirq-update-irq_set_irqchip_state-documentation.patch][4.8]]
     [[file:4.9/genirq-update-irq_set_irqchip_state-documentation.patch][4.9]]
     [[file:4.11/genirq-update-irq_set_irqchip_state-documentation.patch][4.11]]
-* [   4.6 -   4.11] arm: at91: do not disable/enable clocks in a row
+* [   4.6 -   4.11] arm: at91: do not disable/enable clocks in a row{C::performance::hrtimer::disable/enable clock one line later to avoid needless warning}
   + [[file:4.6/at91_dont_enable_disable_clock.patch][4.6]]
     [[file:4.8/at91_dont_enable_disable_clock.patch][4.8]]
     [[file:4.9/at91_dont_enable_disable_clock.patch][4.9]]
     [[file:4.11/at91_dont_enable_disable_clock.patch][4.11]]
-* [   4.6 -   4.11] net: provide a way to delegate processing a softirq to ksoftirqd
+* [   4.6 -   4.11] net: provide a way to delegate processing a softirq to ksoftirqd{C::feature::sched::provide a way raises the softirq in the ksoftird}
   + [[file:4.6/net-provide-a-way-to-delegate-processing-a-softirq-t.patch][4.6]]
     [[file:4.8/net-provide-a-way-to-delegate-processing-a-softirq-t.patch][4.8]]
     [[file:4.9/net-provide-a-way-to-delegate-processing-a-softirq-t.patch][4.9]]
   m [[file:4.11/net-provide-a-way-to-delegate-processing-a-softirq-t.patch][4.11]]
-* [   4.6 -   4.11] latencyhist: disable jump-labels
+* [   4.6 -   4.11] latencyhist: disable jump-labels{C::maintain::refactor::add config}
   + [[file:4.6/latencyhist-disable-jump-labels.patch][4.6]]
     [[file:4.8/latencyhist-disable-jump-labels.patch][4.8]]
     [[file:4.9/latencyhist-disable-jump-labels.patch][4.9]]
     [[file:4.11/latencyhist-disable-jump-labels.patch][4.11]]
-* [   4.6 -    4.9] kernel: migrate_disable() do fastpath in atomic & irqs-off
+* [   4.6 -    4.9] kernel: migrate_disable() do fastpath in atomic & irqs-off{C::maintain::refactor::refactor migrate_enable/disable}
   + [[file:4.6/kernel-migrate_disable-do-fastpath-in-atomic-irqs-of.patch][4.6]]
     [[file:4.8/kernel-migrate_disable-do-fastpath-in-atomic-irqs-of.patch][4.8]]
     [[file:4.9/kernel-migrate_disable-do-fastpath-in-atomic-irqs-of.patch][4.9]]
   - 4.11
-* [   4.6 -   4.11] tty: serial: 8250: don't take the trylock during oops
+* [   4.6 -   4.11] tty: serial: 8250: don't take the trylock during oops{C::bug::crash::semantics::semantics::skip the trylock in the oops}
   + [[file:4.6/tty-serial-8250-don-t-take-the-trylock-during-oops.patch][4.6]]
     [[file:4.8/tty-serial-8250-don-t-take-the-trylock-during-oops.patch][4.8]]
     [[file:4.9/tty-serial-8250-don-t-take-the-trylock-during-oops.patch][4.9]]
     [[file:4.11/tty-serial-8250-don-t-take-the-trylock-during-oops.patch][4.11]]
-* [   4.6 -   4.11] softirq: split timer softirqs out of ksoftirqd
+* [   4.6 -   4.11] softirq: split timer softirqs out of ksoftirqd{C::bug::softirq::softirq::softirq::split timer softirqs out of ksoftirqd}
   + [[file:4.6/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.6]]
     [[file:4.8/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.8]]
   M [[file:4.9/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.9]]
     [[file:4.11/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.11]]
-* [   4.6 -   4.11] kernel/perf: mark perf_cpu_context's timer as irqsafe
+* [   4.6 -   4.11] kernel/perf: mark perf_cpu_context's timer as irqsafe{C::feature::debuginfo::set irqsafe to remove warning info}
   + [[file:4.6/kernel-perf-mark-perf_cpu_context-s-timer-as-irqsafe.patch][4.6]]
     [[file:4.8/kernel-perf-mark-perf_cpu_context-s-timer-as-irqsafe.patch][4.8]]
     [[file:4.9/kernel-perf-mark-perf_cpu_context-s-timer-as-irqsafe.patch][4.9]]
     [[file:4.11/kernel-perf-mark-perf_cpu_context-s-timer-as-irqsafe.patch][4.11]]
-* [   4.6 -   4.11] drm,radeon,i915: Use preempt_disable/enable_rt() where recommended
+* [   4.6 -   4.11] drm,radeon,i915: Use preempt_disable/enable_rt() where recommended{}{C::performance::preempt::add preempt_disable/enable_rt()}
   + [[file:4.6/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.6]]
     [[file:4.8/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.8]]
     [[file:4.9/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.9]]
     [[file:4.11/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.11]]
-* [   4.8         ] mm: filemap: fix mapping->nrpages double accounting in fuse
+* [   4.8         ] mm: filemap: fix mapping->nrpages double accounting in fuse{C::bug::data_err::err_var::memory::remove nrpages}
   + [[file:4.8/mm-filemap-fix-mapping-nrpages-double-accounting-in-.patch][4.8]]
   - 4.9
-* [   4.8         ] lockdep: Quiet gcc about dangerous __builtin_return_address() operations
+* [   4.8         ] lockdep: Quiet gcc about dangerous __builtin_return_address() operations{C::feature::debuginfo::add config}
   + [[file:4.8/lockdep-Quiet-gcc-about-dangerous-__builtin_return_a.patch][4.8]]
   - 4.9
-* [   4.8         ] jbd2: Fix lockdep annotation in add_transaction_credits()
+* [   4.8         ] jbd2: Fix lockdep annotation in add_transaction_credits(){C::bug::hang::semantics::order::move function into unlocked places}
   + [[file:4.8/jbd2-Fix-lockdep-annotation-in-add_transaction_credi.patch][4.8]]
   - 4.9
-* [   4.8         ] Using BUG_ON() as an assert() is _never_ acceptable
+* [   4.8         ] Using BUG_ON() as an assert() is _never_ acceptable{C::feature::debuginfo::replace VM_BUG_ON() with VM_BUG_ON()_ONCE()}
   + [[file:4.8/Using-BUG_ON-as-an-assert-is-_never_-acceptable.patch][4.8]]
   - 4.9
-* [   4.8         ] mm: filemap: don't plant shadow entries without radix tree node
+* [   4.8         ] mm: filemap: don't plant shadow entries without radix tree node{C::bug::leak::err_var::memory}
   + [[file:4.8/mm-filemap-don-t-plant-shadow-entries-without-radix-.patch][4.8]]
   - 4.9
-* [   4.8 -   4.11] rbtree: include rcu.h because we use it
+* [   4.8 -   4.11] rbtree: include rcu.h because we use it{C::maintain::refactor::add header file}
   + [[file:4.8/rbtree-include-rcu.h-because-we-use-it.patch][4.8]]
     [[file:4.9/rbtree-include-rcu.h-because-we-use-it.patch][4.9]]
   M [[file:4.11/rbtree-include-rcu.h-because-we-use-it.patch][4.11]]
-* [   4.8 -   4.11] iommu/iova: don't disable preempt around this_cpu_ptr()
+* [   4.8 -   4.11] iommu/iova: don't disable preempt around this_cpu_ptr(){C::performance::preempt::don't disable preempt around this_cpu_ptr}
   + [[file:4.8/iommu-iova-don-t-disable-preempt-around-this_cpu_ptr.patch][4.8]]
     [[file:4.9/iommu-iova-don-t-disable-preempt-around-this_cpu_ptr.patch][4.9]]
     [[file:4.11/iommu-iova-don-t-disable-preempt-around-this_cpu_ptr.patch][4.11]]
-* [   4.8 -   4.11] mm/memcontrol: mem_cgroup_migrate() - replace another local_irq_disable() w. loc
+* [   4.8 -   4.11] mm/memcontrol: mem_cgroup_migrate() - replace another local_irq_disable() w. loc{C::maintain::refactor::replace another local_irq_disable()}
   + [[file:4.8/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][4.8]]
     [[file:4.9/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][4.9]]
     [[file:4.11/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][4.11]]
-* [   4.8 -   4.11] net: add a lock around icmp_sk()
+* [   4.8 -   4.11] net: add a lock around icmp_sk(){C::feature::rtsupport::add lock avoid missing serialization}
   + [[file:4.8/net-add-a-lock-around-icmp_sk.patch][4.8]]
     [[file:4.9/net-add-a-lock-around-icmp_sk.patch][4.9]]
   M [[file:4.11/net-add-a-lock-around-icmp_sk.patch][4.11]]
-* [   4.8 -   4.11] fs/dcache: init in_lookup_hashtable
+* [   4.8 -   4.11] fs/dcache: init in_lookup_hashtable{C::bug::data_err::uninit_var::memory::in_lookup_hashtable}
   + [[file:4.8/fs-dcache-init-in_lookup_hashtable.patch][4.8]]
     [[file:4.9/fs-dcache-init-in_lookup_hashtable.patch][4.9]]
     [[file:4.11/fs-dcache-init-in_lookup_hashtable.patch][4.11]]
-* [   4.8 -   4.11] fs/dcache: use swait_queue instead of waitqueue
+* [   4.8 -   4.11] fs/dcache: use swait_queue instead of waitqueue{C::feature::rtsupport::swait_queue instead of waitqueue}
   + [[file:4.8/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][4.8]]
     [[file:4.9/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][4.9]]
     [[file:4.11/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][4.11]]
-* [   4.8 -   4.11] net/Qdisc: use a seqlock instead seqcount
+* [   4.8 -   4.11] net/Qdisc: use a seqlock instead seqcount{C::feature::rtsupport::use a seqlock instead seqcount}
   + [[file:4.8/net-Qdisc-use-a-seqlock-instead-seqcount.patch][4.8]]
   m [[file:4.9/net-Qdisc-use-a-seqlock-instead-seqcount.patch][4.9]]
   m [[file:4.11/net-Qdisc-use-a-seqlock-instead-seqcount.patch][4.11]]
-* [   4.8 -   4.11] mm: perform lru_add_drain_all() remotely
+* [   4.8 -   4.11] mm: perform lru_add_drain_all() remotely{C::bug::leak::overflow::memory::drain the LRU pagevecs of remote CPUs}
   + [[file:4.8/mm-perform-lru_add_drain_all-remotely.patch][4.8]]
     [[file:4.9/mm-perform-lru_add_drain_all-remotely.patch][4.9]]
   M [[file:4.11/mm-perform-lru_add_drain_all-remotely.patch][4.11]]
-* [   4.8 -   4.11] net: add back the missing serialization in ip_send_unicast_reply()
+* [   4.8 -   4.11] net: add back the missing serialization in ip_send_unicast_reply(){C::bug::crash::atomicity::mutex::add old lock}
   + [[file:4.8/net-add-back-the-missing-serialization-in-ip_send_un.patch][4.8]]
     [[file:4.9/net-add-back-the-missing-serialization-in-ip_send_un.patch][4.9]]
   m [[file:4.11/net-add-back-the-missing-serialization-in-ip_send_un.patch][4.11]]
-* [   4.8 -   4.11] timer: make the base lock raw
+* [   4.8 -   4.11] timer: make the base lock raw{C::feature::rtsupport::replace with raw}
   + [[file:4.8/timer-make-the-base-lock-raw.patch][4.8]]
     [[file:4.9/timer-make-the-base-lock-raw.patch][4.9]]
   m [[file:4.11/timer-make-the-base-lock-raw.patch][4.11]]
-* [   4.8 -    4.9] kernel/futex: don't deboost too early
+* [   4.8 -    4.9] kernel/futex: don't deboost too early{C::bug::livelock::livelock::order::do unlock without deboost and deboost after wake up waiter}
   + [[file:4.8/kernel-futex-don-t-deboost-too-early.patch][4.8]]
     [[file:4.9/kernel-futex-don-t-deboost-too-early.patch][4.9]]
   - 4.11
-* [   4.8 -   4.11] iommu/vt-d: don't disable preemption while accessing deferred_flush()
+* [   4.8 -   4.11] iommu/vt-d: don't disable preemption while accessing deferred_flush(){C::feature::rtsupport::don't disable preemption while accessing deferred_flush()}
   + [[file:4.8/iommu-vt-d-don-t-disable-preemption-while-accessing-.patch][4.8]]
     [[file:4.9/iommu-vt-d-don-t-disable-preemption-while-accessing-.patch][4.9]]
     [[file:4.11/iommu-vt-d-don-t-disable-preemption-while-accessing-.patch][4.11]]
-* [   4.8 -    4.9] gpu: don't check for the lock owner.
+* [   4.8 -    4.9] gpu: don't check for the lock owner.{C::feature::debuginfo::don't check for the lock owner}
   + [[file:4.8/gpu_don_t_check_for_the_lock_owner.patch][4.8]]
     [[file:4.9/gpu_don_t_check_for_the_lock_owner.patch][4.9]]
   - 4.11
-* [   4.8 -   4.11] fs/nfs: turn rmdir_sem into a semaphore
+* [   4.8 -   4.11] fs/nfs: turn rmdir_sem into a semaphore{C::feature::rtsupport::turn rmdir_sem into a semaphore}
   + [[file:4.8/fs-nfs-turn-rmdir_sem-into-a-semaphore.patch][4.8]]
     [[file:4.9/fs-nfs-turn-rmdir_sem-into-a-semaphore.patch][4.9]]
     [[file:4.11/fs-nfs-turn-rmdir_sem-into-a-semaphore.patch][4.11]]
-* [   4.8 -   4.11] kernel/printk: Don't try to print from IRQ/NMI region
+* [   4.8 -   4.11] kernel/printk: Don't try to print from IRQ/NMI region{C::feature::debuginfo::Don't try to print from IRQ/NMI region}
   + [[file:4.8/kernel-printk-Don-t-try-to-print-from-IRQ-NMI-region.patch][4.8]]
     [[file:4.9/kernel-printk-Don-t-try-to-print-from-IRQ-NMI-region.patch][4.9]]
     [[file:4.11/kernel-printk-Don-t-try-to-print-from-IRQ-NMI-region.patch][4.11]]
-* [   4.8 -    4.9] fs/dcache: include wait.h
+* [   4.8 -    4.9] fs/dcache: include wait.h{C::maintain::refactor::include wait.h}
   + [[file:4.8/fs-dcache-include-wait.h.patch][4.8]]
     [[file:4.9/fs-dcache-include-wait.h.patch][4.9]]
   - 4.11
-* [   4.8 -   4.11] locallock: add local_lock_on()
+* [   4.8 -   4.11] locallock: add local_lock_on(){C::feature::rtsupport::add local_lock_on()}
   + [[file:4.8/locallock-add-local_lock_on.patch][4.8]]
     [[file:4.9/locallock-add-local_lock_on.patch][4.9]]
     [[file:4.11/locallock-add-local_lock_on.patch][4.11]]
-* [   4.9 -   4.11] locking/percpu-rwsem: Remove preempt_disable variants
+* [   4.9 -   4.11] locking/percpu-rwsem: Remove preempt_disable variants{C::performance::preempt::remove preempt_disable variants}
   + [[file:4.9/peterz-percpu-rwsem-rt.patch][4.9]]
     [[file:4.11/peterz-percpu-rwsem-rt.patch][4.11]]
-* [   4.9 -   4.11] net: Have __napi_schedule_irqoff() disable interrupts on RT
+* [   4.9 -   4.11] net: Have __napi_schedule_irqoff() disable interrupts on {C::maintain::refactor::add config,refactor function}
   + [[file:4.9/net-Have-__napi_schedule_irqoff-disable-interrupts-o.patch][4.9]]
   m [[file:4.11/net-Have-__napi_schedule_irqoff-disable-interrupts-o.patch][4.11]]
-* [   4.9 -   4.11] rxrpc: remove unused static variables
+* [   4.9 -   4.11] rxrpc: remove unused static variables{C::maintain::refactor::remove unused variable}
   + [[file:4.9/rxrpc-remove-unused-static-variables.patch][4.9]]
     [[file:4.11/rxrpc-remove-unused-static-variables.patch][4.11]]
-* [   4.9 -   4.11] connector/cn_proc: Protect send_msg() with a local lock on RT
+* [   4.9 -   4.11] connector/cn_proc: Protect send_msg() with a local lock on RT{C::bug::deadlock::deadlock::preempt::repace with local lock}
   + [[file:4.9/connector-cn_proc-Protect-send_msg-with-a-local-lock.patch][4.9]]
     [[file:4.11/connector-cn_proc-Protect-send_msg-with-a-local-lock.patch][4.11]]
-* [   4.9 -   4.11] drivers/zram: Don't disable preemption in zcomp_stream_get/put()
+* [   4.9 -   4.11] drivers/zram: Don't disable preemption in zcomp_stream_get/put(){C::bug::irq::preempt::preempt::add new lock , reorder lock order}
   + [[file:4.9/drivers-zram-Don-t-disable-preemption-in-zcomp_strea.patch][4.9]]
   M [[file:4.11/drivers-zram-Don-t-disable-preemption-in-zcomp_strea.patch][4.11]]
-* [   4.9 -   4.11] NFSv4: replace seqcount_t with a seqlock_t
+* [   4.9 -   4.11] NFSv4: replace seqcount_t with a seqlock_t{C::feature::rtsupport::replace with seqlock_t}
   + [[file:4.9/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][4.9]]
   m [[file:4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][4.11]]
-* [   4.9         ] btrfs: drop trace_btrfs_all_work_done() from normal_work_helper()
+* [   4.9         ] btrfs: drop trace_btrfs_all_work_done() from normal_work_helper(){C::feature::debuginfo::remove code}
   + [[file:4.9/btrfs-drop-trace_btrfs_all_work_done-from-normal_wor.patch][4.9]]
   - 4.11
-* [   4.9 -   4.11] kernel/sched: move stack + kprobe clean up to __put_task_struct()
+* [   4.9 -   4.11] kernel/sched: move stack + kprobe clean up to __put_task_struct(){C::maintain::refactor::reorder code}
   + [[file:4.9/kernel-sched-move-stack-kprobe-clean-up-to-__put_tas.patch][4.9]]
     [[file:4.11/kernel-sched-move-stack-kprobe-clean-up-to-__put_tas.patch][4.11]]
-* [   4.9 -   4.11] ftrace: Fix trace header alignment
+* [   4.9 -   4.11] ftrace: Fix trace header alignment{C::maintain::refactor}
   + [[file:4.9/ftrace-Fix-trace-header-alignment.patch][4.9]]
     [[file:4.11/ftrace-Fix-trace-header-alignment.patch][4.11]]
-* [   4.9         ] locking/percpu-rwsem: use swait for the wating writer
+* [   4.9         ] locking/percpu-rwsem: use swait for the wating writer{C::performance::mutex::replace with swait}
   + [[file:4.9/locking-percpu-rwsem-use-swait-for-the-wating-writer.patch][4.9]]
   - 4.11
-* [   4.9 -   4.11] arm: include definition for cpumask_t
+* [   4.9 -   4.11] arm: include definition for cpumask_t{C::maintain::refactor::add header }
   + [[file:4.9/arm-include-definition-for-cpumask_t.patch][4.9]]
     [[file:4.11/arm-include-definition-for-cpumask_t.patch][4.11]]
-* [   4.9         ] rcu: update: make RCU_EXPEDITE_BOOT default
+* [   4.9         ] rcu: update: make RCU_EXPEDITE_BOOT default{C::maintain::refactor::change config to make RCU_EXPEDITE_BOOT default}
   + [[file:4.9/rcu-update-make-RCU_EXPEDITE_BOOT-default.patch][4.9]]
   - 4.11
-* [   4.9         ] btrfs: swap free() and trace point in run_ordered_work()
+* [   4.9         ] btrfs: swap free() and trace point in run_ordered_work(){C::maintain::refactor::reorder}
   + [[file:4.9/btrfs-swap-free-and-trace-point-in-run_ordered_work.patch][4.9]]
   - 4.11
-* [   4.9 -   4.11] rcu: enable rcu_normal_after_boot by default for RT
+* [   4.9 -   4.11] rcu: enable rcu_normal_after_boot by default for RT{C::feature::rtsupport::rcu_normal_after_boot by default}
   + [[file:4.9/rcu-enable-rcu_normal_after_boot-by-default-for-RT.patch][4.9]]
     [[file:4.11/rcu-enable-rcu_normal_after_boot-by-default-for-RT.patch][4.11]]
-* [   4.9         ] x86/apic: get rid of "warning: 'acpi_ioapic_lock' defined but not used"
+* [   4.9         ] x86/apic: get rid of "warning: 'acpi_ioapic_lock' defined but not used"{C::feature::debuginfo::add #ifdef to remove warning}
   + [[file:4.9/x86-apic-get-rid-of-warning-acpi_ioapic_lock-defined.patch][4.9]]
   - 4.11
-* [   4.9 -   4.11] mm/zsmalloc: copy with get_cpu_var() and locking
+* [   4.9 -   4.11] mm/zsmalloc: copy with get_cpu_var() and locking{C::feature::rtsupport::replace with get_lock_var() and mutex lock}
   + [[file:4.9/mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch][4.9]]
     [[file:4.11/mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch][4.11]]
-* [   4.9 -   4.11] arm: kprobe: replace patch_lock to raw lock
+* [   4.9 -   4.11] arm: kprobe: replace patch_lock to raw lock{C::bug::deadlock::atomicity::mutex::replace with raw lock}
   + [[file:4.9/arm-kprobe-replace-patch_lock-to-raw-lock.patch][4.9]]
     [[file:4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][4.11]]
-* [  4.11         ] sched/clock: Fix early boot preempt assumption in __set_sched_clock_stable()
+* [  4.11         ] sched/clock: Fix early boot preempt assumption in __set_sched_clock_stable{C::bug::crash::atomicity::preempt::add lock to disable preempt}
   + [[file:4.11/0001-sched-clock-Fix-early-boot-preempt-assumption-in-__s.patch][4.11]]
-* [  4.11         ] sched/core: Enable might_sleep() and smp_processor_id() checks early
+* [  4.11         ] sched/core: Enable might_sleep() and smp_processor_id() checks early{C::feature::debuginfo::enable might_sleep()and smp_processor_id() checks}
   + [[file:4.11/0017-sched-core-Enable-might_sleep-and-smp_processor_id-c.patch][4.11]]
-* [  4.11         ] sched: Remove TASK_ALL
+* [  4.11         ] sched: Remove TASK_ALL{C::maintain::refactor::remove code}
   + [[file:4.11/sched-Remove-TASK_ALL.patch][4.11]]
-* [  4.11         ] ia64/topology: Remove cpus_allowed manipulation
+* [  4.11         ] ia64/topology: Remove cpus_allowed manipulation{C::feature::hardware::remove cpus_allowed-manipulation}
   + [[file:4.11/0001-ia64-topology-Remove-cpus_allowed-manipulation.patch][4.11]]
-* [  4.11         ] random: avoid preempt_disable()ed section
+* [  4.11         ] random: avoid preempt_disable()ed section{C::bug::hang::semantics::preempt::replace sleeping lock with local lock}
   + [[file:4.11/random-avoid-preempt_disable-ed-section.patch][4.11]]
-* [  4.11         ] futex: Clarify mark_wake_futex memory barrier usage
+* [  4.11         ] futex: Clarify mark_wake_futex memory barrier usage{C::maintain::donothing::add comment}
   + [[file:4.11/0003-futex-Clarify-mark_wake_futex-memory-barrier-usage.patch][4.11]]
-* [  4.11         ] x86/smp: Adjust system_state check
+* [  4.11         ] x86/smp: Adjust system_state check{C::feature::debuginfo::change condition of if to adjust system_state check}
   + [[file:4.11/0004-x86-smp-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] drm/i915: init spinlock properly on -RT
+* [  4.11         ] drm/i915: init spinlock properly on -RT{C::feature::rtsupport::add rt-lock init}
   + [[file:4.11/drm-i915-init-spinlock-properly-on-RT.patch][4.11]]
-* [  4.11         ] powerpc/smp: Replace open coded task affinity logic
+* [  4.11         ] powerpc/smp: Replace open coded task affinity logic{C::performance::smallsize::replace with work_on_cpu_safe()}
   + [[file:4.11/0005-powerpc-smp-Replace-open-coded-task-affinity-logic.patch][4.11]]
-* [  4.11         ] sched/deadline/rtmutex: Dont miss the dl_runtime/dl_period update
+* [  4.11         ] sched/deadline/rtmutex: Dont miss the dl_runtime/dl_period update{C::feature::sched::add !dl_prio() condition to force deadline task not out}
   + [[file:4.11/0003-sched-deadline-rtmutex-Dont-miss-the-dl_runtime-dl_p.patch][4.11]]
-* [  4.11         ] futex,rt_mutex: Provide futex specific rt_mutex API
+* [  4.11         ] futex,rt_mutex: Provide futex specific rt_mutex API{C::performance::mutex::remove unnecessary function for rt_mutex}
   + [[file:4.11/0004-futex-rt_mutex-Provide-futex-specific-rt_mutex-API.patch][4.11]]
-* [  4.11         ] futex: Remove rt_mutex_deadlock_account_*()
+* [  4.11         ] futex: Remove rt_mutex_deadlock_account_*(){C::maintain::refactor::remove unused code}
   + [[file:4.11/0003-futex-Remove-rt_mutex_deadlock_account_.patch][4.11]]
-* [  4.11         ] mm: Adjust system_state check
+* [  4.11         ] mm: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0008-mm-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] cpuset: Convert callback_lock to raw_spinlock_t
+* [  4.11         ] cpuset: Convert callback_lock to raw_spinlock_t{C::feature::rtsupport::replace with raw}
   + [[file:4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][4.11]]
-* [  4.11         ] printk: Adjust system_state checks
+* [  4.11         ] printk: Adjust system_state checks{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0014-printk-Adjust-system_state-checks.patch][4.11]]
-* [  4.11         ] lockdep: Fix compilation error for !CONFIG_MODULES and !CONFIG_SMP
+* [  4.11         ] lockdep: Fix compilation error for !CONFIG_MODULES and !CONFIG_SMP{C::bug::compile::compiling_err::config::add function for both cases}
   + [[file:4.11/lockdep-Fix-compilation-error-for-CONFIG_MODULES-and.patch][4.11]]
-* [  4.11         ] async: Adjust system_state checks
+* [  4.11         ] async: Adjust system_state checks{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0012-async-Adjust-system_state-checks.patch][4.11]]
-* [  4.11         ] cpu/hotplug: Use stop_machine_cpuslocked() in takedown_cpu()
+* [  4.11         ] cpu/hotplug: Use stop_machine_cpuslocked() in takedown_cpu(){C::bug::na::hardware::hardware::replace with _cpuslocked()}
   + [[file:4.11/0017-cpu-hotplug-Use-stop_machine_cpuslocked-in-takedown_.patch][4.11]]
-* [  4.11         ] arm64: Adjust system_state check
+* [  4.11         ] arm64: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0003-arm64-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] futex: Fix small (and harmless looking) inconsistencies
+* [  4.11         ] futex: Fix small (and harmless looking) inconsistencies{C::maintain::refactor::fix small inconsisten}
   + [[file:4.11/0002-futex-Fix-small-and-harmless-looking-inconsistencies.patch][4.11]]
-* [  4.11         ] ACPI/processor: Use cpu_hotplug_disable() instead of get_online_cpus()
+* [  4.11         ] ACPI/processor: Use cpu_hotplug_disable() instead of get_online_cpus(){C::feature::check::replace with cpu_hotplug_disable() to add lockdep}
   + [[file:4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][4.11]]
-* [  4.11         ] s390/kernel: Use stop_machine_cpuslocked()
+* [  4.11         ] s390/kernel: Use stop_machine_cpuslocked(){C::bug::na::hardware::hardware::replace with _cpuslocked()}
   + [[file:4.11/0015-s390-kernel-Use-stop_machine_cpuslocked.patch][4.11]]
-* [  4.11         ] perf/x86/intel: Drop get_online_cpus() in intel_snb_check_microcode()
+* [  4.11         ] perf/x86/intel: Drop get_online_cpus() in intel_snb_check_microcode(){C::maintain::refactor::reorder get_online_cpus(),refactor *_online_cpus}
   + [[file:4.11/0019-perf-x86-intel-Drop-get_online_cpus-in-intel_snb_che.patch][4.11]]
-* [  4.11         ] char/random: don't print that the init is done
+* [  4.11         ] char/random: don't print that the init is done{C::feature::debuginfo::remove or delay printf info}
   + [[file:4.11/char-random-don-t-print-that-the-init-is-done.patch][4.11]]
-* [  4.11         ] rwsem/rt: Lift single reader restriction
+* [  4.11         ] rwsem/rt: Lift single reader restriction{C::feature::rtsupport::restricts the number of reads to one}
   + [[file:4.11/rwsem-rt-Lift-single-reader-restriction.patch][4.11]]
-* [  4.11         ] kprobes: Cure hotplug lock ordering issues
+* [  4.11         ] kprobes: Cure hotplug lock ordering issues{C::bug::deadlock::order::order::reorder lock}
   + [[file:4.11/0025-kprobes-Cure-hotplug-lock-ordering-issues.patch][4.11]]
-* [  4.11         ] lockdep: Fix per-cpu static objects
+* [  4.11         ] lockdep: Fix per-cpu static objects{C::performance::percpu_var::Fix per-cpu static objects}
   + [[file:4.11/lockdep-Fix-per-cpu-static-objects.patch][4.11]]
-* [  4.11         ] ACPI/processor: Fix error handling in __acpi_processor_start()
+* [  4.11         ] ACPI/processor: Fix error handling in __acpi_processor_start(){C::bug::leak::semantics::semantics::add return info}
   + [[file:4.11/0007-ACPI-processor-Fix-error-handling-in-__acpi_processo.patch][4.11]]
-* [  4.11         ] crypto: N2 - Replace racy task affinity logic
+* [  4.11         ] crypto: N2 - Replace racy task affinity logic{C::bug::crash::hardware::hardware::replace with work_on_cpu_safe()}
   + [[file:4.11/0013-crypto-N2-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] Revert "random: invalidate batched entropy after crng init"
+* [  4.11         ] Revert "random: invalidate batched entropy after crng init"{C::feature::other::revert random}
   + [[file:4.11/Revert-random-invalidate-batched-entropy-after-crng-.patch][4.11]]
-* [  4.11         ] sched/rtmutex/deadline: Fix a PI crash for deadline tasks
+* [  4.11         ] sched/rtmutex/deadline: Fix a PI crash for deadline tasks{C::bug::deadlock::atomicity::mutex::add function and pointer}
   + [[file:4.11/0002-sched-rtmutex-deadline-Fix-a-PI-crash-for-deadline-t.patch][4.11]]
-* [  4.11         ] rtmutex: Provide locked slowpath
+* [  4.11         ] rtmutex: Provide locked slowpath{C::feature::rtsupport::provide retmutex_slowlock}
   + [[file:4.11/rtmutex-Provide-locked-slowpath.patch][4.11]]
-* [  4.11         ] acpi/processor: Prevent cpu hotplug deadlock
+* [  4.11         ] acpi/processor: Prevent cpu hotplug deadlock{C::bug::deadlock::order::order::check per cpu thread and invoke function directly}
   + [[file:4.11/0031-acpi-processor-Prevent-cpu-hotplug-deadlock.patch][4.11]]
-* [  4.11         ] arm: Adjust system_state check
+* [  4.11         ] arm: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0002-arm-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] futex: Rework futex_lock_pi() to use rt_mutex_*_proxy_lock()
+* [  4.11         ] futex: Rework futex_lock_pi() to use rt_mutex_*_proxy_lock(){C::bug::na::atomicity::mutex::rework futex_lock_pi()}
   + [[file:4.11/0011-futex-Rework-futex_lock_pi-to-use-rt_mutex_-_proxy_l.patch][4.11]]
-* [  4.11         ] _cpuslocked()
+* [  4.11         ] _cpuslocked(){C::feature::rtsupport::provide _cpuslocked}
   + [[file:4.11/0003-cpu-hotplug-Provide-cpuhp_setup-remove_state-_nocall.patch][4.11]]
-* [  4.11         ] cpufreq/pasemi: Adjust system_state check
+* [  4.11         ] cpufreq/pasemi: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0009-cpufreq-pasemi-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] cpu/hotplug: Provide lockdep_assert_cpus_held()
+* [  4.11         ] cpu/hotplug: Provide lockdep_assert_cpus_held(){C::maintain::refactor::add two function assert}
   + [[file:4.11/0002-cpu-hotplug-Provide-lockdep_assert_cpus_held.patch][4.11]]
-* [  4.11         ] CPUFREQ: Loongson2: drop set_cpus_allowed_ptr()
+* [  4.11         ] CPUFREQ: Loongson2: drop set_cpus_allowed_ptr(){C::maintain::refactor::remove code}
   + [[file:4.11/CPUFREQ-Loongson2-drop-set_cpus_allowed_ptr.patch][4.11]]
-* [  4.11         ] timer/hrtimer: check properly for a running timer
+* [  4.11         ] timer/hrtimer: check properly for a running timer{C::feature::check::add check for running timer in RT enviroment}
   + [[file:4.11/timer-hrtimer-check-properly-for-a-running-timer.patch][4.11]]
-* [  4.11         ] powerpc: Adjust system_state check
+* [  4.11         ] powerpc: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0006-powerpc-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] cpu/hotplug: Convert hotplug locking to percpu rwsem
+* [  4.11         ] cpu/hotplug: Convert hotplug locking to percpu rwsem{C::feature::rtsupport::replace with percpu_rwsem}
   + [[file:4.11/0029-cpu-hotplug-Convert-hotplug-locking-to-percpu-rwsem.patch][4.11]]
-* [  4.11         ] KVM/PPC/Book3S HV: Use cpuhp_setup_state_nocalls_cpuslocked()
+* [  4.11         ] KVM/PPC/Book3S HV: Use cpuhp_setup_state_nocalls_cpuslocked(){C::feature::rtsupport::use _cpuslocked() to avoid nested call,replace with cpus_read_lock()}
   + [[file:4.11/0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch][4.11]]
-* [  4.11         ] futex: Rework inconsistent rt_mutex/futex_q state
+* [  4.11         ] futex: Rework inconsistent rt_mutex/futex_q state{C::bug::deadlock::semantics::order::chang wake_futex_pi() to return -EAGAIN}
   + [[file:4.11/0007-futex-Rework-inconsistent-rt_mutex-futex_q-state.patch][4.11]]
-* [  4.11         ] rtmutex: Fix PI chain order integrity
+* [  4.11         ] rtmutex: Fix PI chain order integrity{C::bug::corrupt::na::semantics::copy deadline,reorder it along prio}
   + [[file:4.11/0007-rtmutex-Fix-PI-chain-order-integrity.patch][4.11]]
-* [  4.11         ] futex: workaround migrate_disable/enable in different context
+* [  4.11         ] futex: workaround migrate_disable/enable in different context{C::performance::mutex::in automic/!atomic contex use respective migrate_disable/enable}
   + [[file:4.11/futex-workaround-migrate_disable-enable-in-different.patch][4.11]]
-* [  4.11         ] sched,tracing: Update trace_sched_pi_setprio()
+* [  4.11         ] sched,tracing: Update trace_sched_pi_setprio(){C::maintain::refactor::refactor Numerical priority and fixing sched tracepoints}
   + [[file:4.11/0006-sched-tracing-Update-trace_sched_pi_setprio.patch][4.11]]
-* [  4.11         ] rtmutex: Deboost before waking up the top waiter
+* [  4.11         ] rtmutex: Deboost before waking up the top waiter{C::bug::livelock::semantics::order::Deboost before waking up the top waiter}
   + [[file:4.11/0001-rtmutex-Deboost-before-waking-up-the-top-waiter.patch][4.11]]
-* [  4.11         ] x86/perf: Drop EXPORT of perf_check_microcode
+* [  4.11         ] x86/perf: Drop EXPORT of perf_check_microcode{C::maintain::refactor::remove export code}
   + [[file:4.11/0018-x86-perf-Drop-EXPORT-of-perf_check_microcode.patch][4.11]]
-* [  4.11         ] hwtracing/coresight-etm4x: Use cpuhp_setup_state_nocalls_cpuslocked()
+* [  4.11         ] hwtracing/coresight-etm4x: Use cpuhp_setup_state_nocalls_cpuslocked(){C::performance::hardware::add new function to optimizing hotplug cup}
   + [[file:4.11/0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch][4.11]]
-* [  4.11         ] init: Introduce SYSTEM_SCHEDULING state
+* [  4.11         ] init: Introduce SYSTEM_SCHEDULING state{C::maintain::refactor::introduce SYSTEM_SCHEDULING state}
   + [[file:4.11/0016-init-Introduce-SYSTEM_SCHEDULING-state.patch][4.11]]
-* [  4.11         ] lockdep: Handle statically initialized PER_CPU locks proper
+* [  4.11         ] lockdep: Handle statically initialized PER_CPU locks proper{C::bug::data_err::err_var::memory::hand back canonical adddress as the lock key,move the check into look_up_lock_class() }
   + [[file:4.11/lockdep-Handle-statically-initialized-PER_CPU-locks-.patch][4.11]]
-* [  4.11         ] cpufreq/ia64: Replace racy task affinity logic
+* [  4.11         ] cpufreq/ia64: Replace racy task affinity logic{C::feature::sched::replace with work_on_cpu()}
   + [[file:4.11/0009-cpufreq-ia64-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] rtmutex: Provide rt_mutex_lock_state()
+* [  4.11         ] rtmutex: Provide rt_mutex_lock_state(){C::maintain::refactor::add rtmutex state function}
   + [[file:4.11/rtmutex-Provide-rt_mutex_lock_state.patch][4.11]]
-* [  4.11         ] futex: Cleanup refcounting
+* [  4.11         ] futex: Cleanup refcounting{C::feature::debuginfo::add WARN_ON_ONCE()}
   + [[file:4.11/0006-futex-Cleanup-refcounting.patch][4.11]]
-* [  4.11         ] futex: Avoid freeing an active timer
+* [  4.11         ] futex: Avoid freeing an active timer{C::maintain::refactor::add httimer_cancel() to cancel freeing timer}
   + [[file:4.11/0001-futex-Avoid-freeing-an-active-timer.patch][4.11]]
-* [  4.11         ] cpuhotplug: Link lock stacks for hotplug callbacks
+* [  4.11         ] cpuhotplug: Link lock stacks for hotplug callbacks{C::feature::check::add lockdep to detected deadlock}
   + [[file:4.11/0032-cpuhotplug-Link-lock-stacks-for-hotplug-callbacks.patch][4.11]]
-* [  4.11         ] init: Pin init task to the boot CPU, initially
+* [  4.11         ] init: Pin init task to the boot CPU, initially{C::bug::hwerr::hardware::hardware::Pin init task to the boot CPU}
   + [[file:4.11/0001-init-Pin-init-task-to-the-boot-CPU-initially.patch][4.11]]
-* [  4.11         ] ACPI: Adjust system_state check
+* [  4.11         ] ACPI: Adjust system_state check{C::maintain::refactor::adjust system_state check}
   + [[file:4.11/0007-ACPI-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] cpu/hotplug: Add __cpuhp_state_add_instance_cpuslocked()
+* [  4.11         ] cpu/hotplug: Add __cpuhp_state_add_instance_cpuslocked(){C::feature::hardware::Add __cpuhp_state_add_instance_cpuslocked() for cpu hotplug}
   + [[file:4.11/0004-cpu-hotplug-Add-__cpuhp_state_add_instance_cpuslocke.patch][4.11]]
-* [  4.11         ] futex: Change locking rules
+* [  4.11         ] futex: Change locking rules{C::performance::mutex::chang locking rules}
   + [[file:4.11/0005-futex-Change-locking-rules.patch][4.11]]
-* [  4.11         ] kernel: sched: Provide a pointer to the valid CPU mask
+* [  4.11         ] kernel: sched: Provide a pointer to the valid CPU mask{C::maintain::refactor::replace CPU mask with pointer}
   + [[file:4.11/kernel-sched-Provide-a-pointer-to-the-valid-CPU-mask.patch][4.11]]
-* [  4.11         ] iommu/vt-d: Adjust system_state checks
+* [  4.11         ] iommu/vt-d: Adjust system_state checks{C::maintain::refactor::Adjust system_state checks}
   + [[file:4.11/0010-iommu-vt-d-Adjust-system_state-checks.patch][4.11]]
-* [  4.11         ] net/core: disable NET_RX_BUSY_POLL
+* [  4.11         ] net/core: disable NET_RX_BUSY_POLL{C::maintain::refactor::add !PREEMPT_RT_FULL config}
   + [[file:4.11/net_disable_NET_RX_BUSY_POLL.patch][4.11]]
-* [  4.11         ] perf/x86/intel/cqm: Use cpuhp_setup_state_cpuslocked()
+* [  4.11         ] perf/x86/intel/cqm: Use cpuhp_setup_state_cpuslocked(){C::performance::hardware::add new function to optimizing hotplug cup}
   + [[file:4.11/0013-perf-x86-intel-cqm-Use-cpuhp_setup_state_cpuslocked.patch][4.11]]
-* [  4.11         ] perf/tracing/cpuhotplug: Fix locking order
+* [  4.11         ] perf/tracing/cpuhotplug: Fix locking order{C::bug::livelock::order::semantics::introuce pmus_mutex}
   + [[file:4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][4.11]]
-* [  4.11         ] padata: Avoid nested calls to cpus_read_lock() in pcrypt_init_padata()
+* [  4.11         ] padata: Avoid nested calls to cpus_read_lock() in pcrypt_init_padata(){C::maintain::refactor::remove/add some function}
   + [[file:4.11/0007-padata-Avoid-nested-calls-to-cpus_read_lock-in-pcryp.patch][4.11]]
-* [  4.11         ] rtmutex: Plug preempt count leak in rt_mutex_futex_unlock()
+* [  4.11         ] rtmutex: Plug preempt count leak in rt_mutex_futex_unlock(){C::maintain::refactor::merge code}
   + [[file:4.11/0009-rtmutex-Plug-preempt-count-leak-in-rt_mutex_futex_un.patch][4.11]]
-* [  4.11         ] cpufreq/sparc-us3: Replace racy task affinity logic
+* [  4.11         ] cpufreq/sparc-us3: Replace racy task affinity logic{C::bug::crash::na::semantics::straight call smp function}
   + [[file:4.11/0011-cpufreq-sparc-us3-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] rtmutex: Make lock_killable work
+* [  4.11         ] rtmutex: Make lock_killable work{C::bug::compile::semantics::semantics::call function unconditionaly}
   + [[file:4.11/rtmutex-Make-lock_killable-work.patch][4.11]]
-* [  4.11         ] workqueue: Provide work_on_cpu_safe()
+* [  4.11         ] workqueue: Provide work_on_cpu_safe(){C::feature::hardware::add function for CPU hotplug}
   + [[file:4.11/0002-workqueue-Provide-work_on_cpu_safe.patch][4.11]]
-* [  4.11         ] cpufreq: Use cpuhp_setup_state_nocalls_cpuslocked()
+* [  4.11         ] cpufreq: Use cpuhp_setup_state_nocalls_cpuslocked(){C::performance::hardware::add new function to optimizing hotplug cup}
   + [[file:4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][4.11]]
-* [  4.11         ] arm: Prevent hotplug rwsem recursion
+* [  4.11         ] arm: Prevent hotplug rwsem recursion{C::feature::check::add function to check unprotect callers and avoid recursion}
   + [[file:4.11/0027-arm-Prevent-hotplug-rwsem-recursion.patch][4.11]]
-* [  4.11         ] radix-tree: use local locks
+* [  4.11         ] radix-tree: use local locks{}{C::feature::rtsupport::add local_lock() for RT}
   + [[file:4.11/radix-tree-use-local-locks.patch][4.11]]
-* [  4.11         ] MAINTAINERS: Add FUTEX SUBSYSTEM
+* [  4.11         ] MAINTAINERS: Add FUTEX SUBSYSTEM{C::maintain::refactor:: Add FUTEX SUBSYSTEM to MAINTAINERS}
   + [[file:4.11/0004-MAINTAINERS-Add-FUTEX-SUBSYSTEM.patch][4.11]]
-* [  4.11         ] delayacct: use raw_spinlocks
+* [  4.11         ] delayacct: use raw_spinlocks{C::performance::mutex::replace with raw}
   + [[file:4.11/delayacct-use-raw_spinlocks.patch][4.11]]
-* [  4.11         ] futex/rtmutex: Cure RT double blocking issue
+* [  4.11         ] futex/rtmutex: Cure RT double blocking issue{C::feature::debuginfo}
   + [[file:4.11/futex-rtmutex-Cure-RT-double-blocking-issue.patch][4.11]]
-* [  4.11         ] sched: Provide is_percpu_thread() helper
+* [  4.11         ] sched: Provide is_percpu_thread() helper{C::feature::check::provide a helper for check}
   + [[file:4.11/0030-sched-Provide-is_percpu_thread-helper.patch][4.11]]
-* [  4.11         ] rtmutex: Clean up
+* [  4.11         ] rtmutex: Clean up{C::maintain::refactor::update comments and code}
   + [[file:4.11/0004-rtmutex-Clean-up.patch][4.11]]
-* [  4.11         ] futex: Drop hb->lock before enqueueing on the rtmutex
+* [  4.11         ] futex: Drop hb->lock before enqueueing on the rtmutex{C::bug::deadlock::atomicity::mutex::drop hb->lock after acquiring wait_lock}
   + [[file:4.11/0013-futex-Drop-hb-lock-before-enqueueing-on-the-rtmutex.patch][4.11]]
-* [  4.11         ] softirq: wake the timer softirq if needed
+* [  4.11         ] softirq: wake the timer softirq if needed{C::performance::softirq::add #ifdef to wake the timer softirq if need}
   + [[file:4.11/softirq-wake-the-timer-softirq-if-needed.patch][4.11]]
-* [  4.11         ] futex: Futex_unlock_pi() determinism
+* [  4.11         ] futex: Futex_unlock_pi() determinism{C::feature::statistics::add some function to acquire state}
   + [[file:4.11/0012-futex-Futex_unlock_pi-determinism.patch][4.11]]
-* [  4.11         ] rtmutex: Fix more prio comparisons
+* [  4.11         ] rtmutex: Fix more prio comparisons{C::feature::sched::add rt_mutex_waiter_equal to fix prio comparisons}
   + [[file:4.11/0008-rtmutex-Fix-more-prio-comparisons.patch][4.11]]
-* [  4.11         ] PCI: Replace the racy recursion prevention
+* [  4.11         ] PCI: Replace the racy recursion prevention{C::bug::na::na::semantics::use check and make method to replace the racy}
   + [[file:4.11/0021-PCI-Replace-the-racy-recursion-prevention.patch][4.11]]
-* [  4.11         ] kernel/sched/core: add migrate_disable()
+* [  4.11         ] kernel/sched/core: add migrate_disable(){C::feature::rtsupport::add migrate_disable()}
   + [[file:4.11/add_migrate_disable.patch][4.11]]
-* [  4.11         ] ACPI/processor: Replace racy task affinity logic
+* [  4.11         ] ACPI/processor: Replace racy task affinity logic{C::bug::hwerr::hardware::hardware::replace with work_on_cpu()}
   + [[file:4.11/0008-ACPI-processor-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] powerpc/powernv: Use stop_machine_cpuslocked()
+* [  4.11         ] powerpc/powernv: Use stop_machine_cpuslocked(){C::performance::hardware::Use stop_machine_cpuslocked()}
   + [[file:4.11/0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch][4.11]]
-* [  4.11         ] ARM/hw_breakpoint: Use cpuhp_setup_state_cpuslocked()
+* [  4.11         ] ARM/hw_breakpoint: Use cpuhp_setup_state_cpuslocked(){C::performance::hardware:: cpuhp_setup_state_cpuslocked()}
   + [[file:4.11/0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch][4.11]]
-* [  4.11         ] sparc/sysfs: Replace racy task affinity logic
+* [  4.11         ] sparc/sysfs: Replace racy task affinity logic{C::performance::hardware::Replace racy task affinity logic use work_on_cpu()}
   + [[file:4.11/0006-sparc-sysfs-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] futex: Use smp_store_release() in mark_wake_futex()
+* [  4.11         ] futex: Use smp_store_release() in mark_wake_futex(){C::maintain::refactor::merge code}
   + [[file:4.11/0002-futex-Use-smp_store_release-in-mark_wake_futex.patch][4.11]]
-* [  4.11         ] sched: Prevent task state corruption by spurious lock wakeup
+* [  4.11         ] sched: Prevent task state corruption by spurious lock wakeup{C::bug::corrupt::semantics::semantics::replace TASK_ALL with TASK_UNINTERRUPTIBLE}
   + [[file:4.11/sched-Prevent-task-state-corruption-by-spurious-lock.patch][4.11]]
-* [  4.11         ] hwtracing/coresight-etm3x: Use cpuhp_setup_state_nocalls_cpuslocked()
+* [  4.11         ] hwtracing/coresight-etm3x: Use cpuhp_setup_state_nocalls_cpuslocked(){C::performance::hardware::Use cpuhp_setup_state_nocalls_cpuslocked()}
   + [[file:4.11/0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch][4.11]]
-* [  4.11         ] ia64/sn/hwperf: Replace racy task affinity logic
+* [  4.11         ] ia64/sn/hwperf: Replace racy task affinity logic{C::bug::crash::na::semantics::using work_on_cpu_safe()}
   + [[file:4.11/0004-ia64-sn-hwperf-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] stop_machine: Provide stop_machine_cpuslocked()
+* [  4.11         ] stop_machine: Provide stop_machine_cpuslocked(){C::maintain::refactor::Provide stop_machine_cpuslocked() for introducing rwsem}
   + [[file:4.11/0005-stop_machine-Provide-stop_machine_cpuslocked.patch][4.11]]
-* [  4.11         ] x86/mtrr: Remove get_online_cpus() from mtrr_save_state()
+* [  4.11         ] x86/mtrr: Remove get_online_cpus() from mtrr_save_state(){C::maintain::refactor::remove pointless function}
   + [[file:4.11/0008-x86-mtrr-Remove-get_online_cpus-from-mtrr_save_state.patch][4.11]]
-* [  4.11         ] futex: Pull rt_mutex_futex_unlock() out from under hb->lock
+* [  4.11         ] futex: Pull rt_mutex_futex_unlock() out from under hb->lock{C::performance::mutex::change previous changs with new method}
   + [[file:4.11/0008-futex-Pull-rt_mutex_futex_unlock-out-from-under-hb-l.patch][4.11]]
-* [  4.11         ] PCI: Use cpu_hotplug_disable() instead of get_online_cpus()
+* [  4.11         ] PCI: Use cpu_hotplug_disable() instead of get_online_cpus(){C::feature::check::replace with cpu_hotplug_disable()}
   + [[file:4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][4.11]]
-* [  4.11         ] futex,rt_mutex: Fix rt_mutex_cleanup_proxy_lock()
+* [  4.11         ] futex,rt_mutex: Fix rt_mutex_cleanup_proxy_lock(){C::bug::crash::na::mutex::add try_to_take_rt_mutex(),reorder code}
   + [[file:4.11/futex-rt_mutex-Fix-rt_mutex_cleanup_proxy_lock.patch][4.11]]
-* [  4.11         ] futex,rt_mutex: Introduce rt_mutex_init_waiter()
+* [  4.11         ] futex,rt_mutex: Introduce rt_mutex_init_waiter(){C::maintain::refactor::Organize the code as a function}
   + [[file:4.11/0009-futex-rt_mutex-Introduce-rt_mutex_init_waiter.patch][4.11]]
-* [  4.11         ] extable: Adjust system_state checks
+* [  4.11         ] extable: Adjust system_state checks{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0013-extable-Adjust-system_state-checks.patch][4.11]]
-* [  4.11         ] lock()
+* [  4.11         ] lock(){C::maintain::refactor::rename function}
   + [[file:4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][4.11]]
-* [  4.11         ] cpufreq/sh: Replace racy task affinity logic
+* [  4.11         ] cpufreq/sh: Replace racy task affinity logic{C::feature::other::replace with work_on_cpu()}
   + [[file:4.11/0010-cpufreq-sh-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] futex,rt_mutex: Restructure rt_mutex_finish_proxy_lock()
+* [  4.11         ] futex,rt_mutex: Restructure rt_mutex_finish_proxy_lock(){C::feature::rtsupport::refactor lock()}
   + [[file:4.11/0010-futex-rt_mutex-Restructure-rt_mutex_finish_proxy_loc.patch][4.11]]
-* [  4.11         ] arm64: Prevent cpu hotplug rwsem recursion
+* [  4.11         ] arm64: Prevent cpu hotplug rwsem recursion{C::feature::check::replace with _cpuslocked() to check lock}
   + [[file:4.11/0026-arm64-Prevent-cpu-hotplug-rwsem-recursion.patch][4.11]]
-* [  4.11         ] net/core: remove explicit do_softirq() from busy_poll_stop()
+* [  4.11         ] net/core: remove explicit do_softirq() from busy_poll_stop(){C::performance::smallsize::remove unnecessary code}
   + [[file:4.11/net-core-remove-explicit-do_softirq-from-busy_poll_s.patch][4.11]]
-* [  4.11         ] cpufreq/sparc-us2e: Replace racy task affinity logic
+* [  4.11         ] cpufreq/sparc-us2e: Replace racy task affinity logic{C::performance::smallsize::replace with straight forward smp function call}
   + [[file:4.11/0012-cpufreq-sparc-us2e-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] futex: Cleanup variable names for futex_top_waiter()
+* [  4.11         ] futex: Cleanup variable names for futex_top_waiter(){C::maintain::refactor::rename var}
   + [[file:4.11/0001-futex-Cleanup-variable-names-for-futex_top_waiter.patch][4.11]]
-* [  4.11         ] jump_label: Reorder hotplug lock and jump_label_lock
+* [  4.11         ] jump_label: Reorder hotplug lock and jump_label_lock{C::feature::rtsupport::remove some lock,reorder lock, add some lock}
   + [[file:4.11/0024-jump_label-Reorder-hotplug-lock-and-jump_label_lock.patch][4.11]]
-* [  4.11         ] mm/vmscan: Adjust system_state checks
+* [  4.11         ] mm/vmscan: Adjust system_state checks{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0015-mm-vmscan-Adjust-system_state-checks.patch][4.11]]
-* [  4.11         ] padata: Make padata_alloc() static
+* [  4.11         ] padata: Make padata_alloc() static{C::maintain::refactor::Make padata_alloc() static}
   + [[file:4.11/0006-padata-Make-padata_alloc-static.patch][4.11]]
-* [  4.11         ] ia64/salinfo: Replace racy task affinity logic
+* [  4.11         ] ia64/salinfo: Replace racy task affinity logic{C::feature::hardware::use work_on_cpu_safe() to support cpu hotplug and concurrent affinity}
   + [[file:4.11/0003-ia64-salinfo-Replace-racy-task-affinity-logic.patch][4.11]]
-* [  4.11         ] sched/rtmutex: Refactor rt_mutex_setprio()
+* [  4.11         ] sched/rtmutex: Refactor rt_mutex_setprio(){C::feature::rtsupport::refactor mutex function}
   + [[file:4.11/0005-sched-rtmutex-Refactor-rt_mutex_setprio.patch][4.11]]
-* [  4.11         ] metag: Adjust system_state check
+* [  4.11         ] metag: Adjust system_state check{C::feature::check::change condition to handle extra states}
   + [[file:4.11/0005-metag-Adjust-system_state-check.patch][4.11]]
-* [  4.11         ] s390: Prevent hotplug rwsem recursion
+* [  4.11         ] s390: Prevent hotplug rwsem recursion{C::feature::check::use stop_machine_cpuslocked() to contain a lockdep}
   + [[file:4.11/0028-s390-Prevent-hotplug-rwsem-recursion.patch][4.11]]
