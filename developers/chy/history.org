@@ -8782,8 +8782,8 @@ of ftrace}
   M [[file:4.8/work-simple-Simple-work-queue-implemenation.patch][4.8]]
     [[file:4.9/work-simple-Simple-work-queue-implemenation.patch][4.9]]
   m [[file:4.11/work-simple-Simple-work-queue-implemenation.patch][4.11]]
-* [   4.0         ] rtmutex.c: Fix incorrect waiter check{C::bug::na::na::mutex::fix waiter check}
-  + [[file:4.0/rtmutex.c-Fix-incorrect-waiter-check.patch][4.0]
+* [   4.0         ] rtmutex.c: Fix incorrect waiter check{C::bug::data_err::err_var::semantics::fix waiter check}
+  + [[file:4.0/rtmutex.c-Fix-incorrect-waiter-check.patch][4.0]]
   - 4.1
 * [   4.0         ] Revert "rwsem-rt: Do not allow readers to nest"{C::feature::rtsupport::do not allow readers nest}
   + [[file:4.0/Revert-rwsem-rt-Do-not-allow-readers-to-nest.patch][4.0]]
@@ -8797,13 +8797,13 @@ of ftrace}
 * [   4.0         ] rt,locking: fix __ww_mutex_lock_interruptible() lockdep annotation{C::maintain::refactor::replace with mutex_acquir_nest()}
   + [[file:4.0/rtmutex-ww_mutex_fix_ww_mutex_lock_interruptible_lockdep_annotation.patch][4.0]]
   - 4.1
-* [   4.0         ] xfs: Disable percpu SB on PREEMPT_RT_FULL {C::bug::compile::config_err::config::add config}
+* [   4.0         ] xfs: Disable percpu SB on PREEMPT_RT_FULL {C::bug::livelock::livelock::config::add config}
   + [[file:4.0/xfs-Disable-percpu-SB-on-PREEMPT_RT_FULL.patch][4.0]]
   - 4.1
 * [   4.0         ] rtmutex: enable deadlock detection in ww_mutex_lock functions{C::feature::check::correct potential deadlock}
   + [[file:4.0/rtmutex-enable-deadlock-detection-in-ww_mutex_lock-f.patch][4.0]]
   - 4.1
-* [   4.0         ] irq_work: Hide access to hirq_work_list in PREEMPT_RT_FULL{C::performance::smallsize::add #ifdef}
+* [   4.0         ] irq_work: Hide access to hirq_work_list in PREEMPT_RT_FULL{C::bug::compile::compiling_err::syntax::add #ifdef}
   + [[file:4.0/irq_work-Hide-access-to-hirq_work_list-in-PREEMPT_RT.patch][4.0]]
   - 4.1
 * [   4.0         ] irq_work: Delegate non-immediate irq work to ksoftirqd{C::bug::deadlock::deadlock::softirq::delegate non-immediate irq work to ksoftirqd}
@@ -8820,11 +8820,11 @@ of ftrace}
   + [[file:4.0/0011-arm-futex-UP-futex_atomic_op_inuser-relies-on-disabl.patch][4.0]]
     [[file:4.1/0011-arm-futex-UP-futex_atomic_op_inuser-relies-on-disabl.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] arm64: Mark PMU interrupt IRQF_NO_THREAD{C::maintain::refactor::add IRQF_NO_THREAD}
+* [   4.0 -    4.1] arm64: Mark PMU interrupt IRQF_NO_THREAD{C::feature::arch::add IRQF_NO_THREAD}
   + [[file:4.0/0001-arm64-Mark-PMU-interrupt-IRQF_NO_THREAD.patch][4.0]]
     [[file:4.1/0001-arm64-Mark-PMU-interrupt-IRQF_NO_THREAD.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic{C::performance::preempt::explicit preempt disable/enable}
+* [   4.0 -    4.1] sched/preempt, arm/futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic{C::feature::rtsupport::explicit preempt disable/enable}
   + [[file:4.0/0010-arm-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on.patch][4.0]]
     [[file:4.1/0010-arm-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on.patch][4.1]]
   - 4.4
@@ -8836,7 +8836,7 @@ of ftrace}
   + [[file:4.0/0013-mips-properly-lock-access-to-the-fpu.patch][4.0]]
     [[file:4.1/0013-mips-properly-lock-access-to-the-fpu.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, mm/kmap, MIPS: Disable preemption in kmap_coherent() explicitly{C::performance::preempt::explicit preempt disable/enable }
+* [   4.0 -    4.1] sched/preempt, mm/kmap, MIPS: Disable preemption in kmap_coherent() explicitly{C::feature::rtsupport::explicit preempt disable/enable }
   + [[file:4.0/0005-mips-kmap_coherent-relies-on-disabled-preemption.patch][4.0]]
     [[file:4.1/0005-mips-kmap_coherent-relies-on-disabled-preemption.patch][4.1]]
   - 4.4
@@ -8844,7 +8844,7 @@ of ftrace}
   + [[file:4.0/0012-futex-clarify-that-preemption-doesn-t-have-to-be-dis.patch][4.0]]
     [[file:4.1/0012-futex-clarify-that-preemption-doesn-t-have-to-be-dis.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic() e{C::performance::preempt::explicit preempt disable/enable}
+* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_cmpxchg_inatomic() e{C::feature::rtsupport::explicit preempt disable/enable}
   + [[file:4.0/0009-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on-dis.patch][4.0]]
     [[file:4.1/0009-futex-UP-futex_atomic_cmpxchg_inatomic-relies-on-dis.patch][4.1]]
   - 4.4
@@ -8856,7 +8856,7 @@ of ftrace}
   + [[file:4.0/0002-mm-uaccess-trigger-might_sleep-in-might_fault-with-d.patch][4.0]]
     [[file:4.1/0002-mm-uaccess-trigger-might_sleep-in-might_fault-with-d.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] ARM: cmpxchg: define __HAVE_ARCH_CMPXCHG for armv6 and later{C::maintain::refactor::add define}
+* [   4.0 -    4.1] ARM: cmpxchg: define __HAVE_ARCH_CMPXCHG for armv6 and later{C::performance::hardware::add define}
   + [[file:4.0/ARM-cmpxchg-define-__HAVE_ARCH_CMPXCHG-for-armv6-and.patch][4.0]]
     [[file:4.1/ARM-cmpxchg-define-__HAVE_ARCH_CMPXCHG-for-armv6-and.patch][4.1]]
   - 4.4
@@ -8864,11 +8864,11 @@ of ftrace}
   + [[file:4.0/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.0]]
     [[file:4.1/mmc-sdhci-don-t-provide-hard-irq-handler.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the {C::bug::data_err::semantics::semantics::use faulthandler_disable() replaced in_atomic()}
+* [   4.0 -    4.1] mm/fault, arch: Use pagefault_disable() to check for disabled pagefaults in the {C::feature::rtsupport::use faulthandler_disable() replaced in_atomic()}
   + [[file:4.0/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.0]]
     [[file:4.1/0006-mm-use-pagefault_disable-to-check-for-disabled-pagef.patch][4.1]]
   - 4.4
-* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_op_inuser() explicit{C::performance::mutex::add preempt_disable/enable ensure mutual exclusion}
+* [   4.0 -    4.1] sched/preempt, futex: Disable preemption in UP futex_atomic_op_inuser() explicit{C::feature::rtsupport::add preempt_disable/enable ensure mutual exclusion}
   + [[file:4.0/0008-futex-UP-futex_atomic_op_inuser-relies-on-disabled-p.patch][4.0]]
     [[file:4.1/0008-futex-UP-futex_atomic_op_inuser-relies-on-disabled-p.patch][4.1]]
   - 4.4
@@ -8884,17 +8884,17 @@ of ftrace}
   + [[file:4.0/0002-arm64-Allow-forced-irq-threading.patch][4.0]]
     [[file:4.1/0002-arm64-Allow-forced-irq-threading.patch][4.1]]
   - 4.4
-* [   4.0 -    4.4] KVM: use simple waitqueue for vcpu->wq {C::feature::sched::use simple waitqueue for vcpu}
+* [   4.0 -    4.4] KVM: use simple waitqueue for vcpu->wq {C::performance::preempt::use simple waitqueue for vcpu}
   + [[file:4.0/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.0]]
   m [[file:4.1/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.1]]
   M [[file:4.4/KVM-use-simple-waitqueue-for-vcpu-wq.patch][4.4]]
   - 4.6
-* [   4.0 -    4.4] block/mq: drop per ctx cpu_lock{C::maintain::refactor::remove per ctx cpu_lock}
+* [   4.0 -    4.4] block/mq: drop per ctx cpu_lock{C::bug::crash::atomicity::mutex::remove per ctx cpu_lock}
   + [[file:4.0/block-mq-drop-per-ctx-cpu_lock.patch][4.0]]
     [[file:4.1/block-mq-drop-per-ctx-cpu_lock.patch][4.1]]
   M [[file:4.4/block-mq-drop-per-ctx-cpu_lock.patch][4.4]]
   - 4.6
-* [   4.0 -   4.11] sunrpc: Make svc_xprt_do_enqueue() use get_cpu_light(){C::maintain::refactor::conver the get_cpu() to get_cpu_light()}
+* [   4.0 -   4.11] sunrpc: Make svc_xprt_do_enqueue() use get_cpu_light(){C::bug::deadlock::deadlock::preempt::conver the get_cpu() to get_cpu_light()}
   + [[file:4.0/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.0]]
     [[file:4.1/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.1]]
     [[file:4.4/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.4]]
@@ -8902,7 +8902,7 @@ of ftrace}
     [[file:4.8/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.8]]
     [[file:4.9/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.9]]
     [[file:4.11/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][4.11]]
-* [   4.0 -   4.11] hotplug: Use set_cpus_allowed_ptr() in sync_unplug_thread(){C::maintain::refactor::rename fun}
+* [   4.0 -   4.11] hotplug: Use set_cpus_allowed_ptr() in sync_unplug_thread(){C::bug::crash::err_access::semantics::rename fun}
   + [[file:4.0/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.0]]
     [[file:4.1/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.1]]
     [[file:4.4/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.4]]
@@ -8910,7 +8910,7 @@ of ftrace}
     [[file:4.8/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.8]]
     [[file:4.9/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.9]]
     [[file:4.11/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][4.11]]
-* [   4.0 -   4.11] cpufreq: drop K8's driver from beeing selected{C::maintain::refactor::add config}
+* [   4.0 -   4.11] cpufreq: drop K8's driver from beeing selected{C::bug::crash::err_var::config::add config}
   + [[file:4.0/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.0]]
     [[file:4.1/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.1]]
     [[file:4.4/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.4]]
@@ -8918,7 +8918,7 @@ of ftrace}
     [[file:4.8/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.8]]
     [[file:4.9/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.9]]
     [[file:4.11/cpufreq-drop-K8-s-driver-from-beeing-selected.patch][4.11]]
-* [   4.0 -   4.11] slub: Disable SLUB_CPU_PARTIAL{C::maintain::refactor::add config}
+* [   4.0 -   4.11] slub: Disable SLUB_CPU_PARTIAL{C::bug::deadlock::deadlock::config::add config}
   + [[file:4.0/slub-disable-SLUB_CPU_PARTIAL.patch][4.0]]
     [[file:4.1/slub-disable-SLUB_CPU_PARTIAL.patch][4.1]]
     [[file:4.4/slub-disable-SLUB_CPU_PARTIAL.patch][4.4]]
@@ -8926,7 +8926,7 @@ of ftrace}
     [[file:4.8/slub-disable-SLUB_CPU_PARTIAL.patch][4.8]]
     [[file:4.9/slub-disable-SLUB_CPU_PARTIAL.patch][4.9]]
     [[file:4.11/slub-disable-SLUB_CPU_PARTIAL.patch][4.11]]
-* [   4.0 -   4.11] fs/aio: simple simple work{C::maintain::refactor::replace with swork}
+* [   4.0 -   4.11] fs/aio: simple simple work{C::bug::deadlock::deadlock::preempt::replace with swork}
   + [[file:4.0/fs-aio-simple-simple-work.patch][4.0]]
   m [[file:4.1/fs-aio-simple-simple-work.patch][4.1]]
     [[file:4.4/fs-aio-simple-simple-work.patch][4.4]]
@@ -8934,7 +8934,7 @@ of ftrace}
   M [[file:4.8/fs-aio-simple-simple-work.patch][4.8]]
     [[file:4.9/fs-aio-simple-simple-work.patch][4.9]]
   m [[file:4.11/fs-aio-simple-simple-work.patch][4.11]]
-* [   4.0 -   4.11] x86: UV: raw_spinlock conversion{C::maintain::refactor::rename raw spin lock}
+* [   4.0 -   4.11] x86: UV: raw_spinlock conversion{C::feature::rtsupport::rename raw spin lock}
   + [[file:4.0/x86-UV-raw_spinlock-conversion.patch][4.0]]
     [[file:4.1/x86-UV-raw_spinlock-conversion.patch][4.1]]
     [[file:4.4/x86-UV-raw_spinlock-conversion.patch][4.4]]
@@ -8942,7 +8942,7 @@ of ftrace}
   M [[file:4.8/x86-UV-raw_spinlock-conversion.patch][4.8]]
   m [[file:4.9/x86-UV-raw_spinlock-conversion.patch][4.9]]
   M [[file:4.11/x86-UV-raw_spinlock-conversion.patch][4.11]]
-* [   4.0 -   4.11] lockdep: selftest: fix warnings due to missing PREEMPT_RT conditionals{C::bug::compile::config_err::config::add ifndef}
+* [   4.0 -   4.11] lockdep: selftest: fix warnings due to missing PREEMPT_RT conditionals{C::bug::compile::compiling_err::config::add ifndef}
   + [[file:4.0/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.0]]
     [[file:4.1/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.1]]
     [[file:4.4/lockdep-selftest-fix-warnings-due-to-missing-PREEMPT.patch][4.4]]
@@ -8958,7 +8958,7 @@ of ftrace}
   M [[file:4.8/arch-arm64-Add-lazy-preempt-support.patch][4.8]]
   M [[file:4.9/arch-arm64-Add-lazy-preempt-support.patch][4.9]]
   M [[file:4.11/arch-arm64-Add-lazy-preempt-support.patch][4.11]]
-* [   4.0 -   4.11] sas-ata/isci: dont't disable interrupts in qc_issue handler{C::performance::preempt::use loacl_irq_save_nort() do not disable irq}
+* [   4.0 -   4.11] sas-ata/isci: dont't disable interrupts in qc_issue handler{C::bug::deadlock::deadlock::irq::use loacl_irq_save_nort() do not disable irq}
   + [[file:4.0/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.0]]
     [[file:4.1/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.1]]
     [[file:4.4/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.4]]
@@ -8966,7 +8966,7 @@ of ftrace}
     [[file:4.8/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.8]]
     [[file:4.9/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.9]]
     [[file:4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][4.11]]
-* [   4.0 -   4.11] thermal: Defer thermal wakups to threads{C::feature::sched::defer thermal wakups}
+* [   4.0 -   4.11] thermal: Defer thermal wakups to threads{C::bug::crash::deadlock::sched::defer thermal wakups}
   + [[file:4.0/thermal-Defer-thermal-wakups-to-threads.patch][4.0]]
   M [[file:4.1/thermal-Defer-thermal-wakups-to-threads.patch][4.1]]
     [[file:4.4/thermal-Defer-thermal-wakups-to-threads.patch][4.4]]
@@ -8974,7 +8974,7 @@ of ftrace}
   M [[file:4.8/thermal-Defer-thermal-wakups-to-threads.patch][4.8]]
     [[file:4.9/thermal-Defer-thermal-wakups-to-threads.patch][4.9]]
   M [[file:4.11/thermal-Defer-thermal-wakups-to-threads.patch][4.11]]
-* [   4.0 -   4.11] memcontrol: Prevent scheduling while atomic in cgroup code{C::maintain::refactor::replace with get/put_cpu_light()}
+* [   4.0 -   4.11] memcontrol: Prevent scheduling while atomic in cgroup code{C::bug::crash::atomicity::migration::replace with get/put_cpu_light()}
   + [[file:4.0/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.0]]
     [[file:4.1/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.1]]
     [[file:4.4/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.4]]
@@ -8982,7 +8982,7 @@ of ftrace}
   M [[file:4.8/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.8]]
     [[file:4.9/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.9]]
     [[file:4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][4.11]]
-* [   4.0 -   4.11] snd/pcm: fix snd_pcm_stream_lock*() irqs_disabled() splats{C::performance::mutex::replace with nort lock}
+* [   4.0 -   4.11] snd/pcm: fix snd_pcm_stream_lock*() irqs_disabled() splats{C::bug::deadlock::deadlock::mutex::replace with nort lock}
   + [[file:4.0/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.0]]
     [[file:4.1/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.1]]
     [[file:4.4/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.4]]
@@ -8990,7 +8990,7 @@ of ftrace}
     [[file:4.8/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.8]]
     [[file:4.9/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.9]]
     [[file:4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][4.11]]
-* [   4.0 -   4.11] ARM: enable irq in translation/section permission fault handlers{C::performance::irq::enable irq}
+* [   4.0 -   4.11] ARM: enable irq in translation/section permission fault handlers{C::bug::deadlock::deadlock::irq::enable irq}
   + [[file:4.0/ARM-enable-irq-in-translation-section-permission-fau.patch][4.0]]
     [[file:4.1/ARM-enable-irq-in-translation-section-permission-fau.patch][4.1]]
     [[file:4.4/ARM-enable-irq-in-translation-section-permission-fau.patch][4.4]]
@@ -8998,7 +8998,7 @@ of ftrace}
     [[file:4.8/ARM-enable-irq-in-translation-section-permission-fau.patch][4.8]]
     [[file:4.9/ARM-enable-irq-in-translation-section-permission-fau.patch][4.9]]
     [[file:4.11/ARM-enable-irq-in-translation-section-permission-fau.patch][4.11]]
-* [   4.0 -   4.11] powerpc/kvm: Disable in-kernel MPIC emulation for PREEMPT_RT_FULL{C::maintain::refactor::add !PREEMPT_RT_FULL config}
+* [   4.0 -   4.11] powerpc/kvm: Disable in-kernel MPIC emulation for PREEMPT_RT_FULL{C::bug::irq::irq::config::add !PREEMPT_RT_FULL config}
   + [[file:4.0/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.0]]
     [[file:4.1/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.1]]
     [[file:4.4/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.4]]
@@ -9006,7 +9006,7 @@ of ftrace}
     [[file:4.8/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.8]]
     [[file:4.9/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.9]]
     [[file:4.11/powerpc-kvm-Disable-in-kernel-MPIC-emulation-for-PRE.patch][4.11]]
-* [   4.0 -   4.11] x86/mce: use swait queue for mce wakeups{C::feature::sched::use swait queue for mce}
+* [   4.0 -   4.11] x86/mce: use swait queue for mce wakeups{C::bug::deadlock::deadlock::preempt::use swait queue for mce}
   + [[file:4.0/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.0]]
     [[file:4.1/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.1]]
     [[file:4.4/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.4]]
@@ -9014,7 +9014,7 @@ of ftrace}
   M [[file:4.8/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.8]]
   m [[file:4.9/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.9]]
   m [[file:4.11/x86-mce-use-swait-queue-for-mce-wakeups.patch][4.11]]
-* [   4.0 -   4.11] KVM: lapic: mark LAPIC timer handler as irqsafe{C::feature::hrtimer::lapic timer handler}
+* [   4.0 -   4.11] KVM: lapic: mark LAPIC timer handler as irqsafe{C::performance::hrtimer::lapic timer handler}
   + [[file:4.0/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.0]]
     [[file:4.1/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.1]]
   M [[file:4.4/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.4]]
@@ -9022,7 +9022,7 @@ of ftrace}
     [[file:4.8/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.8]]
     [[file:4.9/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.9]]
     [[file:4.11/KVM-lapic-mark-LAPIC-timer-handler-as-irqsafe.patch][4.11]]
-* [   4.0 -   4.11] sched/deadline: dl_task_timer has to be irqsafe{C::maintain::refactor::add init timer->irqsafe}
+* [   4.0 -   4.11] sched/deadline: dl_task_timer has to be irqsafe{C::feature::timer::add init timer->irqsafe}
   + [[file:4.0/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.0]] 
     [[file:4.1/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.1]]
     [[file:4.4/sched-deadline-dl_task_timer-has-to-be-irqsafe.patch][4.4]]
