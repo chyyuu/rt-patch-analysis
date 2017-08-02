@@ -31,11 +31,11 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ### bug consequence
 - corrupt:: 系统破坏了保存的数据（主要与文件系统，存储系统相关）
 - hang:: 系统长时间无反应
-- deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。scheduling in atomic
+- deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。scheduling in atomic, or nested lock
 - livelock:: 如果事务T1封锁了数据R,事务T2又请求封锁R，于是T2等待。T3也请求封锁R，当T1释放了R上的封锁后，系统首先批准了T3的请求，T2仍然等待。然后T4又请求封锁R，当T3释放了R上的封锁之后，系统又批准了T的请求......T2可能永远等待，这就是活锁。活锁有一定几率解开。
-- crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM...
-- leak:: 发生数据泄漏
-- data_err:: 数据处理/显示错误
+- crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM,...
+- leak:: 发生数据泄漏 
+- data_err:: 数据处理/显示错误 （有warning信息也算）
 - rtlatency:: unexpected realtime latencies
 - irq/softirq:: not-irq/softirq-safe 无法响应/打开/关闭中断(包括nmi)，softirq执行延迟/挂起，产生大量irq,  导致系统工作不正确
 - compile:: compiling/build error
@@ -56,7 +56,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
-- atomicity:临界区没有保护好共享资源的互斥(mutex)访问.
+- atomicity:临界区没有保护好/过度保护共享资源的互斥(mutex)访问.
 - order: 没有确保执行的顺序性(sync,barrier),或者barrier工作无效了。如  [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers
 - deadlock: 形成了死锁   e.g. BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914 |in_atomic(): 1, irqs_disabled(). 一个进程获得了spinlock之后它就进入了这里所谓的atomic context，或者是在一个irq-handler，也就是一个中断上下文中。这两种上下文中理论上不应该让当前的execution path进入sleep状态(虽然不是强制规定，换句话说，一个拥有spinlock的进程进入sleep并不必然意味着系统就一定会deadlock 等，但是对内核编程而言，还是应该尽力避开这个雷区)。
 - livelock: 形成了活锁
@@ -68,7 +68,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow刘明明 <eva980636@126.com>, eva980636 <eva980636@163.com>
 
 - err_var:: 数据处理/比较错误
-_ err_access:: 用户态访问内核态等类似的程序访问错误
+_ err_access:: 用户态访问内核态等类似的程序访问错误，执行错误指令
 
 #### error code
 - compiling_err:: 编译错误
@@ -79,12 +79,12 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - mutex:: 互斥相关的修复
 - sync/order:: order OR 同步相关的修复
 - irq/softirq:: 中断/软中断相关的修复 
-- preempt:: 抢占相关的修复 如 handle accurate time keeping over long delays NEED TO READ
+- preempt:: 抢占相关的修复 如 handle accurate time keeping over long delays NEED TO READ， 修改方法之一：  用preempt_disable() friendly swork 代替work_struct 或 preempt_disable --> migration_disable
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
 - memory:: type of var, init var, var<-->ptr 相关的修复
 - sched:: 调度相关的修复（主要集中在kernel/sched*.c）
-- config:: 修复config相关的bug
+- config:: 修复config相关的bug，特别是直接!PREEMPT_RT_*的方式，在有rt的情况下，就不支持这个feature了
 - syntax:: 修复编译语法错误
 - runtime:: add might_sleep() function to find bug on os running.
 - semantics:: 修复语义错误(修改代码，删除代码) 如  Don't call mcount from vsyscall_fn's OR PowerPC: remove broken vsyscall cod
@@ -117,7 +117,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误
 - msleep:: msleep优化
 - irq/softirq:: irq/softirq相关优化
 - mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock， 减少cirtical section的范围等
-- preempt:: preempt相关的优化
+- preempt:: sched/preempt相关的优化
 - migration:: 与migration相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
