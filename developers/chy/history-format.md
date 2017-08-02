@@ -56,9 +56,9 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
-- atomicity:临界区没有保护好共享资源的互斥(mutex)访问
+- atomicity:临界区没有保护好共享资源的互斥(mutex)访问.
 - order: 没有确保执行的顺序性(sync,barrier),或者barrier工作无效了。如  [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers
-- deadlock: 形成了死锁
+- deadlock: 形成了死锁   e.g. BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914 |in_atomic(): 1, irqs_disabled(). 一个进程获得了spinlock之后它就进入了这里所谓的atomic context，或者是在一个irq-handler，也就是一个中断上下文中。这两种上下文中理论上不应该让当前的execution path进入sleep状态(虽然不是强制规定，换句话说，一个拥有spinlock的进程进入sleep并不必然意味着系统就一定会deadlock 等，但是对内核编程而言，还是应该尽力避开这个雷区)。
 - livelock: 形成了活锁
 
 #### memory
