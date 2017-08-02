@@ -1,0 +1,165 @@
+Unknown bug type "??"
+* [   3.0         ] ftrace-hash-fix.patch{C::bug::data_err::??::semantics::add and replace old fun}
+
+Unknown aspect "maintain?"
+* [   3.0         ] mips: ftrace: Fix the CONFIG_DYNAMIC_FTRACE=n compile{C::maintain?::refactor(I guess maybe it is fix compile err here)}
+
+Unknown feature method "rtsupport?"
+* [   3.0         ] sched: remove useles get_cpu() in sched_fork(){C::feature::rtsupport?::said to rm useless preempt disable}
+
+Unknown feature method "errhandle"
+* [   3.0         ] rtc: Handle errors correctly in rtc_irq_set_state(){}{C::feature::errhandle::release spinlock when meet err}
+
+BUG ::= 'bug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
+* [   3.0         ] watchdog-madness.patch{C::bug::??::rm static, add set scheduler fun}
+
+BUG ::= 'bug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
+* [   3.0         ] mips: sibyte: Add missing irq_mask function{C::bug::??::rename a field}
+
+Unknown feature method "lock"
+* [   3.0         ] sched-show-state-no-task-list-lock.patch{C::feature::lock::replace rd_lock with rcu_read_lock}
+
+Unknown bug consequence "??:irq"
+* [   3.0 -    3.2] x86-32-fix-signal-crap.patch{C::bug::??:irq::irq::add irqenable}
+
+Unknown feature method "signal"
+* [   3.0 -    3.4] arm-enable-interrupts-in-signal-code.patch{}{C::feature::signal::add irq in signal code}
+
+Unknown aspect "??"
+* [   3.0 -    3.8] stomp-machine-mark-stomper-thread.patch{C::??::add flag, and init p with it}
+
+Unknown feature method "list"
+* [   3.0 -   3.12] list-add-list-last-entry.patch{C::feature::list::add macro to get list end}
+
+Unknown feature method "rtsupport&&mm"
+* [   3.0 -   3.12] mm: shrink the page frame to !-rt size{C::feature::rtsupport&&mm::rt spinlock dynamic allocator when all pte_page}
+
+Unknown feature method "stack"
+* [   3.0 -   3.14] x86: Disable IST stacks for debug/int 3/stack fault for PREEMPT_RT{C::feature::stack::disable ist stacks ... in rt}
+
+Unknown bug type "??"
+* [   3.0 -   3.14] filemap-fix-up.patch{C::bug::??::??::irq::replace in_atomic in bug on with pagefault_disabled}
+
+Unknown feature method "localvar"
+* [   3.0 -    4.0] local-vars-migrate-disable.patch{C::feature::localvar::implement non-rt _cpu_var funs}
+
+Unknown feature method "signal"
+* [   3.0 -    4.0] mips-enable-interrupts-in-signal.patch{C::feature::signal::enable irq in signal}
+
+Unknown feature method "sched&rtsupport"
+* [   3.0 -    4.0] sched-migrate-disable.patch{C::feature::sched&rtsupport::implement migrate disable}
+
+Unknown bug consequence "hang?"
+* [   3.0 -    4.6] timers: Avoid the switch timers base set to NULL trick on RT{C::bug::hang?::irq::semantics::try new lock first to avoid return NULL}
+
+Unknown feature method "hwlat detector"
+* [   3.0 -    4.8] hwlatdetect.patch{C::feature::hwlat detector}
+
+Unknown feature method "console"
+* [   3.0 -   4.11] printk: Add a printk kill switch{C::feature::console::printk kill switch}
+
+Unknown feature method "sysrq"
+* [   3.0 -   4.11] net: sysrq via icmp{C::feature::sysrq::enable sysrq to rcmp}
+
+Unknown bug type "??"
+* [   3.0 -   4.11] x86: Convert mce timer to hrtimer{C::bug::crash::??::timer::convert mce to hrtimer}
+
+Unknown aspect "feature?"
+* [   3.0 -   4.11] block: Turn off warning which is bogus on RT{C::feature?::rtsupport::no rt warn, replace fun to use _light}
+
+Unknown feature method "posix-cpu-time"
+* [   3.0 -   4.11] posix-timers: Thread posix-cpu-timers on -rt{C::feature::posix-cpu-time::impl thread posix cpu timers}
+
+Unknown fix method "rm RT"
+* [   3.0 -   4.11] sched: Disable CONFIG_RT_GROUP_SCHED on RT{C::bug::deadlock::deadlock::rm RT::disable CONFIG_RT_GROUP_SCHED}
+
+Unknown feature method "irq"
+* [   3.0 -   4.11] ARM: AT91: PIT: Remove irq handler when clock event is unused{C::feature::irq::setup rm irq handler in clk evnt mode selection}
+
+Unknown bug consequence "unbalanced sched"
+* [   3.0 -   4.11] timer: delay waking softirqs from the jiffy tick{C::bug::unbalanced sched::irq::semantics::reorder fun}
+
+Unknown feature method "trace"
+* [   3.0 -   4.11] tracing: Add latency histograms{C::feature::trace::add latency histograms}
+
+Unknown feature method "clk"
+* [   3.0 -   4.11] clocksource: TCLIB: Allow higher clock rates for clock events{C::feature::clk::add check to allow higher clk rate}
+
+Unknown feature method "cpu"
+* [   3.0 -   4.11] hotplug: Lightweight get online cpus{C::feature::cpu::add fun to get online cpu}
+
+Unknown feature method "trace"
+* [   3.0 -   4.11] trace: Add migrate-disabled counter to tracing output{C::feature::trace::add migrate_disable trace in rt}
+
+Unknown aspect "feature&performance"
+* [   3.2         ] wait-simple: Simple waitqueue implementation{C::feature&performance::waitqueue::implement a slim version of waitqueue}
+
+Unknown performance method "sched"
+* [   3.2         ] acpi-gpe-use-wait-simple.patch{C::performance::sched::use simple waitqueue}
+
+Unknown feature method "irq"
+* [   3.2         ] powerpc: wsp: Mark opb cascade handler IRQF_NO_THREAD{C::feature::irq::mark irq with hard irq}
+
+Unknown bug consequence "sched"
+* [   3.2         ] ACPI: Convert embedded controller lock to raw spinlock{C::bug::sched::atomicity::irq::replace with raw}
+
+Unknown bug type "??"
+* [   3.2 -    3.4] slab: Fix __do_drain to use the right array cache{C::bug::??::??::??::replace with rt safe fun}
+
+Unknown bug type "??"
+* [   3.2 -    3.6] ftrace-crap.patch{C::bug::??::??::semantics::implement a rt version fun}
+
+Unknown aspect "bug?"
+* [   3.2 -    3.6] hrtimer: Add missing debug_activate() aid{C::bug?::??::??::simply deactivate the warning trace function}
+
+Unknown bug type "??"
+* [   3.2 -   3.18] mm: raw_pagefault_disable{C::bug::??::??::irq::replace with raw pgfault disable}
+
+Unknown feature method "trace"
+* [   3.2 -    4.0] tracing: Show padding as unsigned short{C::feature::trace::change var type}
+
+Unknown feature method "migrate"
+* [   3.2 -    4.0] sched: Postpone actual migration disalbe to schedule{C::feature::migrate::new impl of migrate disable}
+
+Unknown feature method "cpu"
+* [   3.2 -   4.11] hotplug: Reread hotplug_pcp on pin_current_cpu() retry{C::feature::cpu::update cpu mask}
+
+Unknown feature method "fs"
+* [   3.2 -   4.11] sysfs: Add /sys/kernel/realtime entry{C::feature::fs::add rt entry}
+
+Unknown feature method "trace"
+* [   3.2 -   4.11] tracing: Account for preempt off in preempt_schedule(){C::feature::trace::add trace manually}
+
+Unknown bug consequence "?module unusable"
+* [   3.2 -   4.11] kgdb/serial: Short term workaround{C::bug::?module unusable::semantics::add fun, and move the cnt}
+
+Unknown bug type "preempt?"
+* [   3.4 -   3.12] sched/rt: Fix wait_task_interactive() to test rt_spin_lock state{C::bug::data_err::preempt?::preempt::add state check}
+
+Unknown feature method "signal"
+* [   3.4 -   4.11] signal/x86: Delay calling signals in atomic{C::feature::signal::add fun}
+
+Unknown feature method "irq"
+* [   3.6 -    3.8] genirq: Add default affinity mask command line option{C::feature::irq::allow restriction to the default irq affinity mask}
+
+Unknown bug type "init"
+* [   3.6 -    4.0] softirq: Init softirq local lock after per cpu section is set up{C::bug::crash::init::change init sequence}
+
+Unknown feature method "irq"
+* [   3.6 -    4.0] softirq: Make serving softirqs a task flag{C::feature::irq::add a flag, rm fun}
+
+Unknown feature method "mutex"
+* [   3.6 -    4.0] rt: rwsem/rwlock: lockdep annotations{C::feature::mutex::allow multi-readers}
+
+Unknown performance method "io"
+* [   3.6 -    4.1] fs, jbd: pull your plug when waiting for space{C::performance::io::sched when plug}
+
+Unknown feature method "irq"
+* [   3.6 -   4.11] lockdep: selftest: Only do hardirq context test for raw spinlock{C::feature::irq::selftest only hardirq test}
+
+Unknown feature method "reg"
+* [   3.6 -   4.11] random: Make it work on rt{C::feature::reg::random IP}
+
+Unknown feature method "irq"
+* [   3.6 -   4.11] softirq: Split softirq locks{C::feature::irq::enclose with lock}
+

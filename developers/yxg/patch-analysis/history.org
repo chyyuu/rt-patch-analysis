@@ -4164,7 +4164,7 @@
 * [   3.0         ] mips: Allow irq threading{C::feature::rtsupport::enable rt thrd, add reverse dependency entry in Kconfig}
   + [[file:3.0/mips-allow-irq-threading.patch][3.0]]
   - 3.2
-* [   3.0         ] rtmutex: Cleanup the debug code{C::refactor::rm some debuginfo, replace rt_trace_on with debug_locks}
+* [   3.0         ] rtmutex: Cleanup the debug code{C::maintain::refactor::rm some debuginfo, replace rt_trace_on with debug_locks}
   + [[file:3.0/rtmutex-debug-cleanup.patch][3.0]]
   - 3.2
 * [   3.0         ] sched: Convert thread_group_cputimer lock to raw_spinlock{C::feature::rtsupport::replace with raw}
@@ -4176,7 +4176,7 @@
 * [   3.0         ] x86-iommu-rt-aware.patch{C::feature::rtsupport::replace with raw}
   + [[file:3.0/dmar-make-register-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] ftrace-hash-fix.patch{C::bug::data err::semantics::add and replace old fun}
+* [   3.0         ] ftrace-hash-fix.patch{C::bug::data_err::??::semantics::add and replace old fun}
   + [[file:3.0/ftrace-hash-fix.patch][3.0]]
   - 3.2
 * [   3.0         ] ACPI: Convert c3_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
@@ -4206,7 +4206,7 @@
 * [   3.0         ] printk: Convert logbuf_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/prink-convert-logbuf-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING{C::bug::leak::resource leak::sementic::add pointer to record the resourse to be freed}
+* [   3.0         ] perf, x86: Avoid kfree in CPU_STARTING{C::bug::leak::resource_leak::semantics::add pointer to record the resourse to be freed}
   + [[file:3.0/perf-x86-no-kfree-in-cpu_starting.patch][3.0]]
   - 3.2
 * [   3.0         ] fs: Add missing rcu protection for __task_cred() in sys_ioprio_get{C::bug::data_err::atomicity::mutex::enclose with rcu_read_lock}
@@ -4224,7 +4224,7 @@
 * [   3.0         ] sched: Convert cgroups release_list_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/sched-convert-cgroups-release-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] highmem-rt.patch{C::feature::rtsupport::highmem::no rt when highmem on}
+* [   3.0         ] highmem-rt.patch{C::feature::rtsupport::highmem, no rt when highmem on}
   + [[file:3.0/x86-no-highmem-with-rt.patch][3.0]]
   - 3.2
 * [   3.0         ] mm: memory: Efficient ZAP block size{C::feature::rtsupport::add comment, preemptible when rt-full}
@@ -4254,7 +4254,7 @@
 * [   3.0         ] netfilter-wtf.patch{C::maintain::refactor::init with fun}
   + [[file:3.0/net-netfilter-use-proper-rw-init.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Warn on rt throttling{C::maintain::warning info}
+* [   3.0         ] sched: Warn on rt throttling{C::feature::debuginfo::warning info}
   + [[file:3.0/sched-warn-on-throttle.patch][3.0]]
   - 3.2
 * [   3.0         ] fs: btrfs locking workaround for preempt -rt{C::feature::rtsupport::add config}
@@ -4266,7 +4266,7 @@
 * [   3.0         ] xfs: Convert mr_lock to rw_anon_semaphore{C::feature::rtsupport::replace with anon sem}
   + [[file:3.0/xfs-convert-mr-lock-to-rw-anon.patch][3.0]]
   - 3.2
-* [   3.0         ] sched: Move blk_schedule_flush_plug() out of __schedule(){C::feature::rtsupport::preempt::remove fun into schedule, rm irq and preempt wrap around}
+* [   3.0         ] sched: Move blk_schedule_flush_plug() out of __schedule(){C::feature::rtsupport::preempt, remove fun into schedule, rm irq and preempt wrap around}
   + [[file:3.0/sched-move-blk_schedule_flush_plug-out-of-__schedule.patch][3.0]]
   - 3.2
 * [   3.0         ] video: Convert vga console lock to raw_spinlock{C::feature::rtsupport::make printk atomic}
@@ -4314,7 +4314,7 @@
 * [   3.0         ] x86: mce: Convert cmci_discover_lock to raw_spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.0/x86-mce-cmc-lock-raw.patch][3.0]]
   - 3.2
-* [   3.0         ] rw_semaphores: Add rw_anon_semaphores{C::feature::rtsupport::anon sem::implement anonymous sem to make convertion to rt easier}
+* [   3.0         ] rw_semaphores: Add rw_anon_semaphores{C::feature::rtsupport::anon sem, implement anonymous sem to make convertion to rt easier}
   + [[file:3.0/rwsem-implement-anon-rwsems.patch][3.0]]
   - 3.2
 * [   3.0         ] ide: Fix irq flags madness{C::bug::data_err::uninit_var::memory::init with 0}
@@ -4323,7 +4323,7 @@
 * [   3.0         ] proportions: Convert to raw_spinlck{C::feature::rtsupport::replace with raw}
   + [[file:3.0/proportions-raw-lock.patch][3.0]]
   - 3.2
-* [   3.0         ] drm-more-moronic-crap.patch{C::perf::?degrade performence::rm preempt disable}
+* [   3.0         ] drm-more-moronic-crap.patch{C::feature::rtsupport::rm preempt disable}
   + [[file:3.0/drm-more-moronic-crap.patch][3.0]]
   - 3.2
 * [   3.0         ] sched: Separate the scheduler entry for preemption{C::maintain::refactor::separate codes, actually a rename}
@@ -4382,7 +4382,7 @@
   + [[file:3.0/sched-create-schedule-preempt-disabled.patch][3.0]]
     [[file:3.2/sched-create-schedule-preempt-disabled.patch][3.2]]
   - 3.4
-* [   3.0 -    3.2] timekeeping: Convert xtime_lock to raw_seqlock{C::feature::refactor::replace with raw but not a roll-back}
+* [   3.0 -    3.2] timekeeping: Convert xtime_lock to raw_seqlock{C::maintain::refactor::replace with raw but not a roll-back}
   + [[file:3.0/timekeeping-covert-xtimelock.patch][3.0]]
   M [[file:3.2/timekeeping-covert-xtimelock.patch][3.2]]
   - 3.4
@@ -4426,7 +4426,7 @@
     [[file:3.4/workqueue-use-get-cpu-light.patch][3.4]]
     [[file:3.6/workqueue-use-get-cpu-light.patch][3.6]]
   - 3.8
-* [   3.0 -    3.6] x86: kprobes: Remove remove bogus preempt_enable{C::maintain::rm fun not function}
+* [   3.0 -    3.6] x86: kprobes: Remove remove bogus preempt_enable{C::maintain::refactor::rm fun not function}
   + [[file:3.0/x86-kprobes-remove-bogus-preempt-enable.patch][3.0]]
     [[file:3.2/x86-kprobes-remove-bogus-preempt-enable.patch][3.2]]
     [[file:3.4/x86-kprobes-remove-bogus-preempt-enable.patch][3.4]]
@@ -4450,13 +4450,13 @@
     [[file:3.4/rcu-force-preempt-rcu-for-rt.patch][3.4]]
     [[file:3.6/rcu-force-preempt-rcu-for-rt.patch][3.6]]
   - 3.8
-* [   3.0 -    3.6] x86: highmem: Replace BUG_ON by WARN_ON{C::feature::debug info::change buginfo to warning to get more info}
+* [   3.0 -    3.6] x86: highmem: Replace BUG_ON by WARN_ON{C::feature::debuginfo::change buginfo to warning to get more info}
   + [[file:3.0/x86-highmem-warn.patch][3.0]]
   m [[file:3.2/x86-highmem-warn.patch][3.2]]
     [[file:3.4/x86-highmem-warn.patch][3.4]]
     [[file:3.6/x86-highmem-warn.patch][3.6]]
   - 3.8
-* [   3.0 -    3.6] tty: Do not disable interrupts in put_ldisc on -rt{C::bug::might sleep::irq::irq::add nort to irq_save}
+* [   3.0 -    3.6] tty: Do not disable interrupts in put_ldisc on -rt{C::bug::crash::irq::irq::add nort to irq_save}
   + [[file:3.0/tty-use-local-irq-nort.patch][3.0]]
     [[file:3.2/tty-use-local-irq-nort.patch][3.2]]
     [[file:3.4/tty-use-local-irq-nort.patch][3.4]]
@@ -4482,7 +4482,7 @@
     [[file:3.6/acpi-use-local-irq-nort.patch][3.6]]
     [[file:3.8/acpi-use-local-irq-nort.patch][3.8]]
   - 3.10
-* [   3.0 -    3.8] seqlock: Remove unused functions{C::maintain::rm unused fun}
+* [   3.0 -    3.8] seqlock: Remove unused functions{C::maintain::refactor::rm unused fun}
   + [[file:3.0/seqlock-remove-unused-functions.patch][3.0]]
     [[file:3.2/seqlock-remove-unused-functions.patch][3.2]]
     [[file:3.4/seqlock-remove-unused-functions.patch][3.4]]
@@ -4594,7 +4594,7 @@
     [[file:3.12/drivers-serial-cleanup-locking-for-rt.patch][3.12]]
     [[file:3.14/drivers-serial-cleanup-locking-for-rt.patch][3.14]]
   - 3.18
-* [   3.0 -   3.14] USB: Fix the mouse problem when copying large amounts of data{C::bug::hwerr::hardware::::semantic::modify ints var when plug usb}
+* [   3.0 -   3.14] USB: Fix the mouse problem when copying large amounts of data{C::bug::hwerr::hardware::semantics::modify ints var when plug usb}
   + [[file:3.0/usb-fix-mouse-problem-copying-large-data.patch][3.0]]
     [[file:3.2/usb-fix-mouse-problem-copying-large-data.patch][3.2]]
     [[file:3.4/usb-fix-mouse-problem-copying-large-data.patch][3.4]]
@@ -4614,7 +4614,7 @@
     [[file:3.12/mm-cgroup-page-bit-spinlock.patch][3.12]]
     [[file:3.14/mm-cgroup-page-bit-spinlock.patch][3.14]]
   - 3.18
-* [   3.0 -   3.14] filemap-fix-up.patch{C::bug::bug err::irq::replace in_atomic in bug on with pagefault_disabled} 
+* [   3.0 -   3.14] filemap-fix-up.patch{C::bug::??::??::irq::replace in_atomic in bug on with pagefault_disabled} 
   + [[file:3.0/filemap-fix-up.patch][3.0]]
   M [[file:3.2/filemap-fix-up.patch][3.2]]
   m [[file:3.4/filemap-fix-up.patch][3.4]]
@@ -4666,7 +4666,7 @@
   M [[file:3.14/mm-prepare-pf-disable-discoupling.patch][3.14]]
   m [[file:3.18/mm-prepare-pf-disable-discoupling.patch][3.18]]
   - 4.0
-* [   3.0 -   3.18] core: Do not disable interrupts on RT in res_counter.c{C::bug::unexpected sleep??::irq::irq::replace with nort}
+* [   3.0 -   3.18] core: Do not disable interrupts on RT in res_counter.c{C::bug::crash::irq::irq::replace with nort}
   + [[file:3.0/resource-counters-use-localirq-nort.patch][3.0]]
     [[file:3.2/resource-counters-use-localirq-nort.patch][3.2]]
     [[file:3.4/resource-counters-use-localirq-nort.patch][3.4]]
@@ -4688,7 +4688,7 @@
   M [[file:3.14/arch-use-pagefault-disabled.patch][3.14]]
   M [[file:3.18/arch-use-pagefault-disabled.patch][3.18]]
   - 4.0
-* [   3.0 -    4.0] migrate-disable-rt-variant.patch{C::maintain::rtsupport::add dummy fun and macros to control migrate in rt}
+* [   3.0 -    4.0] migrate-disable-rt-variant.patch{C::maintain::refactor::add dummy fun and macros to control migrate in rt}
   + [[file:3.0/migrate-disable-rt-variant.patch][3.0]]
     [[file:3.2/migrate-disable-rt-variant.patch][3.2]]
     [[file:3.4/migrate-disable-rt-variant.patch][3.4]]
@@ -4736,7 +4736,7 @@
     [[file:3.18/mm-remove-preempt-count-from-pf.patch][3.18]]
     [[file:4.0/mm-remove-preempt-count-from-pf.patch][4.0]]
   - 4.1
-* [   3.0 -    4.0] local-var.patch{C::maintain::wrap but same name}
+* [   3.0 -    4.0] local-var.patch{C::maintain::refactor::wrap but same name}
   + [[file:3.0/local-var.patch][3.0]]
     [[file:3.2/local-var.patch][3.2]]
     [[file:3.4/local-var.patch][3.4]]
@@ -5019,7 +5019,7 @@
   M [[file:4.4/timers-preempt-rt-support.patch][4.4]]
   M [[file:4.6/timers-preempt-rt-support.patch][4.6]]
   - 4.8
-* [   3.0 -    4.6] drivers/net: fix livelock issues{C::bug::livelock::livelock::rm NETDEV_TX_LOCKED macro optimization}
+* [   3.0 -    4.6] drivers/net: fix livelock issues{C::bug::livelock::livelock::semantics::rm NETDEV_TX_LOCKED macro optimization}
   + [[file:3.0/drivers-net-fix-livelock-issues.patch][3.0]]
   M [[file:3.2/drivers-net-fix-livelock-issues.patch][3.2]]
   m [[file:3.4/drivers-net-fix-livelock-issues.patch][3.4]]
@@ -5270,7 +5270,7 @@
     [[file:4.8/sched-limit-nr-migrate.patch][4.8]]
     [[file:4.9/sched-limit-nr-migrate.patch][4.9]]
     [[file:4.11/sched-limit-nr-migrate.patch][4.11]]
-* [   3.0 -   4.11] suspend: Prevent might sleep splats{C::bug::might sleep::preempt::semantics::not a fixup, but a way to block mightsleep warning}
+* [   3.0 -   4.11] suspend: Prevent might sleep splats{C::bug::crash::irq::semantics::not a fixup, but a way to block mightsleep warning}
   + [[file:3.0/suspend-prevernt-might-sleep-splats.patch][3.0]]
   m [[file:3.2/suspend-prevernt-might-sleep-splats.patch][3.2]]
     [[file:3.4/suspend-prevernt-might-sleep-splats.patch][3.4]]
@@ -5321,7 +5321,7 @@
     [[file:4.8/fs-replace-bh_uptodate_lock-for-rt.patch][4.8]]
     [[file:4.9/fs-replace-bh_uptodate_lock-for-rt.patch][4.9]]
     [[file:4.11/fs-replace-bh_uptodate_lock-for-rt.patch][4.11]]
-* [   3.0 -   4.11] md: raid5: Make raid5_percpu handling RT aware{C::bug::might sleep::preempt::preempt::add locks, and replace with _light to keep serialized}
+* [   3.0 -   4.11] md: raid5: Make raid5_percpu handling RT aware{C::bug::crash::preempt::preempt::add locks, and replace with _light to keep serialized}
   + [[file:3.0/md-raid5-percpu-handling-rt-aware.patch][3.0]]
   m [[file:3.2/md-raid5-percpu-handling-rt-aware.patch][3.2]]
     [[file:3.4/md-raid5-percpu-handling-rt-aware.patch][3.4]]
@@ -5338,7 +5338,7 @@
   m [[file:4.8/md-raid5-percpu-handling-rt-aware.patch][4.8]]
   M [[file:4.9/md-raid5-percpu-handling-rt-aware.patch][4.9]]
   m [[file:4.11/md-raid5-percpu-handling-rt-aware.patch][4.11]]
-* [   3.0 -   4.11] x86: Convert mce timer to hrtimer{C::bug::might sleep::??::timer::convert mce to hrtimer}
+* [   3.0 -   4.11] x86: Convert mce timer to hrtimer{C::bug::crash::??::timer::convert mce to hrtimer}
   + [[file:3.0/x86-mce-timer-hrtimer.patch][3.0]]
   M [[file:3.2/x86-mce-timer-hrtimer.patch][3.2]]
     [[file:3.4/x86-mce-timer-hrtimer.patch][3.4]]
@@ -5423,7 +5423,7 @@
     [[file:4.8/skbufhead-raw-lock.patch][4.8]]
   M [[file:4.9/skbufhead-raw-lock.patch][4.9]]
   m [[file:4.11/skbufhead-raw-lock.patch][4.11]]
-* [   3.0 -   4.11] x86: Use generic rwsem_spinlocks on -rt{C::feature::capacity::modify config to use gen rwsem in rt}
+* [   3.0 -   4.11] x86: Use generic rwsem_spinlocks on -rt{C::feature::rtsupport::modify config to use gen rwsem in rt}
   + [[file:3.0/x86-use-gen-rwsem-spinlocks-rt.patch][3.0]]
     [[file:3.2/x86-use-gen-rwsem-spinlocks-rt.patch][3.2]]
     [[file:3.4/x86-use-gen-rwsem-spinlocks-rt.patch][3.4]]
@@ -5559,7 +5559,7 @@
     [[file:4.8/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch][4.8]]
     [[file:4.9/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch][4.9]]
   M [[file:4.11/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch][4.11]]
-* [   3.0 -   4.11] fs: ntfs: disable interrupt only on !RT{C::bug::dump::irq::irq::replace with nort}
+* [   3.0 -   4.11] fs: ntfs: disable interrupt only on !RT{C::bug::crash::irq::irq::replace with nort}
   + [[file:3.0/fs-ntfs-disable-interrupt-non-rt.patch][3.0]]
     [[file:3.2/fs-ntfs-disable-interrupt-non-rt.patch][3.2]]
   m [[file:3.4/fs-ntfs-disable-interrupt-non-rt.patch][3.4]]
@@ -5610,7 +5610,7 @@
     [[file:4.8/mm-scatterlist-dont-disable-irqs-on-RT.patch][4.8]]
     [[file:4.9/mm-scatterlist-dont-disable-irqs-on-RT.patch][4.9]]
   M [[file:4.11/mm-scatterlist-dont-disable-irqs-on-RT.patch][4.11]]
-* [   3.0 -   4.11] softirq: Disable softirq stacks for RT{C::feature::capacity::disable softirq stack rt}
+* [   3.0 -   4.11] softirq: Disable softirq stacks for RT{C::feature::rtsupport::disable softirq stack rt}
   + [[file:3.0/softirq-disable-softirq-stacks-for-rt.patch][3.0]]
     [[file:3.2/softirq-disable-softirq-stacks-for-rt.patch][3.2]]
   m [[file:3.4/softirq-disable-softirq-stacks-for-rt.patch][3.4]]
@@ -5695,7 +5695,7 @@
   M [[file:4.8/radix-tree-rt-aware.patch][4.8]]
     [[file:4.9/radix-tree-rt-aware.patch][4.9]]
   - 4.11
-* [   3.0 -   4.11] rtmutex: Avoid include hell{C::bug::compile:compiling_err::compile::correct header file}
+* [   3.0 -   4.11] rtmutex: Avoid include hell{C::bug::compile::compiling_err::syntax::correct header file}
   + [[file:3.0/rtmutex-avoid-include-hell.patch][3.0]]
     [[file:3.2/rtmutex-avoid-include-hell.patch][3.2]]
     [[file:3.4/rtmutex-avoid-include-hell.patch][3.4]]
@@ -5814,7 +5814,7 @@
   M [[file:4.8/arm-at91-pit-remove-irq-handler-when-clock-is-unused.patch][4.8]]
     [[file:4.9/arm-at91-pit-remove-irq-handler-when-clock-is-unused.patch][4.9]]
     [[file:4.11/arm-at91-pit-remove-irq-handler-when-clock-is-unused.patch][4.11]]
-* [   3.0 -   4.11] timer: delay waking softirqs from the jiffy tick{C::bug::unbalanced sched::irq::semantic::reorder fun}
+* [   3.0 -   4.11] timer: delay waking softirqs from the jiffy tick{C::bug::unbalanced sched::irq::semantics::reorder fun}
   + [[file:3.0/timer-delay-waking-softirqs-from-the-jiffy-tick.patch][3.0]]
     [[file:3.2/timer-delay-waking-softirqs-from-the-jiffy-tick.patch][3.2]]
     [[file:3.4/timer-delay-waking-softirqs-from-the-jiffy-tick.patch][3.4]]
@@ -6239,7 +6239,7 @@
     [[file:4.8/arm-at91-tclib-default-to-tclib-timer-for-rt.patch][4.8]]
     [[file:4.9/arm-at91-tclib-default-to-tclib-timer-for-rt.patch][4.9]]
     [[file:4.11/arm-at91-tclib-default-to-tclib-timer-for-rt.patch][4.11]]
-* [   3.0 -   4.11] fs/epoll: Do not disable preemption on RT{C::feature::rt::replace with _light}
+* [   3.0 -   4.11] fs/epoll: Do not disable preemption on RT{C::feature::rtsupport::replace with _light}
   + [[file:3.0/epoll-use-get-cpu-light.patch][3.0]]
     [[file:3.2/epoll-use-get-cpu-light.patch][3.2]]
   m [[file:3.4/epoll-use-get-cpu-light.patch][3.4]]
@@ -6307,7 +6307,7 @@
     [[file:4.8/mutex-no-spin-on-rt.patch][4.8]]
     [[file:4.9/mutex-no-spin-on-rt.patch][4.9]]
   M [[file:4.11/mutex-no-spin-on-rt.patch][4.11]]
-* [   3.0 -   4.11] jump-label: disable if stop_machine() is used{C::feature::disable jump label in rt}
+* [   3.0 -   4.11] jump-label: disable if stop_machine() is used{C::feature::rtsupport::disable jump label in rt}
   + [[file:3.0/jump-label-rt.patch][3.0]]
     [[file:3.2/jump-label-rt.patch][3.2]]
   M [[file:3.4/jump-label-rt.patch][3.4]]
@@ -6347,7 +6347,7 @@
 * [   3.2         ] wait-simple: Simple waitqueue implementation{C::feature&performance::waitqueue::implement a slim version of waitqueue}
   + [[file:3.2/wait-simple-version.patch][3.2]]
   - 3.4
-* [   3.2         ] printk: Disable migration instead of preemption{C::bug::sleep::preempt::preempt::replace preempt_disable with migrate_disable}
+* [   3.2         ] printk: Disable migration instead of preemption{C::bug::crash::preempt::preempt::replace preempt_disable with migrate_disable}
   + [[file:3.2/printk-disable-migration-instead-of-preemption.patch][3.2]]
   - 3.4
 * [   3.2         ] acpi-gpe-use-wait-simple.patch{C::performance::sched::use simple waitqueue}
@@ -6362,7 +6362,7 @@
 * [   3.2         ] powerpc: Mark IPI interrupts IRQF_NO_THREAD{C::feature::rtsupport::rm irq thread flag}
   + [[file:3.2/powerpc-markipi-interrupts-nothread.patch][3.2]]
   - 3.4
-* [   3.2         ] sched: Keep period timer ticking when throttling active{C::bug::timer stop?::time::semantics::keep timer alive}
+* [   3.2         ] sched: Keep period timer ticking when throttling active{C::bug::hang::time::semantics::keep timer alive}
   + [[file:3.2/sched-keep-period-timer-alive-when-throttled.patch][3.2]]
   - 3.4
 * [   3.2         ] ACPI: Convert embedded controller lock to raw spinlock{C::bug::sched::atomicity::irq::replace with raw}
@@ -6401,7 +6401,7 @@
   + [[file:3.2/rt-ring-buffer-convert-reader_lock-from-raw_spin_lock-into-spin_lock.patch][3.2]]
     [[file:3.4/rt-ring-buffer-convert-reader_lock-from-raw_spin_lock-into-spin_lock.patch][3.4]]
   - 3.6
-* [   3.2 -    3.4] rcu: Fix macro substitution for synchronize_rcu_bh() on RT{C::bug::compile::compile_err::syntax::rm () to make it right type}
+* [   3.2 -    3.4] rcu: Fix macro substitution for synchronize_rcu_bh() on RT{C::bug::compile::compiling_err::syntax::rm () to make it right type}
   + [[file:3.2/rcu-fix-macro-substitution.patch][3.2]]
     [[file:3.4/rcu-fix-macro-substitution.patch][3.4]]
   - 3.6
@@ -6413,12 +6413,12 @@
   + [[file:3.2/workqueue-hotplug-fix.patch][3.2]]
     [[file:3.4/workqueue-hotplug-fix.patch][3.4]]
   - 3.6
-* [   3.2 -    3.6] ftrace-crap.patch{C::bug::??::??::semantic::implement a rt version fun}
+* [   3.2 -    3.6] ftrace-crap.patch{C::bug::??::??::semantics::implement a rt version fun}
   + [[file:3.2/ftrace-crap.patch][3.2]]
     [[file:3.4/ftrace-crap.patch][3.4]]
     [[file:3.6/ftrace-crap.patch][3.6]]
   - 3.8
-* [   3.2 -    3.6] softirq: Fix unplug deadlock{C::bug::deadlock::deadlock::semantic::add a check, rm some case and a new case to manage dead}
+* [   3.2 -    3.6] softirq: Fix unplug deadlock{C::bug::deadlock::deadlock::semantics::add a check, rm some case and a new case to manage dead}
   + [[file:3.2/softirq-fix-unplug-deadlock.patch][3.2]]
     [[file:3.4/softirq-fix-unplug-deadlock.patch][3.4]]
     [[file:3.6/softirq-fix-unplug-deadlock.patch][3.6]]
@@ -6428,7 +6428,7 @@
     [[file:3.4/hrtimer-fix-reprogram-madness.patch][3.4]]
     [[file:3.6/hrtimer-fix-reprogram-madness.patch][3.6]]
   - 3.8
-* [   3.2 -    3.6] rt/rcutree: Move misplaced prototype{C::bug::compile::compile_err::semantics::move declaration}
+* [   3.2 -    3.6] rt/rcutree: Move misplaced prototype{C::bug::compile::compiling_err::semantics::move declaration}
   + [[file:3.2/rt-rcutree-warn-fix.patch][3.2]]
     [[file:3.4/rt-rcutree-warn-fix.patch][3.4]]
     [[file:3.6/rt-rcutree-warn-fix.patch][3.6]]
@@ -6449,26 +6449,26 @@
     [[file:3.6/intel_idle-convert-i7300_idle_lock-to-raw-spinlock.patch][3.6]]
     [[file:3.8/intel_idle-convert-i7300_idle_lock-to-raw-spinlock.patch][3.8]]
   - 3.10
-* [   3.2 -    3.8] printk: Don't call printk_tick in printk_needs_cpu() on RT{C::bug::crash::atomicity::semantic::replace with a sleep safe fun}
+* [   3.2 -    3.8] printk: Don't call printk_tick in printk_needs_cpu() on RT{C::bug::crash::atomicity::semantics::replace with a sleep safe fun}
   + [[file:3.2/rfc-printk-don-27t-call-printk_tick-in-printk_needs_cpu.patch][3.2]]
     [[file:3.4/rfc-printk-don-27t-call-printk_tick-in-printk_needs_cpu.patch][3.4]]
     [[file:3.6/rfc-printk-don-27t-call-printk_tick-in-printk_needs_cpu.patch][3.6]]
     [[file:3.8/rfc-printk-don-27t-call-printk_tick-in-printk_needs_cpu.patch][3.8]]
   - 3.10
-* [   3.2 -    3.8] x86: hpet: Disable MSI on Lenovo W510{C::bug::crash::hardware::semantic::just add stack to call back on this chip, not a fixup}
+* [   3.2 -    3.8] x86: hpet: Disable MSI on Lenovo W510{C::bug::crash::hardware::semantics::just add stack to call back on this chip, not a fixup}
   + [[file:3.2/x86-hpet-disable-msi-on-lenovo-w510.patch][3.2]]
     [[file:3.4/x86-hpet-disable-msi-on-lenovo-w510.patch][3.4]]
     [[file:3.6/x86-hpet-disable-msi-on-lenovo-w510.patch][3.6]]
     [[file:3.8/x86-hpet-disable-msi-on-lenovo-w510.patch][3.8]]
   - 3.10
-* [   3.2 -   3.10] softirq: Export in_serving_softirq(){C::bug::compile::compile_err::syntax::add symbol export}
+* [   3.2 -   3.10] softirq: Export in_serving_softirq(){C::bug::compile::compiling_err::syntax::add symbol export}
   + [[file:3.2/softirq-export-in-serving-softirq.patch][3.2]]
     [[file:3.4/softirq-export-in-serving-softirq.patch][3.4]]
     [[file:3.6/softirq-export-in-serving-softirq.patch][3.6]]
     [[file:3.8/softirq-export-in-serving-softirq.patch][3.8]]
     [[file:3.10/softirq-export-in-serving-softirq.patch][3.10]]
   - 3.12
-* [   3.2 -   3.10] hardirq.h: Define softirq_count() as OUL to kill build warning{C::bug::compile::compile_err::memory::change var type}
+* [   3.2 -   3.10] hardirq.h: Define softirq_count() as OUL to kill build warning{C::bug::compile::compiling_err::memory::change var type}
   + [[file:3.2/harirq-h-define-softirq_count-as-oul-to-kill-build-warning.patch][3.2]]
     [[file:3.4/harirq-h-define-softirq_count-as-oul-to-kill-build-warning.patch][3.4]]
     [[file:3.6/harirq-h-define-softirq_count-as-oul-to-kill-build-warning.patch][3.6]]
@@ -6558,7 +6558,7 @@
     [[file:3.18/sched-teach-migrate_disable-about-atomic-contexts.patch][3.18]]
     [[file:4.0/sched-teach-migrate_disable-about-atomic-contexts.patch][4.0]]
   - 4.1
-* [   3.2 -    4.0] ipc/mqueue: Add a critical section to avoid a deadlock{C::bug::hang::deadlock::deadlock::preempt::diasble preempt}
+* [   3.2 -    4.0] ipc/mqueue: Add a critical section to avoid a deadlock{C::bug::deadlock::deadlock::preempt::diasble preempt}
   + [[file:3.2/ipc-mqueue-add-a-critical-section-to-avoid-a-deadlock.patch][3.2]]
     [[file:3.4/ipc-mqueue-add-a-critical-section-to-avoid-a-deadlock.patch][3.4]]
   M [[file:3.6/ipc-mqueue-add-a-critical-section-to-avoid-a-deadlock.patch][3.6]]
@@ -6569,7 +6569,7 @@
     [[file:3.18/ipc-mqueue-add-a-critical-section-to-avoid-a-deadlock.patch][3.18]]
     [[file:4.0/ipc-mqueue-add-a-critical-section-to-avoid-a-deadlock.patch][4.0]]
   - 4.1
-* [   3.2 -    4.0] sched: Postpone actual migration disalbe to schedule{C::performance::migrate::new impl of migrate disable}
+* [   3.2 -    4.0] sched: Postpone actual migration disalbe to schedule{C::feature::migrate::new impl of migrate disable}
   + [[file:3.2/rt-sched-postpone-actual-migration-disalbe-to-schedule.patch][3.2]]
   M [[file:3.4/rt-sched-postpone-actual-migration-disalbe-to-schedule.patch][3.4]]
   M [[file:3.6/rt-sched-postpone-actual-migration-disalbe-to-schedule.patch][3.6]]
@@ -6591,7 +6591,7 @@
     [[file:3.18/rt-sched-do-not-compare-cpu-masks-in-scheduler.patch][3.18]]
     [[file:4.0/rt-sched-do-not-compare-cpu-masks-in-scheduler.patch][4.0]]
   - 4.1
-* [   3.2 -    4.0] sysctl-include-fix.patch{C::bug::compile::compile_err::syntax::add proper header file}
+* [   3.2 -    4.0] sysctl-include-fix.patch{C::bug::compile::compiling_err::syntax::add proper header file}
   + [[file:3.2/sysctl-include-atomic-h.patch][3.2]]
   m [[file:3.4/sysctl-include-atomic-h.patch][3.4]]
     [[file:3.6/sysctl-include-atomic-h.patch][3.6]]
@@ -6646,7 +6646,7 @@
     [[file:3.18/early-printk-consolidate.patch][3.18]]
     [[file:4.0/early-printk-consolidate.patch][4.0]]
   - 4.1
-* [   3.2 -    4.4] rwlocks: Fix section mismatch{C::bug::compile::compile_err::syntax::making non-rt kernel cache align rwlocks by default}
+* [   3.2 -    4.4] rwlocks: Fix section mismatch{C::bug::compile::compiling_err::syntax::making non-rt kernel cache align rwlocks by default}
   + [[file:3.2/tasklist-lock-fix-section-conflict.patch][3.2]]
     [[file:3.4/tasklist-lock-fix-section-conflict.patch][3.4]]
     [[file:3.6/tasklist-lock-fix-section-conflict.patch][3.6]]
@@ -6865,7 +6865,7 @@
     [[file:4.8/x86-kvm-require-const-tsc-for-rt.patch][4.8]]
     [[file:4.9/x86-kvm-require-const-tsc-for-rt.patch][4.9]]
     [[file:4.11/x86-kvm-require-const-tsc-for-rt.patch][4.11]]
-* [   3.2 -   4.11] ARM: Initialize split page table locks for vector page{C::bug::crash::data_err::semantic::add fun}
+* [   3.2 -   4.11] ARM: Initialize split page table locks for vector page{C::bug::data_err::uninit_var::semantics::add fun}
   + [[file:3.2/re-preempt_rt_full-arm-coredump-fails-for-cpu-3e-3d-4.patch][3.2]]
   m [[file:3.4/re-preempt_rt_full-arm-coredump-fails-for-cpu-3e-3d-4.patch][3.4]]
     [[file:3.6/re-preempt_rt_full-arm-coredump-fails-for-cpu-3e-3d-4.patch][3.6]]
@@ -6961,7 +6961,7 @@
   m [[file:4.8/tracing-account-for-preempt-off-in-preempt_schedule.patch][4.8]]
     [[file:4.9/tracing-account-for-preempt-off-in-preempt_schedule.patch][4.9]]
     [[file:4.11/tracing-account-for-preempt-off-in-preempt_schedule.patch][4.11]]
-* [   3.2 -   4.11] kgdb/serial: Short term workaround{C::bug::?module unusable::semantic::add fun, and move the cnt}
+* [   3.2 -   4.11] kgdb/serial: Short term workaround{C::bug::?module unusable::semantics::add fun, and move the cnt}
   + [[file:3.2/kgb-serial-hackaround.patch][3.2]]
   M [[file:3.4/kgb-serial-hackaround.patch][3.4]]
     [[file:3.6/kgb-serial-hackaround.patch][3.6]]
@@ -6993,7 +6993,7 @@
     [[file:4.8/pci-access-use-__wake_up_all_locked.patch][4.8]]
     [[file:4.9/pci-access-use-__wake_up_all_locked.patch][4.9]]
   - 4.11
-* [   3.2 -   4.11] rt: Improve the serial console PASS_LIMIT{C::bug::compile::compile_err::syntax::add a rt limit}
+* [   3.2 -   4.11] rt: Improve the serial console PASS_LIMIT{C::bug::compile::compiling_err::syntax::add a rt limit}
   + [[file:3.2/rt-serial-warn-fix.patch][3.2]]
     [[file:3.4/rt-serial-warn-fix.patch][3.4]]
     [[file:3.6/rt-serial-warn-fix.patch][3.6]]
@@ -7025,7 +7025,7 @@
     [[file:4.8/dm-make-rt-aware.patch][4.8]]
   m [[file:4.9/dm-make-rt-aware.patch][4.9]]
     [[file:4.11/dm-make-rt-aware.patch][4.11]]
-* [   3.2 -   4.11] rcu: Frob softirq test{C::bug::deadlock::deadlock::semantic::add preempt count check}
+* [   3.2 -   4.11] rcu: Frob softirq test{C::bug::deadlock::deadlock::semantics::add preempt count check}
   + [[file:3.2/peter_zijlstra-frob-rcu.patch][3.2]]
     [[file:3.4/peter_zijlstra-frob-rcu.patch][3.4]]
     [[file:3.6/peter_zijlstra-frob-rcu.patch][3.6]]
@@ -7101,7 +7101,7 @@
 * [   3.4         ] futex/rt: Fix possible lockup when taking pi_lock in proxy handler{C::feature::rtsupport::replace with irq disabled}
   + [[file:3.4/rfc-futex-rt-fix-possible-lockup-when-taking-pi_lock-in-proxy-handler.patch][3.4]]
   - 3.6
-* [   3.4 -    3.6] rcu: Fix build break{C::bug::compile::compiler_err::syntex::restrict precompile section}
+* [   3.4 -    3.6] rcu: Fix build break{C::bug::compile::compiling_err::syntax::restrict precompile section}
   + [[file:3.4/rcu-fix-build-break.patch][3.4]]
   m [[file:3.6/rcu-fix-build-break.patch][3.6]]
   - 3.8
@@ -7137,7 +7137,7 @@
   m [[file:4.0/fix-rt-int3-x86_32-3.2-rt.patch][4.0]]
   m [[file:4.1/fix-rt-int3-x86_32-3.2-rt.patch][4.1]]
   - 4.4
-* [   3.4 -   4.11] futex: Fix bug on when a requeued RT task times out{C::bug::deadlock::deadlock::semantic::add macro and specific check}
+* [   3.4 -   4.11] futex: Fix bug on when a requeued RT task times out{C::bug::deadlock::deadlock::semantics::add macro and specific check}
   + [[file:3.4/futex-requeue-pi-fix.patch][3.4]]
   M [[file:3.6/futex-requeue-pi-fix.patch][3.6]]
     [[file:3.8/futex-requeue-pi-fix.patch][3.8]]
@@ -7197,7 +7197,7 @@
     [[file:4.8/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.8]]
     [[file:4.9/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.9]]
     [[file:4.11/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.11]]
-* [   3.4 -   4.11] timer-fd: Prevent live lock{C::bug::livelock::livelock::semantic::wait for return before cpu_relax}
+* [   3.4 -   4.11] timer-fd: Prevent live lock{C::bug::livelock::livelock::semantics::wait for return before cpu_relax}
   + [[file:3.4/timer-fd-avoid-live-lock.patch][3.4]]
     [[file:3.6/timer-fd-avoid-live-lock.patch][3.6]]
     [[file:3.8/timer-fd-avoid-live-lock.patch][3.8]]
@@ -7272,57 +7272,57 @@
     [[file:4.8/oleg-signal-rt-fix.patch][4.8]]
   m [[file:4.9/oleg-signal-rt-fix.patch][4.9]]
   M [[file:4.11/oleg-signal-rt-fix.patch][4.11]]
-* [   3.6         ] Disable RT_GROUP_SCHED in PREEMPT_RT_FULL
+* [   3.6         ] Disable RT_GROUP_SCHED in PREEMPT_RT_FULL{C::feature::rtsupport::disable ...}
   + [[file:3.6/rt-disable-rt-group-sched.patch][3.6]]
   - 3.8
-* [   3.6         ] mm: Protect activate_mm() by preempt_[disable%7Cenable]_rt()
+* [   3.6         ] mm: Protect activate_mm() by preempt_[disable%7Cenable]_rt(){C::bug::??::irq::irq::replace with preempt pair}
   + [[file:3.6/mm-protect-activate_mm-by-preempt_-disable-7cenable-_rt.patch][3.6]]
   - 3.8
-* [   3.6         ] timer.c: fix build fail for ! RT_FULL
+* [   3.6         ] timer.c: fix build fail for ! RT_FULL{C::bug::compile::compiling_err::syntax::add precompile}
   + [[file:3.6/timer.c-fix-build-fail-for-RT_FULL.patch][3.6]]
   - 3.8
-* [   3.6         ] mm: slab: Fix potential deadlock
+* [   3.6         ] mm: slab: Fix potential deadlock{C::bug::deadlock::deadlock::semantics::add macros and replace with it}
   + [[file:3.6/mm-slab-fix-potential-deadlock.patch][3.6]]
   - 3.8
-* [   3.6         ] crypto: Make core builtin and init srcu early
+* [   3.6         ] crypto: Make core builtin and init srcu early{C::bug::crash::uninit_var::memory::enforce init at kern}
   + [[file:3.6/crypto-make-core-static-and-init-scru-early.patch][3.6]]
   - 3.8
-* [   3.6 -    3.8] x86: perf: Deal with kfree from atomic contexts
+* [   3.6 -    3.8] x86: perf: Deal with kfree from atomic contexts{C::feature::rtsupport::replace with lockless for not in a atomic text}
   + [[file:3.6/x86-perf-uncore-deal-with-kfree.patch][3.6]]
     [[file:3.8/x86-perf-uncore-deal-with-kfree.patch][3.8]]
   - 3.10
-* [   3.6 -    3.8] genirq: Add default affinity mask command line option
+* [   3.6 -    3.8] genirq: Add default affinity mask command line option{C::feature::irq::allow restriction to the default irq affinity mask}
   + [[file:3.6/genirq-add-default-mask-cmdline-option.patch][3.6]]
     [[file:3.8/genirq-add-default-mask-cmdline-option.patch][3.8]]
   - 3.10
-* [   3.6 -    3.8] lockdep: Selftest: convert spinlock to raw spinlock
+* [   3.6 -    3.8] lockdep: Selftest: convert spinlock to raw spinlock{C::feature::rtsupport::replace with raw}
   + [[file:3.6/lockdep-selftest-convert-spinlock-to-raw-spinlock.patch][3.6]]
     [[file:3.8/lockdep-selftest-convert-spinlock-to-raw-spinlock.patch][3.8]]
   - 3.10
-* [   3.6 -    3.8] powerpc: Mark low level irq handlers NO_THREAD
+* [   3.6 -    3.8] powerpc: Mark low level irq handlers NO_THREAD{C::feature::rtsupport::make fun NO_THREAD}
   + [[file:3.6/ppc-mark-low-level-handlers-no-thread.patch][3.6]]
     [[file:3.8/ppc-mark-low-level-handlers-no-thread.patch][3.8]]
   - 3.10
-* [   3.6 -   3.10] rcu: rcutiny: Prevent RCU stall
+* [   3.6 -   3.10] rcu: rcutiny: Prevent RCU stall{C::bug::data_err::irq::semantics::modify check}
   + [[file:3.6/rcu-tiny-solve-rt-mistery.patch][3.6]]
     [[file:3.8/rcu-tiny-solve-rt-mistery.patch][3.8]]
     [[file:3.10/rcu-tiny-solve-rt-mistery.patch][3.10]]
   - 3.12
-* [   3.6 -   3.14] stomp_machine: Use mutex_trylock when called from inactive cpu
+* [   3.6 -   3.14] stomp_machine: Use mutex_trylock when called from inactive cpu{C::feature::rtsupport::add trylock loop to avoid contention}
   + [[file:3.6/stomp-machine-deal-clever-with-stopper-lock.patch][3.6]]
     [[file:3.8/stomp-machine-deal-clever-with-stopper-lock.patch][3.8]]
   m [[file:3.10/stomp-machine-deal-clever-with-stopper-lock.patch][3.10]]
     [[file:3.12/stomp-machine-deal-clever-with-stopper-lock.patch][3.12]]
     [[file:3.14/stomp-machine-deal-clever-with-stopper-lock.patch][3.14]]
   - 3.18
-* [   3.6 -   3.14] sched: Add better debug output for might_sleep()
+* [   3.6 -   3.14] sched: Add better debug output for might_sleep(){C::feature::debuginfo::add output in might_sleep}
   + [[file:3.6/sched-better-debug-output-for-might-sleep.patch][3.6]]
   m [[file:3.8/sched-better-debug-output-for-might-sleep.patch][3.8]]
   M [[file:3.10/sched-better-debug-output-for-might-sleep.patch][3.10]]
     [[file:3.12/sched-better-debug-output-for-might-sleep.patch][3.12]]
   m [[file:3.14/sched-Add-better-debug-output-for-might_sleep.patch][3.14]]
   - 3.18
-* [   3.6 -   3.18] net: Use get_cpu_light() in ip_send_unicast_reply()
+* [   3.6 -   3.18] net: Use get_cpu_light() in ip_send_unicast_reply(){C::feature::rtsupport::enclose with get/put_cpu_light pair}
   + [[file:3.6/net-use-cpu-light-in-ip-send-unicast-reply.patch][3.6]]
     [[file:3.8/net-use-cpu-light-in-ip-send-unicast-reply.patch][3.8]]
     [[file:3.10/net-use-cpu-light-in-ip-send-unicast-reply.patch][3.10]]
@@ -7330,7 +7330,7 @@
     [[file:3.14/net-use-cpu-light-in-ip-send-unicast-reply.patch][3.14]]
   m [[file:3.18/net-use-cpu-light-in-ip-send-unicast-reply.patch][3.18]]
   - 4.0
-* [   3.6 -    4.0] softirq: Init softirq local lock after per cpu section is set up
+* [   3.6 -    4.0] softirq: Init softirq local lock after per cpu section is set up{C::bug::crash::init::change init sequence}
   + [[file:3.6/softirq-init-softirq-local-lock-after-per-cpu-section-is-set-up.patch][3.6]]
     [[file:3.8/softirq-init-softirq-local-lock-after-per-cpu-section-is-set-up.patch][3.8]]
   m [[file:3.10/softirq-init-softirq-local-lock-after-per-cpu-section-is-set-up.patch][3.10]]
@@ -7339,7 +7339,7 @@
     [[file:3.18/softirq-init-softirq-local-lock-after-per-cpu-section-is-set-up.patch][3.18]]
     [[file:4.0/softirq-init-softirq-local-lock-after-per-cpu-section-is-set-up.patch][4.0]]
   - 4.1
-* [   3.6 -    4.0] softirq: Split handling function
+* [   3.6 -    4.0] softirq: Split handling function{C::maintain::refactor::split fun out}
   + [[file:3.6/softirq-split-handling-function.patch][3.6]]
     [[file:3.8/softirq-split-handling-function.patch][3.8]]
     [[file:3.10/softirq-split-handling-function.patch][3.10]]
@@ -7348,7 +7348,7 @@
   M [[file:3.18/softirq-split-handling-function.patch][3.18]]
     [[file:4.0/softirq-split-handling-function.patch][4.0]]
   - 4.1
-* [   3.6 -    4.0] softirq: Make serving softirqs a task flag
+* [   3.6 -    4.0] softirq: Make serving softirqs a task flag{C::feature::irq::add a flag, rm fun}
   + [[file:3.6/softirq-make-serving-softirqs-a-task-flag.patch][3.6]]
   M [[file:3.8/softirq-make-serving-softirqs-a-task-flag.patch][3.8]]
     [[file:3.10/softirq-make-serving-softirqs-a-task-flag.patch][3.10]]
@@ -7357,7 +7357,7 @@
     [[file:3.18/softirq-make-serving-softirqs-a-task-flag.patch][3.18]]
   M [[file:4.0/softirq-make-serving-softirqs-a-task-flag.patch][4.0]]
   - 4.1
-* [   3.6 -    4.0] rt: rwsem/rwlock: lockdep annotations
+* [   3.6 -    4.0] rt: rwsem/rwlock: lockdep annotations{C::feature::mutex::allow multi-readers}
   + [[file:3.6/rt-rw-lockdep-annotations.patch][3.6]]
   M [[file:3.8/rt-rw-lockdep-annotations.patch][3.8]]
     [[file:3.10/rt-rw-lockdep-annotations.patch][3.10]]
@@ -7366,7 +7366,7 @@
   M [[file:3.18/rt-rw-lockdep-annotations.patch][3.18]]
   M [[file:4.0/rt-rw-lockdep-annotations.patch][4.0]]
   - 4.1
-* [   3.6 -    4.1] fs, jbd: pull your plug when waiting for space
+* [   3.6 -    4.1] fs, jbd: pull your plug when waiting for space{C::performance::io::sched when plug}
   + [[file:3.6/fs-jbd-pull-plug-when-waiting-for-space.patch][3.6]]
     [[file:3.8/fs-jbd-pull-plug-when-waiting-for-space.patch][3.8]]
     [[file:3.10/fs-jbd-pull-plug-when-waiting-for-space.patch][3.10]]
@@ -7376,7 +7376,7 @@
     [[file:4.0/fs-jbd-pull-plug-when-waiting-for-space.patch][4.0]]
     [[file:4.1/fs-jbd-pull-plug-when-waiting-for-space.patch][4.1]]
   - 4.4
-* [   3.6 -   4.11] printk: Make rt aware
+* [   3.6 -   4.11] printk: Make rt aware{C::feature::rtsupport::make rt aware}
   + [[file:3.6/printk-rt-aware.patch][3.6]]
     [[file:3.8/printk-rt-aware.patch][3.8]]
   m [[file:3.10/printk-rt-aware.patch][3.10]]
@@ -7390,7 +7390,7 @@
     [[file:4.8/printk-rt-aware.patch][4.8]]
     [[file:4.9/printk-rt-aware.patch][4.9]]
   M [[file:4.11/printk-rt-aware.patch][4.11]]
-* [   3.6 -   4.11] net: Remove preemption disabling in netif_rx()
+* [   3.6 -   4.11] net: Remove preemption disabling in netif_rx(){C::bug::crash::atomicity::preempt::replace with migration disable}
   + [[file:3.6/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.6]]
     [[file:3.8/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.8]]
     [[file:3.10/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.10]]
@@ -7404,7 +7404,7 @@
     [[file:4.8/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][4.8]]
     [[file:4.9/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][4.9]]
     [[file:4.11/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][4.11]]
-* [   3.6 -   4.11] lockdep: selftest: Only do hardirq context test for raw spinlock
+* [   3.6 -   4.11] lockdep: selftest: Only do hardirq context test for raw spinlock{C::feature::irq::selftest only hardirq test}
   + [[file:3.6/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][3.6]]
     [[file:3.8/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][3.8]]
     [[file:3.10/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][3.10]]
@@ -7418,7 +7418,7 @@
     [[file:4.8/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][4.8]]
     [[file:4.9/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][4.9]]
     [[file:4.11/lockdep-selftest-only-do-hardirq-context-test-for-raw-spinlock.patch][4.11]]
-* [   3.6 -   4.11] scsi: qla2xxx: Use local_irq_save_nort() in qla2x00_poll
+* [   3.6 -   4.11] scsi: qla2xxx: Use local_irq_save_nort() in qla2x00_poll{C::bug::crash::irq::irq::replace with nort}
   + [[file:3.6/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.6]]
     [[file:3.8/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.8]]
     [[file:3.10/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.10]]
@@ -7432,7 +7432,7 @@
     [[file:4.8/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][4.8]]
     [[file:4.9/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][4.9]]
     [[file:4.11/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][4.11]]
-* [   3.6 -   4.11] cpu/rt: Rework cpu down for PREEMPT_RT
+* [   3.6 -   4.11] cpu/rt: Rework cpu down for PREEMPT_RT{C::feature::sched::migrate the current task off the cpu is going down}
   + [[file:3.6/cpu-rt-rework-cpu-down.patch][3.6]]
   m [[file:3.8/cpu-rt-rework-cpu-down.patch][3.8]]
   M [[file:3.10/cpu-rt-rework-cpu-down.patch][3.10]]
@@ -7446,7 +7446,7 @@
   M [[file:4.8/cpu-rt-rework-cpu-down.patch][4.8]]
   M [[file:4.9/cpu-rt-rework-cpu-down.patch][4.9]]
   M [[file:4.11/cpu-rt-rework-cpu-down.patch][4.11]]
-* [   3.6 -   4.11] random: Make it work on rt
+* [   3.6 -   4.11] random: Make it work on rt{C::feature::reg::random IP}
   + [[file:3.6/random-make-it-work-on-rt.patch][3.6]]
   M [[file:3.8/random-make-it-work-on-rt.patch][3.8]]
     [[file:3.10/random-make-it-work-on-rt.patch][3.10]]
@@ -7460,7 +7460,7 @@
   M [[file:4.8/random-make-it-work-on-rt.patch][4.8]]
   M [[file:4.9/random-make-it-work-on-rt.patch][4.9]]
   m [[file:4.11/random-make-it-work-on-rt.patch][4.11]]
-* [   3.6 -   4.11] softirq: Check preemption after reenabling interrupts
+* [   3.6 -   4.11] softirq: Check preemption after reenabling interrupts{C::bug::rtlatency::preempt::semantics::check preemption after reenable interrupts}
   + [[file:3.6/softirq-preempt-fix-3-re.patch][3.6]]
     [[file:3.8/softirq-preempt-fix-3-re.patch][3.8]]
   M [[file:3.10/softirq-preempt-fix-3-re.patch][3.10]]
@@ -7474,7 +7474,7 @@
     [[file:4.8/softirq-preempt-fix-3-re.patch][4.8]]
   M [[file:4.9/softirq-preempt-fix-3-re.patch][4.9]]
   m [[file:4.11/softirq-preempt-fix-3-re.patch][4.11]]
-* [   3.6 -   4.11] perf: Make swevent hrtimer run in irq instead of softirq
+* [   3.6 -   4.11] perf: Make swevent hrtimer run in irq instead of softirq{C::bug::deadlock::deadlock::semantics::make field true}
   + [[file:3.6/perf-make-swevent-hrtimer-irqsafe.patch][3.6]]
     [[file:3.8/perf-make-swevent-hrtimer-irqsafe.patch][3.8]]
     [[file:3.10/perf-make-swevent-hrtimer-irqsafe.patch][3.10]]
@@ -7488,7 +7488,7 @@
     [[file:4.8/perf-make-swevent-hrtimer-irqsafe.patch][4.8]]
     [[file:4.9/perf-make-swevent-hrtimer-irqsafe.patch][4.9]]
     [[file:4.11/perf-make-swevent-hrtimer-irqsafe.patch][4.11]]
-* [   3.6 -   4.11] mm: page_alloc: Use local_lock_on() instead of plain spinlock
+* [   3.6 -   4.11] mm: page_alloc: Use local_lock_on() instead of plain spinlock{C::feature::mm::add fun to ease debugging}
   + [[file:3.6/mm-page-alloc-use-local-lock-on-target-cpu.patch][3.6]]
   m [[file:3.8/mm-page-alloc-use-local-lock-on-target-cpu.patch][3.8]]
   M [[file:3.10/mm-page-alloc-use-local-lock-on-target-cpu.patch][3.10]]
@@ -7516,7 +7516,7 @@
     [[file:4.8/net-another-local-irq-disable-alloc-atomic-headache.patch][4.8]]
     [[file:4.9/net-another-local-irq-disable-alloc-atomic-headache.patch][4.9]]
   m [[file:4.11/net-another-local-irq-disable-alloc-atomic-headache.patch][4.11]]
-* [   3.6 -   4.11] softirq: Split softirq locks
+* [   3.6 -   4.11] softirq: Split softirq locks{C::feature::irq::enclose with lock}
   + [[file:3.6/softirq-split-locks.patch][3.6]]
   M [[file:3.8/softirq-split-locks.patch][3.8]]
   M [[file:3.10/softirq-split-locks.patch][3.10]]
@@ -7530,7 +7530,7 @@
     [[file:4.8/softirq-split-locks.patch][4.8]]
   M [[file:4.9/softirq-split-locks.patch][4.9]]
   M [[file:4.11/softirq-split-locks.patch][4.11]]
-* [   3.6 -   4.11] crypto: Convert crypto notifier chain to SRCU
+* [   3.6 -   4.11] crypto: Convert crypto notifier chain to SRCU{C::bug::deadlock::deadlock::semantics::replace fun}
   + [[file:3.6/peterz-srcu-crypto-chain.patch][3.6]]
   M [[file:3.8/peterz-srcu-crypto-chain.patch][3.8]]
   m [[file:3.10/peterz-srcu-crypto-chain.patch][3.10]]

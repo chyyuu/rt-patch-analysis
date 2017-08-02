@@ -2,4 +2,5 @@
 /developers/yxg/patch-analysis/*
 !/developers/yxg/patch-analysis/history.org
 !/developers/yxg/patch-analysis/reference.md
+!/developers/yxg/patch-analysis/diff.txt
 *.pyc
