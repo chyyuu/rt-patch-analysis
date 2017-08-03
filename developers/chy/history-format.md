@@ -130,7 +130,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 ## maintain related info
 ### maintain method
 - refactor:: 重构软件相关,包括调整位置，删除无用代码(unused code)
-- donothing:: 什么也没做
+- donothing:: 什么也没做，包括增加注释、和修改文档或者增加文档。
 
 ### PATCH_CHANGES
 ```
