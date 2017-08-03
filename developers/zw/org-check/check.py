@@ -10,7 +10,7 @@ class Checker(object):
 
     feature_method = {'hardware', 'debuginfo', 'idle', 'hrtimer', 'statistics',
                       'delay', 'sched', 'mm', 'timer', 'lockless', 'capability',
-                      'net', 'power', 'rtsupport', 'check', 'arch', 'other'}
+                      'net', 'power', 'rtsupport', 'check', 'arch','testcase',  'other'}
 
     fix_method = {'hardware', 'mutex', 'sync', 'order', 'irq', 'softirq',
                   'preempt', 'migration', 'idle', 'memory', 'config', 'sched', 
