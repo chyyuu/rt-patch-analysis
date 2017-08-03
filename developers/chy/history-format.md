@@ -108,6 +108,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - check:: add runtime check to make it more stable
 - arch:: add new architecture support for RT
 - power:: 节能
+- testcase:: e.g. v2.6.26-rwlock-torture.patch  add a kernel module to test rwlock
 - other:: 不太好归类的， e.g. dont stop box in panic function 或 highmem: revert mainline 即恢复到mainline
 
 ## performance related info
