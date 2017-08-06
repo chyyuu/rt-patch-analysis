@@ -10,7 +10,8 @@ class Checker(object):
 
     feature_method = {'hardware', 'debuginfo', 'idle', 'hrtimer', 'statistics',
                       'delay', 'sched', 'mm', 'timer', 'lockless', 'capability',
-                      'net', 'power', 'rtsupport', 'check', 'arch','testcase',  'other'}
+                      'net', 'power', 'rtsupport', 'check', 'arch','testcase',  
+                      'hotplug', 'other'}
 
     fix_method = {'hardware', 'mutex', 'sync', 'order', 'irq', 'softirq',
                   'preempt', 'migration', 'idle', 'memory', 'config', 'sched', 
@@ -22,7 +23,7 @@ class Checker(object):
 
     performance_method = {'hardware', 'cache', 'msleep', 'irq', 'softirq',
                           'mutex', 'preempt', 'barrier', 'idle', 'hrtimer',
-                          'mm', 'percpu_var', 'smallsize', 'migration'}
+                          'mm', 'percpu_var', 'smallsize', 'migration','config'}
 
     maintain_method = {'refactor', 'donothing'}
 

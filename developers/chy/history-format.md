@@ -67,7 +67,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - typo_var:: 变量类型错误
 - overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow刘明明 <eva980636@126.com>, eva980636 <eva980636@163.com>
 
-- err_var:: 数据处理/比较错误
+- err_var:: 数据处理/比较错误 use after free
 _ err_access:: 用户态访问内核态等类似的程序访问错误，执行错误指令
 
 #### error code
@@ -82,7 +82,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - preempt:: 抢占相关的修复 如 handle accurate time keeping over long delays NEED TO READ， 修改方法之一：  用preempt_disable() friendly swork 代替work_struct 或 preempt_disable --> migration_disable
 - migration:: 迁移相关的修复
 - idle:: idle OR suspend/resume相关的修复
-- memory:: type of var, init var, var<-->ptr 相关的修复
+- memory:: type of var, init var, var<-->ptr  percpu var -->pertask var, use after free相关的修复
 - sched:: 调度相关的修复（主要集中在kernel/sched*.c）
 - config:: 修复config相关的bug，特别是直接!PREEMPT_RT_*的方式，在有rt的情况下，就不支持这个feature了
 - syntax:: 修复编译语法错误
@@ -100,6 +100,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - delay:: 添加workqueue/softirq相关功能
 - sched:: 对调度的修改改进
 - mm:: 对内存的修改改进
+- hotplug:: 对hotplug的rt改进
 - timer:: clock_event，time of day, 等与时钟通知机制有关的功能添加
 - lockless:: 无锁设计
 - capability:: 与rt相关的权限设置
@@ -109,7 +110,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - arch:: add new architecture support for RT
 - power:: 节能
 - testcase:: e.g. v2.6.26-rwlock-torture.patch  add a kernel module to test rwlock
-- other:: 不太好归类的， e.g. dont stop box in panic function 或 highmem: revert mainline 即恢复到mainline
+- other:: 不太好归类的， e.g. dont stop box in panic function 或 highmem: revert mainline 即恢复到mainline/upstream
 
 ## performance related info
 ### performance method
@@ -118,7 +119,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - msleep:: msleep优化
 - irq/softirq:: irq/softirq相关优化
 - mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock， 减少cirtical section的范围等
-- preempt:: sched/preempt相关的优化
+- preempt:: sched/preempt/rcu (also process preempt)相关的优化
 - migration:: 与migration相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
@@ -126,6 +127,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - mm: memory management/kmem_cache相关优化
 - percpu_var:: percpu var设计优化
 - smallsize:: 减少不必要的代码执行/执行次数等，以优化执行时间
+- config:: use config to disable some feature when enable preempt_rt_full
 
 ## maintain related info
 ### maintain method
