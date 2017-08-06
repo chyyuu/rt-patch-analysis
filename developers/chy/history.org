@@ -3499,298 +3499,298 @@ of ftrace}
     [[file:2.6.26/rt-move-update-wall-time-back-to-do-timer.patch][2.6.26]]
     [[file:2.6.29/rt-move-update-wall-time-back-to-do-timer.patch][2.6.29]]
   - 3.0
-* [2.6.26         ] m68knommu: make cmpxchg RT-safe
+* [2.6.26         ] m68knommu-make-cmpxchg-RT-safe.patch {C::feature::check::add compile time check of IRQ flags}
   + [[file:2.6.26/m68knommu-make-cmpxchg-RT-safe.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: fix torture test to handle non-rt
+* [2.6.26         ] rwlock-torture-no-rt.patch {C::bug::compile::compiling_err::syntax::fix torture test to handle non-rt, access undefined struct member }
   + [[file:2.6.26/rwlock-torture-no-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: fix non PREEMPT_RT case
+* [2.6.26         ] rwlocks-fix-no-preempt-rt.patch {C::bug::data_err::atomicity::mutex::the addition of RT_RW_READER broke the non PREEMPT_RT case}
   + [[file:2.6.26/rwlocks-fix-no-preempt-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: be more conservative in locking reader_lock_count
+* [2.6.26         ]rt-rwlock-conservative-locking.patch {C::bug::data_err::atomicity::mutex::rwlock: be more conservative in locking reader_lock_count}
   + [[file:2.6.26/rt-rwlock-conservative-locking.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: print ktime values in readable form
+* [2.6.26         ] trace-ktime-scalar.patch{C::maintain::refactor::ftrace: print ktime values in readable form}
   + [[file:2.6.26/trace-ktime-scalar.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] Fix preempt unsafe paths accessing per_cpu variables
+* [2.6.26         ] ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables {C::bug::data_err::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}
   + [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace-fix-missing-kprobe-include.pathc
+* [2.6.26         ] ftrace-fix-get-kprobe-wreckage {C::bug::compile::compiling_err::syntax::add a get_kprobe function }
   + [[file:2.6.26/ftrace-fix-get-kprobe-wreckage.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] map read/write locks back to their readers
+* [2.6.26         ] multi-reader-lock-account.patch {C::feature::rtsupport::map read/write locks back to their readers}
   + [[file:2.6.26/multi-reader-lock-account.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: dont trace markers
+* [2.6.26         ] ftrace-dont-trace-markers.patch {C::feature::debuginfo::ftrace: dont trace markers, Do not trace debug files and internal ftrace files}
   + [[file:2.6.26/ftrace-dont-trace-markers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] RT: wrap BUILD_CHECK_IRQ_FLAGS
+* [2.6.26         ] arm-omap-02.patch {C::bug::compile::compiling_err::syntax::RT: wrap BUILD_CHECK_IRQ_FLAGS}
   + [[file:2.6.26/arm-omap-02.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-protect-reader_lock_count.patch
+* [2.6.26         ] rwlock-protect-reader_lock_count.patch {C::bug::data_err::atomicity::mutex::rwlock protect reader_lock_count}
   + [[file:2.6.26/rwlock-protect-reader_lock_count.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rt: remove call to stop tracer
+* [2.6.26         ] ftrace-compile-fixes.patch {C::bug::compile::compiling_err::syntax:: remove call to stop tracer}
   + [[file:2.6.26/ftrace-compile-fixes.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] m68knommu_fixes_ontop_of_v2.6.26.patch
+* [2.6.26         ] m68knommu_fixes_ontop_of_v2.6.26.patch {C::?}
   + [[file:2.6.26/m68knommu_fixes_ontop_of_v2.6.26.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched: fix cpupri hotplug support
+* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::crash::migration::migration::sched: fix cpupri hotplug support}
   + [[file:2.6.26/sched-cpupri-hotplug-support.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] implement rwlocks management
+* [2.6.26         ]  rwlocks-multiple-readers.patch   {C::feature::rtsupport::adds the managment for rwlocks to have multiple readers}
   + [[file:2.6.26/rwlocks-multiple-readers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] lockdep: add +1 to radix tree array
+* [2.6.26         ] radix-tree-lockdep-plus1.patch {C::bug::data_err::semantics::semantics::array was off by 1}
   + [[file:2.6.26/radix-tree-lockdep-plus1.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] pmtmr: allow command line override of ioport
+* [2.6.26         ] pmtmr-override.patch   {C::feature::hardware::pmtmr: allow command line override of ioport}
   + [[file:2.6.26/pmtmr-override.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rtmutex-debug-fix.patch
+* [2.6.26         ] rtmutex-debug-fix.patch {C::feature::debuginfo::add task_free info}
   + [[file:2.6.26/rtmutex-debug-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: reset prio on unlocks and wakeups
+* [2.6.26         ]rwlock-prio-fix.patch {C::bug::deadlock::semantics::mutex::rwlock: reset prio on unlocks and wakeups}
   + [[file:2.6.26/rwlock-prio-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace-document-event-tracer.patch
+* [2.6.26         ] ftrace-document-event-tracer.patch{C::maintain::donothing:: add  ftrace-document-event-tracer}
   + [[file:2.6.26/ftrace-document-event-tracer.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] fix sysrq+l when nmi_watchdog disabled
+* [2.6.26         ]  nmi-show-regs-fix.patch  {C::bug::hang::hardware::hardware::fix sysrq+l when nmi_watchdog disabled}
   + [[file:2.6.26/nmi-show-regs-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: define function trace nop
+* [2.6.26         ] ftrace-function-record-nop.patch {C::maintain::refactor::ftrace: define function trace nop}
   + [[file:2.6.26/ftrace-function-record-nop.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] map tasks to reader locks held
+* [2.6.26         ] multi-reader-account.patch{C::feature::statistics::keeps track of all reader locks that are held for a task}
   + [[file:2.6.26/multi-reader-account.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-slowunlock-mutex-fix2.patch
+* [2.6.26         ] rwlock-slowunlock-mutex-fix2.patch {C::bug::deadlock::semantics::semantics::rt_read_slowunlock:If readers still own this lock, then we need  to update the pi_list too}
   + [[file:2.6.26/rwlock-slowunlock-mutex-fix2.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] m68knommu: generic stacktrace function
+* [2.6.26         ] ftrace-m68knommu-generic-stacktrace-function.patch {C::feature::debuginfo::provides the generic stack trace interface}
   + [[file:2.6.26/ftrace-m68knommu-generic-stacktrace-function.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] powerpc: ftrace stop on crash
+* [2.6.26         ] powerpc-ftrace-stop-on-oops.patch{C::feature::debuginfo::Stop tracing, when we run into an oops/bug.}
   + [[file:2.6.26/powerpc-ftrace-stop-on-oops.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] preempt-realtime-ftrace-disable-ftraced.patch
+* [2.6.26         ] preempt-realtime-ftrace-disable-ftraced.patch{C::feature::rtsupport::preempt-realtime-ftrace-disable-ftraced}
   + [[file:2.6.26/preempt-realtime-ftrace-disable-ftraced.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] fix for compiling 2.6.24.7-rt10 without CONFIG_FTRACE
+* [2.6.26         ] ftrace-fix-header.patch {C::bug::compile::compiling_err::syntax::add a header file,fix to handle compiling debugging without CONFIG_FTRACE}
   + [[file:2.6.26/ftrace-fix-header.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: only trace preempt off with preempt tracer
+* [2.6.26         ] ftrace-preempt-trace-check.patch {C::bug::data_err::semantics::semantics::ftrace: only trace preempt off with preempt tracer}
   + [[file:2.6.26/ftrace-preempt-trace-check.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: trace sched.c
+* [2.6.26         ] ftrace-trace-sched.patch {C::feature::debuginfo::trace sched.c}
   + [[file:2.6.26/ftrace-trace-sched.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] mapping_nrpages-fix.patch
+* [2.6.26         ] mapping_nrpages-fix.patch {C::bug::data_err::atomicity::mutex::use  atomic_long_read instead of direct access struct member}
   + [[file:2.6.26/mapping_nrpages-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] arm-fix-compile-error-trace-exit-idle.patch
+* [2.6.26         ] arm-fix-compile-error-trace-exit-idle.patch{{C::bug::compile::compiling_err::syntax::delet undefined fuction}
   + [[file:2.6.26/arm-fix-compile-error-trace-exit-idle.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-slowunlock-mutex-fix.patch
+* [2.6.26         ] rwlock-slowunlock-mutex-fix.patch{C::bug::data_err::atomicity::mutex::set the mutex owner to RT_RW_READER}
   + [[file:2.6.26/rwlock-slowunlock-mutex-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: user raw spin lock for wakeup function trace
+* [2.6.26         ] ftrace-wakeup-rawspinlock.patch {C::bug::hang::preempt::preempt::ftrace: user raw spin lock for wakeup function trace}
   + [[file:2.6.26/ftrace-wakeup-rawspinlock.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] fix-tracer-wreckage-wtf-is-this-code-all-features.patch
+* [2.6.26         ] ftrace-stop-trace-on-crash.patch{C::feature::debuginfo::ftrace stop trace on crash}
   + [[file:2.6.26/ftrace-stop-trace-on-crash.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: rwlock torture test
+* [2.6.26         ] rwlock-torture.patch {C::feature::testcase::torture tests for Priority Inheritance RW locks}
   + [[file:2.6.26/rwlock-torture.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] event-tracer: add clockevent trace
+* [2.6.26         ] eevent-trace-hrtimer-trace.patch {C::feature::debuginfo::event-tracer: add clockevent trace}
   + [[file:2.6.26/event-trace-hrtimer-trace.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] m68knommu: add FTRACE support
+* [2.6.26         ] ftrace-m68knommu-add-FTRACE-support.patch {C::feature::debuginfo::event-tracer: m68knommu: add FTRACE support}
   + [[file:2.6.26/ftrace-m68knommu-add-FTRACE-support.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: record comm on function ctrl change
+* [2.6.26         ] ftrace-record-comm-on-ctrl.patch {C::feature::debuginfo::ftrace: record comm on function ctrl change}
   + [[file:2.6.26/ftrace-record-comm-on-ctrl.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] lockstat: fix contention points
+* [2.6.26         ] lockstat-fix-contention-points.patch {C::bug::?::semantics::semantics::lockstat: fix contention points}
   + [[file:2.6.26/lockstat-fix-contention-points.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] m68knommu: make timer interrupt non threaded
+* [2.6.26         ]preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch{C::bug::hwerr::irq::hardware::m68knommu: make timer interrupt non threaded}
   + [[file:2.6.26/preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] trace-do-not-wakeup-when-irqs-disabled.patch
+* [2.6.26         ] trace-do-not-wakeup-when-irqs-disabled.patch {C::bug::deadlock::irq::irq::trace do not wakeup when irqs disabled in the PREEMPT_RT case.}
   + [[file:2.6.26/trace-do-not-wakeup-when-irqs-disabled.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] trace_hist-latediv.patch
+* [2.6.26         ] trace_hist-latediv.patch  {C::maintain::refactor::trace_hist late  div }
   + [[file:2.6.26/trace_hist-latediv.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlocks multi downgrade write
+* [2.6.26         ] rwlock-implement-downgrade-write.patch {C::feature::rtsupport::rwlocks multi downgrade write}
   + [[file:2.6.26/rwlock-implement-downgrade-write.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] read lock Priority Inheritance implementation
+* [2.6.26         ] multi-reader-pi.patch {C::feature::rtsupport::read lock Priority Inheritance implementation}
   + [[file:2.6.26/multi-reader-pi.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] trace_hist.c: divide-by-zero problem (2)
+* [2.6.26         ] trace_hist-divzero.patch {C::performance::smallsize:: reduce the divide operate counts }
   + [[file:2.6.26/trace_hist-divzero.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] remove warn on for scatterlist in preempt rt
+* [2.6.26         ]warn-on-rt-scatterlist.patch {C::feature::rtsupport::remove warn on for scatterlist in preempt rt}
   + [[file:2.6.26/warn-on-rt-scatterlist.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] frace-use-tsc.patch
+* [2.6.26         ] frace-use-tsc.patch{C::bug::data_err::time::hardware::Use tsc as ftrace clock till we get all the sched_clock fixes in}
   + [[file:2.6.26/frace-use-tsc.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rt-mutex-namespace.patch
+* [2.6.26         ] rt-mutex-namespace.patch  {C::maintain::refactor::rt-mutex-namespace }
   + [[file:2.6.26/rt-mutex-namespace.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rt-mutex-cleanup.patch
+* [2.6.26         ] rt-mutex-use-inline.patch {C::maintain::refactor::rt-mutex-use-inline }
   + [[file:2.6.26/rt-mutex-use-inline.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched-nr-migrate-lower-default-preempt-rt.patch
+* [2.6.26         ] sched-nr-migrate-lower-default-preempt-rt.patch {C::performance::migration::make sched-nr-migrate default value lower }
   + [[file:2.6.26/sched-nr-migrate-lower-default-preempt-rt.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlocks-default-nr-readers-nr-cpus.patch
+* [2.6.26         ] rwlocks-default-nr-readers-nr-cpus.patch{C::performance::mutex::Limit the number of readers to number of CPUS by default}
   + [[file:2.6.26/rwlocks-default-nr-readers-nr-cpus.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] implement reader limit on read write locks
+* [2.6.26         ] multi-reader-limit.patch {C::feature::rtsupport::implement reader limit on read write locks}
   + [[file:2.6.26/multi-reader-limit.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] idle2-fix.patch
+* [2.6.26         ] idle2-fix.patch{C::bug::compile::compiling_err::syntax::nohz: adjust tick_nohz_stop_sched_tick() call of s390 as well}
   + [[file:2.6.26/idle2-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: fix the command line printing
+* [2.6.26         ] ftrace-print-missing-cmdline.patch {C::bug::data_err::semantics::semantics::ftrace: fix the command line printing}
   + [[file:2.6.26/ftrace-print-missing-cmdline.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] lockstat: warn about disabled lock debugging
+* [2.6.26         ] lockstat-output.patch {C::feature::debuginfo::warn about disabled lock debugging}
   + [[file:2.6.26/lockstat-output.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: document updates
+* [2.6.26         ] ftrace-document-update1.patch {C::maintain::donothing:: ftrace: document updates}
   + [[file:2.6.26/ftrace-document-update1.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: cpu hotplug fix
+* [2.6.26         ] ftrace-hotplug-fix.patch {C::bug::crash::hardware::hardware:::disable the function tracer when bringing up a new CPU.}
   + [[file:2.6.26/ftrace-hotplug-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched: fix cpupri priocount
+* [2.6.26         ] sched-cpupri-priocount.patch {C::bug::data_err::semantics::semantics::rounding error off by one}
   + [[file:2.6.26/sched-cpupri-priocount.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] ftrace: fix if define to prove locking
+* [2.6.26         ] lockdep-avoid-fork-waring.patch {C::bug::?::semantics::semantics::The preprocessor condition }
   + [[file:2.6.26/lockdep-avoid-fork-waring.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock-pi-lock-reader.patch
+* [2.6.26         ] rwlock-pi-lock-reader.patch {C::bug::data_err::atomicity::mutex::rwlock-pi-lock-reader}
   + [[file:2.6.26/rwlock-pi-lock-reader.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] idle-fix.patch
+* [2.6.26         ] idle-fix.patch{C::bug::hwerr::irq::hardware::nohz: prevent tick stop outside of the idle loop}
   + [[file:2.6.26/idle-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] sched: prioritize non-migratable tasks over migratable ones
+* [2.6.26         ] sched-prioritize-non-migrating-rt-tasks.patch{C::feature::rtsupport::sched: prioritize non-migratable tasks over migratable}
   + [[file:2.6.26/sched-prioritize-non-migrating-rt-tasks.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] Fix a previously reverted "fix"
+* [2.6.26         ] fix-a-previously-reverted-fix.patch {C::bug::hang::irq::irq::preempt_schedule_irq}
   + [[file:2.6.26/fix-a-previously-reverted-fix.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] 2.6.25.4-rt2 (native_sched_clock() booboo)
+* [2.6.26         ] native-sched-clock-booboo.patch {C::bug::compile::compiling_err::syntax::fix return value}
   + [[file:2.6.26/native-sched-clock-booboo.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] 2.6.25.4-rt4
+* [2.6.26         ] trace-eip2ip.patch {C::bug::compile::compiling_err::syntax::change eip to ip}
   + [[file:2.6.26/trace-eip2ip.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] add framework for multi readers on rwsems
+* [2.6.26         ] rwsems-multiple-readers.patch{C::feature::rtsupport::rw_mutex add framework for multi readers on rwsems}
   + [[file:2.6.26/rwsems-multiple-readers.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] rwlock: fix pi_list race conditions
+* [2.6.26         ]rwlock-fixes.patch{C::bug::deadlock::atomicity::mutex::rwlock: fix pi_list race conditions} 
   + [[file:2.6.26/rwlock-fixes.patch][2.6.26]]
   - 2.6.29
-* [2.6.26         ] Compile warning rtmutex code on 2.6.24.7-rt8 (CC:LKML added)
+* [2.6.26         ] rtmutex-rwlock-cmpxchg-typecast.patch {C::bug::compile::compiling_err::syntax::Compile warning rtmutex code  type cast}
   + [[file:2.6.26/rtmutex-rwlock-cmpxchg-typecast.patch][2.6.26]]
   - 2.6.29
-* [2.6.26 - 2.6.29] realtime: preempt warn about tracing
+* [2.6.26 - 2.6.29] realtime-preempt-warn-about-tracing.patch {C::maintain::refactor::realtime: preempt warn about tracing}
   + [[file:2.6.26/realtime-preempt-warn-about-tracing.patch][2.6.26]]
   M [[file:2.6.29/realtime-preempt-warn-about-tracing.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] optimize rt lock wakeup
+* [2.6.26 - 2.6.29] adaptive-optimize-rt-lock-wakeup.patch{C::performance::mutex::optimize rt lock wakeup}
   + [[file:2.6.26/adaptive-optimize-rt-lock-wakeup.patch][2.6.26]]
     [[file:2.6.29/adaptive-optimize-rt-lock-wakeup.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/raw-spinlocks-for-nmi-print.patch
+* [2.6.26 - 2.6.29] raw-spinlocks-for-nmi-print.patch {C::bug::data_err::atomicity::mutex::change spinlock to be raw spinlock when serializing prints from NMI}
   + [[file:2.6.26/raw-spinlocks-for-nmi-print.patch][2.6.26]]
   M [[file:2.6.29/raw-spinlocks-for-nmi-print.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] adjust pi_lock usage in wakeup
+* [2.6.26 - 2.6.29] adaptive-adjust-pi-wakeup.patch {C::performance::mutex::adjust pi_lock usage in wakeup}
   + [[file:2.6.26/adaptive-adjust-pi-wakeup.patch][2.6.26]]
     [[file:2.6.29/adaptive-adjust-pi-wakeup.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] gitignore scripts/testlpp
+* [2.6.26 - 2.6.29]git-ignore-script-lpp.patch {C::maintain::donothing:: gitignore scripts/testlpp}
   + [[file:2.6.26/git-ignore-script-lpp.patch][2.6.26]]
     [[file:2.6.29/git-ignore-script-lpp.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched: wake_up_idle_cpu rt
+* [2.6.26 - 2.6.29] sched-wake_up_idle_cpu-rt.patch {C::feature::rtsupport::use raw_smp_processor_id() instead of smp_processor_id() }
   + [[file:2.6.26/sched-wake_up_idle_cpu-rt.patch][2.6.26]]
     [[file:2.6.29/sched-wake_up_idle_cpu-rt.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/rtmutex-rearrange.patch
+* [2.6.26 - 2.6.29] rtmutex-rearrange.patch {C::maintain::refactor::rearrange rt_spin_lock_slowlock sleeping code}
   + [[file:2.6.26/rtmutex-rearrange.patch][2.6.26]]
     [[file:2.6.29/rtmutex-rearrange.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] fix-adaptive-hack.patch
+* [2.6.26 - 2.6.29] fix-adaptive-hack.patch{C::bug::deadlock::semantics::mutex::fix-adaptive-hack}
   + [[file:2.6.26/fix-adaptive-hack.patch][2.6.26]]
     [[file:2.6.29/fix-adaptive-hack.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] ARM: OMAP: remove unnecessary locking in clk_get_rate()
+* [2.6.26 - 2.6.29] arm-omap-05.patch{C::bug::deadlock::deadlock::semantics::  ARM: OMAP: remove unnecessary locking in clk_get_rate()}
   + [[file:2.6.26/arm-omap-05.patch][2.6.26]]
     [[file:2.6.29/arm-omap-05.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] rtmutex: break out early on first run
+* [2.6.26 - 2.6.29] adaptive-earlybreak-on-steal.patch {C::performance::smallsize::rtmutex: break out early on first run}
   + [[file:2.6.26/adaptive-earlybreak-on-steal.patch][2.6.26]]
     [[file:2.6.29/adaptive-earlybreak-on-steal.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] remove the extra call to try_to_take_lock
+* [2.6.26 - 2.6.29] adapt-remove-extra-try-to-lock.patch {C::performance::smallsize::remove the extra call to try_to_take_lock}
   + [[file:2.6.26/adapt-remove-extra-try-to-lock.patch][2.6.26]]
     [[file:2.6.29/adapt-remove-extra-try-to-lock.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch
+* [2.6.26 - 2.6.29] sched-fix-dequeued-race.patch {C::bug::?::sched::sched::sched-fix-dequeued-race}
   + [[file:2.6.26/sched-fix-dequeued-race.patch][2.6.26]]
   m [[file:2.6.29/sched-fix-dequeued-race.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/rtmutex-lateral-steal.patch
+* [2.6.26 - 2.6.29] rtmutex-lateral-steal.patch{C::performance::mutex::allow rt-mutex lock-stealing to include lateral priority}
   + [[file:2.6.26/rtmutex-lateral-steal.patch][2.6.26]]
     [[file:2.6.29/rtmutex-lateral-steal.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] rtmutex - remove double xchg
+* [2.6.26 - 2.6.29] rtmutex-remove-xchg.patch {C::performance::smallsize:: rtmutex - remove double xchg}
   + [[file:2.6.26/rtmutex-remove-xchg.patch][2.6.26]]
     [[file:2.6.29/rtmutex-remove-xchg.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/revert-preempt-bkl-revert.patch
+* [2.6.26 - 2.6.29] revert-preempt-bkl-revert.patch {C::performance::mutex::BKL: revert back to the old spinlock implementation}
   + [[file:2.6.26/revert-preempt-bkl-revert.patch][2.6.26]]
   m [[file:2.6.29/revert-preempt-bkl-revert.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] sched: make task->oncpu available in all configurations
+* [2.6.26 - 2.6.29] adaptive-task-oncpu.patch{C::feature::sched::sched: make task->oncpu available in all configurations}
   + [[file:2.6.26/adaptive-task-oncpu.patch][2.6.26]]
   m [[file:2.6.29/adaptive-task-oncpu.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/bz235099-idle-load-fix.patch
+* [2.6.26 - 2.6.29] bz235099-idle-load-fix.patch {C::bug::data_err::semantics::semantics::fix for load average calculation} 
   + [[file:2.6.26/bz235099-idle-load-fix.patch][2.6.26]]
   M [[file:2.6.29/bz235099-idle-load-fix.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] Fix CONFIG_DEBUG_RT_MUTEX lock underflow warnings
+* [2.6.26 - 2.6.29]fix-config-debug-rt-mutex-lock-underflow-warnings.patch {C::bug::data_err::atomicity::mutex::converts lock_count to a atomic_t}
   + [[file:2.6.26/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.26]]
   m [[file:2.6.29/fix-config-debug-rt-mutex-lock-underflow-warnings.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] patches/fix_vdso_gtod_vsyscall64_2.patch
+* [2.6.26 - 2.6.29]fix_vdso_gtod_vsyscall64_2.patch {C::performance::hrtimer:: enforces the 1ms resolution}
   + [[file:2.6.26/fix_vdso_gtod_vsyscall64_2.patch][2.6.26]]
   m [[file:2.6.29/fix_vdso_gtod_vsyscall64_2.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] adaptive spinlocks lite
+* [2.6.26 - 2.6.29] adaptive-spinlock-lite-v2.patch {C::performance::hrtimer::adaptive spinlocks lite}
   + [[file:2.6.26/adaptive-spinlock-lite-v2.patch][2.6.26]]
   m [[file:2.6.29/adaptive-spinlock-lite-v2.patch][2.6.29]]
   - 3.0
-* [2.6.26 - 2.6.29] nfs: fix missing preemption check
+* [2.6.26 - 2.6.29] nfs-stats-miss-preemption.patch {C::bug::rtlatency::preempt::preempt::nfs: fix missing preemption check}
   + [[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]
   m [[file:2.6.29/nfs-stats-miss-preemption.patch][2.6.29]]
   - 3.0
-* [2.6.26 -    3.8] generic: Use raw local irq variant for generic cmpxchg
+* [2.6.26 -    3.8] generic-cmpxchg-use-raw-local-irq-variant.patch{{C::bug::hwerr::irq::hardware::generic: Use raw local irq variant for generic cmpxchg}
   + [[file:2.6.26/generic-cmpxchg-use-raw-local-irq-variant.patch][2.6.26]]
     [[file:2.6.29/generic-cmpxchg-use-raw-local-irq-variant.patch][2.6.29]]
     [[file:3.0/generic-cmpxchg-use-raw-local-irq.patch][3.0]]
@@ -3799,7 +3799,7 @@ of ftrace}
     [[file:3.6/generic-cmpxchg-use-raw-local-irq.patch][3.6]]
     [[file:3.8/generic-cmpxchg-use-raw-local-irq.patch][3.8]]
   - 3.10
-* [2.6.26 -   3.12] usb: Use local_irq_*_nort() variants
+* [2.6.26 -   3.12] sub-dont-disable-irqs.patch{{C::performance::smallsize::rt: dont disable irqs in usb}
   + [[file:2.6.26/sub-dont-disable-irqs.patch][2.6.26]]
     [[file:2.6.29/sub-dont-disable-irqs.patch][2.6.29]]
   m [[file:3.0/usb-hcd-use-local-irq-nort.patch][3.0]]
