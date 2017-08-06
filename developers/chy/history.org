@@ -7549,87 +7549,88 @@ of ftrace}
     [[file:4.8/peterz-srcu-crypto-chain.patch][4.8]]
     [[file:4.9/peterz-srcu-crypto-chain.patch][4.9]]
     [[file:4.11/peterz-srcu-crypto-chain.patch][4.11]]
-* [   3.8         ] timekeeping: Implement a shadow timekeeper
+* [   3.8         ] timekeeping: Implement a shadow timekeeper{C::feature::timer::timekeeping: Implement a shadow timekeeper}
   + [[file:3.8/timekeeping-implement-shadow-timekeeper.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Store cycle_last value in timekeeper struct as well
+* [   3.8         ] timekeeping: Store cycle_last value in timekeeper struct as well{C::feature::timer::timekeeping: Store cycle_last value in timekeeper struct as well}
   + [[file:3.8/timekeeping-store-cycle-last-in-timekeeper.patch][3.8]]
   - 3.10
-* [   3.8         ] printk: Fix rq->lock vs logbuf_lock unlock lock inversion
+* [   3.8         ] printk: Fix rq->lock vs logbuf_lock unlock lock inversion{C::bug::deadlock::deadlock::semantics:: printk: Fix rq->lock vs logbuf_lock unlock lock inversion}
   + [[file:3.8/fix-rq-3elock-vs-logbuf_lock-unlock-race.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Split timekeeper_lock into lock and seqcount
+* [   3.8         ] timekeeping: Split timekeeper_lock into lock and seqcount{C::performance::mutex::timekeeping: Split timekeeper_lock into lock and seqcount}
   + [[file:3.8/timekeeping-split-timekeeper-lock.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Calc stuff once
+* [   3.8         ] timekeeping: Calc stuff once{C::maintain::refactor::timekeeping: Calc stuff once}
   + [[file:3.8/timekeeping-do-not-calc-crap-over-and-over.patch][3.8]]
   - 3.10
-* [   3.8         ] of: fix recursive locking in of_get_next_available_child()
+* [   3.8         ] of: fix recursive locking in of_get_next_available_child(){C::bug::deadlock::deadlock::semantics:: of: fix recursive locking in of_get_next_available_child()}
   + [[file:3.8/0001-of-fix-recursive-locking-in-of_get_next_available_ch.patch][3.8]]
   - 3.10
-* [   3.8         ] powerpc/fsl-msi: use a different locklcass for the cascade interrupt
+* [   3.8         ] powerpc/fsl-msi: use a different locklcass for the cascade interrupt{C::bug::deadlock::deadlock::semantics::powerpc/fsl-msi: use a different locklcass for the cascade interrupt}
   + [[file:3.8/powerpc-fsl-msi-use-a-different-locklcass-for-the-ca.patch][3.8]]
   - 3.10
-* [   3.8         ] OF: Convert devtree lock from rw_lock to raw spinlock
+* [   3.8         ] OF: Convert devtree lock from rw_lock to raw spinlock{C::feature::rtsupport::OF: Convert devtree lock from rw_lock to raw}
   + [[file:3.8/of-convert-devtree-lock-from-rw_lock-to-raw-spinlock.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Delay update of clock->cycle_last
+* [   3.8         ] timekeeping: Delay update of clock->cycle_last{C::performance::smallsize::timekeeping: Delay update of clock->cycle_last}
   + [[file:3.8/timekeeping-delay-clock-cycle-last-update.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Move lock out of timekeeper struct
+* [   3.8         ] timekeeping: Move lock out of timekeeper struct{C::feature::rtsupport::timekeeping: Move lock out of timekeeper }
   + [[file:3.8/timekeeping-move-lock-out-of-timekeeper.patch][3.8]]
   - 3.10
-* [   3.8         ] kernel/srcu: merge common code into a macro
+* [   3.8         ] kernel/srcu: merge common code into a macro{C::maintain::refactor::kernel/srcu: merge common code into a macro}
   + [[file:3.8/0001-kernel-srcu-merge-common-code-into-a-macro.patch][3.8]]
   - 3.10
-* [   3.8         ] FIX [2/2] slub: Tid must be retrieved from the percpu area of the current proces
+* [   3.8         ] FIX [2/2] slub: Tid must be retrieved from the percpu area of the current proces{C::bug::data_err::preempt::preempt::slub: Tid must be retrieved from the percpu area of the current proces}
   + [[file:3.8/fix-2-2-slub-tid-must-be-retrieved-from-the-percpu-area-of-the-current-processor.patch][3.8]]
   - 3.10
-* [   3.8         ] spi/omap-mcspi: check condition also after timeout
+* [   3.8         ] spi/omap-mcspi: check condition also after timeout{C::bug::hwerr::semantics::semantics::spi/omap-mcspi: check condition also after timeout}
   + [[file:3.8/spi-omap-mcspi-check-condition-also-after-timeout.patch][3.8]]
   - 3.10
-* [   3.8         ] FIX [1/2] slub: Do not dereference NULL pointer in node_match
+* [   3.8         ] FIX [1/2] slub: Do not dereference NULL pointer in node_match{C::bug::data_err::err_var::memory::slub: Do not dereference NULL pointer in node_match}
   + [[file:3.8/fix-1-2-slub-do-not-dereference-null-pointer-in-node_match.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Make jiffies_lock internal
+* [   3.8         ] timekeeping: Make jiffies_lock internal{C::maintain::refactor::timekeeping: Make jiffies_lock internal}
   + [[file:3.8/timekeeping-make-jiffies-lock-internal.patch][3.8]]
   - 3.10
-* [   3.8         ] timekeeping: Shorten seq_count region
+* [   3.8         ] timekeeping: Shorten seq_count region{C::performance::mutex::timekeeping: Shorten seq_count region}
   + [[file:3.8/timekeeping-shorten-seq-count-region.patch][3.8]]
   - 3.10
-* [   3.8 -   3.10] rcutiny: Use simple waitqueue
+* [   3.8 -   3.10] rcutiny: Use simple waitqueue{C::performance::mutex::rcutiny: Use simple waitqueue}
   + [[file:3.8/rcutiny-use-simple-waitqueue.patch][3.8]]
     [[file:3.10/rcutiny-use-simple-waitqueue.patch][3.10]]
   - 3.12
-* [   3.8 -   3.12] sched: Adjust sched_reset_on_fork when nothing else changes
+* [   3.8 -   3.12] sched: Adjust sched_reset_on_fork when nothing else changes{C::bug::data_err::sched::sched::sched: Adjust sched_reset_on_fork when nothing else changes}
   + [[file:3.8/sched-adjust-reset-on-fork-always.patch][3.8]]
     [[file:3.10/sched-adjust-reset-on-fork-always.patch][3.10]]
     [[file:3.12/sched-adjust-reset-on-fork-always.patch][3.12]]
   - 3.14
-* [   3.8 -   3.12] sched: Consider pi boosting in setscheduler
+* [   3.8 -   3.12] sched: Consider pi boosting in setscheduler{C::bug::rtlatency::sched::sched::sched: Consider pi boosting in setscheduler}
   + [[file:3.8/sched-consider-pi-boosting-in-setscheduler.patch][3.8]]
     [[file:3.10/sched-consider-pi-boosting-in-setscheduler.patch][3.10]]
     [[file:3.12/sched-consider-pi-boosting-in-setscheduler.patch][3.12]]
-  - 3.14
-* [   3.8 -   3.14] sched: Init idle->on_rq in init_idle()
+    [[file:3.14/sched-Consider-pi-boosting-in-setscheduler.patch][3.14]]
+  - 3.18
+* [   3.8 -   3.14] sched: Init idle->on_rq in init_idle(){C::bug::?::sched::sched::Init idle->on_rq in init_idle()}
   + [[file:3.8/idle-state.patch][3.8]]
     [[file:3.10/idle-state.patch][3.10]]
     [[file:3.12/idle-state.patch][3.12]]
     [[file:3.14/sched-Init-idle-on_rq-in-init_idle.patch][3.14]]
   - 3.18
-* [   3.8 -   3.14] sched: Check for idle task in might_sleep()
+* [   3.8 -   3.14] sched: Check for idle task in might_sleep(){C::bug::deadlock::deadlock::semantics::Idle is not allowed to call sleeping functions ever!}
   + [[file:3.8/might-sleep-check-for-idle.patch][3.8]]
     [[file:3.10/might-sleep-check-for-idle.patch][3.10]]
     [[file:3.12/might-sleep-check-for-idle.patch][3.12]]
     [[file:3.14/sched-Check-for-idle-task-in-might_sleep.patch][3.14]]
   - 3.18
-* [   3.8 -   3.14] sched: Queue RT tasks to head when prio drops
+* [   3.8 -   3.14] sched: Queue RT tasks to head when prio drops{C::bug::rtlatency::sched::sched::sched: Queue RT tasks to head when prio drops}
   + [[file:3.8/sched-enqueue-to-head.patch][3.8]]
     [[file:3.10/sched-enqueue-to-head.patch][3.10]]
     [[file:3.12/sched-enqueue-to-head.patch][3.12]]
     [[file:3.14/sched-Queue-RT-tasks-to-head-when-prio-drops.patch][3.14]]
   - 3.18
-* [   3.8 -    4.0] wait-simple: Rework for use with completions
+* [   3.8 -    4.0] wait-simple: Rework for use with completions{C::feature::rtsupport::wait-simple: Rework for use with completions}
   + [[file:3.8/wait-simple-rework-for-completions.patch][3.8]]
     [[file:3.10/wait-simple-rework-for-completions.patch][3.10]]
   M [[file:3.12/wait-simple-rework-for-completions.patch][3.12]]
@@ -7637,7 +7638,7 @@ of ftrace}
     [[file:3.18/wait-simple-rework-for-completions.patch][3.18]]
     [[file:4.0/wait-simple-rework-for-completions.patch][4.0]]
   - 4.1
-* [   3.8 -    4.0] kernel/treercu: use a simple waitqueue
+* [   3.8 -    4.0] kernel/treercu: use a simple waitqueue{C::performance::mutex::treercu: use a simple waitqueue}
   + [[file:3.8/treercu-use-simple-waitqueue.patch][3.8]]
   m [[file:3.10/treercu-use-simple-waitqueue.patch][3.10]]
     [[file:3.12/treercu-use-simple-waitqueue.patch][3.12]]
@@ -7645,7 +7646,7 @@ of ftrace}
   M [[file:3.18/treercu-use-simple-waitqueue.patch][3.18]]
     [[file:4.0/treercu-use-simple-waitqueue.patch][4.0]]
   - 4.1
-* [   3.8 -    4.0] softirq: Adapt NOHZ softirq pending check to new RT scheme
+* [   3.8 -    4.0] softirq: Adapt NOHZ softirq pending check to new RT scheme{C::feature::rtsupport::softirq: Adapt NOHZ softirq pending check to new RT scheme}
   + [[file:3.8/softirq-adapt-nohz-pending-debug-code-to-new-scheme.patch][3.8]]
     [[file:3.10/softirq-adapt-nohz-pending-debug-code-to-new-scheme.patch][3.10]]
   M [[file:3.12/softirq-adapt-nohz-pending-debug-code-to-new-scheme.patch][3.12]]
@@ -7653,7 +7654,7 @@ of ftrace}
   M [[file:3.18/softirq-adapt-nohz-pending-debug-code-to-new-scheme.patch][3.18]]
   M [[file:4.0/softirq-adapt-nohz-pending-debug-code-to-new-scheme.patch][4.0]]
   - 4.1
-* [   3.8 -    4.0] net: Use local_bh_disable in netif_rx_ni()
+* [   3.8 -    4.0] net: Use local_bh_disable in netif_rx_ni(){C::bug::hwerr::semantics::semantics::net: Use local_bh_disable in netif_rx_ni}
   + [[file:3.8/net-netif-rx-ni-use-local-bh-disable.patch][3.8]]
     [[file:3.10/net-netif-rx-ni-use-local-bh-disable.patch][3.10]]
     [[file:3.12/net-netif-rx-ni-use-local-bh-disable.patch][3.12]]
@@ -7661,7 +7662,7 @@ of ftrace}
     [[file:3.18/net-netif-rx-ni-use-local-bh-disable.patch][3.18]]
     [[file:4.0/net-netif-rx-ni-use-local-bh-disable.patch][4.0]]
   - 4.1
-* [   3.8 -    4.1] hrtimer: Raise softirq if hrtimer irq stalled
+* [   3.8 -    4.1] hrtimer: Raise softirq if hrtimer irq stalled{C::feature::hrtimer:: hrtimer: Raise softirq if hrtimer irq stalled}
   + [[file:3.8/hrtimer-raise-softirq-if-hrtimer-irq-stalled.patch][3.8]]
     [[file:3.10/hrtimer-raise-softirq-if-hrtimer-irq-stalled.patch][3.10]]
     [[file:3.12/hrtimer-raise-softirq-if-hrtimer-irq-stalled.patch][3.12]]
@@ -7670,7 +7671,7 @@ of ftrace}
     [[file:4.0/hrtimer-raise-softirq-if-hrtimer-irq-stalled.patch][4.0]]
     [[file:4.1/hrtimer-raise-softirq-if-hrtimer-irq-stalled.patch][4.1]]
   - 4.4
-* [   3.8 -    4.4] wait-simple: Simple waitqueue implementation
+* [   3.8 -    4.4] wait-simple: Simple waitqueue implementation{C::feature::rtsupport:: wait-simple: Simple waitqueue implementation}
   + [[file:3.8/wait-simple-implementation.patch][3.8]]
   m [[file:3.10/wait-simple-implementation.patch][3.10]]
   m [[file:3.12/wait-simple-implementation.patch][3.12]]
@@ -7680,7 +7681,7 @@ of ftrace}
     [[file:4.1/wait-simple-implementation.patch][4.1]]
   m [[file:4.4/wait-simple-implementation.patch][4.4]]
   - 4.6
-* [   3.8 -    4.6] i2c/omap: drop the lock hard irq context
+* [   3.8 -    4.6] i2c/omap: drop the lock hard irq context{C::performance::mutex::i2c/omap: drop the lock hard irq }
   + [[file:3.8/i2c-omap-drop-the-lock-hard-irq-context.patch][3.8]]
     [[file:3.10/i2c-omap-drop-the-lock-hard-irq-context.patch][3.10]]
     [[file:3.12/i2c-omap-drop-the-lock-hard-irq-context.patch][3.12]]
@@ -7691,7 +7692,7 @@ of ftrace}
   M [[file:4.4/i2c-omap-drop-the-lock-hard-irq-context.patch][4.4]]
     [[file:4.6/i2c-omap-drop-the-lock-hard-irq-context.patch][4.6]]
   - 4.8
-* [   3.8 -   4.11] arm: Enable highmem for rt
+* [   3.8 -   4.11] arm: Enable highmem for rt{C::feature::mm::arm-enable-highmem-for-rt}
   + [[file:3.8/arm-enable-highmem-for-rt.patch][3.8]]
     [[file:3.10/arm-enable-highmem-for-rt.patch][3.10]]
   m [[file:3.12/arm-enable-highmem-for-rt.patch][3.12]]
@@ -7704,7 +7705,7 @@ of ftrace}
     [[file:4.8/arm-enable-highmem-for-rt.patch][4.8]]
     [[file:4.9/arm-enable-highmem-for-rt.patch][4.9]]
     [[file:4.11/arm-enable-highmem-for-rt.patch][4.11]]
-* [   3.8 -   4.11] net: netfilter: Serialize xt_write_recseq sections on RT
+* [   3.8 -   4.11] net: netfilter: Serialize xt_write_recseq sections on RT{C::bug::data_err::order::order::net: netfilter: Serialize xt_write_recseq sections on RT}
   + [[file:3.8/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][3.8]]
   M [[file:3.10/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][3.10]]
     [[file:3.12/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][3.12]]
@@ -7717,7 +7718,7 @@ of ftrace}
   m [[file:4.8/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][4.8]]
   m [[file:4.9/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][4.9]]
   m [[file:4.11/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][4.11]]
-* [   3.8 -   4.11] printk: Drop the logbuf_lock more often
+* [   3.8 -   4.11] printk: Drop the logbuf_lock more often{C::performance::mutex::printk: Drop the logbuf_lock more}
   + [[file:3.8/HACK-printk-drop-the-logbuf_lock-more-often.patch][3.8]]
     [[file:3.10/HACK-printk-drop-the-logbuf_lock-more-often.patch][3.10]]
     [[file:3.12/HACK-printk-drop-the-logbuf_lock-more-often.patch][3.12]]
@@ -7730,7 +7731,7 @@ of ftrace}
     [[file:4.8/HACK-printk-drop-the-logbuf_lock-more-often.patch][4.8]]
     [[file:4.9/HACK-printk-drop-the-logbuf_lock-more-often.patch][4.9]]
   M [[file:4.11/HACK-printk-drop-the-logbuf_lock-more-often.patch][4.11]]
-* [   3.8 -   4.11] powerpc: Add support for lazy preemption
+* [   3.8 -   4.11] powerpc: Add support for lazy preemption{C::feature::rtsupport::powerpc: Add support for lazy }
   + [[file:3.8/powerpc-preempt-lazy-support.patch][3.8]]
   M [[file:3.10/powerpc-preempt-lazy-support.patch][3.10]]
   M [[file:3.12/powerpc-preempt-lazy-support.patch][3.12]]
@@ -7743,7 +7744,7 @@ of ftrace}
   M [[file:4.8/powerpc-preempt-lazy-support.patch][4.8]]
     [[file:4.9/powerpc-preempt-lazy-support.patch][4.9]]
   M [[file:4.11/powerpc-preempt-lazy-support.patch][4.11]]
-* [   3.8 -   4.11] net: Add a mutex around devnet_rename_seq
+* [   3.8 -   4.11] net: Add a mutex around devnet_rename_seq{C::performance::preempt:: net: make devnet_rename_seq a mutex}
   + [[file:3.8/net-make-devnet_rename_seq-a-mutex.patch][3.8]]
   M [[file:3.10/net-make-devnet_rename_seq-a-mutex.patch][3.10]]
   m [[file:3.12/net-make-devnet_rename_seq-a-mutex.patch][3.12]]
@@ -7756,7 +7757,7 @@ of ftrace}
     [[file:4.8/net-make-devnet_rename_seq-a-mutex.patch][4.8]]
     [[file:4.9/net-make-devnet_rename_seq-a-mutex.patch][4.9]]
     [[file:4.11/net-make-devnet_rename_seq-a-mutex.patch][4.11]]
-* [   3.8 -   4.11] rcu: Disable RCU_FAST_NO_HZ on RT
+* [   3.8 -   4.11] rcu: Disable RCU_FAST_NO_HZ on RT{C::bug::hwerr::irq::irq::rcu: Disable RCU_FAST_NO_HZ on RT}
   + [[file:3.8/rcu-disable-rcu-fast-no-hz-on-rt.patch][3.8]]
   M [[file:3.10/rcu-disable-rcu-fast-no-hz-on-rt.patch][3.10]]
     [[file:3.12/rcu-disable-rcu-fast-no-hz-on-rt.patch][3.12]]
@@ -7769,7 +7770,7 @@ of ftrace}
     [[file:4.8/rcu-disable-rcu-fast-no-hz-on-rt.patch][4.8]]
     [[file:4.9/rcu-disable-rcu-fast-no-hz-on-rt.patch][4.9]]
     [[file:4.11/rcu-disable-rcu-fast-no-hz-on-rt.patch][4.11]]
-* [   3.8 -   4.11] sched: Add support for lazy preemption
+* [   3.8 -   4.11] sched: Add support for lazy preemption{C::feature::sched::sched: Add support for lazy preemptions}
   + [[file:3.8/preempt-lazy-support.patch][3.8]]
   M [[file:3.10/preempt-lazy-support.patch][3.10]]
   M [[file:3.12/preempt-lazy-support.patch][3.12]]
@@ -7782,7 +7783,7 @@ of ftrace}
   M [[file:4.8/preempt-lazy-support.patch][4.8]]
     [[file:4.9/preempt-lazy-support.patch][4.9]]
   M [[file:4.11/preempt-lazy-support.patch][4.11]]
-* [   3.8 -   4.11] arm/highmem: Flush tlb on unmap
+* [   3.8 -   4.11] arm/highmem: Flush tlb on unmap{C::bug::data_err::hardware::hardware:: arm/highmem: Flush tlb on unmap}
   + [[file:3.8/0003-arm-highmem-flush-tlb-on-unmap.patch][3.8]]
     [[file:3.10/0003-arm-highmem-flush-tlb-on-unmap.patch][3.10]]
     [[file:3.12/0003-arm-highmem-flush-tlb-on-unmap.patch][3.12]]
@@ -7795,7 +7796,7 @@ of ftrace}
     [[file:4.8/arm-highmem-flush-tlb-on-unmap.patch][4.8]]
     [[file:4.9/arm-highmem-flush-tlb-on-unmap.patch][4.9]]
     [[file:4.11/arm-highmem-flush-tlb-on-unmap.patch][4.11]]
-* [   3.8 -   4.11] slub: Enable irqs for __GFP_WAIT
+* [   3.8 -   4.11] slub: Enable irqs for __GFP_WAIT{C::bug::hwerr::irq::irq::slub: Enable irqs for __GFP_WAIT}
   + [[file:3.8/slub-enable-irqs-for-no-wait.patch][3.8]]
     [[file:3.10/slub-enable-irqs-for-no-wait.patch][3.10]]
     [[file:3.12/slub-enable-irqs-for-no-wait.patch][3.12]]
@@ -7808,7 +7809,7 @@ of ftrace}
   m [[file:4.8/slub-enable-irqs-for-no-wait.patch][4.8]]
     [[file:4.9/slub-enable-irqs-for-no-wait.patch][4.9]]
   M [[file:4.11/slub-enable-irqs-for-no-wait.patch][4.11]]
-* [   3.8 -   4.11] completion: Use simple wait queues
+* [   3.8 -   4.11] completion: Use simple wait queues{C::performance::mutex::completion: Use simple wait queues}
   + [[file:3.8/completion-use-simple-wait-queues.patch][3.8]]
   M [[file:3.10/completion-use-simple-wait-queues.patch][3.10]]
   m [[file:3.12/completion-use-simple-wait-queues.patch][3.12]]
@@ -7821,7 +7822,7 @@ of ftrace}
   m [[file:4.8/completion-use-simple-wait-queues.patch][4.8]]
     [[file:4.9/completion-use-simple-wait-queues.patch][4.9]]
   M [[file:4.11/completion-use-simple-wait-queues.patch][4.11]]
-* [   3.8 -   4.11] block: Use cpu_chill() for retry loops
+* [   3.8 -   4.11] block: Use cpu_chill() for retry loops{C::bug::livelock::livelock::semantics::block: Use cpu_chill() for retry loops}
   + [[file:3.8/block-use-cpu-chill.patch][3.8]]
     [[file:3.10/block-use-cpu-chill.patch][3.10]]
     [[file:3.12/block-use-cpu-chill.patch][3.12]]
@@ -7834,7 +7835,7 @@ of ftrace}
     [[file:4.8/block-use-cpu-chill.patch][4.8]]
     [[file:4.9/block-use-cpu-chill.patch][4.9]]
   M [[file:4.11/block-use-cpu-chill.patch][4.11]]
-* [   3.8 -   4.11] x86: Support for lazy preemption
+* [   3.8 -   4.11] x86: Support for lazy preemption{C::feature::rtsupport::x86: Support for lazy preemption}
   + [[file:3.8/x86-preempt-lazy.patch][3.8]]
   m [[file:3.10/x86-preempt-lazy.patch][3.10]]
   m [[file:3.12/x86-preempt-lazy.patch][3.12]]
@@ -7847,7 +7848,7 @@ of ftrace}
   M [[file:4.8/x86-preempt-lazy.patch][4.8]]
   M [[file:4.9/x86-preempt-lazy.patch][4.9]]
   M [[file:4.11/x86-preempt-lazy.patch][4.11]]
-* [   3.8 -   4.11] mm: Enable SLUB for RT
+* [   3.8 -   4.11] mm: Enable SLUB for RT{C::feature::mm::mm: Enable SLUB for RT}
   + [[file:3.8/mm-enable-slub.patch][3.8]]
   M [[file:3.10/mm-enable-slub.patch][3.10]]
   M [[file:3.12/mm-enable-slub.patch][3.12]]
@@ -7860,7 +7861,7 @@ of ftrace}
   m [[file:4.8/mm-enable-slub.patch][4.8]]
     [[file:4.9/mm-enable-slub.patch][4.9]]
   M [[file:4.11/mm-enable-slub.patch][4.11]]
-* [   3.8 -   4.11] kernel/SRCU: provide a static initializer
+* [   3.8 -   4.11] kernel/SRCU: provide a static initializer{C::feature::rtsupport::SRCU: provide a static initializer}
   + [[file:3.8/0002-kernel-SRCU-provide-a-static-initializer.patch][3.8]]
   M [[file:3.10/0002-kernel-SRCU-provide-a-static-initializer.patch][3.10]]
     [[file:3.12/0002-kernel-SRCU-provide-a-static-initializer.patch][3.12]]
@@ -7873,7 +7874,7 @@ of ftrace}
     [[file:4.8/kernel-SRCU-provide-a-static-initializer.patch][4.8]]
     [[file:4.9/kernel-SRCU-provide-a-static-initializer.patch][4.9]]
   M [[file:4.11/kernel-SRCU-provide-a-static-initializer.patch][4.11]]
-* [   3.8 -   4.11] mmci: Remove bogus local_irq_save()
+* [   3.8 -   4.11] mmci: Remove bogus local_irq_save(){C::performance::irq::mmci: Remove bogus local_irq_save()}
   + [[file:3.8/mmci-remove-bogus-irq-save.patch][3.8]]
     [[file:3.10/mmci-remove-bogus-irq-save.patch][3.10]]
     [[file:3.12/mmci-remove-bogus-irq-save.patch][3.12]]
@@ -7886,7 +7887,7 @@ of ftrace}
     [[file:4.8/mmci-remove-bogus-irq-save.patch][4.8]]
     [[file:4.9/mmci-remove-bogus-irq-save.patch][4.9]]
     [[file:4.11/mmci-remove-bogus-irq-save.patch][4.11]]
-* [   3.8 -   4.11] mm: bounce: Use local_irq_save_nort
+* [   3.8 -   4.11] mm: bounce: Use local_irq_save_nort{C::performance::irq:: mm: bounce: Use local_irq_save_nort}
   + [[file:3.8/mm-bounce-local-irq-save-nort.patch][3.8]]
     [[file:3.10/mm-bounce-local-irq-save-nort.patch][3.10]]
     [[file:3.12/mm-bounce-local-irq-save-nort.patch][3.12]]
@@ -7899,7 +7900,7 @@ of ftrace}
     [[file:4.8/mm-bounce-local-irq-save-nort.patch][4.8]]
     [[file:4.9/mm-bounce-local-irq-save-nort.patch][4.9]]
     [[file:4.11/mm-bounce-local-irq-save-nort.patch][4.11]]
-* [   3.8 -   4.11] tty/serial/pl011: Make the locking work on RT
+* [   3.8 -   4.11] tty/serial/pl011: Make the locking work on RT{C::bug::hwerr::irq::irq::Redo it to make it work on -RT and non-RT.}
   + [[file:3.8/drivers-tty-pl011-irq-disable-madness.patch][3.8]]
     [[file:3.10/drivers-tty-pl011-irq-disable-madness.patch][3.10]]
     [[file:3.12/drivers-tty-pl011-irq-disable-madness.patch][3.12]]
@@ -7912,7 +7913,7 @@ of ftrace}
     [[file:4.8/drivers-tty-pl011-irq-disable-madness.patch][4.8]]
     [[file:4.9/drivers-tty-pl011-irq-disable-madness.patch][4.9]]
     [[file:4.11/drivers-tty-pl011-irq-disable-madness.patch][4.11]]
-* [   3.8 -   4.11] futex: Ensure lock/unlock symetry versus pi_lock and hash bucket lock
+* [   3.8 -   4.11] futex: Ensure lock/unlock symetry versus pi_lock and hash bucket lock{C::bug::deadlock::semantics::semantics::futex: Ensure lock/unlock symetry versus pi_lock and hash bucket lock}
   + [[file:3.8/0005-futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][3.8]]
     [[file:3.10/0005-futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][3.10]]
     [[file:3.12/0005-futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][3.12]]
@@ -7925,7 +7926,7 @@ of ftrace}
     [[file:4.8/futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][4.8]]
     [[file:4.9/futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][4.9]]
     [[file:4.11/futex-Ensure-lock-unlock-symetry-versus-pi_lock-and-.patch][4.11]]
-* [   3.8 -   4.11] workqueue: Use local irq lock instead of irq disable regions
+* [   3.8 -   4.11] workqueue: Use local irq lock instead of irq disable regions{C::performance::mutex::Use local irq lock instead of irq disable regions}
   + [[file:3.8/workqueue-use-locallock.patch][3.8]]
   M [[file:3.10/workqueue-use-locallock.patch][3.10]]
   m [[file:3.12/workqueue-use-locallock.patch][3.12]]
@@ -7938,7 +7939,7 @@ of ftrace}
     [[file:4.8/workqueue-use-locallock.patch][4.8]]
   M [[file:4.9/workqueue-use-locallock.patch][4.9]]
   M [[file:4.11/workqueue-use-locallock.patch][4.11]]
-* [   3.8 -   4.11] arm: Add support for lazy preemption
+* [   3.8 -   4.11] arm: Add support for lazy preemption{C::feature::rtsupport::arm-preempt-lazy-support}
   + [[file:3.8/arm-preempt-lazy-support.patch][3.8]]
   m [[file:3.10/arm-preempt-lazy-support.patch][3.10]]
   m [[file:3.12/arm-preempt-lazy-support.patch][3.12]]
@@ -7951,7 +7952,7 @@ of ftrace}
   M [[file:4.8/arm-preempt-lazy-support.patch][4.8]]
     [[file:4.9/arm-preempt-lazy-support.patch][4.9]]
     [[file:4.11/arm-preempt-lazy-support.patch][4.11]]
-* [   3.8 -   4.11] timekeeping: Split jiffies seqlock
+* [   3.8 -   4.11] timekeeping: Split jiffies seqlock{C::performance::mutex::timekeeping: Split jiffies seqlock}
   + [[file:3.8/timekeeping-split-jiffies-lock.patch][3.8]]
   m [[file:3.10/timekeeping-split-jiffies-lock.patch][3.10]]
   m [[file:3.12/timekeeping-split-jiffies-lock.patch][3.12]]
@@ -7964,7 +7965,7 @@ of ftrace}
   m [[file:4.8/timekeeping-split-jiffies-lock.patch][4.8]]
     [[file:4.9/timekeeping-split-jiffies-lock.patch][4.9]]
   m [[file:4.11/timekeeping-split-jiffies-lock.patch][4.11]]
-* [   3.8 -   4.11] x86/highmem: Add a "already used pte" check
+* [   3.8 -   4.11] x86/highmem: Add a "already used pte" check{C::feature::check::Add a "already used pte" check}
   + [[file:3.8/0002-x86-highmem-add-a-already-used-pte-check.patch][3.8]]
     [[file:3.10/0002-x86-highmem-add-a-already-used-pte-check.patch][3.10]]
     [[file:3.12/0002-x86-highmem-add-a-already-used-pte-check.patch][3.12]]
