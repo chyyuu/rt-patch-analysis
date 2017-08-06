@@ -8199,40 +8199,40 @@ of ftrace}
     [[file:4.8/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][4.8]]
     [[file:4.9/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][4.9]]
     [[file:4.11/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][4.11]]
-* [  3.12         ] net: iwlwifi: request only a threaded handler for interrupts
+* [  3.12         ] net: iwlwifi: request only a threaded handler for interrupts{C::performance::irq::net: iwlwifi: request only a threaded handler for interrupts}
   + [[file:3.12/net-iwlwifi-request-only-a-threaded-handler-for-inte.patch][3.12]]
   - 3.14
-* [  3.12         ] Kind of revert "powerpc: 52xx: provide a default in mpc52xx_irqhost_map()"
+* [  3.12         ] Kind of revert "powerpc: 52xx: provide a default in mpc52xx_irqhost_map()"{C::bug::hwerr::irq::irq:: Kind of revert "powerpc: 52xx: provide a default in mpc52xx_irqhost_map()"}
   + [[file:3.12/Kind-of-revert-powerpc-52xx-provide-a-default-in-mpc.patch][3.12]]
   - 3.14
-* [  3.12         ] drm: remove preempt_disable() from drm_calc_vbltimestamp_from_scanoutpos()
+* [  3.12         ] drm: remove preempt_disable() from drm_calc_vbltimestamp_from_scanoutpos(){C::bug::deadlock::irq::irq::drm: remove preempt_disable() from drm_calc_vbltimestamp_from_scanoutpos()}
   + [[file:3.12/drm-remove-preempt_disable-from-drm_calc_vbltimestam.patch][3.12]]
   - 3.14
-* [  3.12         ] genirq: Set the irq thread policy without checking CAP_SYS_NICE
+* [  3.12         ] genirq: Set the irq thread policy without checking CAP_SYS_NICE{C::bug::?::semantics::semantics::genirq: Set the irq thread policy without checking CAP_SYS_NICE}
   + [[file:3.12/genirq-Set-the-irq-thread-policy-without-checking-CA.patch][3.12]]
   - 3.14
-* [  3.12         ] lockref: disable 64bit cmpxchg optimization on RT
+* [  3.12         ] lockref: disable 64bit cmpxchg optimization on RT{C::feature::rtsupport::lockref: disable 64bit cmpxchg optimization on RT}
   + [[file:3.12/lockref-disable-64bit-cmpxchg-optimization-on-RT.patch][3.12]]
   - 3.14
-* [  3.12 -    4.0] simple-wait: rename and export the equivalent of waitqueue_active()
+* [  3.12 -    4.0] simple-wait: rename and export the equivalent of waitqueue_active(){C::maintain::refactor::simple-wait: rename and export the equivalent of waitqueue_active()}
   + [[file:3.12/simple-wait-rename-and-export-the-equivalent-of-wait.patch][3.12]]
     [[file:3.14/simple-wait-rename-and-export-the-equivalent-of-wait.patch][3.14]]
     [[file:3.18/simple-wait-rename-and-export-the-equivalent-of-wait.patch][3.18]]
     [[file:4.0/simple-wait-rename-and-export-the-equivalent-of-wait.patch][4.0]]
   - 4.1
-* [  3.12 -    4.0] a few open coded completions
+* [  3.12 -    4.0] a few open coded completions{C::performance::mutex::fixup_opencoded_completions}
   + [[file:3.12/fixup_opencoded_completions.patch][3.12]]
   M [[file:3.14/fixup_opencoded_completions.patch][3.14]]
     [[file:3.18/fixup_opencoded_completions.patch][3.18]]
     [[file:4.0/fixup_opencoded_completions.patch][4.0]]
   - 4.1
-* [  3.12 -    4.0] sparc: provide EARLY_PRINTK for SPARC
+* [  3.12 -    4.0] sparc: provide EARLY_PRINTK for SPARC{C::bug::compile::compiling_err::syntax::sparc: provide EARLY_PRINTK for SPARC}
   + [[file:3.12/sparc-provide-EARLY_PRINTK-for-SPARC.patch][3.12]]
     [[file:3.14/sparc-provide-EARLY_PRINTK-for-SPARC.patch][3.14]]
     [[file:3.18/sparc-provide-EARLY_PRINTK-for-SPARC.patch][3.18]]
     [[file:4.0/sparc-provide-EARLY_PRINTK-for-SPARC.patch][4.0]]
   - 4.1
-* [  3.12 -    4.8] hwlat-detector: Update hwlat_detector to add outer loop detection
+* [  3.12 -    4.8] hwlat-detector: Update hwlat_detector to add outer loop detection{C::bug::data_err::semantics::semantics::hwlat-detector: Update hwlat_detector to add outer loop detection}
   + [[file:3.12/hwlat-detector-Update-hwlat_detector-to-add-outer-lo.patch][3.12]]
   M [[file:3.14/hwlat-detector-Update-hwlat_detector-to-add-outer-lo.patch][3.14]]
     [[file:3.18/hwlat-detector-Update-hwlat_detector-to-add-outer-lo.patch][3.18]]
@@ -8242,7 +8242,7 @@ of ftrace}
     [[file:4.6/hwlat-detector-Update-hwlat_detector-to-add-outer-lo.patch][4.6]]
     [[file:4.8/hwlat-detector-Update-hwlat_detector-to-add-outer-lo.patch][4.8]]
   - 4.9
-* [  3.12 -    4.8] hwlat-detector: Use thread instead of stop machine
+* [  3.12 -    4.8] hwlat-detector: Use thread instead of stop machine{C::performance::preempt::hwlat-detector: Use thread instead of stop machine}
   + [[file:3.12/hwlat-detector-Use-thread-instead-of-stop-machine.patch][3.12]]
   M [[file:3.14/hwlat-detector-Use-thread-instead-of-stop-machine.patch][3.14]]
     [[file:3.18/hwlat-detector-Use-thread-instead-of-stop-machine.patch][3.18]]
@@ -8252,7 +8252,7 @@ of ftrace}
     [[file:4.6/hwlat-detector-Use-thread-instead-of-stop-machine.patch][4.6]]
     [[file:4.8/hwlat-detector-Use-thread-instead-of-stop-machine.patch][4.8]]
   - 4.9
-* [  3.12 -    4.8] hwlat-detector: Use trace_clock_local if available
+* [  3.12 -    4.8] hwlat-detector: Use trace_clock_local if available{C::bug::data_err::order::semantics::hwlat-detector: Use trace_clock_local if available}
   + [[file:3.12/hwlat-detector-Use-trace_clock_local-if-available.patch][3.12]]
   M [[file:3.14/hwlat-detector-Use-trace_clock_local-if-available.patch][3.14]]
     [[file:3.18/hwlat-detector-Use-trace_clock_local-if-available.patch][3.18]]
@@ -8262,7 +8262,7 @@ of ftrace}
     [[file:4.6/hwlat-detector-Use-trace_clock_local-if-available.patch][4.6]]
     [[file:4.8/hwlat-detector-Use-trace_clock_local-if-available.patch][4.8]]
   - 4.9
-* [  3.12 -    4.8] hwlat-detector: Don't ignore threshold module parameter
+* [  3.12 -    4.8] hwlat-detector: Don't ignore threshold module parameter{C::bug::data_err::semantics::semantics::hwlat-detector: Don't ignore threshold module parameter}
   + [[file:3.12/hwlat-detector-Don-t-ignore-threshold-module-paramet.patch][3.12]]
   M [[file:3.14/hwlat-detector-Don-t-ignore-threshold-module-paramet.patch][3.14]]
     [[file:3.18/hwlat-detector-Don-t-ignore-threshold-module-paramet.patch][3.18]]
@@ -8272,7 +8272,7 @@ of ftrace}
     [[file:4.6/hwlat-detector-Don-t-ignore-threshold-module-paramet.patch][4.6]]
     [[file:4.8/hwlat-detector-Don-t-ignore-threshold-module-paramet.patch][4.8]]
   - 4.9
-* [  3.12 -   4.11] hrtimer: Move schedule_work call to helper thread
+* [  3.12 -   4.11] hrtimer: Move schedule_work call to helper thread{C::bug::deadlock::irq::irq::hrtimer: Move schedule_work call to helper thread}
   + [[file:3.12/hrtimer-Move-schedule_work-call-to-helper-thread.patch][3.12]]
   m [[file:3.14/hrtimer-Move-schedule_work-call-to-helper-thread.patch][3.14]]
     [[file:3.18/hrtimer-Move-schedule_work-call-to-helper-thread.patch][3.18]]
@@ -8283,7 +8283,7 @@ of ftrace}
   M [[file:4.8/hrtimer-Move-schedule_work-call-to-helper-thread.patch][4.8]]
     [[file:4.9/hrtimer-Move-schedule_work-call-to-helper-thread.patch][4.9]]
     [[file:4.11/hrtimer-Move-schedule_work-call-to-helper-thread.patch][4.11]]
-* [  3.12 -   4.11] ptrace: fix ptrace vs tasklist_lock race
+* [  3.12 -   4.11] ptrace: fix ptrace vs tasklist_lock race{C::bug::?::mutex::mutex::ptrace: fix ptrace vs tasklist_lock race}
   + [[file:3.12/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][3.12]]
   M [[file:3.14/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][3.14]]
   M [[file:3.18/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][3.18]]
@@ -8294,7 +8294,7 @@ of ftrace}
   m [[file:4.8/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][4.8]]
     [[file:4.9/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][4.9]]
   M [[file:4.11/ptrace-fix-ptrace-vs-tasklist_lock-race.patch][4.11]]
-* [  3.12 -   4.11] mm/memcontrol: Don't call schedule_work_on in preemption disabled context
+* [  3.12 -   4.11] mm/memcontrol: Don't call schedule_work_on in preemption disabled context{C::bug::deadlock::deadlock::preempt:: mm/memcontrol: Don't call schedule_work_on in preemption disabled context}
   + [[file:3.12/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][3.12]]
     [[file:3.14/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][3.14]]
     [[file:3.18/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][3.18]]
@@ -8305,7 +8305,7 @@ of ftrace}
     [[file:4.8/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][4.8]]
     [[file:4.9/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][4.9]]
     [[file:4.11/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][4.11]]
-* [  3.12 -   4.11] genirq: Do not invoke the affinity callback via a workqueue on RT
+* [  3.12 -   4.11] genirq: Do not invoke the affinity callback via a workqueue on RT{C::bug::deadlock::deadlock::softirq::genirq: Do not invoke the affinity callback via a workqueue on RT}
   + [[file:3.12/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][3.12]]
     [[file:3.14/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][3.14]]
   m [[file:3.18/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][3.18]]
@@ -8316,7 +8316,7 @@ of ftrace}
   M [[file:4.8/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][4.8]]
   M [[file:4.9/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][4.9]]
   M [[file:4.11/genirq-do-not-invoke-the-affinity-callback-via-a-wor.patch][4.11]]
-* [  3.12 -   4.11] wait.h: include atomic.h
+* [  3.12 -   4.11] wait.h: include atomic.h{C::bug::compile::compiling_err::syntax:: wait.h: include atomic.h}
   + [[file:3.12/wait.h-include-atomic.h.patch][3.12]]
     [[file:3.14/wait.h-include-atomic.h.patch][3.14]]
     [[file:3.18/wait.h-include-atomic.h.patch][3.18]]
@@ -8327,7 +8327,7 @@ of ftrace}
     [[file:4.8/wait.h-include-atomic.h.patch][4.8]]
     [[file:4.9/wait.h-include-atomic.h.patch][4.9]]
   m [[file:4.11/wait.h-include-atomic.h.patch][4.11]]
-* [  3.12 -   4.11] mm: Allow only slub on RT
+* [  3.12 -   4.11] mm: Allow only slub on RT{C::feature::rtsupport:: mm: Allow only slub on RT}
   + [[file:3.12/mm-disable-sloub-rt.patch][3.12]]
     [[file:3.14/mm-disable-sloub-rt.patch][3.14]]
     [[file:3.18/mm-disable-sloub-rt.patch][3.18]]
@@ -8338,7 +8338,7 @@ of ftrace}
   m [[file:4.8/mm-disable-sloub-rt.patch][4.8]]
     [[file:4.9/mm-disable-sloub-rt.patch][4.9]]
     [[file:4.11/mm-disable-sloub-rt.patch][4.11]]
-* [  3.12 -   4.11] usb: Use _nort in giveback function
+* [  3.12 -   4.11] usb: Use _nort in giveback function{C::bug::deadlock::deadlock::irq:: usb: use _nort in giveback}
   + [[file:3.12/usb-use-_nort-in-giveback.patch][3.12]]
   m [[file:3.14/usb-use-_nort-in-giveback.patch][3.14]]
     [[file:3.18/usb-use-_nort-in-giveback.patch][3.18]]
@@ -8349,7 +8349,7 @@ of ftrace}
     [[file:4.8/usb-use-_nort-in-giveback.patch][4.8]]
     [[file:4.9/usb-use-_nort-in-giveback.patch][4.9]]
     [[file:4.11/usb-use-_nort-in-giveback.patch][4.11]]
-* [  3.12 -   4.11] rtmutex: Add RT aware ww locks
+* [  3.12 -   4.11] rtmutex: Add RT aware ww locks{C::feature::rtsupport:: rtmutex: Add RT aware ww locks}
   + [[file:3.12/rtmutex-add-a-first-shot-of-ww_mutex.patch][3.12]]
   M [[file:3.14/rtmutex-add-a-first-shot-of-ww_mutex.patch][3.14]]
   M [[file:3.18/rtmutex-add-a-first-shot-of-ww_mutex.patch][3.18]]
@@ -8360,7 +8360,7 @@ of ftrace}
     [[file:4.8/rtmutex-add-a-first-shot-of-ww_mutex.patch][4.8]]
     [[file:4.9/rtmutex-add-a-first-shot-of-ww_mutex.patch][4.9]]
   M [[file:4.11/rtmutex-add-a-first-shot-of-ww_mutex.patch][4.11]]
-* [  3.12 -   4.11] md: disable bcache
+* [  3.12 -   4.11] md: disable bcache{C::bug::compile::compiling_err::syntax::md: disable bcache}
   + [[file:3.12/md-disable-bcache.patch][3.12]]
     [[file:3.14/md-disable-bcache.patch][3.14]]
     [[file:3.18/md-disable-bcache.patch][3.18]]
