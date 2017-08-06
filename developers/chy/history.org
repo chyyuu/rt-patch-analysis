@@ -3813,269 +3813,271 @@ of ftrace}
 * [2.6.29         ] rt: page_alloc.c cleanup
   + [[file:2.6.29/rt-page_alloc.c-cleanup.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] disable-maxcpus-for-now.patch
+* [2.6.29         ] disable-maxcpus-for-now.patch{C::feature::rtsupport::disable maxcpus configure item}
   + [[file:2.6.29/disable-maxcpus-for-now.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt-rt-x86-pageattr-flush-unused.patch
+* [2.6.29         ] preempt-rt-x86-pageattr-flush-unused.patch{C::?::disable a function call}
   + [[file:2.6.29/preempt-rt-x86-pageattr-flush-unused.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt-rt-scatterlist-nort.patch
+* [2.6.29         ] preempt-rt-scatterlist-nort.patch{C::performance::irq::do not need to disable irq}
   + [[file:2.6.29/preempt-rt-scatterlist-nort.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] ftrace: fix erroneous histogram stop WARN_ON() messages
+* [2.6.29         ] fix-erroneous-histogram-stop-warn-on-messages messages{C::bug::data_err::semantics::semantics::add type check and debuginfo}
   + [[file:2.6.29/fix-erroneous-histogram-stop-warn-on-messages.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] mingo: rt spinlock fix
+* [2.6.29         ] mingo: rt spinlock fix{C::feature::rtsupport:: }
   + [[file:2.6.29/rt-mutex-core-fixes2.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] seqlock - fix for both PREEMPT_RT and non PREEMPT_RT
+* [2.6.29         ] seqlock - fix for both PREEMPT_RT and non PREEMPT_RT{C::feature::rtsupport:: }
   + [[file:2.6.29/seqlocks-handle-rwlock-and-spin.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: mingo kernel_sem fix
+* [2.6.29         ] rt: mingo kernel_sem fix{C::bug::crash::semantics::mutex::rt BKL fix }
   + [[file:2.6.29/rt-mutex-fix-non-lock-kernel-config.patch][2.6.29]]
   - 3.0
 * [2.6.29         ] rt: fix timer.c warning
   + [[file:2.6.29/preempt-realtimer-timer-more-non-rt-warning-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] pagealloc-cond-resched-rt-only.patch
+* [2.6.29         ] pagealloc-cond-resched-rt-only.patch{C::feature::rtsupport:: replace spin_lock with spin_lock_irqsave, spin_unlock with spin_unlock_irqrestore}
   + [[file:2.6.29/pagealloc-cond-resched-rt-only.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] pagealloc: reduce lock sections further
+* [2.6.29         ] pagealloc: reduce lock sections further{C::performance::mutex::pagealloc: reduce lock sections further}
   + [[file:2.6.29/page-alloc-bulk-moar.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] kbuild.patch
+* [2.6.29         ] kbuild.patch{C::maintain::refactor:: refactor kbuild}
   + [[file:2.6.29/kbuild.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-rtmutex.patch
+* [2.6.29         ] powerpc-rtmutex.patch{C::feature::rtsupport:: powerpc-rtmutex}
   + [[file:2.6.29/powerpc-rtmutex.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] signals: allow rt tasks to cache one sigqueue struct
+* [2.6.29         ] signals: allow rt tasks to cache one sigqueue struct{C::feature::rtsupport::signals: allow rt tasks to cache one sigqueue struct}
   + [[file:2.6.29/signal-keep-a-task-private-siginfo-for-rt-tasks.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt: realtime sched remove debug
+* [2.6.29         ] preempt: realtime sched remove debug{C::feature::debuginfo::realtime sched remove debug}
   + [[file:2.6.29/preempt-realtime-sched-remove-debug.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] genirq-warn-on-do-irq.patch
+* [2.6.29         ] genirq-warn-on-do-irq.patch{C::feature::debuginfo::genirq-warn-on-do-irq}
   + [[file:2.6.29/genirq-warn-on-do-irq.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] cpu-hotplug: vs slab
+* [2.6.29         ] cpu-hotplug: vs slab{C::feature::rtsupport::fix up the slab allocator to be cpu-hotplug safe}
   + [[file:2.6.29/cpuhotplug-vs-slab.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] slab-free-pages.patch
+* [2.6.29         ] slab-free-pages.patch{C::?}
   + [[file:2.6.29/slab-free-pages.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: convert stop_machine_run() to PREEMPT_RT
+* [2.6.29         ] rt: convert stop_machine_run() to PREEMPT_RT{C::feature::rtsupport::rt: convert stop_machine_run() to PREEMPT_RT}
   + [[file:2.6.29/rt-stop-cpus-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-compat-semaphore.patch
+* [2.6.29         ] powerpc-compat-semaphore.patch{C::?::}
   + [[file:2.6.29/powerpc-compat-semaphore.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] revert-bkl-cleanup.patch
+* [2.6.29         ] revert-bkl-cleanup.patch {C::maintain::refactor::test_thread_flag}
   + [[file:2.6.29/revert-bkl-cleanup.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: fix RCU menuconfig
+* [2.6.29         ] rt: fix RCU menuconfig{C::feature::rtsupport::rt: fix RCU menuconfig }
   + [[file:2.6.29/preempt-realtime-force-rcu-preempt.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] lockdep: fix compat_sema_init
+* [2.6.29         ] lockdep: fix compat_sema_init{C::bug::na::uninit_var::memory::spin_lock_init}
   + [[file:2.6.29/lockdep-compat-sema-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] x86-microcode-fix-sysfs-wreckage.patch
+* [2.6.29         ] x86-microcode-fix-sysfs-wreckage.patch{C::bug::?::hardware::hardware::x86-microcode-fix-sysfs-wreckage}
   + [[file:2.6.29/x86-microcode-fix-sysfs-wreckage.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] revert-sched-changes.patch
+* [2.6.29         ] revert-sched-changes.patch{C::feature::rtsupport:: revert-sched-changes}
   + [[file:2.6.29/revert-sched-changes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] remove one extra (incorrect) test in mask_ack_irq()
+* [2.6.29         ] remove one extra (incorrect) test in mask_ack_irq(){C::bug::hwerr::irq::irq::remove one extra (incorrect) test in mask_ack_irq()}
   + [[file:2.6.29/preempt-irqs-core-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] hrtimer-fix-wait-for-hrtimer.patch
+* [2.6.29         ] hrtimer-fix-wait-for-hrtimer.patch{C::bug::hwerr::time::semantics::hrtimer-fix-wait-for-hrtimer}
   + [[file:2.6.29/hrtimer-fix-wait-for-hrtimer.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] cpu-hotplug: cpu_down vs preempt-rt
+* [2.6.29         ] cpu-hotplug: cpu_down vs preempt-rt{C::?}
   + [[file:2.6.29/cpuhotplug-idle.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rtmutex: remove uber optimization
+* [2.6.29         ] rtmutex: remove uber optimization{C::?}
   + [[file:2.6.29/tglx-05-rtmutex-remove-uber-optimization.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: xfs fix
+* [2.6.29         ] rt: xfs fix{C::feature::rtsupport::XFS still relies on compat semaphore}
   + [[file:2.6.29/preempt-realtime-xfs-compat-semaphore.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: mutex core fixes
+* [2.6.29         ] rt: mutex core fixes{C::bug::?::mutex::mutex::replace rwsem_is_locked with compat_rwsem_is_locked}
   + [[file:2.6.29/rt-mutex-core-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt-realtime-tracer.patch
+* [2.6.29         ] preempt-realtime-tracer.patch{C::feature::rtsupport::preempt-realtime-tracer}
   + [[file:2.6.29/preempt-realtime-tracer.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] trace-setprio.patch
+* [2.6.29         ] trace-setprio.patch{C::feature::debuginfo::trace-setprio}
   + [[file:2.6.29/trace-setprio.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] net: xmit lock owner cleanup
+* [2.6.29         ] net: xmit lock owner cleanup{C::maintain::refactor::net: xmit lock owner cleanup}
   + [[file:2.6.29/net-xmit-lock-owner-cleanup.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] net: clean up dev_queue_xmit() code flow
+* [2.6.29         ] net: clean up dev_queue_xmit() code flow{C::maintain::refactor::net: clean up dev_queue_xmit() code}
   + [[file:2.6.29/preempt-realtime-cleanup-dev-queue-xmit.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] percpu-locked-netfilter-ecache.patch
+* [2.6.29         ] percpu-locked-netfilter-ecache.patch{C::bug::data_err::atomicity::mutex::add spinlock}
   + [[file:2.6.29/percpu-locked-netfilter-ecache.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] add -rt version tag
+* [2.6.29         ] add -rt version tag{C::maintain::donothing:: update version number}
   + [[file:2.6.29/version.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: port hardirq threading to CONFIG_SPARSEIRQ
+* [2.6.29         ] rt: port hardirq threading to CONFIG_SPARSEIRQ{C::feature::rtsupport::rt: port hardirq threading to CONFIG_SPARSEIRQ}
   + [[file:2.6.29/preempt-realtime-irqthreading-sparseirq-fixups.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] seqlock: make sure that raw_seqlock_t retries readers while writes are pending]
+* [2.6.29         ] seqlock: make sure that raw_seqlock_t retries readers while writes are pending] {C::bug::livelock::semantics::semantics::seqlock: make sure that raw_seqlock_t retries readers while writes are pending}
   + [[file:2.6.29/seqlock-01-make-sure-that-raw_seqlock-retries.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt-spin-needbreak-fixup.patch
+* [2.6.29         ] rt-spin-needbreak-fixup.patch{C::bug::livelock::semantics::semantics::rt-spin-needbreak-fixup}
   + [[file:2.6.29/rt-spin-needbreak-fixup.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-rawlocks.patch
+* [2.6.29         ] powerpc-rawlocks.patch{C::feature::rtsupport::powerpc-rawlocks}
   + [[file:2.6.29/powerpc-rawlocks.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rtmutex: unify state manipulation
+* [2.6.29         ] rtmutex: unify state manipulation{}{C::bug::data_err::semantics::semantics::rtmutex: unify state manipulation}
   + [[file:2.6.29/tglx-04-rtmutex-unify-state-manipulation.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt: irqs port fixes
+* [2.6.29         ] preempt: irqs port fixes{C::feature::rtsupport::cpumask infrastructure related changes}
   + [[file:2.6.29/preempt-irqs-port-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: CONFIG_SPARSEIRQ=y fix
+* [2.6.29         ] rt: CONFIG_SPARSEIRQ=y fix{C::data_err::uninit_var::memory::The desc->wait_for_handler waitqueue needs to be initialized for
+dynamically allocated irq descriptors}
   + [[file:2.6.29/preempt-realtime-sparseirq-waitqueue-init-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] Fix Bug messages
+* [2.6.29         ] Fix Bug messages{C::bug::corrupt::atomicity::mutex::replace per_cpu_var with per_cpu_var_locked}
   + [[file:2.6.29/namespace-lock-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] -rt, bit-spinlocks: add __bit_spin_unlock()
+* [2.6.29         ] -rt, bit-spinlocks: add __bit_spin_unlock(){C::bug::data_err::atomicity::mutex::add __bit_spin_unlock}
   + [[file:2.6.29/slub-compile-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] netfilter-rcu-destroy.patch
+* [2.6.29         ] netfilter-rcu-destroy.patch{C::feature::rtsupport::use a rcu callback for nf_conntrack_destroy}
   + [[file:2.6.29/netfilter-rcu-destroy.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] add -rt extra-version
+* [2.6.29         ] add -rt extra-version{C::feature::rtsupport:: rtmutex support}
   + [[file:2.6.29/rt-mutex-core-mutex-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt-realtime-x86-32-gup-kmapatomic.patch
+* [2.6.29         ] preempt-realtime-x86-32-gup-kmapatomic.patch{C::feature::mm::?}
   + [[file:2.6.29/preempt-realtime-x86-32-gup-kmapatomic.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: fix perfcounters
+* [2.6.29         ] rt: fix perfcounters{C::bug::corrupt::atomicity::mutex:: replace spinlock_t with raw_spinlock_t}
   + [[file:2.6.29/preempt-realtime-perfcounters.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] x86: fix sparse irq vector
+* [2.6.29         ] x86: fix sparse irq vector{C::bug::hwerr::irq::irq:: fix sparse irq vector}
   + [[file:2.6.29/x86-vector-sparse-irq-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] arm-tracing-updates.patch
+* [2.6.29         ] arm-tracing-updates.patch{C::feature::debuginfo::add arm ftrace function}
   + [[file:2.6.29/arm-tracing-updates.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] arm-fix-compile-1.patch
+* [2.6.29         ] arm-fix-compile-1.patch{C::bug::compile::compiling_err::syntax::add head file}
   + [[file:2.6.29/arm-fix-compile-1.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-pseries-rtasd-irq-disable-check-non-rt.patch
+* [2.6.29         ] powerpc-pseries-rtasd-irq-disable-check-non-rt.patch{C::feature::check::disable check non rt}
   + [[file:2.6.29/powerpc-pseries-rtasd-irq-disable-check-non-rt.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: sparseirq build fix
+* [2.6.29         ] rt: sparseirq build fix{C::bug::compile::compiling_err::semantics:: replace __SPIN_LOCK_UNLOCKED with RAW_SPIN_LOCK_UNLOCKED}
   + [[file:2.6.29/preempt-realtime-fix-irqdesc-lock-initializers.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] per: cpu locked infrastructure
+* [2.6.29         ] per: cpu locked infrastructure{C::feature::rtsupport::per: cpu locked infrastructure}
   + [[file:2.6.29/per-cpu-locked-infrastructure.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] threaded-irq-revert-for-first-shot.patch
+* [2.6.29         ] threaded-irq-revert-for-first-shot.patch{C::feature::rtsupport::threaded-irq-revert-for-first-shot}
   + [[file:2.6.29/threaded-irq-revert-for-first-shot.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] cpu-hotplug: get_cpu_var_locked online aware
+* [2.6.29         ] cpu-hotplug: get_cpu_var_locked online aware{C::feature::hardware::cpu-hotplug: get_cpu_var_locked online aware}
   + [[file:2.6.29/cpuhotplug-per-cpu.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] preempt-realtime-debugobjects-rt-safe.patch
+* [2.6.29         ] preempt-realtime-debugobjects-rt-safe.patch{C::bug::data_err::atomicity::mutex::replace spinlock_t with raw_spinlock_t}
   + [[file:2.6.29/preempt-realtime-debugobjects-rt-safe.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] mm-lock-break-on-bulk.patch
+* [2.6.29         ] mm-lock-break-on-bulk.patch{C::?}
   + [[file:2.6.29/mm-lock-break-on-bulk.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: res_counter fix
+* [2.6.29         ] rt: res_counter fix{C::bug::hwerr::irq::irq::replace local_irq_save with local_irq_save_nort}
   + [[file:2.6.29/rt-res_counter-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] suppress warning of smp_processor_id use.
+* [2.6.29         ] suppress warning of smp_processor_id use.{C::bug::?::preempt::preempt::use preempt_disable() to supress waring message}
   + [[file:2.6.29/sched-generic-hide-smp-warning.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] irq: desc init
+* [2.6.29         ] irq: desc init{C::feature::rtsupport::replace __SPIN_LOCK_UNLOCKED with RAW_SPIN_LOCK_UNLOCKED}
   + [[file:2.6.29/irq-desc-init.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rtmutex: prevent missed wakeups
+* [2.6.29         ] rtmutex: prevent missed wakeups{C::bug::?::semantics::semantics::rtmutex: prevent missed wakeups}
   + [[file:2.6.29/tglx-07-rtmutex-prevent-missed-wakeups.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: btrfs locking fix/workaround
+* [2.6.29         ] rt: btrfs locking fix/workaround{C::feature::rtsupport:: make this function return 0 if in PREEMPT_RT }
   + [[file:2.6.29/preempt-realtime-btrfs-locking-workaround.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] patches/fix-net-bug-fixes.patch
+* [2.6.29         ] patches/fix-net-bug-fixes.patch{C::bug::hwerr::atomicity::mutex:: declare it as a PER_CPU_LOCKED, but then never use the extra lock to synchronize data}
   + [[file:2.6.29/fix-net-bug-fixes.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: fix paravirt spinlocks
+* [2.6.29         ] rt: fix paravirt spinlocks{C::feature::rtsupport:: use __raw_spinlock_t instead of raw_spinlock_t}
   + [[file:2.6.29/preempt-realtime-paravirt-spinlocks-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rtmutex-mutex-fixups.patch
+* [2.6.29         ] rtmutex-mutex-fixups.patch{C::bug::?::semantics::semantics:: chang conditional compile}
   + [[file:2.6.29/rtmutex-mutex-fixups.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] cpu-hotplug: preemptible page_alloc
+* [2.6.29         ] cpu-hotplug: preemptible page_alloc{C::feature::rtsupport:: preemptible page_alloc}
   + [[file:2.6.29/cpuhotplug-page_alloc.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-raw-spin-unlock-wait-disable-preemption.patch
+* [2.6.29         ] powerpc-raw-spin-unlock-wait-disable-preemption.patch{C::feature::rtsupport::powerpc-raw-spin-unlock-wait-disable-preemption}
   + [[file:2.6.29/powerpc-raw-spin-unlock-wait-disable-preemption.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] t: fix ipi call lock
+* [2.6.29         ] t: fix ipi call lock{C::feature::rtsupport::call_function_lock needs to be raw too - it gets called from atomic}
+IPI context.
   + [[file:2.6.29/preempt-realtime-ipi-call-lock-raw.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] trace-disable-hw-branch-tracer.patch
+* [2.6.29         ] trace-disable-hw-branch-tracer.patch{C::feature::debuginfo::disable-hw-branch-tracer in PREEMPT_RT}
   + [[file:2.6.29/trace-disable-hw-branch-tracer.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] resurrect: softirq code
+* [2.6.29         ] resurrect: softirq code{C::feature::rtsupport:: use softirq}
   + [[file:2.6.29/resurrect-softirq-code.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-percpu-tlb.patch
+* [2.6.29         ] powerpc-percpu-tlb.patch{C::feature::rtsupport::powerpc-percpu-tlb}
   + [[file:2.6.29/powerpc-percpu-tlb.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: no workqueue tracer
+* [2.6.29         ] rt: no workqueue tracer{C::bug::deadlock::semantics::semantics:: disable-workqueue-tracer-on-preempt-rt to avoid call sleeping function }
   + [[file:2.6.29/preempt-realtime-disable-workqueue-tracer-on-preempt-rt.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: serial console fix
+* [2.6.29         ] rt: serial console fix{C::bug::data_err::atomicity::mutex::rt: serial console fix }
   + [[file:2.6.29/preempt-realtime-serial-console-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: signals struct lock init fix
+* [2.6.29         ] rt: signals struct lock init fix{C::bug::data_err::atomicity::mutex::ignals struct lock init fix}
   + [[file:2.6.29/preempt-realtime-fix-sig-cputimer-lock.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] powerpc-realtime-preempt.patch
+* [2.6.29         ] powerpc-realtime-preempt.patch{C::feature::rtsupport::powerpc-realtime-preempt}
   + [[file:2.6.29/powerpc-realtime-preempt.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] lockdep: atomic fixup
+* [2.6.29         ] lockdep: atomic fixup{C::bug::compile::compiling_err::syntax:: use atomic_t instead of int}
   + [[file:2.6.29/lockdep-atomic-fixup.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] highmem: atomic fix
+* [2.6.29         ] highmem: atomic fix{C::bug::compile::semantics::semantics:: disalble BUG_ON check}
   + [[file:2.6.29/highmem-atomic-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] seqlock: serialize against writers
+* [2.6.29         ] seqlock: serialize against writers{C::bug::deadlock::deadlock::semantics::seqlock: serialize against writers}
   + [[file:2.6.29/seqlock-serialize-against-writers.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] rt: irq handle.c fix2
+* [2.6.29         ] rt: irq handle.c fix2{C::bug::hwerr::irq::irq::direct-keyboard-sparseirq-fix}
   + [[file:2.6.29/preempt-realtime-direct-keyboard-sparseirq-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] x86-pae-preempt-realtime-fix.patch
+* [2.6.29         ] x86-pae-preempt-realtime-fix.patch{C::bug::?::preempt:preempt::add preempt_disable protect}
   + [[file:2.6.29/x86-pae-preempt-realtime-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29         ] irq threading: fix PF_HARDIRQ definition
+* [2.6.29         ] irq threading: fix PF_HARDIRQ definition{C::bug::hwerr::irq::irq:: fix PF_HARDIRQ macro t}
   + [[file:2.6.29/blkcypher-fix.patch][2.6.29]]
   - 3.0
-* [2.6.29 -    3.4] timers: fix timer hotplug on -rt
+* [2.6.29 -    3.4] timers: fix timer hotplug on -rt{C::bug::hwerr::irq::irq::in the CPU_DEAD notifier, must not sleep nor enable interrupts.}
   + [[file:2.6.29/preempt-realtime-timer-cpu-hotplug-fix.patch][2.6.29]]
     [[file:3.0/timers-fix-timer-hotplug-on-rt.patch][3.0]]
     [[file:3.2/timers-fix-timer-hotplug-on-rt.patch][3.2]]
     [[file:3.4/timers-fix-timer-hotplug-on-rt.patch][3.4]]
   - 3.6
-* [2.6.29 -    3.6] signals: Do not wakeup self
+* [2.6.29 -    3.6] signals: Do not wakeup self{C::bug::??::semantics::semantics::signal_wake_up  signals: Do not wakeup self}
   + [[file:2.6.29/signal-do-not-wakeup-self.patch][2.6.29]]
     [[file:3.0/signals-do-not-wake-self.patch][3.0]]
     [[file:3.2/signals-do-not-wake-self.patch][3.2]]
     [[file:3.4/signals-do-not-wake-self.patch][3.4]]
     [[file:3.6/signals-do-not-wake-self.patch][3.6]]
   - 3.8
-* [2.6.29 -    3.8] timers: mov printk_tick to soft interrupt
+* [2.6.29 -    3.8] timers: mov printk_tick to soft interrupt{C::performance::irq:: mov printk_tick to soft interrupt}
   + [[file:2.6.29/printk-tick-move-to-softirq-on-rt.patch][2.6.29]]
   m [[file:3.0/timers-mov-printk_tick-to-soft-interrupt.patch][3.0]]
     [[file:3.2/timers-mov-printk_tick-to-soft-interrupt.patch][3.2]]
@@ -4083,7 +4085,7 @@ of ftrace}
     [[file:3.6/timers-mov-printk_tick-to-soft-interrupt.patch][3.6]]
     [[file:3.8/timers-mov-printk_tick-to-soft-interrupt.patch][3.8]]
   - 3.10
-* [2.6.29 -    4.0] posix-timers: Shorten posix_cpu_timers/<CPU> kernel thread names
+* [2.6.29 -    4.0] posix-timers: Shorten posix_cpu_timers/<CPU> kernel thread names{C::bug::data_err::overflow::semantics::Shorten the softirq kernel thread names because they always overflow the limited comm length, appearing as "posix_cpu_timer" CPU# times.}
   + [[file:2.6.29/shorten-posix-cpu-timers-name.patch][2.6.29]]
     [[file:3.0/posix-timers-shorten-cpu-timers-thread.patch][3.0]]
     [[file:3.2/posix-timers-shorten-cpu-timers-thread.patch][3.2]]
@@ -4096,7 +4098,7 @@ of ftrace}
     [[file:3.18/posix-timers-shorten-cpu-timers-thread.patch][3.18]]
     [[file:4.0/posix-timers-shorten-cpu-timers-thread.patch][4.0]]
   - 4.1
-* [2.6.29 -    4.0] posix-timers: Avoid wakeups when no timers are active
+* [2.6.29 -    4.0] posix-timers: Avoid wakeups when no timers are active{C::performance::smallsize::posix-timers: Avoid wakeups when no timers are active,Waking the thread even when no timers are scheduled is useless.}
   + [[file:2.6.29/posixtimer-avoid-wakeups.patch][2.6.29]]
     [[file:3.0/posix-timers-avoid-wakeups-when-no-timers-are-active.patch][3.0]]
     [[file:3.2/posix-timers-avoid-wakeups-when-no-timers-are-active.patch][3.2]]
@@ -4109,7 +4111,7 @@ of ftrace}
     [[file:3.18/posix-timers-avoid-wakeups-when-no-timers-are-active.patch][3.18]]
     [[file:4.0/posix-timers-avoid-wakeups-when-no-timers-are-active.patch][4.0]]
   - 4.1
-* [2.6.29 -   4.11] hrtimer: Fixup hrtimer callback changes for preempt-rt
+* [2.6.29 -   4.11] hrtimer: Fixup hrtimer callback changes for preempt-rt{C::bug::hwerr::time::semantics::In preempt-rt we can not call the callbacks which take sleeping locks from the timer interrupt context.}
   + [[file:2.6.29/hrtimer-fixup-hrtimer-callback-changes.patch][2.6.29]]
   M [[file:3.0/hrtimer-fixup-hrtimer-callback-changes-for-preempt-r.patch][3.0]]
   m [[file:3.2/hrtimer-fixup-hrtimer-callback-changes-for-preempt-r.patch][3.2]]
@@ -4127,7 +4129,7 @@ of ftrace}
   M [[file:4.8/hrtimer-fixup-hrtimer-callback-changes-for-preempt-r.patch][4.8]]
     [[file:4.9/hrtimer-fixup-hrtimer-callback-changes-for-preempt-r.patch][4.9]]
   M [[file:4.11/hrtimer-fixup-hrtimer-callback-changes-for-preempt-r.patch][4.11]]
-* [2.6.29 -   4.11] ata: Do not disable interrupts in ide code for preempt-rt
+* [2.6.29 -   4.11] ata: Do not disable interrupts in ide code for preempt-rt{C::bug::hwerr::irq::irq:: Do not disable interrupts in ide code for preempt-rt}
   + [[file:2.6.29/ata-irq-save-nort.patch][2.6.29]]
     [[file:3.0/ata-disable-interrupts-if-non-rt.patch][3.0]]
   m [[file:3.2/ata-disable-interrupts-if-non-rt.patch][3.2]]
@@ -4145,7 +4147,7 @@ of ftrace}
     [[file:4.8/ata-disable-interrupts-if-non-rt.patch][4.8]]
     [[file:4.9/ata-disable-interrupts-if-non-rt.patch][4.9]]
   m [[file:4.11/ata-disable-interrupts-if-non-rt.patch][4.11]]
-* [2.6.29 -   4.11] posix-timers: Prevent broadcast signals
+* [2.6.29 -   4.11] posix-timers: Prevent broadcast signals{C::bug::?::semantics::semantics:: posix-timers-prevent-broadcast-signals}
   + [[file:2.6.29/posix-timers-prevent-broadcast-signals.patch][2.6.29]]
     [[file:3.0/posix-timers-no-broadcast.patch][3.0]]
     [[file:3.2/posix-timers-no-broadcast.patch][3.2]]
