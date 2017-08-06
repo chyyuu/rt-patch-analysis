@@ -33,14 +33,15 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - hang:: 系统长时间无反应
 - deadlock::由于拥有资源且申请资源导致系统无法继续运行。死锁（deadlock）是无法解开的。scheduling in atomic, or nested lock
 - livelock:: 如果事务T1封锁了数据R,事务T2又请求封锁R，于是T2等待。T3也请求封锁R，当T1释放了R上的封锁后，系统首先批准了T3的请求，T2仍然等待。然后T4又请求封锁R，当T3释放了R上的封锁之后，系统又批准了T的请求......T2可能永远等待，这就是活锁。活锁有一定几率解开。
-- crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM,...
+- crash:: 系统崩溃，但没有破坏保存的数据， 比如有在log中有关键字 break machine, ARM, WARNING...
 - leak:: 发生数据泄漏 
 - data_err:: 数据处理/显示错误 （有warning信息也算）
+- ctrl_err:: kernel thread, app can not run
 - rtlatency:: unexpected realtime latencies
 - irq/softirq:: not-irq/softirq-safe 无法响应/打开/关闭中断(包括nmi)，softirq执行延迟/挂起，产生大量irq,  导致系统工作不正确
 - compile:: compiling/build error
 - idle:: idle OR suspend/resume相关错误
-- hwerr:: hardware malfunction. 硬件/外设不能正常工作  e.g.  i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
+- hwerr:: hardware malfunction. 硬件/外设/watchdog不能正常工作  e.g.  i386-pit-stop-only-when-in-periodic-or-oneshot-mode.patch
 - na|??:: Not Available OR Not Applicable 无从得知或不适用
 
 
@@ -52,7 +53,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - sched:: 与线程/进程调度相关的错误 （主要集中在kernel/sched*.c）
 - time:: 时间处理相关的错误
 - irq/softirq:: 与设置中断/软中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
-- semantics:: 编程逻辑有误
+- semantics:: 编程逻辑有误，对函数语义理解有误
 - na: Not Available OR Not Applicable 无从得知或不适用
 
 #### concurrency
@@ -105,8 +106,8 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - lockless:: 无锁设计
 - capability:: 与rt相关的权限设置
 - net:: 对net的修改（hash） inet_hash_bits.patch
-- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 trylock, rcu, bh, sched, atomic op, anon sem, seqlock, get/put_cpu_light, local_lock...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub
-- check:: add runtime check to make it more stable
+- rtsupport:: 与rt相关的lock添加设计/回滚设计,包括 migration_eanble/disable, preempt_enable/disable, trylock, rcu, bh, sched, atomic op, anon sem, seqlock, get/put_cpu_light, local_lock...。也包括添加/减少 CONFIG等。对于这样的patch, 如果不这样实现，会出现rt错误，但并没有在log中说明有错误，所以归类为rtsupport  .  e.g.  preempt: rt no slub  swait_*
+- check:: add runtime check to make it more stable/rt latency detect. e.g. hw_latency SMI detector
 - arch:: add new architecture support for RT
 - power:: 节能
 - testcase:: e.g. v2.6.26-rwlock-torture.patch  add a kernel module to test rwlock
@@ -120,7 +121,7 @@ _ err_access:: 用户态访问内核态等类似的程序访问错误，执行�
 - irq/softirq:: irq/softirq相关优化
 - mutex:: 与lock/mutex相关的优化，比如去掉多余的lock/unlock， 减少cirtical section的范围等
 - preempt:: sched/preempt/rcu (also process preempt)相关的优化
-- migration:: 与migration相关的优化
+- migration:: 与migration/load balance相关的优化
 - barrier:: barrier相关优化
 - idle:: 缩短idle OR suspend/resume时间的正确计算与优化
 - hrtimer:采用高精度时钟的优化

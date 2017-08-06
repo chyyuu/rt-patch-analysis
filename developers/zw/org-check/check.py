@@ -18,7 +18,7 @@ class Checker(object):
                   'syntax', 'runtime', 'semantics'}
 
     bug_consequence = {'hwerr', 'corrupt', 'hang', 'deadlock', 'livelock', 'crash',
-                       'leak', 'data_err', 'irq', 'softirq', 'compile', 'idle',
+                       'leak', 'data_err', 'ctrl_err', 'irq', 'softirq', 'compile', 'idle',
                        'rtlatency', 'na', '??'}
 
     performance_method = {'hardware', 'cache', 'msleep', 'irq', 'softirq',
