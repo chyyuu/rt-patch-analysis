@@ -7978,67 +7978,67 @@ of ftrace}
     [[file:4.8/x86-highmem-add-a-already-used-pte-check.patch][4.8]]
     [[file:4.9/x86-highmem-add-a-already-used-pte-check.patch][4.9]]
     [[file:4.11/x86-highmem-add-a-already-used-pte-check.patch][4.11]]
-* [  3.10         ] net/cpsw: Use fallback for active_slave
+* [  3.10         ] net/cpsw: Use fallback for active_slave{C::feature::net::net/cpsw: Use fallback for active_slave}
   + [[file:3.10/cpsw-net-cpsw-Use-fallback-for-active_slave.patch][3.10]]
   - 3.12
-* [  3.10         ] gpu: i915: allow the user not to do the wbinvd
+* [  3.10         ] gpu: i915: allow the user not to do the wbinvd{C::bug::hwerr::hardware::hardware::gpu: i915: allow the user not to do the wbinvd}
   + [[file:3.10/gpu-i915-allow-the-user-not-to-do-the-wbinvd.patch][3.10]]
   - 3.12
-* [  3.10         ] net/cpsw: revert f9a8f83b04e0c362a2fc660dbad980d24af209fc
+* [  3.10         ] net/cpsw: revert f9a8f83b04e0c362a2fc660dbad980d24af209fc{C::bug::compile::compiling_err::syntax:: fix function call parameter}
   + [[file:3.10/revert-f9a8f83b04e0c362a2fc660dbad980d24af209fc.patch][3.10]]
   - 3.12
-* [  3.10         ] mm-disable-slab-on-rt.patch
+* [  3.10         ] mm-disable-slab-on-rt.patch{C::feature::rtsupport::mm-disable-slab-on-rt}
   + [[file:3.10/mm-disable-slab-on-rt.patch][3.10]]
   - 3.12
-* [  3.10         ] net-dev-make-devnet-rename-seq-static.patch
+* [  3.10         ] net-dev-make-devnet-rename-seq-static.patch{C::bug::hwerr::semantics::semantics:: net-dev-make-devnet-rename-seq-static}
   + [[file:3.10/net-dev-make-devnet-rename-seq-static.patch][3.10]]
   - 3.12
-* [  3.10         ] net/cpsw: revert 80d5c3689b886308247da295a228a54df49a44f6
+* [  3.10         ] net/cpsw: revert 80d5c3689b886308247da295a228a54df49a44f6{C::bug::hwerr::semantics::semantics::fix function call }
   + [[file:3.10/revert-80d5c3689b886308247da295a228a54df49a44f6.patch][3.10]]
   - 3.12
-* [  3.10         ] net/cpsw: revert f646968f8f7c624587de729115d802372b9063dd
+* [  3.10         ] net/cpsw: revert f646968f8f7c624587de729115d802372b9063dd{C::bug::hwerr::semantics::semantics::change MARCO}
   + [[file:3.10/revert-f646968f8f7c624587de729115d802372b9063dd.patch][3.10]]
   - 3.12
-* [  3.10         ] fs/fscache: remove spin_lock() from the condition in while()
+* [  3.10         ] fs/fscache: remove spin_lock() from the condition in while(){C::bug::compile::compiling_err::semantics::remove spin_lock() from the condition in while()}
   + [[file:3.10/fs-fscache-remove-spin_lock-from-the-condition-in-wh.patch][3.10]]
   - 3.12
-* [  3.10 -   3.12] x86/mce: fix mce timer interval
+* [  3.10 -   3.12] x86/mce: fix mce timer interval{C::bug::hwerr::semantics::semantics::fix mce timer interval}
   + [[file:3.10/x86-mce-fix-mce-timer-interval.patch][3.10]]
     [[file:3.12/x86-mce-fix-mce-timer-interval.patch][3.12]]
   - 3.14
-* [  3.10 -   3.14] net/cpsw: use a lock around source testing
+* [  3.10 -   3.14] net/cpsw: use a lock around source testing{C::bug::hwerr::atomicity::semantics:: use a lock around source testing}
   + [[file:3.10/cpsw-net-cpsw-use-a-lock-around-source-testing.patch][3.10]]
     [[file:3.12/cpsw-net-cpsw-use-a-lock-around-source-testing.patch][3.12]]
     [[file:3.14/cpsw-net-cpsw-use-a-lock-around-source-testing.patch][3.14]]
   - 3.18
-* [  3.10 -   3.18] x86/mce: Defer mce wakeups to threads for PREEMPT_RT
+* [  3.10 -   3.18] x86/mce: Defer mce wakeups to threads for PREEMPT_RT{C::bug::deadlock::deadlock::semantics::mce: Defer mce wakeups to threads for PREEMPT_RT}
   + [[file:3.10/x86-mce-Defer-mce-wakeups-to-threads-for-PREEMPT_RT.patch][3.10]]
   M [[file:3.12/x86-mce-Defer-mce-wakeups-to-threads-for-PREEMPT_RT.patch][3.12]]
     [[file:3.14/x86-mce-Defer-mce-wakeups-to-threads-for-PREEMPT_RT.patch][3.14]]
   M [[file:3.18/x86-mce-Defer-mce-wakeups-to-threads-for-PREEMPT_RT.patch][3.18]]
   - 4.0
-* [  3.10 -    4.0] slub: delay ctor until the object is requested
+* [  3.10 -    4.0] slub: delay ctor until the object is requested{C::performance::preempt::slub: delay ctor until the object is requested}
   + [[file:3.10/slub_delay_ctor_on_rt.patch][3.10]]
     [[file:3.12/slub_delay_ctor_on_rt.patch][3.12]]
     [[file:3.14/slub_delay_ctor_on_rt.patch][3.14]]
     [[file:3.18/slub_delay_ctor_on_rt.patch][3.18]]
   M [[file:4.0/slub_delay_ctor_on_rt.patch][4.0]]
   - 4.1
-* [  3.10 -    4.0] percpu-rwsem: compile fix
+* [  3.10 -    4.0] percpu-rwsem: compile fix{C::bug::compile::compiling_err::semantics::choose the correct function}
   + [[file:3.10/percpu-rwsem-compilefix.patch][3.10]]
     [[file:3.12/percpu-rwsem-compilefix.patch][3.12]]
     [[file:3.14/percpu-rwsem-compilefix.patch][3.14]]
     [[file:3.18/percpu-rwsem-compilefix.patch][3.18]]
     [[file:4.0/percpu-rwsem-compilefix.patch][4.0]]
   - 4.1
-* [  3.10 -    4.0] timers: prepare for full preemption improve
+* [  3.10 -    4.0] timers: prepare for full preemption improve{C::feature::rtsupport::timers: prepare for full preemption improve}
   + [[file:3.10/timers-prepare-for-full-preemption-improve.patch][3.10]]
     [[file:3.12/timers-prepare-for-full-preemption-improve.patch][3.12]]
     [[file:3.14/timers-prepare-for-full-preemption-improve.patch][3.14]]
     [[file:3.18/timers-prepare-for-full-preemption-improve.patch][3.18]]
     [[file:4.0/timers-prepare-for-full-preemption-improve.patch][4.0]]
   - 4.1
-* [  3.10 -    4.4] vtime: Split lock and seqcount
+* [  3.10 -    4.4] vtime: Split lock and seqcount{C::performance::mutex:: vtime: Split lock and seqcount}
   + [[file:3.10/vtime-split-lock-and-seqcount.patch][3.10]]
   M [[file:3.12/vtime-split-lock-and-seqcount.patch][3.12]]
   M [[file:3.14/vtime-split-lock-and-seqcount.patch][3.14]]
@@ -8047,7 +8047,7 @@ of ftrace}
     [[file:4.1/vtime-split-lock-and-seqcount.patch][4.1]]
   m [[file:4.4/vtime-split-lock-and-seqcount.patch][4.4]]
   - 4.6
-* [  3.10 -    4.4] rcu: use simple waitqueues
+* [  3.10 -    4.4] rcu: use simple waitqueues{C::performance::mutex::rcu: Convert RCU's wait-queues into simple waitqueues.}
   + [[file:3.10/rcu-more-swait-conversions.patch][3.10]]
   M [[file:3.12/rcu-more-swait-conversions.patch][3.12]]
   M [[file:3.14/rcu-more-swait-conversions.patch][3.14]]
@@ -8056,7 +8056,7 @@ of ftrace}
   M [[file:4.1/rcu-more-swait-conversions.patch][4.1]]
   M [[file:4.4/rcu-more-swait-conversions.patch][4.4]]
   - 4.6
-* [  3.10 -    4.6] gpu/i915: don't open code these things
+* [  3.10 -    4.6] gpu/i915: don't open code these things{C::bug::hwerr::semantics::semantics::don't open code these things}
   + [[file:3.10/i915_compile_fix.patch][3.10]]
     [[file:3.12/i915_compile_fix.patch][3.12]]
     [[file:3.14/i915_compile_fix.patch][3.14]]
@@ -8066,7 +8066,7 @@ of ftrace}
     [[file:4.4/i915_compile_fix.patch][4.4]]
     [[file:4.6/i915_compile_fix.patch][4.6]]
   - 4.8
-* [  3.10 -   4.11] rt,ntp: Move call to schedule_delayed_work() to helper thread
+* [  3.10 -   4.11] rt,ntp: Move call to schedule_delayed_work() to helper thread{C::bug::deadlock::irq::semantics::rt,ntp: Move call to schedule_delayed_work() to helper thread}
   + [[file:3.10/move_sched_delayed_work_to_helper.patch][3.10]]
   M [[file:3.12/move_sched_delayed_work_to_helper.patch][3.12]]
     [[file:3.14/move_sched_delayed_work_to_helper.patch][3.14]]
@@ -8078,7 +8078,7 @@ of ftrace}
   M [[file:4.8/move_sched_delayed_work_to_helper.patch][4.8]]
     [[file:4.9/move_sched_delayed_work_to_helper.patch][4.9]]
     [[file:4.11/move_sched_delayed_work_to_helper.patch][4.11]]
-* [  3.10 -   4.11] workqueue: Use normal rcu
+* [  3.10 -   4.11] workqueue: Use normal rcu{C::performance::mutex:: workqueue: Use normal rcu}
   + [[file:3.10/workqueue-use-rcu.patch][3.10]]
   m [[file:3.12/workqueue-use-rcu.patch][3.12]]
     [[file:3.14/workqueue-use-rcu.patch][3.14]]
@@ -8090,7 +8090,8 @@ of ftrace}
     [[file:4.8/workqueue-use-rcu.patch][4.8]]
     [[file:4.9/workqueue-use-rcu.patch][4.9]]
     [[file:4.11/workqueue-use-rcu.patch][4.11]]
-* [  3.10 -   4.11] sched/workqueue: Only wake up idle workers if not blocked on sleeping spin lock
+* [  3.10 -   4.11] sched/workqueue: Only wake up idle workers if not blocked on sleeping spin lock{C::performance::smallsize::sched/workqueue: Only wake up idle workers if not blocked on
+ sleeping spin lock}
   + [[file:3.10/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][3.10]]
     [[file:3.12/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][3.12]]
     [[file:3.14/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][3.14]]
@@ -8102,7 +8103,7 @@ of ftrace}
     [[file:4.8/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][4.8]]
     [[file:4.9/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][4.9]]
     [[file:4.11/sched-workqueue-Only-wake-up-idle-workers-if-not-blo.patch][4.11]]
-* [  3.10 -   4.11] kernel/hotplug: restore original cpu mask oncpu/down
+* [  3.10 -   4.11] kernel/hotplug: restore original cpu mask oncpu/down{C::bug::?::sched::semantics::restore original cpu mask oncpu/down}
   + [[file:3.10/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][3.10]]
     [[file:3.12/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][3.12]]
     [[file:3.14/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][3.14]]
@@ -8114,7 +8115,7 @@ of ftrace}
     [[file:4.8/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][4.8]]
     [[file:4.9/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][4.9]]
   M [[file:4.11/kernel-hotplug-restore-original-cpu-mask-oncpu-down.patch][4.11]]
-* [  3.10 -   4.11] kernel/cpu: fix cpu down problem if kthread's cpu is going down
+* [  3.10 -   4.11] kernel/cpu: fix cpu down problem if kthread's cpu is going down{C::bug::hang::hardware::hardware::fix cpu down problem if kthread's cpu is going down}
   + [[file:3.10/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][3.10]]
     [[file:3.12/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][3.12]]
   m [[file:3.14/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][3.14]]
@@ -8126,7 +8127,7 @@ of ftrace}
   m [[file:4.8/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][4.8]]
     [[file:4.9/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][4.9]]
     [[file:4.11/kernel-cpu-fix-cpu-down-problem-if-kthread-s-cpu-is-.patch][4.11]]
-* [  3.10 -   4.11] sched: Distangle worker accounting from rqlock
+* [  3.10 -   4.11] sched: Distangle worker accounting from rqlock{C::maintain::refactor::sched: Distangle worker accounting from rqlock}
   + [[file:3.10/workqueue-distangle-from-rq-lock.patch][3.10]]
   M [[file:3.12/workqueue-distangle-from-rq-lock.patch][3.12]]
     [[file:3.14/workqueue-distangle-from-rq-lock.patch][3.14]]
@@ -8138,7 +8139,7 @@ of ftrace}
   M [[file:4.8/workqueue-distangle-from-rq-lock.patch][4.8]]
   M [[file:4.9/workqueue-distangle-from-rq-lock.patch][4.9]]
   M [[file:4.11/workqueue-distangle-from-rq-lock.patch][4.11]]
-* [  3.10 -   4.11] workqueue: Prevent workqueue versus ata-piix livelock
+* [  3.10 -   4.11] workqueue: Prevent workqueue versus ata-piix livelock{C::bug::livelock::livelock::semantics::workqueue: Prevent workqueue versus ata-piix livelock}
   + [[file:3.10/work-queue-work-around-irqsafe-timer-optimization.patch][3.10]]
     [[file:3.12/work-queue-work-around-irqsafe-timer-optimization.patch][3.12]]
     [[file:3.14/work-queue-work-around-irqsafe-timer-optimization.patch][3.14]]
@@ -8150,7 +8151,7 @@ of ftrace}
     [[file:4.8/work-queue-work-around-irqsafe-timer-optimization.patch][4.8]]
     [[file:4.9/work-queue-work-around-irqsafe-timer-optimization.patch][4.9]]
     [[file:4.11/work-queue-work-around-irqsafe-timer-optimization.patch][4.11]]
-* [  3.10 -   4.11] list_bl: Make list head locking RT safe
+* [  3.10 -   4.11] list_bl: Make list head locking RT safe{C::bug::crash::atomicity::mutex::list_bl: Make list head locking RT safe}
   + [[file:3.10/list_bl.h-make-list-head-locking-RT-safe.patch][3.10]]
   M [[file:3.12/list_bl.h-make-list-head-locking-RT-safe.patch][3.12]]
     [[file:3.14/list_bl.h-make-list-head-locking-RT-safe.patch][3.14]]
@@ -8162,7 +8163,7 @@ of ftrace}
     [[file:4.8/list_bl.h-make-list-head-locking-RT-safe.patch][4.8]]
     [[file:4.9/list_bl.h-make-list-head-locking-RT-safe.patch][4.9]]
     [[file:4.11/list_bl.h-make-list-head-locking-RT-safe.patch][4.11]]
-* [  3.10 -    4.9] idr: Use local lock instead of preempt enable/disable
+* [  3.10 -    4.9] idr: Use local lock instead of preempt enable/disable{C::performance::mutex::idr: Use local lock instead of preempt enable/disable}
   + [[file:3.10/idr-use-local-lock-for-protection.patch][3.10]]
     [[file:3.12/idr-use-local-lock-for-protection.patch][3.12]]
     [[file:3.14/idr-use-local-lock-for-protection.patch][3.14]]
@@ -8174,7 +8175,7 @@ of ftrace}
     [[file:4.8/idr-use-local-lock-for-protection.patch][4.8]]
     [[file:4.9/idr-use-local-lock-for-protection.patch][4.9]]
   - 4.11
-* [  3.10 -   4.11] drm/i915: drop trace_i915_gem_ring_dispatch on rt
+* [  3.10 -   4.11] drm/i915: drop trace_i915_gem_ring_dispatch on rt{C::bug::crash::hardware::hardware:: drm/i915: drop trace_i915_gem_ring_dispatch on rt}
   + [[file:3.10/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][3.10]]
   m [[file:3.12/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][3.12]]
   m [[file:3.14/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][3.14]]
@@ -8186,7 +8187,7 @@ of ftrace}
   m [[file:4.8/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][4.8]]
     [[file:4.9/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][4.9]]
     [[file:4.11/drm-i915-drop-trace_i915_gem_ring_dispatch-onrt.patch][4.11]]
-* [  3.10 -   4.11] acpi/rt: Convert acpi_gbl_hardware lock back to a raw_spinlock_t
+* [  3.10 -   4.11] acpi/rt: Convert acpi_gbl_hardware lock back to a raw_spinlock_t{C::bug::crash::hardware::mutex::acpi/rt: Convert acpi_gbl_hardware lock back to a raw_spinlock_t}
   + [[file:3.10/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][3.10]]
     [[file:3.12/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][3.12]]
   M [[file:3.14/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][3.14]]
