@@ -19,6 +19,137 @@ https://linux.cn/article-6504-1.html
 
 以 Emde 观点来看，从技术的角度来说，实时 Linux 的性能已经可以媲美绝大多数其他的实时操作系统 - 但前提是你要不厌其烦地把所有的补丁都打上。 Emde 的原话如下：“该项目（LCTT 译注，指 RTL）的唯一目标就是提供一个满足实时性要求的 Linux 系统，使其无论运行状况如何恶劣都可以保证在确定的、可以预先定义的时间期限内对外界处理做出响应。这个目标已经实现，但需要你手动地将 RTL 提供的补丁添加到 Linux 内核主线的版本代码上，但将来的不用打补丁的实时 Linux 内核也能实现这个目标。唯一的，当然也是最重要的区别就是相应的维护工作将少得多，因为我们再也不用一次又一次移植那些独立于内核主线的补丁代码了。”
 
+
+
+## GPIO和syscall对RT的影响
+
+首先我們藉由 SMP affinity,在特定的 CPU 上隔離即時任務,以降低非即時任務帶來的衝擊,過程中我們發現由於記憶體由若干 CPU 所共享,Linux 並沒有進行實體區隔,於是就伴隨著 memory coherence 的時間成本,進而導致最差情況下延
+遲時間 (worse case execution time) 的增加。另外,我們也發現頻繁的系統呼叫實際上也會影響到即時效
+能,即便系統呼叫不發生於隔離的即時環境。
+
+## 内核的patch less robust
+
+Some versions of the RT Preempt Patches
+are less robust.
+
+- Some have more radical restructuring
+- Some are more experimental
+- Recent are based on -tip and pull in origin.patch
+- Some have less developer attention
+- Some pull previous RT preempt forward
+  to newer base kernel without a lot of validation
+- Some have more focus on stabilization
+- Some have support for more architectures
+
+## 对内核某些功能的影响/被影响
+
+### resource allocation
+
+Allocate before beginning real time operation.
+For example:
+
+- Create processes.
+- Allocate memory.
+- Lock memory.
+
+### printk()
+
+4.1.2的有RT_FULL config但用在不同地方
+
+```
+On PREEMPT_RT kernel printk() may sleep.
+kernel/printk.c:
+/*
+* On PREEMPT_RT kernels __wake_up may sleep, so wake syslogd
+* up only if we are in a preemptible section. We normally dont
+* printk from non-preemptible sections so this is for the emergency
+* case only.
+*/
+#ifdef CONFIG_PREEMPT_RT
+if (!in_atomic() && !irqs_disabled())
+#endif
+if(wake_klogd)
+wake_up_klogd();
+
+```
+
+### kernel thread priority
+
+Determine proper priorities for:
+
+- IRQ handler threads
+- Softirq threads
+- real time application kernel threads
+- real time application user space threads
+
+### power management
+
+For optimal real time latency, disable power
+management.
+
+Frequency Scaling
+Latency while changing frequency.
+Unexpectedly executing slower.
+
+CPU Sleep Latency
+The wake up latency from cpu sleep increases
+for deeper levels of sleep.
+drivers/cpuidle/* attempts to balance power
+saving and latency.
+
+
+
+Many config options can strongly affect latencies
+
+```
+CONFIG_APM
+CONFIG_CPU_FREQ
+CONFIG_CPU_IDLE
+CONFIG_NO_HZ
+  Desirable for cpu isolation, but increases latency.
+```
+
+
+
+### stop_machine()
+
+Freezes all cpus, except one which executes
+a specified function.
+Interrupts are disabled while the cpus are
+frozen. Interrupt latency can become
+very large.
+
+### CPU Hotplug
+
+A little bit fragile...
+Attempts to resolve the RT issues have led to the
+conclusion that the best approach is to refactor
+the architecture specific code into common
+shared code.
+Summary of the redesign/rework discussion is at:
+https://lkml.org/lkml/2012/3/19/350
+Patches started appearing on lkml in April
+
+### CPU Isolation
+
+[git pull] CPU isolation extensions
+From: Max Krasnyansky
+https://lkml.org/lkml/2008/2/7/1
+Linus, please pull CPU isolation extensions from ...
+The patchset consist of 4 patches.
+
+- Make cpu isolation configurable and export isolated map
+- Do not route IRQs to the CPUs isolated at boot
+- Do not schedule workqueues on the isolated CPUs
+- Do not halt isolated CPUs with Stop Machine
+
+[PATCH v7 0/8] Reduce cross CPU IPI interference
+From: Gilad Ben-Yossef
+https://lkml.org/lkml/2012/1/8/109
+https://lkml.org/lkml/2012/1/26/70
+
+
+
 ## PREEMPT_RT Patch Size
 
  2.6 ->3.x->4.x
@@ -34,11 +165,66 @@ version      file_changed lines_plus Lines_minus
 #### spinlock_t
 Critical sections are preemptible. The _irq operations (e.g., spin_lock_irqsave()) do -not- disable hardware interrupts. Priority inheritance is used to prevent priority inversion. An underlying rt_mutex is used to implement spinlock_t in PREEMPT_RT (as well as to implement rwlock_t, struct semaphore, and struct rw_semaphore).
 
+在4.1.2 rt kernel中
+
+```
+#define spin_lock_init(slock)				\
+do {							\
+	static struct lock_class_key __key;		\
+							\
+	rt_mutex_init(&(slock)->lock);			\
+	__rt_spin_lock_init(slock, #slock, &__key);	\
+} while (0)
+
+void __lockfunc rt_spin_lock(spinlock_t *lock)
+{
+	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock);
+	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+}
+
+#define spin_lock(lock)				\
+	do {					\
+		migrate_disable();		\
+		rt_spin_lock(lock);		\
+	} while (0)
+
+#define spin_lock_bh(lock)			\
+	do {					\
+		local_bh_disable();		\
+		migrate_disable();		\
+		rt_spin_lock(lock);		\
+	} while (0)
+
+#define spin_lock_irq(lock)		spin_lock(lock)
+
+#define spin_lock_irqsave(lock, flags)			 \
+	do {						 \
+		typecheck(unsigned long, flags);	 \
+		flags = 0;				 \
+		spin_lock(lock);			 \
+	} while (0)
+
+```
+
 #### raw_spinlock_t
 Special variant of spinlock_t that offers the traditional behavior, so that critical sections are non-preemptible and _irq operations really disable hardware interrupts. Note that you should use the normal primitives (e.g., spin_lock()) on raw_spinlock_t. That said, you shouldn't be using raw_spinlock_t -at- -all- except deep within architecture-specific code or low-level scheduling and synchronization primitives. Misuse of raw_spinlock_t will destroy the realtime aspects of PREEMPT_RT. You have been warned.
 
+- Some spin_locks should never be converted to a mutex
+- Same as current mainline spin_locks
+- Should only be used for scheduler, rtmutex implementation, debugging/tracing infrastructure and for timer interrupts.
+- Timer drivers for clock events (HPET, PM timer, TSC)
+- Exists today in current mainline, with no other purpose as to annotate what locks are special (Thank you Linus!)
+
+
 #### rwlock_t
 Critical sections are preemptible. The _irq operations (e.g., write_lock_irqsave()) do -not- disable hardware interrupts. Priority inheritance is used to prevent priority inversion. In order to keep the complexity of priority inheritance down to a dull roar, only one task may read-acquire a given rwlock_t at a time, though that task may recursively read-acquire the lock.
+
+- Death of Determinism
+- Writes must wait for unknown amount of readers
+- Recursive locking
+- Possible strange deadlock due to writers
+  – Yes, affects mainline too!
+
 
 #### RW_LOCK_UNLOCKED(mylock)
 The RW_LOCK_UNLOCKED macro now takes the lock itself as an argument, which is required for priority inheritance. Unfortunately, this makes its use incompatible with the PREEMPT and non-PREEMPT kernels. Uses of RW_LOCK_UNLOCKED should therefore be changed to DEFINE_RWLOCK().
@@ -128,6 +314,32 @@ raw_local_save_flags(flags)
 These functions disable hardware interrupts, and are therefore suitable for use with SA_NODELAY interrupts such as the scheduler clock interrupt (which, among other things, invokes scheduler_tick()).
 These functions are quite specialized, and should only be used in low-level code such as the scheduler, synchronization primitives, and so on. Keep in mind that you cannot acquire normal spinlock_t locks while under the effects of raw_local_irq*().
 
+在4.1.2 rt kernel中
+
+```
+
+#define local_irq_enable()	do { raw_local_irq_enable(); } while (0)
+#define local_irq_disable()	do { raw_local_irq_disable(); } while (0)
+
+/*
+ * local_irq* variants depending on RT/!RT
+ */
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define local_irq_disable_nort()	do { } while (0)
+# define local_irq_enable_nort()	do { } while (0)
+# define local_irq_save_nort(flags)	local_save_flags(flags)
+# define local_irq_restore_nort(flags)	(void)(flags)
+# define local_irq_disable_rt()		local_irq_disable()
+# define local_irq_enable_rt()		local_irq_enable()
+#else
+# define local_irq_disable_nort()	local_irq_disable()
+# define local_irq_enable_nort()	local_irq_enable()
+# define local_irq_save_nort(flags)	local_irq_save(flags)
+# define local_irq_restore_nort(flags)	local_irq_restore(flags)
+# define local_irq_disable_rt()		do { } while (0)
+# define local_irq_enable_rt()		do { } while (0)
+#endif
+```
 
 ### Miscellaneous
 #### wait_for_timer()
@@ -220,6 +432,28 @@ replace preempt_disable().
 Summary of the redesign/rework discussion is at:
 https://lkml.org/lkml/2012/3/19/350
 
+### threaded irq
+- Lowers Interrupt Latency
+- Prioritize interrupts even when the hardware does not support it.
+- Less noise from things like “updatedb”
+- request_threaded_irq()
+  – Tells system driver wants handler as thread
+- The kernel command line parameter
+  – threadirqs:  threadirqs forces all IRQS to have a “special” handler” and uses the handler as thread_fn
+  - except IRQF_NOTHREAD, IRQF_PER_CPU and IRQF_ONESHOT
+
+
+
+### Non-Thread IRQs
+- Timer interrupt
+  -  Manages the system (sends signals to others about time management)
+- IRQF_TIMER
+   – Denotes that a interrupt handler is a timer
+- IRQF_NO_THREAD
+   – When the interrupt must not be a thread
+   – Don't use unless you know what you are doing
+   – Must not call spin_locks
+
 
 ### Deadline Scheduler
 
@@ -236,8 +470,7 @@ complete work by deadline.
  EDF scheduling
 
 ### CPU Isolation
-Dedicate a processor to a specific task (kernel
-space or user space).
+Dedicate a processor to a specific task (kernel space or user space).
 Eliminate all normal kernel interrupts and
 overhead on the processor.
 
@@ -335,6 +568,42 @@ preempt_count() //返回抢占计数
 preempt_schedule() //核抢占时的调度程序的入口点
 
 
+```
+
+#ifdef CONFIG_PREEMPT_COUNT
+
+#define preempt_disable() \
+do { \
+	preempt_count_inc(); \
+	barrier(); \
+} while (0)
+
+--------------
+
+#ifdef CONFIG_PREEMPT
+#define preempt_enable() \
+do { \
+	barrier(); \
+	if (unlikely(preempt_count_dec_and_test())) \
+		__preempt_schedule(); \
+} while (0)
+
+---------------------
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define preempt_disable_rt()		preempt_disable()
+# define preempt_enable_rt()		preempt_enable()
+# define preempt_disable_nort()		barrier()
+# define preempt_enable_nort()		barrier()
+# ifdef CONFIG_SMP
+   extern void migrate_disable(void);
+   extern void migrate_enable(void);
+# else /* CONFIG_SMP */
+
+--------------
+
+```
+
 
 ## 对NO_HZ的理解
 
@@ -391,8 +660,333 @@ RT
 +	 do { (void)cpu; spin_unlock(&__get_cpu_lock(var, cpu)); } while (0)
 ```
 
+
+4.1.2 rt kernel
+
+```
+#define get_cpu()		({ preempt_disable(); smp_processor_id(); })
+#define put_cpu()		preempt_enable()
+
+#define get_cpu_light()		({ migrate_disable(); smp_processor_id(); })
+#define put_cpu_light()		migrate_enable()
+-------------------------
+#define get_cpu_var(var)						\
+(*({									\
+	preempt_disable();						\
+	this_cpu_ptr(&var);						\
+}))
+
+#define put_cpu_var(var)						\
+do {									\
+	(void)&(var);							\
+	preempt_enable();						\
+} while (0)
+------------------------
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+
+#define get_local_var(var) (*({		\
+	       migrate_disable();	\
+	       this_cpu_ptr(&var);	}))
+
+#define put_local_var(var) do {	\
+	(void)&(var);		\
+	migrate_enable();	\
+} while (0)
+
+# define get_local_ptr(var) ({		\
+		migrate_disable();	\
+		this_cpu_ptr(var);	})
+
+# define put_local_ptr(var) do {	\
+	(void)(var);			\
+	migrate_enable();		\
+} while (0)
+
+#else
+
+#define get_local_var(var)	get_cpu_var(var)
+#define put_local_var(var)	put_cpu_var(var)
+#define get_local_ptr(var)	get_cpu_ptr(var)
+#define put_local_ptr(var)	put_cpu_ptr(var)
+
+#endif
+--------------------------------
+```
+
 ### local_lock v4.11
 
+4.1.2 rt kernel
+```
+#ifdef CONFIG_PREEMPT_RT_BASE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#ifdef CONFIG_DEBUG_SPINLOCK
+# define LL_WARN(cond)	WARN_ON(cond)
+#else
+# define LL_WARN(cond)	do { } while (0)
+#endif
+
+/*
+ * per cpu lock based substitute for local_irq_*()
+ */
+struct local_irq_lock {
+	spinlock_t		lock;
+	struct task_struct	*owner;
+	int			nestcnt;
+	unsigned long		flags;
+};
+
+#define DEFINE_LOCAL_IRQ_LOCK(lvar)					\
+	DEFINE_PER_CPU(struct local_irq_lock, lvar) = {			\
+		.lock = __SPIN_LOCK_UNLOCKED((lvar).lock) }
+
+#define DECLARE_LOCAL_IRQ_LOCK(lvar)					\
+	DECLARE_PER_CPU(struct local_irq_lock, lvar)
+
+#define local_irq_lock_init(lvar)					\
+	do {								\
+		int __cpu;						\
+		for_each_possible_cpu(__cpu)				\
+			spin_lock_init(&per_cpu(lvar, __cpu).lock);	\
+	} while (0)
+
+
+
+/*
+ * spin_lock|trylock|unlock_local flavour that does not migrate disable
+ * used for __local_lock|trylock|unlock where get_local_var/put_local_var
+ * already takes care of the migrate_disable/enable
+ * for CONFIG_PREEMPT_BASE map to the normal spin_* calls.
+ */
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define spin_lock_local(lock)			rt_spin_lock(lock)
+# define spin_trylock_local(lock)		rt_spin_trylock(lock)
+# define spin_unlock_local(lock)		rt_spin_unlock(lock)
+#else
+# define spin_lock_local(lock)			spin_lock(lock)
+# define spin_trylock_local(lock)		spin_trylock(lock)
+# define spin_unlock_local(lock)		spin_unlock(lock)
+#endif
+------------------------------------
+
+static inline void __local_lock(struct local_irq_lock *lv)
+{
+	if (lv->owner != current) {
+		spin_lock_local(&lv->lock);
+		LL_WARN(lv->owner);
+		LL_WARN(lv->nestcnt);
+		lv->owner = current;
+	}
+	lv->nestcnt++;
+}
+
+#define local_lock(lvar)					\
+	do { __local_lock(&get_local_var(lvar)); } while (0)
+
+static inline int __local_trylock(struct local_irq_lock *lv)
+{
+	if (lv->owner != current && spin_trylock_local(&lv->lock)) {
+		LL_WARN(lv->owner);
+		LL_WARN(lv->nestcnt);
+		lv->owner = current;
+		lv->nestcnt = 1;
+		return 1;
+	}
+	return 0;
+}
+
+#define local_trylock(lvar)						\
+	({								\
+		int __locked;						\
+		__locked = __local_trylock(&get_local_var(lvar));	\
+		if (!__locked)						\
+			put_local_var(lvar);				\
+		__locked;						\
+	})
+
+static inline void __local_unlock(struct local_irq_lock *lv)
+{
+	LL_WARN(lv->nestcnt == 0);
+	LL_WARN(lv->owner != current);
+	if (--lv->nestcnt)
+		return;
+
+	lv->owner = NULL;
+	spin_unlock_local(&lv->lock);
+}
+
+#define local_unlock(lvar)					\
+	do {							\
+		__local_unlock(this_cpu_ptr(&lvar));		\
+		put_local_var(lvar);				\
+	} while (0)
+
+static inline void __local_lock_irq(struct local_irq_lock *lv)
+{
+	spin_lock_irqsave(&lv->lock, lv->flags);
+	LL_WARN(lv->owner);
+	LL_WARN(lv->nestcnt);
+	lv->owner = current;
+	lv->nestcnt = 1;
+}
+
+#define local_lock_irq(lvar)						\
+	do { __local_lock_irq(&get_local_var(lvar)); } while (0)
+
+#define local_lock_irq_on(lvar, cpu)					\
+	do { __local_lock_irq(&per_cpu(lvar, cpu)); } while (0)
+
+static inline void __local_unlock_irq(struct local_irq_lock *lv)
+{
+	LL_WARN(!lv->nestcnt);
+	LL_WARN(lv->owner != current);
+	lv->owner = NULL;
+	lv->nestcnt = 0;
+	spin_unlock_irq(&lv->lock);
+}
+
+#define local_unlock_irq(lvar)						\
+	do {								\
+		__local_unlock_irq(this_cpu_ptr(&lvar));		\
+		put_local_var(lvar);					\
+	} while (0)
+
+#define local_unlock_irq_on(lvar, cpu)					\
+	do {								\
+		__local_unlock_irq(&per_cpu(lvar, cpu));		\
+	} while (0)
+
+static inline int __local_lock_irqsave(struct local_irq_lock *lv)
+{
+	if (lv->owner != current) {
+		__local_lock_irq(lv);
+		return 0;
+	} else {
+		lv->nestcnt++;
+		return 1;
+	}
+}
+
+#define local_lock_irqsave(lvar, _flags)				\
+	do {								\
+		if (__local_lock_irqsave(&get_local_var(lvar)))		\
+			put_local_var(lvar);				\
+		_flags = __this_cpu_read(lvar.flags);			\
+	} while (0)
+
+#define local_lock_irqsave_on(lvar, _flags, cpu)			\
+	do {								\
+		__local_lock_irqsave(&per_cpu(lvar, cpu));		\
+		_flags = per_cpu(lvar, cpu).flags;			\
+	} while (0)
+
+static inline int __local_unlock_irqrestore(struct local_irq_lock *lv,
+					    unsigned long flags)
+{
+	LL_WARN(!lv->nestcnt);
+	LL_WARN(lv->owner != current);
+	if (--lv->nestcnt)
+		return 0;
+
+	lv->owner = NULL;
+	spin_unlock_irqrestore(&lv->lock, lv->flags);
+	return 1;
+}
+
+#define local_unlock_irqrestore(lvar, flags)				\
+	do {								\
+		if (__local_unlock_irqrestore(this_cpu_ptr(&lvar), flags)) \
+			put_local_var(lvar);				\
+	} while (0)
+
+#define local_unlock_irqrestore_on(lvar, flags, cpu)			\
+	do {								\
+		__local_unlock_irqrestore(&per_cpu(lvar, cpu), flags);	\
+	} while (0)
+
+#define local_spin_trylock_irq(lvar, lock)				\
+	({								\
+		int __locked;						\
+		local_lock_irq(lvar);					\
+		__locked = spin_trylock(lock);				\
+		if (!__locked)						\
+			local_unlock_irq(lvar);				\
+		__locked;						\
+	})
+
+#define local_spin_lock_irq(lvar, lock)					\
+	do {								\
+		local_lock_irq(lvar);					\
+		spin_lock(lock);					\
+	} while (0)
+
+#define local_spin_unlock_irq(lvar, lock)				\
+	do {								\
+		spin_unlock(lock);					\
+		local_unlock_irq(lvar);					\
+	} while (0)
+
+#define local_spin_lock_irqsave(lvar, lock, flags)			\
+	do {								\
+		local_lock_irqsave(lvar, flags);			\
+		spin_lock(lock);					\
+	} while (0)
+
+#define local_spin_unlock_irqrestore(lvar, lock, flags)			\
+	do {								\
+		spin_unlock(lock);					\
+		local_unlock_irqrestore(lvar, flags);			\
+	} while (0)
+
+#define get_locked_var(lvar, var)					\
+	(*({								\
+		local_lock(lvar);					\
+		this_cpu_ptr(&var);					\
+	}))
+
+#define put_locked_var(lvar, var)	local_unlock(lvar);
+
+#define local_lock_cpu(lvar)						\
+	({								\
+		local_lock(lvar);					\
+		smp_processor_id();					\
+	})
+
+#define local_unlock_cpu(lvar)			local_unlock(lvar)
+
+#else /* PREEMPT_RT_BASE */ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#define DEFINE_LOCAL_IRQ_LOCK(lvar)		__typeof__(const int) lvar
+#define DECLARE_LOCAL_IRQ_LOCK(lvar)		extern __typeof__(const int) lvar
+
+static inline void local_irq_lock_init(int lvar) { }
+
+#define local_lock(lvar)			preempt_disable()
+#define local_unlock(lvar)			preempt_enable()
+#define local_lock_irq(lvar)			local_irq_disable()
+#define local_unlock_irq(lvar)			local_irq_enable()
+#define local_lock_irqsave(lvar, flags)		local_irq_save(flags)
+#define local_unlock_irqrestore(lvar, flags)	local_irq_restore(flags)
+
+#define local_spin_trylock_irq(lvar, lock)	spin_trylock_irq(lock)
+#define local_spin_lock_irq(lvar, lock)		spin_lock_irq(lock)
+#define local_spin_unlock_irq(lvar, lock)	spin_unlock_irq(lock)
+#define local_spin_lock_irqsave(lvar, lock, flags)	\
+	spin_lock_irqsave(lock, flags)
+#define local_spin_unlock_irqrestore(lvar, lock, flags)	\
+	spin_unlock_irqrestore(lock, flags)
+
+#define get_locked_var(lvar, var)		get_cpu_var(var)
+#define put_locked_var(lvar, var)		put_cpu_var(var)
+
+#define local_lock_cpu(lvar)			get_cpu()
+#define local_unlock_cpu(lvar)			put_cpu()
+
+#endif
+
+
+
+```
 
 
 ### touch/stop_critical_timing
@@ -638,3 +1232,17 @@ features that make lock debugging easier and faster:
     - Detects self-recursing locks and prints out all relevant info.
     - Detects multi-task circular deadlocks and prints out all affected
       locks and tasks (and only those tasks).
+
+
+### PREEMPT_LAZY
+如何理解？
+
+- RT can preempt almost anywhere
+- Spinlocks that are now mutexes can be
+  preempted
+  – Much more likely to cause contention
+- Do not preempt on migrate_disable()
+  – used by sleepable spinlocks
+- Increases throughput on non-RT tasks
+
+
