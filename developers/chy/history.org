@@ -8371,152 +8371,152 @@ of ftrace}
     [[file:4.8/md-disable-bcache.patch][4.8]]
     [[file:4.9/md-disable-bcache.patch][4.9]]
     [[file:4.11/md-disable-bcache.patch][4.11]]
-* [  3.14         ] net: gianfar: do not try to cleanup TX packets if they are not done
+* [  3.14         ] net: gianfar: do not try to cleanup TX packets if they are not done{C::bug::hwerr::hardware::hardware:: net: gianfar: do not try to cleanup TX packets if they
+ are not done}
   + [[file:3.14/net-gianfar-do-not-try-to-cleanup-TX-packets-if-they.patch][3.14]]
   - 3.18
 * [  3.14         ] rt,sched,numa: Move task_numa_free() to __put_task_struct(), which -rt offloads
-  + [[file:3.14/rt-sched-numa-Move-task_numa_free-to-__put_task_stru.patch][3.14]]
+  + [[file:3.14/rt-sched-numa-Move-task_numa_free-to-__put_task_stru.patch][3.14]]{C::bug::deadlock::deadlock::semantics::rt,sched,numa: Move task_numa_free() to __put_task_struct()}
   - 3.18
-* [  3.14         ] Revert "x86: Disable IST stacks for debug/int 3/stack fault for PREEMPT_RT"
+* [  3.14         ] Revert "x86: Disable IST stacks for debug/int 3/stack fault for PREEMPT_RT"{C::bug::?::semantics::semantics::Revert "x86: Disable IST stacks for debug/int 3/stack fault for PREEMPT_RT"}
   + [[file:3.14/Revert-x86-Disable-IST-stacks-for-debug-int-3-stack-.patch][3.14]]
   - 3.18
-* [  3.14         ] disable lazy preempt on x86-64
+* [  3.14         ] disable lazy preempt on x86-64{C::feature::rtsupport::disable lazy preempt on x86-64}
   + [[file:3.14/disable-lazy-preempt-on-x86-64.patch][3.14]]
   - 3.18
-* [  3.14         ] sparc64: convert ctx_alloc_lock raw_spinlock_t
+* [  3.14         ] sparc64: convert ctx_alloc_lock raw_spinlock_t{C::bug::data_err::atomicity::mutex::sparc64: convert ctx_alloc_lock raw_spinlock_t}
   + [[file:3.14/0003-sparc64-convert-ctx_alloc_lock-raw_spinlock_t.patch][3.14]]
   - 3.18
-* [  3.14         ] ipv6: some ipv6 statistic counters failed to disable bh
+* [  3.14         ] ipv6: some ipv6 statistic counters failed to disable bh{C::bug::data_err::semantics::semantics::ipv6: some ipv6 statistic counters failed to disable bh}
   + [[file:3.14/ipv6-some-ipv6-statistic-counters-failed-to-disable-.patch][3.14]]
   - 3.18
-* [  3.14         ] sched: Adjust p->sched_reset_on_fork when nothing else changes
+* [  3.14         ] sched: Adjust p->sched_reset_on_fork when nothing else changes{C::bug::data_err::sched::sched::sched: Adjust p->sched_reset_on_fork when nothing else changes}
   + [[file:3.14/sched-Adjust-p-sched_reset_on_fork-when-nothing-else.patch][3.14]]
   - 3.18
-* [  3.14         ] sched: Consider pi boosting in setscheduler()
-  + [[file:3.14/sched-Consider-pi-boosting-in-setscheduler.patch][3.14]]
-  - 3.18
-* [  3.14         ] sparc64: convert spinlock_t to raw_spinlock_t in mmu_context_t
+
+* [  3.14         ] sparc64: convert spinlock_t to raw_spinlock_t in mmu_context_t{C::bug::data_err::atomicity::mutex::sparc64: convert spinlock_t to raw_spinlock_t in mmu_context_t}
   + [[file:3.14/0002-sparc64-convert-spinlock_t-to-raw_spinlock_t-in-mmu_.patch][3.14]]
   - 3.18
-* [  3.14 -   3.18] net: ip_send_unicast_reply: add missing local serialization
+* [  3.14 -   3.18] net: ip_send_unicast_reply: add missing local serialization{C::bug::data_err::order::mutex::net: ip_send_unicast_reply: add missing local serialization}
   + [[file:3.14/net-ip_send_unicast_reply-add-missing-local-serializ.patch][3.14]]
   m [[file:3.18/net-ip_send_unicast_reply-add-missing-local-serializ.patch][3.18]]
   - 4.0
-* [  3.14 -   3.18] sched: Fix broken setscheduler()
+* [  3.14 -   3.18] sched: Fix broken setscheduler(){C::bug::rtlatency::sched::sched::sched: Fix broken setscheduler()}
   + [[file:3.14/sched-Fix-broken-setscheduler.patch][3.14]]
     [[file:3.18/sched-Fix-broken-setscheduler.patch][3.18]]
   - 4.0
-* [  3.14 -   3.18] bad return value in __mutex_lock_check_stamp
+* [  3.14 -   3.18] bad return value in __mutex_lock_check_stamp{C::bug::data_err::semantics::semantics::bad return value in __mutex_lock_check_stamp}
   + [[file:3.14/rtmutex-ww-bad-return-value-in-__mutex_lock_check_stamp.patch][3.14]]
     [[file:3.18/rtmutex-ww-bad-return-value-in-__mutex_lock_check_stamp.patch][3.18]]
   - 4.0
-* [  3.14 -    4.0] kernel/hrtimer: be non-freezeable in cpu_chill()
+* [  3.14 -    4.0] kernel/hrtimer: be non-freezeable in cpu_chill(){C::bug::crash::time::semantics::kernel/hrtimer: be non-freezeable in cpu_chill()}
   + [[file:3.14/kernel-hrtimer-be-non-freezeable-in-cpu_chill.patch][3.14]]
     [[file:3.18/kernel-hrtimer-be-non-freezeable-in-cpu_chill.patch][3.18]]
     [[file:4.0/kernel-hrtimer-be-non-freezeable-in-cpu_chill.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] sched: dont calculate hweight in update_migrate_disable()
+* [  3.14 -    4.0] sched: dont calculate hweight in update_migrate_disable(){C::performance::smallsize::sched: dont calculate hweight in update_migrate_disable()}
   + [[file:3.14/sched-dont-calculate-hweight-in-update_migrate_disab.patch][3.14]]
     [[file:3.18/sched-dont-calculate-hweight-in-update_migrate_disab.patch][3.18]]
     [[file:4.0/sched-dont-calculate-hweight-in-update_migrate_disab.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] API cleanup - use local_lock not __local_lock for soft
+* [  3.14 -    4.0] API cleanup - use local_lock not __local_lock for soft{C::maintain::refactor:: API cleanup - use local_lock not __local_lock for soft}
   + [[file:3.14/API-cleanup-use-local_lock-not-__local_lock-for-soft.patch][3.14]]
     [[file:3.18/API-cleanup-use-local_lock-not-__local_lock-for-soft.patch][3.18]]
   M [[file:4.0/API-cleanup-use-local_lock-not-__local_lock-for-soft.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] softirq: make migrate disable/enable conditioned on softirq_nestcnt transition
+* [  3.14 -    4.0] softirq: make migrate disable/enable conditioned on softirq_nestcnt transition {C::maintain::refactor:: oftirq: make migrate disable/enable conditioned on softirq_nestcnt transition }
   + [[file:3.14/softirq-make-migrate-disable-enable-conditioned-on-softirq_n.patch][3.14]]
     [[file:3.18/softirq-make-migrate-disable-enable-conditioned-on-softirq_n.patch][3.18]]
     [[file:4.0/softirq-make-migrate-disable-enable-conditioned-on-softirq_n.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] irq_work: allow certain work in hard irq context
+* [  3.14 -    4.0] irq_work: allow certain work in hard irq context{C::bug::data_err::irq::irq::irq_work: allow certain work in hard irq context}
   + [[file:3.14/irq_work-allow-certain-work-in-hard-irq-context.patch][3.14]]
   M [[file:3.18/irq_work-allow-certain-work-in-hard-irq-context.patch][3.18]]
   M [[file:4.0/irq_work-allow-certain-work-in-hard-irq-context.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] seqlock: consolidate spin_lock/unlock waiting with spin_unlock_wait
+* [  3.14 -    4.0] seqlock: consolidate spin_lock/unlock waiting with spin_unlock_wait{C::maintain::refactor::seqlock: consolidate spin_lock/unlock waiting with spin_unlock_wait}
   + [[file:3.14/seqlock-consolidate-spin_lock-unlock-waiting-with-sp.patch][3.14]]
     [[file:3.18/seqlock-consolidate-spin_lock-unlock-waiting-with-sp.patch][3.18]]
     [[file:4.0/seqlock-consolidate-spin_lock-unlock-waiting-with-sp.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] timer/rt: Always raise the softirq if there's irq_work to be done
+* [  3.14 -    4.0] timer/rt: Always raise the softirq if there's irq_work to be done{C::bug::hang::softirq::softirq::timer/rt: Always raise the softirq if there's irq_work to
+ be done}
   + [[file:3.14/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][3.14]]
     [[file:3.18/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][3.18]]
     [[file:4.0/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] migrate_disable pushd down in rt_spin_trylock_irqsave
+* [  3.14 -    4.0] migrate_disable pushd down in rt_spin_trylock_irqsave{C::maintain::refactor::migrate_disable pushd down in rt_spin_trylock_irqsave}
   + [[file:3.14/migrate_disable-pushd-down-in-rt_spin_trylock_irqsav.patch][3.14]]
     [[file:3.18/migrate_disable-pushd-down-in-rt_spin_trylock_irqsav.patch][3.18]]
     [[file:4.0/migrate_disable-pushd-down-in-rt_spin_trylock_irqsav.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] write_lock migrate_disable pushdown to rt_write_lock
+* [  3.14 -    4.0] write_lock migrate_disable pushdown to rt_write_lock{C::maintain::refactor::write_lock migrate_disable pushdown to rt_write_lock}
   + [[file:3.14/write_lock-migrate_disable-pushdown-to-rt_write_lock.patch][3.14]]
     [[file:3.18/write_lock-migrate_disable-pushdown-to-rt_write_lock.patch][3.18]]
     [[file:4.0/write_lock-migrate_disable-pushdown-to-rt_write_lock.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] migrate_disable pushd down in rt_write_trylock_irqsave
+* [  3.14 -    4.0] migrate_disable pushd down in rt_write_trylock_irqsave{C::maintain::refactor::migrate_disable pushd down in rt_write_trylock_irqsave}
   + [[file:3.14/migrate_disable-pushd-down-in-rt_write_trylock_irqsa.patch][3.14]]
     [[file:3.18/migrate_disable-pushd-down-in-rt_write_trylock_irqsa.patch][3.18]]
     [[file:4.0/migrate_disable-pushd-down-in-rt_write_trylock_irqsa.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] allow preemption in recursive migrate_disable call
+* [  3.14 -    4.0] allow preemption in recursive migrate_disable call{C::performance::preempt:: allow preemption in recursive migrate_disable call}
   + [[file:3.14/allow-preemption-in-recursive-migrate_disable-call.patch][3.14]]
     [[file:3.18/allow-preemption-in-recursive-migrate_disable-call.patch][3.18]]
     [[file:4.0/allow-preemption-in-recursive-migrate_disable-call.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] rt: Make cpu_chill() use hrtimer instead of msleep()
+* [  3.14 -    4.0] rt: Make cpu_chill() use hrtimer instead of msleep(){C::bug::deadlock::deadlock::semantics::rt: Make cpu_chill() use hrtimer instead of msleep()}
   + [[file:3.14/rt-Make-cpu_chill-use-hrtimer-instead-of-msleep.patch][3.14]]
     [[file:3.18/rt-Make-cpu_chill-use-hrtimer-instead-of-msleep.patch][3.18]]
     [[file:4.0/rt-Make-cpu_chill-use-hrtimer-instead-of-msleep.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] rt: Cleanup of unnecessary do while 0 in read/write _lock()
+* [  3.14 -    4.0] rt: Cleanup of unnecessary do while 0 in read/write _lock(){C::maintain::refactor::rt: Cleanup of unnecessary do while 0 in read/write _lock()}
   + [[file:3.14/rt-Cleanup-of-unnecessary-do-while-0-in-read-write-_.patch][3.14]]
     [[file:3.18/rt-Cleanup-of-unnecessary-do-while-0-in-read-write-_.patch][3.18]]
     [[file:4.0/rt-Cleanup-of-unnecessary-do-while-0-in-read-write-_.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] migrate_disable pushd down in atomic_dec_and_spin_lock
+* [  3.14 -    4.0] migrate_disable pushd down in atomic_dec_and_spin_lock{C::maintain::refactor::migrate_disable pushd down in atomic_dec_and_spin_lock}
   + [[file:3.14/migrate_disable-pushd-down-in-atomic_dec_and_spin_lo.patch][3.14]]
     [[file:3.18/migrate_disable-pushd-down-in-atomic_dec_and_spin_lo.patch][3.18]]
     [[file:4.0/migrate_disable-pushd-down-in-atomic_dec_and_spin_lo.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] read_lock migrate_disable pushdown to rt_read_lock
+* [  3.14 -    4.0] read_lock migrate_disable pushdown to rt_read_lock{C::maintain::refactor::read_lock migrate_disable pushdown to rt_read_lock}
   + [[file:3.14/read_lock-migrate_disable-pushdown-to-rt_read_lock.patch][3.14]]
   m [[file:3.18/read_lock-migrate_disable-pushdown-to-rt_read_lock.patch][3.18]]
     [[file:4.0/read_lock-migrate_disable-pushdown-to-rt_read_lock.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] timer: Raise softirq if there's irq_work
+* [  3.14 -    4.0] timer: Raise softirq if there's irq_work{C::bug::deadlock::deadlock::semantics::timer: Raise softirq if there's irq_work}
   + [[file:3.14/timer-Raise-softirq-if-there-s-irq_work.patch][3.14]]
     [[file:3.18/timer-Raise-softirq-if-there-s-irq_work.patch][3.18]]
     [[file:4.0/timer-Raise-softirq-if-there-s-irq_work.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] timers: do not raise softirq unconditionally
+* [  3.14 -    4.0] timers: do not raise softirq unconditionally{C::?}
   + [[file:3.14/timers-do-not-raise-softirq-unconditionally.patch][3.14]]
     [[file:3.18/timers-do-not-raise-softirq-unconditionally.patch][3.18]]
     [[file:4.0/timers-do-not-raise-softirq-unconditionally.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] rtmutex: use a trylock for waiter lock in trylock
+* [  3.14 -    4.0] rtmutex: use a trylock for waiter lock in trylock{C::bug::deadlock::deadlock::semantics:: rtmutex: use a trylock for waiter lock in trylock}
   + [[file:3.14/rtmutex-use-a-trylock-for-waiter-lock-in-trylock.patch][3.14]]
   M [[file:3.18/rtmutex-use-a-trylock-for-waiter-lock-in-trylock.patch][3.18]]
     [[file:4.0/rtmutex-use-a-trylock-for-waiter-lock-in-trylock.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] condition migration_disable on lock acquisition
+* [  3.14 -    4.0] condition migration_disable on lock acquisition{C::performance::migration::condition migration_disable on lock acquisition}
   + [[file:3.14/condition-migration_disable-on-lock-acquisition.patch][3.14]]
     [[file:3.18/condition-migration_disable-on-lock-acquisition.patch][3.18]]
     [[file:4.0/condition-migration_disable-on-lock-acquisition.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] use local spin_locks in local_lock
+* [  3.14 -    4.0] use local spin_locks in local_lock{C::performance::mutex::use local spin_locks in local_lock}
   + [[file:3.14/use-local-spin_locks-in-local_lock.patch][3.14]]
     [[file:3.18/use-local-spin_locks-in-local_lock.patch][3.18]]
   m [[file:4.0/use-local-spin_locks-in-local_lock.patch][4.0]]
   - 4.1
-* [  3.14 -    4.1] net: gianfar: Do not disable interrupts
+* [  3.14 -    4.1] net: gianfar: Do not disable interrupts{C::performance::irq::net: gianfar: Do not disable interrupts}
   + [[file:3.14/net-gianfar-do-not-disable-interrupts.patch][3.14]]
   M [[file:3.18/net-gianfar-do-not-disable-interrupts.patch][3.18]]
     [[file:4.0/net-gianfar-do-not-disable-interrupts.patch][4.0]]
     [[file:4.1/net-gianfar-do-not-disable-interrupts.patch][4.1]]
   - 4.4
-* [  3.14 -   4.11] fs: jbd2: pull your plug when waiting for space
+* [  3.14 -   4.11] fs: jbd2: pull your plug when waiting for space{C::bug::livelock::livelock::semantics::fs: jbd2: pull your plug when waiting for space}
   + [[file:3.14/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][3.14]]
   m [[file:3.18/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][3.18]]
     [[file:4.0/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][4.0]]
@@ -8526,7 +8526,7 @@ of ftrace}
     [[file:4.8/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][4.8]]
     [[file:4.9/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][4.9]]
     [[file:4.11/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][4.11]]
-* [  3.14 -   4.11] cpu_chill: Add a UNINTERRUPTIBLE hrtimer_nanosleep
+* [  3.14 -   4.11] cpu_chill: Add a UNINTERRUPTIBLE hrtimer_nanosleep{C::bug::livelock::livelock::semantics::cpu_chill: Add a UNINTERRUPTIBLE hrtimer_nanosleep}
   + [[file:3.14/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][3.14]]
     [[file:3.18/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][3.18]]
     [[file:4.0/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][4.0]]
@@ -8536,7 +8536,7 @@ of ftrace}
     [[file:4.8/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][4.8]]
     [[file:4.9/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][4.9]]
     [[file:4.11/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][4.11]]
-* [  3.14 -   4.11] leds: trigger: disable CPU trigger on -RT
+* [  3.14 -   4.11] leds: trigger: disable CPU trigger on -RT{C::bug::deadlock::deadlock::semantics::leds: trigger: disable CPU trigger on -RT}
   + [[file:3.14/leds-trigger-disable-CPU-trigger-on-RT.patch][3.14]]
     [[file:3.18/leds-trigger-disable-CPU-trigger-on-RT.patch][3.18]]
     [[file:4.0/leds-trigger-disable-CPU-trigger-on-RT.patch][4.0]]
@@ -8546,7 +8546,7 @@ of ftrace}
     [[file:4.8/leds-trigger-disable-CPU-trigger-on-RT.patch][4.8]]
     [[file:4.9/leds-trigger-disable-CPU-trigger-on-RT.patch][4.9]]
     [[file:4.11/leds-trigger-disable-CPU-trigger-on-RT.patch][4.11]]
-* [  3.14 -   4.11] sparc64: use generic rwsem spinlocks rt
+* [  3.14 -   4.11] sparc64: use generic rwsem spinlocks rt{C::feature::rtsupport::sparc64: use generic rwsem spinlocks rt}
   + [[file:3.14/0001-sparc64-use-generic-rwsem-spinlocks-rt.patch][3.14]]
     [[file:3.18/0001-sparc64-use-generic-rwsem-spinlocks-rt.patch][3.18]]
     [[file:4.0/0001-sparc64-use-generic-rwsem-spinlocks-rt.patch][4.0]]
@@ -8556,7 +8556,7 @@ of ftrace}
     [[file:4.8/sparc64-use-generic-rwsem-spinlocks-rt.patch][4.8]]
     [[file:4.9/sparc64-use-generic-rwsem-spinlocks-rt.patch][4.9]]
     [[file:4.11/sparc64-use-generic-rwsem-spinlocks-rt.patch][4.11]]
-* [  3.14 -   4.11] rcutree/rcu_bh_qs: Disable irq while calling rcu_preempt_qs()
+* [  3.14 -   4.11] rcutree/rcu_bh_qs: Disable irq while calling rcu_preempt_qs(){C::bug::hang::irq::irq::rcutree/rcu_bh_qs: Disable irq while calling rcu_preempt_qs()}
   + [[file:3.14/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][3.14]]
   m [[file:3.18/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][3.18]]
     [[file:4.0/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][4.0]]
@@ -8566,7 +8566,7 @@ of ftrace}
     [[file:4.8/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][4.8]]
     [[file:4.9/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][4.9]]
     [[file:4.11/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch][4.11]]
-* [  3.14 -   4.11] cpu hotplug: Document why PREEMPT_RT uses a spinlock
+* [  3.14 -   4.11] cpu hotplug: Document why PREEMPT_RT uses a spinlock{C::maintain::donothing::cpu hotplug: Document why PREEMPT_RT uses a spinlock}
   + [[file:3.14/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][3.14]]
     [[file:3.18/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][3.18]]
     [[file:4.0/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][4.0]]
@@ -8576,7 +8576,7 @@ of ftrace}
     [[file:4.8/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][4.8]]
     [[file:4.9/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][4.9]]
     [[file:4.11/cpu-hotplug-Document-why-PREEMPT_RT-uses-a-spinlock.patch][4.11]]
-* [  3.14 -   4.11] cpu_down: move migrate_enable() back
+* [  3.14 -   4.11] cpu_down: move migrate_enable() back{C::bug::deadlock::deadlock::semantics::cpu_down: move migrate_enable() back}
   + [[file:3.14/cpu_down_move_migrate_enable_back.patch][3.14]]
     [[file:3.18/cpu_down_move_migrate_enable_back.patch][3.18]]
     [[file:4.0/cpu_down_move_migrate_enable_back.patch][4.0]]
@@ -8586,7 +8586,7 @@ of ftrace}
     [[file:4.8/cpu_down_move_migrate_enable_back.patch][4.8]]
     [[file:4.9/cpu_down_move_migrate_enable_back.patch][4.9]]
   m [[file:4.11/cpu_down_move_migrate_enable_back.patch][4.11]]
-* [  3.14 -   4.11] arm/unwind: use a raw_spin_lock
+* [  3.14 -   4.11] arm/unwind: use a raw_spin_lock{C::bug::hang::deadlock::semantics:: arm/unwind: use a raw_spin_lock}
   + [[file:3.14/arm-unwind-use_raw_lock.patch][3.14]]
     [[file:3.18/arm-unwind-use_raw_lock.patch][3.18]]
     [[file:4.0/arm-unwind-use_raw_lock.patch][4.0]]
@@ -8596,7 +8596,7 @@ of ftrace}
     [[file:4.8/arm-unwind-use_raw_lock.patch][4.8]]
     [[file:4.9/arm-unwind-use_raw_lock.patch][4.9]]
     [[file:4.11/arm-unwind-use_raw_lock.patch][4.11]]
-* [  3.14 -   4.11] block: mq: use cpu_light()
+* [  3.14 -   4.11] block: mq: use cpu_light(){C::bug::deadlock::deadlock::semantics::block: mq: use cpu_light()}
   + [[file:3.14/block-mq-use-cpu_light.patch][3.14]]
   M [[file:3.18/block-mq-use-cpu_light.patch][3.18]]
     [[file:4.0/block-mq-use-cpu_light.patch][4.0]]
@@ -8606,7 +8606,7 @@ of ftrace}
     [[file:4.8/block-mq-use-cpu_light.patch][4.8]]
     [[file:4.9/block-mq-use-cpu_light.patch][4.9]]
     [[file:4.11/block-mq-use-cpu_light.patch][4.11]]
-* [  3.14 -   4.11] crypto: Reduce preempt disabled regions, more algos
+* [  3.14 -   4.11] crypto: Reduce preempt disabled regions, more algos{C::performance::preempt::crypto: Reduce preempt disabled regions, more algos}
   + [[file:3.14/crypto-Reduce-preempt-disabled-regions-more-algos.patch][3.14]]
     [[file:3.18/crypto-Reduce-preempt-disabled-regions-more-algos.patch][3.18]]
     [[file:4.0/crypto-Reduce-preempt-disabled-regions-more-algos.patch][4.0]]
@@ -8616,7 +8616,7 @@ of ftrace}
     [[file:4.8/crypto-Reduce-preempt-disabled-regions-more-algos.patch][4.8]]
     [[file:4.9/crypto-Reduce-preempt-disabled-regions-more-algos.patch][4.9]]
     [[file:4.11/crypto-Reduce-preempt-disabled-regions-more-algos.patch][4.11]]
-* [  3.14 -   4.11] net: sched: Use msleep() instead of yield()
+* [  3.14 -   4.11] net: sched: Use msleep() instead of yield(){C::bug::deadlock::deadlock::semantics::sched: Use msleep() instead of yield()}
   + [[file:3.14/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][3.14]]
     [[file:3.18/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][3.18]]
     [[file:4.0/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.0]]
@@ -8626,7 +8626,7 @@ of ftrace}
     [[file:4.8/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.8]]
     [[file:4.9/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.9]]
     [[file:4.11/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.11]]
-* [  3.14 -   4.11] rcu: Eliminate softirq processing from rcutree
+* [  3.14 -   4.11] rcu: Eliminate softirq processing from rcutree{C::performance::softirq::rcu: Eliminate softirq processing from rcutree}
   + [[file:3.14/rcu-Eliminate-softirq-processing-from-rcutree.patch][3.14]]
   m [[file:3.18/rcu-Eliminate-softirq-processing-from-rcutree.patch][3.18]]
   M [[file:4.0/rcu-Eliminate-softirq-processing-from-rcutree.patch][4.0]]
@@ -8636,7 +8636,7 @@ of ftrace}
     [[file:4.8/rcu-Eliminate-softirq-processing-from-rcutree.patch][4.8]]
     [[file:4.9/rcu-Eliminate-softirq-processing-from-rcutree.patch][4.9]]
   M [[file:4.11/rcu-Eliminate-softirq-processing-from-rcutree.patch][4.11]]
-* [  3.14 -   4.11] percpu_ida: Use local locks
+* [  3.14 -   4.11] percpu_ida: Use local locks{C::bug::data_err::irq::irq::percpu_ida: Use local locks}
   + [[file:3.14/percpu_ida-use-locklocks.patch][3.14]]
     [[file:3.18/percpu_ida-use-locklocks.patch][3.18]]
     [[file:4.0/percpu_ida-use-locklocks.patch][4.0]]
@@ -8646,7 +8646,7 @@ of ftrace}
     [[file:4.8/percpu_ida-use-locklocks.patch][4.8]]
     [[file:4.9/percpu_ida-use-locklocks.patch][4.9]]
     [[file:4.11/percpu_ida-use-locklocks.patch][4.11]]
-* [  3.14 -   4.11] rcu: make RCU_BOOST default on RT
+* [  3.14 -   4.11] rcu: make RCU_BOOST default on RT{C::feature::rtsupport::rcu: make RCU_BOOST default on RT}
   + [[file:3.14/rcu-make-RCU_BOOST-default-on-RT.patch][3.14]]
     [[file:3.18/rcu-make-RCU_BOOST-default-on-RT.patch][3.18]]
     [[file:4.0/rcu-make-RCU_BOOST-default-on-RT.patch][4.0]]
@@ -8656,8 +8656,8 @@ of ftrace}
     [[file:4.8/rcu-make-RCU_BOOST-default-on-RT.patch][4.8]]
     [[file:4.9/rcu-make-RCU_BOOST-default-on-RT.patch][4.9]]
     [[file:4.11/rcu-make-RCU_BOOST-default-on-RT.patch][4.11]]
-* [  3.18         ] disable preempt lazy on x86-64 {C::bug::compile::config_err::config::disable preempt lazy}
-  + [[file:3.18/disable-preempt-lazy-on-x86-64.patch][3.18]] {MOD::arch/x86}
+* [  3.18         ] disable preempt lazy on x86-64
+  + [[file:3.18/disable-preempt-lazy-on-x86-64.patch][3.18]]
   - 4.0
 * [  3.18 -    4.0] Revert "timers: do not raise softirq unconditionally"{C::bug::softirq::time::softirq::revert hrtimer}
   + [[file:3.18/Revert-timers-do-not-raise-softirq-unconditionally.patch][3.18]] {MOD::include/linux,kernel/time}
