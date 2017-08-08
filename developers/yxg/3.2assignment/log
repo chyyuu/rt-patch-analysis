@@ -1,0 +1,144 @@
+##patch types
+[{'performance': 38, 'maintain': 93, 'bug': 69, 'feature': 173}, 
+{'performance': 14, 'maintain': 32, 'feature': 43, 'bug': 29}, 
+{'performance': 17, 'maintain': 22, 'feature': 53, 'bug': 32}, 
+{'performance': 2, 'maintain': 4, 'feature': 19, 'bug': 21}, 
+{'performance': 13, 'maintain': 11, 'feature': 25, 'bug': 43}, 
+{'performance': 4, 'maintain': 8, 'feature': 41, 'bug': 38}, 
+{'performance': 10, 'maintain': 31, 'feature': 148, 'bug': 27}, 
+{'performance': 3, 'maintain': 6, 'feature': 38, 'bug': 29}, 
+{'performance': 1, 'maintain': 1, 'feature': 10, 'bug': 7}, 
+{'performance': 1, 'maintain': 1, 'feature': 16, 'bug': 12}, 
+{'performance': 13, 'maintain': 3, 'feature': 16, 'bug': 19}, 
+{'performance': 5, 'maintain': 1, 'feature': 4, 'bug': 17}, 
+{'performance': 3, 'maintain': 1, 'bug': 14, 'feature': 3}, 
+{'performance': 7, 'maintain': 10, 'bug': 24, 'feature': 3}, 
+{'performance': 4, 'maintain': 1, 'feature': 7, 'bug': 7}, 
+{'performance': 6, 'maintain': 6, 'bug': 20, 'feature': 15}, 
+{'performance': 2, 'maintain': 1, 'feature': 5, 'bug': 2}, 
+{'performance': 1, 'maintain': 2, 'feature': 4, 'bug': 9}, 
+{'performance': 7, 'maintain': 5, 'feature': 10, 'bug': 19}, 
+{'performance': 2, 'maintain': 2, 'bug': 9, 'feature': 9}, 
+{'maintain': 4, 'bug': 7, 'feature': 6}, 
+{'performance': 3, 'maintain': 8, 'bug': 23, 'feature': 80}]
+
+##detailed bug_type without 'other'
+[{'config_err': 4, 'err_var': 2, 'compiling_err': 10, 'hardware': 9, 'preempt': 7, 'migration': 2, 'overflow': 1, 'semantics': 4, 'uninit_var': 3, 'softirq': 3, 'livelock': 1, 'irq': 5, 'err_access': 2, 'typo_var': 2, 'time': 2, 'deadlock': 3, 'atomicity': 2, 'order': 7}, 
+{'resource_leak': 1, 'livelock': 1, 'irq': 4, 'deadlock': 2, 'compiling_err': 5, 'preempt': 1, 'migration': 2, 'time': 3, 'uninit_var': 1, 'atomicity': 3, 'semantics': 6}, 
+{'irq': 5, 'err_var': 1, 'compiling_err': 9, 'hardware': 1, 'preempt': 2, 'migration': 1, 'time': 4, 'deadlock': 1, 'atomicity': 1, 'order': 2, 'semantics': 5}, 
+{'sched': 1, 'compiling_err': 2, 'preempt': 2, 'migration': 2, 'time': 1, 'overflow': 1, 'deadlock': 6, 'atomicity': 1, 'order': 3, 'semantics': 2}, 
+{'sched': 1, 'irq': 5, 'compiling_err': 10, 'hardware': 2, 'preempt': 3, 'migration': 1, 'time': 1, 'deadlock': 1, 'atomicity': 9, 'semantics': 10}, 
+{'uninit_var': 1, 'sched': 1, 'irq': 7, 'compiling_err': 4, 'hardware': 1, 'preempt': 2, 'time': 2, 'overflow': 1, 'deadlock': 1, 'atomicity': 8, 'semantics': 10}, 
+{'resource_leak': 1, 'livelock': 1, 'typo_var': 2, 'irq': 8, 'compiling_err': 2, 'hardware': 2, 'preempt': 2, 'time': 1, 'deadlock': 3, 'atomicity': 1, 'semantics': 3, 'uninit_var': 1}, 
+{'deadlock': 3, 'config_err': 1, 'irq': 2, 'err_var': 1, 'compiling_err': 7, 'hardware': 3, 'preempt': 2, 'migration': 2, 'time': 1, 'uninit_var': 1, 'atomicity': 3, 'semantics': 3}, 
+{'preempt': 3, 'deadlock': 2, 'compiling_err': 1, 'livelock': 1}, 
+{'preempt': 1, 'deadlock': 3, 'irq': 3, 'uninit_var': 1, 'atomicity': 2, 'semantics': 1, 'compiling_err': 1}, 
+{'sched': 4, 'livelock': 1, 'irq': 3, 'err_var': 1, 'hardware': 1, 'preempt': 1, 'deadlock': 4, 'order': 1, 'semantics': 3}, 
+{'hardware': 4, 'livelock': 1, 'irq': 1, 'deadlock': 1, 'atomicity': 2, 'semantics': 5, 'compiling_err': 3}, 
+{'irq': 3, 'deadlock': 4, 'order': 1, 'semantics': 3, 'compiling_err': 3}, 
+{'sched': 2, 'livelock': 2, 'irq': 3, 'time': 2, 'deadlock': 9, 'atomicity': 2, 'order': 1, 'semantics': 3}, 
+{'deadlock': 3, 'migration': 3, 'time': 1}, 
+{'livelock': 1, 'err_var': 2, 'err_access': 1, 'compiling_err': 2, 'irq': 1, 'deadlock': 10, 'atomicity': 2, 'semantics': 1}, 
+{'irq': 1, 'compiling_err': 1}, 
+{'uninit_var': 1, 'softirq': 1, 'irq': 1, 'deadlock': 1, 'semantics': 1, 'compiling_err': 4}, 
+{'softirq': 1, 'config_err': 1, 'irq': 4, 'err_var': 1, 'compiling_err': 1, 'preempt': 1, 'migration': 1, 'deadlock': 5, 'atomicity': 3, 'semantics': 1}, 
+{'sched': 1, 'livelock': 1, 'atomicity': 1, 'uninit_var': 1, 'err_var': 1, 'semantics': 2, 'compiling_err': 2}, 
+{'preempt': 1, 'irq': 1, 'deadlock': 2, 'err_var': 1, 'semantics': 1, 'compiling_err': 1}, 
+{'softirq': 1, 'na': 1, 'err_var': 1, 'compiling_err': 1, 'preempt': 1, 'time': 1, 'deadlock': 3, 'atomicity': 3, 'order': 1, 'semantics': 10}]
+
+##detailed bug_type with 'other'
+[('compiling_err', 10), ('hardware', 9), ('preempt', 7), ('order', 7), ('irq', 5), ('other', 31)]
+[('semantics', 6), ('compiling_err', 5), ('irq', 4), ('time', 3), ('atomicity', 3), ('other', 8)]
+[('compiling_err', 9), ('irq', 5), ('semantics', 5), ('time', 4), ('preempt', 2), ('other', 7)]
+[('deadlock', 6), ('order', 3), ('compiling_err', 2), ('preempt', 2), ('migration', 2), ('other', 6)]
+[('compiling_err', 10), ('semantics', 10), ('atomicity', 9), ('irq', 5), ('preempt', 3), ('other', 6)]
+[('semantics', 10), ('atomicity', 8), ('irq', 7), ('compiling_err', 4), ('preempt', 2), ('other', 7)]
+[('irq', 8), ('deadlock', 3), ('semantics', 3), ('typo_var', 2), ('compiling_err', 2), ('other', 9)]
+[('compiling_err', 7), ('deadlock', 3), ('hardware', 3), ('atomicity', 3), ('semantics', 3), ('other', 10)]
+[('preempt', 3), ('deadlock', 2), ('compiling_err', 1), ('livelock', 1), ('other', 0)]
+[('deadlock', 3), ('irq', 3), ('atomicity', 2), ('preempt', 1), ('uninit_var', 1), ('other', 2)]
+[('sched', 4), ('deadlock', 4), ('irq', 3), ('semantics', 3), ('livelock', 1), ('other', 4)]
+[('semantics', 5), ('hardware', 4), ('compiling_err', 3), ('atomicity', 2), ('livelock', 1), ('other', 2)]
+[('deadlock', 4), ('irq', 3), ('semantics', 3), ('compiling_err', 3), ('order', 1), ('other', 0)]
+[('deadlock', 9), ('irq', 3), ('semantics', 3), ('sched', 2), ('livelock', 2), ('other', 5)]
+[('deadlock', 3), ('migration', 3), ('time', 1), ('other', 0)]
+[('deadlock', 10), ('err_var', 2), ('compiling_err', 2), ('atomicity', 2), ('livelock', 1), ('other', 3)]
+[('irq', 1), ('compiling_err', 1), ('other', 0)]
+[('compiling_err', 4), ('uninit_var', 1), ('softirq', 1), ('irq', 1), ('deadlock', 1), ('other', 1)]
+[('deadlock', 5), ('irq', 4), ('atomicity', 3), ('softirq', 1), ('config_err', 1), ('other', 5)]
+[('semantics', 2), ('compiling_err', 2), ('sched', 1), ('livelock', 1), ('atomicity', 1), ('other', 2)]
+[('deadlock', 2), ('preempt', 1), ('irq', 1), ('err_var', 1), ('semantics', 1), ('other', 1)]
+[('semantics', 10), ('deadlock', 3), ('atomicity', 3), ('softirq', 1), ('na', 1), ('other', 5)]
+
+##bug in sequence of (semantics, concurrency, memory, err_code)
+[[32, 13, 10, 14], 
+[16, 6, 2, 5], 
+[18, 4, 1, 9], 
+[8, 10, 1, 2], 
+[23, 10, 0, 10], 
+[23, 9, 2, 4], 
+[16, 5, 4, 2], 
+[13, 6, 2, 8], 
+[3, 3, 0, 1], 
+[5, 5, 1, 1], 
+[12, 6, 1, 0], 
+[10, 4, 0, 3], 
+[6, 5, 0, 3], 
+[10, 14, 0, 0], 
+[4, 3, 0, 0], 
+[2, 13, 3, 2], 
+[1, 0, 0, 1], 
+[3, 1, 1, 4], 
+[8, 8, 1, 2], 
+[3, 2, 2, 2], 
+[3, 2, 1, 1], 
+[14, 7, 1, 1]]
+
+##feature
+[('rtsupport', 79), ('debuginfo', 38), ('timer', 9), ('hardware', 7), ('check', 7), ('other', 33)]
+[('rtsupport', 18), ('debuginfo', 6), ('timer', 6), ('statistics', 4), ('mm', 3), ('other', 6)]
+[('sched', 21), ('debuginfo', 16), ('rtsupport', 12), ('mm', 1), ('statistics', 1), ('other', 2)]
+[('debuginfo', 8), ('sched', 3), ('timer', 3), ('statistics', 2), ('rtsupport', 2), ('other', 1)]
+[('debuginfo', 10), ('rtsupport', 10), ('testcase', 1), ('hardware', 1), ('statistics', 1), ('other', 2)]
+[('rtsupport', 32), ('debuginfo', 5), ('hardware', 1), ('mm', 1), ('other', 1), ('other', 1)]
+[('rtsupport', 115), ('sched', 9), ('debuginfo', 5), ('mm', 5), ('capability', 4), ('other', 10)]
+[('rtsupport', 23), ('sched', 10), ('debuginfo', 4), ('hotplug', 1), ('other', 0)]
+[('rtsupport', 10), ('other', 0)]
+[('rtsupport', 13), ('debuginfo', 1), ('mm', 1), ('sched', 1), ('other', 0)]
+[('rtsupport', 9), ('timer', 2), ('mm', 2), ('hrtimer', 1), ('sched', 1), ('other', 1)]
+[('rtsupport', 2), ('net', 1), ('hotplug', 1), ('other', 0)]
+[('rtsupport', 3), ('other', 0)]
+[('rtsupport', 3), ('other', 0)]
+[('rtsupport', 6), ('debuginfo', 1), ('other', 0)]
+[('rtsupport', 9), ('arch', 3), ('statistics', 1), ('check', 1), ('timer', 1), ('other', 0)]
+[('lockless', 3), ('debuginfo', 1), ('rtsupport', 1), ('other', 0)]
+[('hardware', 1), ('arch', 1), ('check', 1), ('lockless', 1), ('other', 0)]
+[('sched', 2), ('debuginfo', 2), ('check', 2), ('rtsupport', 2), ('hardware', 1), ('other', 1)]
+[('rtsupport', 5), ('debuginfo', 3), ('timer', 1), ('other', 0)]
+[('rtsupport', 5), ('sched', 1), ('other', 0)]
+[('hotplug', 45), ('check', 16), ('rtsupport', 15), ('sched', 2), ('other', 1), ('other', 1)]
+
+
+## performance
+[('preempt', 11), ('smallsize', 5), ('mutex', 5), ('hrtimer', 3), ('softirq', 3), ('other', 11)]
+[('mutex', 6), ('smallsize', 2), ('irq', 2), ('preempt', 1), ('idle', 1), ('other', 2)]
+[('smallsize', 9), ('preempt', 2), ('irq', 2), ('cache', 2), ('migration', 1), ('other', 1)]
+[('irq', 1), ('cache', 1), ('other', 0)]
+[('smallsize', 5), ('mutex', 5), ('hrtimer', 2), ('migration', 1), ('other', 0)]
+[('irq', 2), ('smallsize', 1), ('mutex', 1), ('other', 0)]
+[('mutex', 4), ('irq', 2), ('preempt', 2), ('smallsize', 1), ('migration', 1), ('other', 0)]
+[('preempt', 3), ('other', 0)]
+[('irq', 1), ('other', 0)]
+[('preempt', 1), ('other', 0)]
+[('mutex', 9), ('irq', 2), ('preempt', 1), ('smallsize', 1), ('other', 0)]
+[('mutex', 4), ('preempt', 1), ('other', 0)]
+[('irq', 1), ('preempt', 1), ('mutex', 1), ('other', 0)]
+[('preempt', 2), ('smallsize', 1), ('mutex', 1), ('softirq', 1), ('irq', 1), ('other', 1)]
+[('preempt', 3), ('mutex', 1), ('other', 0)]
+[('preempt', 3), ('hardware', 1), ('irq', 1), ('hrtimer', 1), ('other', 0)]
+[('mm', 1), ('mutex', 1), ('other', 0)]
+[('preempt', 1), ('other', 0)]
+[('preempt', 3), ('smallsize', 3), ('irq', 1), ('other', 0)]
+[('preempt', 2), ('other', 0)]
+[('other', 0)]
+[('smallsize', 2), ('config', 1), ('other', 0)]
