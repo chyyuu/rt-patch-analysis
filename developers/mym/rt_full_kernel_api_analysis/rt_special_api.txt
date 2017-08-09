@@ -1,0 +1,23 @@
+
+以下函数在vninlla kernel里面都不存在
+local_irq_disable/enable_nort
+
+local_irq_disable/enable_rt
+
+local_irq_save/restore_nort
+
+local_irq_save/restore_rt
+
+local_lock/unlock[_irq]
+
+cpu_chill
+
+
+get/put_cpu_light
+
+migrate_disable/enable
+
+rtspin_lock/unlock__no_mg
+
+rt_spin_lock__no_mg
+rt_spin_unlock__no_mg

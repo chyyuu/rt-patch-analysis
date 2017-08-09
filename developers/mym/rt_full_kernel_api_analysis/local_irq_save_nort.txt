@@ -1,0 +1,65 @@
+
+
+local_irq_save_nort/local_irq_restore_nort
+变成了local_save_flags(flags),仅仅是当当前的EFLGS寄存器的值放入到了flags变量里面。
+
+local_irq_restore_nort(flags) 
+变成了 (void)(flags) 
+也就是donothing，并没有回复EFLAGS寄存器的内容。
+
+
+
+ 
+local_irq_save_nort 
+这个函数作用只是将CPU EFLAGS保存到一个变量里面。
+并没有再去关闭本地中断。
+===================================================
+#define local_irq_save_nort(flags) local_save_flags(flags) 
+ 
+
+#define local_save_flags(flags) raw_local_save_flags(flags)
+
+#define raw_local_save_flags(flags) do { typecheck(unsigned long, flags); flags = arch_local_save_flags(); } while (0)
+
+
+# 69 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/irqflags.h"
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) unsigned long arch_local_save_flags(void)
+{
+ return native_save_fl();
+}
+
+
+static inline __attribute__((no_instrument_function)) unsigned long native_save_fl(void)
+{
+ unsigned long flags;
+ asm volatile("# __raw_save_flags\n\t"
+       "pushf ; pop %0"
+       : "=rm" (flags)
+       :
+       : "memory");
+
+ return flags;
+}
+
+ 
+local_irq_save_nort(*flags); 
+最终展开为
+==============================
+do { ({ unsigned long __dummy; typeof(*flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); *flags = arch_local_save_flags(); } while (0); 
+
+
+local_irq_restore_nort(*flags);
+=====================
+ (void)(*flags);
+
+
+使用举例：
+==========================
+ grep -w  -E  "local_irq_save_nort|local_irq_restore_nort" ./* -Rn
+./kernel/signal.c:1323:         local_irq_save_nort(*flags);
+./kernel/signal.c:1328:                 local_irq_restore_nort(*flags);
+./kernel/signal.c:1349:         local_irq_restore_nort(*flags);
+
+ 
+ make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3 ./kernel/signal.i
+ 

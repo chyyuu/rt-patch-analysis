@@ -1,0 +1,360 @@
+
+
+migrate_disable
+当前进程只能在其现在运行的CPU上面运行，因此是nomigrate=y
+应该是可以执行sleep/schedule操作的。
+
+问题：
+migrate_disable和cpu affinity又有什么区别呢？
+他们是不是会被子进程所继承？
+
+
+
+
+migrate_enable
+
+原始定义
+./kernel/sched/core.c:7569
+==================================================
+#if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_SMP)
+
+void migrate_disable(void)
+{
+        struct task_struct *p = current;
+
+        if (in_atomic() || irqs_disabled()) {
+#ifdef CONFIG_SCHED_DEBUG
+                p->migrate_disable_atomic++;
+#endif
+           //直接返回。
+                return;
+        }
+#ifdef CONFIG_SCHED_DEBUG
+        if (unlikely(p->migrate_disable_atomic)) {
+                tracing_off();
+                WARN_ON_ONCE(1);
+        }
+#endif
+
+        if (p->migrate_disable) {
+			//p->migrate_disable不为0，则表示已经处于不可迁移状态
+			//此时让p->migrate_disable++; 返回
+                p->migrate_disable++;
+                return;
+        }
+
+        /* get_online_cpus(); */
+
+		//如果p->migrate_disable==0 表示处于可以迁移状态
+        preempt_disable();
+        preempt_lazy_disable();
+        pin_current_cpu();
+		//让当前CPU不能被 offline ,Prevent the current cpu from being unplugged
+		
+        p->migrate_disable = 1;
+		//将p->migrate_disable = 1;
+
+        p->cpus_ptr = cpumask_of(smp_processor_id());		//cpumask_of根据处理器编号cpu，将处理器位图的相应位置置为1(其它位为0)
+        p->nr_cpus_allowed = 1;
+        //只允许在一个CPU上面运行。
+		//nr_cpus_allowed多核情况下，允许最多在几个核上运行。
+        preempt_enable();
+}
+EXPORT_SYMBOL(migrate_disable);
+
+
+
+./kernel/cpu.c:292:void pin_current_cpu(void)
+
+/**
+ * pin_current_cpu - Prevent the current cpu from being unplugged
+ *
+ * Lightweight version of get_online_cpus() to prevent cpu from being
+ * unplugged when code runs in a migration disabled region.
+ *
+ * Must be called with preemption disabled (preempt_count = 1)!
+ */
+void pin_current_cpu(void)
+{
+        struct hotplug_pcp *hp;
+        int force = 0;
+
+retry:
+        hp = this_cpu_ptr(&hotplug_pcp);
+
+        if (!hp->unplug || hp->refcount || force || preempt_count() > 1 ||
+            hp->unplug == current) {
+                hp->refcount++;
+                return;
+        }
+        if (hp->grab_lock) {
+                preempt_enable();
+                hotplug_lock(hp);
+                hotplug_unlock(hp);
+        } else {
+                preempt_enable();
+                /*
+                 * Try to push this task off of this CPU.
+                 */
+                if (!migrate_me()) {
+                        preempt_disable();
+                        hp = this_cpu_ptr(&hotplug_pcp);
+                        if (!hp->grab_lock) {
+                                /*
+                                 * Just let it continue it's already pinned
+                                 * or about to sleep.
+                                 */
+                                force = 1;
+                                goto retry;
+                        }
+                        preempt_enable();
+                }
+        }
+        preempt_disable();
+        goto retry;
+}
+
+
+
+
+void migrate_enable(void)
+{
+        struct task_struct *p = current;
+
+        if (in_atomic() || irqs_disabled()) {
+#ifdef CONFIG_SCHED_DEBUG
+                p->migrate_disable_atomic--;
+#endif
+                return;
+        }
+
+#ifdef CONFIG_SCHED_DEBUG
+        if (unlikely(p->migrate_disable_atomic)) {
+                tracing_off();
+                WARN_ON_ONCE(1);
+        }
+#endif
+
+        WARN_ON_ONCE(p->migrate_disable <= 0);
+        if (p->migrate_disable > 1) {
+                p->migrate_disable--;
+                return;
+        }
+
+        preempt_disable();
+
+        p->cpus_ptr = &p->cpus_mask;
+        p->nr_cpus_allowed = cpumask_weight(&p->cpus_mask);
+        p->migrate_disable = 0;
+
+        if (p->migrate_disable_update) {
+                struct rq *rq;
+                struct rq_flags rf;
+
+                rq = task_rq_lock(p, &rf);
+                update_rq_clock(rq);
+
+                __do_set_cpus_allowed_tail(p, &p->cpus_mask);
+                task_rq_unlock(rq, p, &rf);
+
+                p->migrate_disable_update = 0;
+
+                WARN_ON(smp_processor_id() != task_cpu(p));
+                if (!cpumask_test_cpu(task_cpu(p), &p->cpus_mask)) {
+                        const struct cpumask *cpu_valid_mask = cpu_active_mask;
+                        struct migration_arg arg;
+                        unsigned int dest_cpu;
+
+                        if (p->flags & PF_KTHREAD) {
+                                /*
+                                 * Kernel threads are allowed on online && !active CPUs
+                                 */
+                                cpu_valid_mask = cpu_online_mask;
+                        }
+                        dest_cpu = cpumask_any_and(cpu_valid_mask, &p->cpus_mask);
+                        arg.task = p;
+                        arg.dest_cpu = dest_cpu;
+
+                        unpin_current_cpu();
+                        preempt_lazy_enable();
+                        preempt_enable();
+                        stop_one_cpu(task_cpu(p), migration_cpu_stop, &arg);
+                        tlb_migrate_finish(p->mm);
+                        /* put_online_cpus(); */
+
+                        return;
+                }
+        }
+        unpin_current_cpu();
+		//使得此CPU可以offline 
+		
+        /* put_online_cpus(); */
+        preempt_lazy_enable();
+        preempt_enable();
+}
+EXPORT_SYMBOL(migrate_enable);
+
+
+
+
+
+
+最终展开结果：
+=============
+void migrate_disable(void)
+{
+ struct task_struct *p = get_current();
+
+ if ((preempt_count() != 0) || ({ unsigned long _flags; do { ({ unsigned long __dummy; typeof(_flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); _flags = arch_local_save_flags(); } while (0); ({ ({ unsigned long __dummy; typeof(_flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); arch_irqs_disabled_flags(_flags); }); })) {
+
+
+  
+  return;
+ }
+
+ if (p->migrate_disable) {
+  p->migrate_disable++;
+  return;
+ }
+
+ do { preempt_count_add(1); __asm__ __volatile__("": : :"memory"); } while (0);
+ do { do { (((struct thread_info *)get_current())->preempt_lazy_count) += (1); } while (0); __asm__ __volatile__("": : :"memory"); } while (0);
+ pin_current_cpu();
+ p->migrate_disable = 1;
+
+ p->cpus_ptr = (get_cpu_mask(debug_smp_processor_id()));
+ p->nr_cpus_allowed = 1;
+
+ do { __asm__ __volatile__("": : :"memory"); if (__builtin_expect(!!(({ preempt_count_sub(1); should_resched(0); })), 0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0);
+}
+
+
+void migrate_enable(void)
+{
+ struct task_struct *p = get_current();
+
+ if ((preempt_count() != 0) || ({ unsigned long _flags; do { ({ unsigned long __dummy; typeof(_flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); _flags = arch_local_save_flags(); } while (0); ({ ({ unsigned long __dummy; typeof(_flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); arch_irqs_disabled_flags(_flags); }); })) {
+
+
+
+  return;
+ }
+# 7623 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c"
+ ({ static bool __attribute__ ((__section__(".data.unlikely"))) __warned; int __ret_warn_once = !!(p->migrate_disable <= 0); if (__builtin_expect(!!(__ret_warn_once && !__warned), 0)) { __warned = true; ({ int __ret_warn_on = !!(1); if (__builtin_expect(!!(__ret_warn_on), 0)) warn_slowpath_null("/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c", 7623); __builtin_expect(!!(__ret_warn_on), 0); }); } __builtin_expect(!!(__ret_warn_once), 0); });
+ if (p->migrate_disable > 1) {
+  p->migrate_disable--;
+  return;
+ }
+
+ do { preempt_count_add(1); __asm__ __volatile__("": : :"memory"); } while (0);
+
+ p->cpus_ptr = &p->cpus_mask;
+ p->nr_cpus_allowed = cpumask_weight(&p->cpus_mask);
+ p->migrate_disable = 0;
+
+ 
+  if (p->migrate_disable_update) {
+  struct rq *rq;
+  struct rq_flags rf;
+
+  rq = task_rq_lock(p, &rf);
+  update_rq_clock(rq);
+
+  __do_set_cpus_allowed_tail(p, &p->cpus_mask);
+  task_rq_unlock(rq, p, &rf);
+
+  p->migrate_disable_update = 0;
+
+  ({ int __ret_warn_on = !!(debug_smp_processor_id() != task_cpu(p)); if (__builtin_expect(!!(__ret_warn_on), 0)) warn_slowpath_null("/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c", 7647); __builtin_expect(!!(__ret_warn_on), 0); });
+  if (!cpumask_test_cpu(task_cpu(p), &p->cpus_mask)) {
+   const struct cpumask *cpu_valid_mask = ((const struct cpumask *)&__cpu_active_mask);
+   struct migration_arg arg;
+   unsigned int dest_cpu;
+
+   if (p->flags & 0x00200000) {
+
+
+
+    cpu_valid_mask = ((const struct cpumask *)&__cpu_online_mask);
+   }
+   dest_cpu = cpumask_next_and(-1, ((cpu_valid_mask)), ((&p->cpus_mask)));
+   arg.task = p;
+   arg.dest_cpu = dest_cpu;
+
+   unpin_current_cpu();
+   do { do { (((struct thread_info *)get_current())->preempt_lazy_count) -= (1); } while (0); __asm__ __volatile__("": : :"memory"); do { if (should_resched(0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0); } while (0);
+   do { __asm__ __volatile__("": : :"memory"); if (__builtin_expect(!!(({ preempt_count_sub(1); should_resched(0); })), 0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0);
+   stop_one_cpu(task_cpu(p), migration_cpu_stop, &arg);
+   do {} while (0);
+
+
+   return;
+  }
+ }
+ unpin_current_cpu();
+
+ 
+  do { do { (((struct thread_info *)get_current())->preempt_lazy_count) -= (1); } while (0); __asm__ __volatile__("": : :"memory"); do { if (should_resched(0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0); } while (0);
+ do { __asm__ __volatile__("": : :"memory"); if (__builtin_expect(!!(({ preempt_count_sub(1); should_resched(0); })), 0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0);
+}
+
+
+
+
+
+使用示例：
+===================
+./kernel/sched/core.c:1108:     return p->migrate_disable;
+./kernel/sched/core.c:1180: * the CPU (with migrate_disable, affinity or NO_SETAFFINITY)
+./kernel/sched/core.c:7569:void migrate_disable(void)
+./kernel/sched/core.c:7586:     if (p->migrate_disable) {
+./kernel/sched/core.c:7587:             p->migrate_disable++;
+./kernel/sched/core.c:7596:     p->migrate_disable = 1;
+./kernel/sched/core.c:7603:EXPORT_SYMBOL(migrate_disable);
+./kernel/sched/core.c:7605:void migrate_enable(void)
+./kernel/sched/core.c:7623:     WARN_ON_ONCE(p->migrate_disable <= 0);
+./kernel/sched/core.c:7624:     if (p->migrate_disable > 1) {
+./kernel/sched/core.c:7625:             p->migrate_disable--;
+./kernel/sched/core.c:7633:     p->migrate_disable = 0;
+./kernel/sched/core.c:7678:EXPORT_SYMBOL(migrate_enable);
+
+
+
+./kernel/locking/rtmutex.c:991:         migrate_disable();
+./kernel/locking/rtmutex.c:1101:                                migrate_enable();
+./kernel/locking/rtmutex.c:1104:                                migrate_disable();
+./kernel/locking/rtmutex.c:1209:        migrate_enable();
+./kernel/locking/rtmutex.c:1246:        migrate_disable();
+./kernel/locking/rtmutex.c:1251:                migrate_enable();
+./kernel/locking/rtmutex.c:1263:                migrate_disable();
+./kernel/locking/rtmutex.c:1278:                migrate_disable();
+
+
+grep -w -E "migrate_disable|migrate_enable" ./* -Rn
+
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3 ./kernel/locking/rtmutex.i
+
+
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+/*
+ * preemptible spin_lock functions:
+ */
+static inline void rt_spin_lock_fastlock(struct rt_mutex *lock,
+                                         void  (*slowfn)(struct rt_mutex *lock,
+                                                         bool mg_off),
+                                         bool do_mig_dis)
+{
+        might_sleep_no_state_check();
+
+        if (do_mig_dis)
+                migrate_disable();
+
+        if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
+                return;
+        else
+                slowfn(lock, do_mig_dis);
+}
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3  ./kernel/sched/core.i
