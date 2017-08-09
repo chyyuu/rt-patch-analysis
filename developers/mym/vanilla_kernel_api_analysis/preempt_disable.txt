@@ -1,0 +1,9 @@
+preempt_disable
+
+make defconfig
+会使得CONFIG_PREEMPT_VOLUNTORY=y
+CONFIG_PREEMPT is not set 
+CONFIG_PREEMPT_COUNT is not set
+
+在PREEMPT_VOLUNTORY模式下面preempt_disable 操作为空。
+因为本身就是不可抢占的。 只是认为的在内核里面加入了一些资源的抢占点。

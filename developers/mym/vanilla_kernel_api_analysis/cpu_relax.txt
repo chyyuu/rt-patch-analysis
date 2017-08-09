@@ -1,0 +1,118 @@
+
+cpu_relax 被翻译成了pause指令。主要用来在spin_lock  spin的时候，减少CPU的能耗。
+
+为了解决这个问题，intel发明了pause指令。这个指令的本质功能：让加锁失败时cpu睡眠30个（about）clock，从而使得读操作的频率低很多。流水线重排的代价也会小很多。
+
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void cpu_relax(void)
+{
+ rep_nop();
+}
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void rep_nop(void)
+{
+ asm volatile("rep; nop" ::: "memory");
+}
+
+rep; nop 会被翻译成pause指令
+
+====================================
+
+./kernel/locking/rtmutex.c:631:         cpu_relax();
+./kernel/locking/mutex.c:453:           cpu_relax();
+
+
+
+/*
+ * Look out! "owner" is an entirely speculative pointer access and not
+ * reliable.
+ *
+ * "noinline" so that this function shows up on perf profiles.
+ */
+static noinline
+ */
+static noinline
+bool mutex_spin_on_owner(struct mutex *lock, struct task_struct *owner,
+                         struct ww_acquire_ctx *ww_ctx, struct mutex_waiter *waiter)
+{       
+        bool ret = true;
+        
+        rcu_read_lock();
+        while (__mutex_owner(lock) == owner) {
+                /*
+                 * Ensure we emit the owner->on_cpu, dereference _after_
+                 * checking lock->owner still matches owner. If that fails,
+                 * owner might point to freed memory. If it still matches,
+                 * the rcu_read_lock() ensures the memory stays valid.
+                 */
+                barrier();
+                
+                /*
+                 * Use vcpu_is_preempted to detect lock holder preemption issue.
+                 */
+                if (!owner->on_cpu || need_resched() ||
+                                vcpu_is_preempted(task_cpu(owner))) {
+                        ret = false;
+                        break;
+                }
+                
+                if (ww_ctx && !ww_mutex_spin_on_owner(lock, ww_ctx, waiter)) {
+                        ret = false;
+                        break;
+                }
+                
+                cpu_relax();
+        }
+        rcu_read_unlock();
+        
+        return ret;
+}
+
+
+
+
+
+
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3  ./kernel/locking/mutex.s
+
+
+内核中的 rep_nop() 函数对 rep;nop 指令进行了包装：
+
+static inline void rep_nop(void)
+{
+__asm__ __volatile__("rep;nop": : :"memory");
+}
+
+
+使用 rep_nop() 函数在内核中亦有样例：
+============================================
+static void delay_tsc(unsigned long loops)
+{
+unsigned long bclock, now;
+
+preempt_disable();
+rdtscl(bclock);
+do {
+rep_nop();
+rdtscl(now);
+} while ((now-bclock) < loops);
+preempt_enable();
+}
+
+rep nop最后会被翻译为pause指令
+
+
+
+PAUSE指令提升了自旋等待循环（spin-wait loop）的性能。当执行一个循环等待时，Intel P4或Intel Xeon处理器会因为检测到一个可能的内存顺序违规（memory order violation）而在退出循环时使性能大幅下降。PAUSE指令给处理器提了个醒：这段代码序列是个循环等待。处理器利用这个提示可以避免在大多数情况下的内存顺序违规，这将大幅提升性能。因为这个原因，所以推荐在循环等待中使用PAUSE指令。
+ 
+PAUSE的另一个功能就是降低Intel P4在执行循环等待时的耗电量。Intel P4处理器在循环等待时会执行得非常快，这将导致处理器消耗大量的电力，而在循环中插入一个PAUSE指令会大幅降低处理器的电力消耗。
+ 
+PAUSE指令虽然是在Intel P4处理器开始出现的，但是它可以向后与所有的IA32处理器兼容。在早期的IA32 CPU中，PAUSE就像NOP指令。Intel P4和Intel Xeon处理器将PAUSE实现成一个预定义的延迟(pre-defined delay)。这种延迟是有限的，而且一些处理器可以为0。PAUSE指令不改变处理器的架构状态（也就是说，它实际上只是执行了一个延迟——并不做任何其他事情——的操作）。
+这个指令的操作在64位和非64位模式下是一致的。
+
+
+
+
+

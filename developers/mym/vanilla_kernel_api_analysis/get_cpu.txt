@@ -1,0 +1,56 @@
+
+get_cpu会关闭抢占，并且返回当前的CPU_ID
+
+put_cpu 会开启抢占
+
+不过在志愿抢占的情况下，preempt_disable和preempt_enable都是空操作
+
+
+#define get_cpu() ({ preempt_disable(); smp_processor_id(); })
+#define put_cpu() preempt_enable()
+
+
+#define smp_processor_id() raw_smp_processor_id()
+
+# 174 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/smp.h"
+#define raw_smp_processor_id() (this_cpu_read(cpu_number))
+
+
+
+
+使用：
+===============================
+./arch/x86/kernel/process.c:99:         struct tss_struct *tss = &per_cpu(cpu_tss, get_cpu());
+
+
+
+/*
+ * Free current thread data structures etc..
+ */
+void exit_thread(struct task_struct *tsk)
+{
+        struct thread_struct *t = &tsk->thread;
+        unsigned long *bp = t->io_bitmap_ptr;
+        struct fpu *fpu = &t->fpu;
+
+        if (bp) {
+                struct tss_struct *tss = &per_cpu(cpu_tss, get_cpu());
+
+                t->io_bitmap_ptr = NULL;
+                clear_thread_flag(TIF_IO_BITMAP);
+                /*
+                 * Careful, clear this in the TSS too:
+                 */
+                memset(tss->io_bitmap, 0xff, t->io_bitmap_max);
+                t->io_bitmap_max = 0;
+                put_cpu();
+                kfree(bp);
+        }
+
+        free_vm86(t);
+
+        fpu__drop(fpu);
+}
+
+
+

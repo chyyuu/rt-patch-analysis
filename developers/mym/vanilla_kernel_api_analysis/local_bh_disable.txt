@@ -1,0 +1,297 @@
+
+local_bh_disable
+禁用本地的bottom half 中断
+采用了preempt_count_add ，增加percpu变量__preempt_count的计数。
+
+
+
+local_bh_enable
+比较复杂：应该是减少__preempt_count的计数，经过一些条件判断会调用do_softirq
+
+
+local_bh_enable/disable是给进程上下文使用的，用于防止softirq 
+handler抢占local_bh_enable/disable之间的临界区的。
+
+
+需要特别注意的地方 __preempt_count 变量是一个percpu变量。
+
+
+======================================
+critical section
+uninterrupt
+nopreempt 
+nomigrate 
+nosfotirq    不能再被softirq打断
+sleep/sched  不能睡眠
+
+
+
+
+./crypto/cryptd.c:177:   * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
+./crypto/cryptd.c:180:  local_bh_disable();
+./crypto/cryptd.c:266:  local_bh_disable();
+./crypto/cryptd.c:470:  local_bh_disable();
+./crypto/cryptd.c:720:  local_bh_disable();
+./crypto/cryptd.c:974:  local_bh_disable();
+
+
+
+"软中断和tasklet"运行与软中断上下文，仍属于原子上下文的一种，而"工作队列"则运行与进程上下文。因此
+，软
+中断和tasklet处理函数中不能睡眠，而工作队列处理函数中允许睡眠。
+
+
+local_bh_disable() 和 local_bh_enable()是内核中用于禁止和使能"软中断和tasklet"底半部机制的函数。
+
+
+
+/* Called in workqueue context, do one real cryption work (via
+ * req->complete) and reschedule itself if there are more work to
+ * do. */
+static void cryptd_queue_worker(struct work_struct *work)
+{
+        struct cryptd_cpu_queue *cpu_queue;
+        struct crypto_async_request *req, *backlog;
+
+        cpu_queue = container_of(work, struct cryptd_cpu_queue, work);
+        /*
+         * Only handle one request at a time to avoid hogging crypto workqueue.
+         * preempt_disable/enable is used to prevent being preempted by
+         * cryptd_enqueue_request(). local_bh_disable/enable is used to prevent
+         * cryptd_enqueue_request() being accessed from software interrupts.
+         */
+        local_bh_disable();
+        preempt_disable();
+        backlog = crypto_get_backlog(&cpu_queue->queue);
+        req = crypto_dequeue_request(&cpu_queue->queue);
+        preempt_enable();
+        local_bh_enable();
+
+        if (!req)
+                return;
+
+        if (backlog)
+                backlog->complete(backlog, -EINPROGRESS);
+        req->complete(req, 0);
+
+        if (cpu_queue->queue.qlen)
+                queue_work(kcrypto_wq, &cpu_queue->work);
+}
+
+
+
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3 ./crypto/cryptd.i
+
+
+
+展开后的结果
+=============
+# 1 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/bottom_half.h" 1
+
+
+static inline __attribute__((no_instrument_function)) void local_bh_disable(void)
+{
+ __local_bh_disable_ip(({ __label__ __here; __here: (unsigned long)&&__here; }), (2 * (1UL << (0 + 8))));
+}
+
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+{
+ __preempt_count_add(cnt);
+ __asm__ __volatile__("": : :"memory");
+}
+
+
+
+
+
+static inline __attribute__((no_instrument_function)) void local_bh_enable_ip(unsigned long ip)
+{
+ __local_bh_enable_ip(ip, (2 * (1UL << (0 + 8))));
+}
+
+static inline __attribute__((no_instrument_function)) void local_bh_enable(void)
+{
+ __local_bh_enable_ip(({ __label__ __here; __here: (unsigned long)&&__here; }), (2 * (1UL << (0 + 8))));
+}
+
+
+
+展开过程
+===============
+
+
+static inline void local_bh_disable(void)
+{
+        __local_bh_disable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+}
+
+static inline void local_bh_enable(void)
+{
+        __local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+}
+
+
+
+./kernel/softirq.c:159:void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+./kernel/softirq.c:190:EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+
+__local_bh_enable_ip 这个函数的操作过程比较复杂
+需要考虑多种情况
+===========================
+void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+{
+        WARN_ON_ONCE(in_irq() || irqs_disabled());
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_disable();
+#endif
+        /*
+         * Are softirqs going to be turned on now:
+         */
+        if (softirq_count() == SOFTIRQ_DISABLE_OFFSET)
+                trace_softirqs_on(ip);
+        /*
+         * Keep preemption disabled until we are done with
+         * softirq processing:
+         */
+        preempt_count_sub(cnt - 1);
+
+        if (unlikely(!in_interrupt() && local_softirq_pending())) {
+                /*
+                 * Run softirq if any pending. And do it in its own stack
+                 * as we may be calling this deep in a task call stack already.
+                 */
+                do_softirq();
+        }
+
+        preempt_count_dec();
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_enable();
+#endif
+        preempt_check_resched();
+}
+EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+
+
+
+
+
+
+
+
+
+
+static __always_inline void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+{
+        preempt_count_add(cnt);
+        barrier();
+}
+
+#define preempt_count_add(val) __preempt_count_add(val)
+#define preempt_count_sub(val) __preempt_count_sub(val)
+
+
+# 54 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h"
+
+/*
+ * The various preempt_count add/sub methods
+ */
+
+static __always_inline void __preempt_count_add(int val)
+{
+        raw_cpu_add_4(__preempt_count, val);
+}
+
+static __always_inline void __preempt_count_sub(int val)
+{
+        raw_cpu_add_4(__preempt_count, -val);
+}
+
+
+
+
+
+有个PERCPU变量__preempt_count比较重要
+# 7 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h" 2 
+
+
+DECLARE_PER_CPU(int, __preempt_count);
+展开后的形式
+extern __attribute__((section(".data..percpu" ""))) __typeof__(int) __preempt_count;
+
+
+#define raw_cpu_add_4(pcp,val) percpu_add_op((pcp), val)
+
+
+ # 76 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/percpu.h"
+
+#define percpu_add_op(var,val) do { typedef typeof(var) pao_T__; const int pao_ID__ = (__builtin_constant_p(val) && ((val) == 1 || (val) == -1)) ? (int)(val) : 0      ; if (0) { pao_T__ pao_tmp__; pao_tmp__ = (val); (void)pao_tmp__; } switch (sizeof(var)) { case 1: if (pao_ID__ == 1) asm("incb "__percpu_arg(0) : "+m" (var)); e      lse if (pao_ID__ == -1) asm("decb "__percpu_arg(0) : "+m" (var)); else asm("addb %1, "__percpu_arg(0) : "+m" (var) : "qi" ((pao_T__)(val))); break; case 2: if (p      ao_ID__ == 1) asm("incw "__percpu_arg(0) : "+m" (var)); else if (pao_ID__ == -1) asm("decw "__percpu_arg(0) : "+m" (var)); else asm("addw %1, "__percpu_arg(0) :       "+m" (var) : "ri" ((pao_T__)(val))); break; case 4: if (pao_ID__ == 1) asm("incl "__percpu_arg(0) : "+m" (var)); else if (pao_ID__ == -1) asm("decl "__percpu_arg      (0) : "+m" (var)); else asm("addl %1, "__percpu_arg(0) : "+m" (var) : "ri" ((pao_T__)(val))); break; case 8: if (pao_ID__ == 1) asm("incq "__percpu_arg(0) : "+m"       (var)); else if (pao_ID__ == -1) asm("decq "__percpu_arg(0) : "+m" (var)); else asm("addq %1, "__percpu_arg(0) : "+m" (var) : "re" ((pao_T__)(val))); break; def      ault: __bad_percpu_size(); } } while (0)
+
+
+
+/*
+ * Generate a percpu add to memory instruction and optimize code
+ * if one is added or subtracted.
+ */
+#define percpu_add_op(var, val)                                         \
+do {                                                                    \
+        typedef typeof(var) pao_T__;                                    \
+        const int pao_ID__ = (__builtin_constant_p(val) &&              \
+                              ((val) == 1 || (val) == -1)) ?            \
+                                (int)(val) : 0;                         \
+        if (0) {                                                        \
+                pao_T__ pao_tmp__;                                      \
+                pao_tmp__ = (val);                                      \
+                (void)pao_tmp__;                                        \
+        }                                                               \
+        switch (sizeof(var)) {                                          \
+        case 1:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incb "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decb "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addb %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "qi" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 2:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incw "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decw "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addw %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "ri" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 4:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incl "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decl "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addl %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "ri" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 8:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incq "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decq "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addq %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "re" ((pao_T__)(val)));                   \
+                break;                                                  \
+        default: __bad_percpu_size();                                   \
+        }                                                               \
+} while (0)				
+				

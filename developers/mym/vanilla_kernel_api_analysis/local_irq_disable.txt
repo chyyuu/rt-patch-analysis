@@ -1,0 +1,153 @@
+
+
+
+local_irq_disable
+==================================
+的功能是屏蔽当前CPU上的所有中断，通过操作FLAGS的寄存器来屏蔽到达CPU上的中断，
+此时中断控制器中所有送往该CPU上的中断信号都将被忽略。 
+
+关键在于cli sti 
+
+
+critical section
+=======
+不能保护临界区里面的代码
+每个CPU上面都执行如下的代码
+{
+local_irq_disable
+critical section
+local_irq_enable
+}
+依然不能保护临界区。因为CPU0和CPU1都可以，以这种方式同时进入临界区的。
+
+
+uninterrupt
+==========
+可以保证本CPU上面的此进程是不会被外部中断打断的。
+
+nopreempt 
+=============
+可以保证本CPU上面的此进程不会被其他的进程抢占，但是此进程可以主动调用schedule来切换到其他进程执行
+
+
+nomigrate 
+=================
+不能保证本CPU上面的此进程被迁移到别的CPU上面去运行。
+进程的迁移是如何进行的？需要定时的loadbalance吗？还有IPI？
+
+
+nosfotirq  
+===================
+
+sleep/sched
+=======================
+关闭中断以后不能执行sleep和schedule
+
+
+
+调用情况：
+============
+./arch/x86/kernel/process.c:294:        local_irq_disable();
+./arch/x86/kernel/process.c:330:        local_irq_disable();
+./arch/x86/kernel/process.c:406:                local_irq_disable();
+
+./kernel/cpu.c:490:                     local_irq_disable();
+./kernel/sched/core.c:96:       local_irq_disable();
+./kernel/sched/core.c:1012:     local_irq_disable();
+./kernel/sched/core.c:3380:     local_irq_disable();
+
+
+
+./arch/x86/kernel/process.c:332:        local_irq_enable();
+./arch/x86/kernel/process.c:375:                        local_irq_enable();
+./arch/x86/kernel/process.c:378:                local_irq_enable();
+./arch/x86/kernel/process.c:408:                local_irq_enable();
+./arch/x86/kernel/apm_32.c:542:                 local_irq_enable();
+
+
+
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3  ./arch/x86/kernel/process.i
+
+还是要看看各个api在源码中哪些位置被调用了，也就是说源代码是如何使用这个API的。
+
+
+./arch/x86/kernel/process.c
+===================================
+void stop_this_cpu(void *dummy)
+{
+        local_irq_disable();
+        /*
+         * Remove this CPU:
+         */
+        set_cpu_online(smp_processor_id(), false);
+        disable_local_APIC();
+        mcheck_cpu_clear(this_cpu_ptr(&cpu_info));
+
+        for (;;)
+                halt();
+}
+
+
+./kernel/sched/core.c
+================================
+/*
+ * this_rq_lock - lock this runqueue and disable interrupts.
+ */
+static struct rq *this_rq_lock(void)
+        __acquires(rq->lock)
+{
+        struct rq *rq;
+
+        local_irq_disable();
+        rq = this_rq();
+        raw_spin_lock(&rq->lock);
+
+        return rq;
+}
+
+
+
+
+
+local_irq_disable();最终展开结果
+===============================================
+do { arch_local_irq_disable(); } while (0);
+ 
+# 120 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/irqflags.h"
+#define local_irq_enable() do { raw_local_irq_enable(); } while (0)
+#define local_irq_disable() do { raw_local_irq_disable(); } while (0)
+
+
+#define raw_local_irq_disable() arch_local_irq_disable()
+#define raw_local_irq_enable() arch_local_irq_enable()
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_disable(void)
+{
+ native_irq_disable();
+}
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_enable(void)
+{
+ native_irq_enable();
+}
+
+
+
+static inline __attribute__((no_instrument_function)) void native_irq_disable(void)
+{
+ asm volatile("cli": : :"memory");
+}
+
+static inline __attribute__((no_instrument_function)) void native_irq_enable(void)
+{
+ asm volatile("sti": : :"memory");
+}
+
+汇编语言指令cli和sti分别清除和设置eflags控制寄存器的IF标志。如果eflags寄存器的IF标志被清0，宏irqs_
+disabled()产生等于1的值；如果IF标志被设置，该宏也产生为1的值。
+ 
+
+
+
+

@@ -1,0 +1,444 @@
+mutex_lock
+可以保护临界区，并且可以睡眠，但是不能用于中断处理程序中。
+
+
+mutex_lock里面又使用到了spin_lock
+
+
+mutex_unlock
+
+互斥锁的内部数据结构：
+====================
+struct mutex {
+ atomic_long_t owner;
+ spinlock_t wait_lock;
+
+ struct optimistic_spin_queue osq;
+
+ struct list_head wait_list;
+};
+
+
+//在4.11.5内核里面没有发现有count成员
+The first field of the mutex structure is - count. Value of this field represents state of a 
+mutex. In a case when the value of the count field is 1, a mutex is in unlocked state. When the 
+value of the count field is zero, a mutex is in the locked state. Additionally value of the 
+count field may be negative. In this case a mutex is in the locked state and has possible 
+waiters.
+
+The next two fields of the mutex structure - wait_lock and wait_list are spinlock for the protection of a wait queue and list of waiters which represents this wait queue for a certain lock.
+
+
+Actually, when a process try to acquire a mutex, there three possible paths:+
+
+fastpath;
+midpath;
+slowpath.
+which may be taken, depending on the current state of the mutex. The first path or fastpath is the fastest as you may understand from its name. Everything is easy in this case. Nobody acquired a mutex, so the value of the count field of the mutex structure may be directly decremented. In a case of unlocking of a mutex, the algorithm is the same. A process just increments the value of the count field of the mutex structure. Of course, all of these operations must be atomic.
+
+Yes, this looks pretty easy. But what happens if a process wants to acquire a mutex which is already acquired by other process? In this case, the control will be transferred to the second path - midpath. The midpath or optimistic spinning tries to spin with already familiar for us MCS lock while the lock owner is running. This path will be executed only if there are no other processes ready to run that have higher priority. This path is called optimistic because the waiting task will not be sleep and rescheduled. This allows to avoid expensive context switch.
+
+乐观锁的意思是，会进行短暂的自旋，并且不会调度，减少上下文切换。
+
+In the last case, when the fastpath and midpath may not be executed, the last path - slowpath will be executed. This path acts like a semaphore lock. If the lock is unable to be acquired by a process, this process will be added to wait queue which is represented by the following:+
+
+struct mutex_waiter {
+        struct list_head        list;
+        struct task_struct      *task;
+#ifdef CONFIG_DEBUG_MUTEXES
+        void                    *magic;
+#endif
+};
+
+
+
+
+#define DEFINE_MUTEX(mutexname) struct mutex mutexname = __MUTEX_INITIALIZER(mutexname)
+
+
+#define __MUTEX_INITIALIZER(lockname) { .owner = ATOMIC_LONG_INIT(0) , .wait_lock = __SPIN_LOCK_UNLOCKED(lockname.wait_lock) , .wait_list = LIST_HEAD_INIT(lockname.wait_list) __DEBUG_MUTEX_INITIALIZER(lockname) __DEP_MAP_MUTEX_INITIALIZER(lockname) }
+
+
+
+
+grep -w  -E "mutex_lock|mutex_unlock" ./* -Rn
+
+
+./mm/slab.c:1084:       mutex_lock(&slab_mutex);
+./mm/slab.c:1086:       mutex_unlock(&slab_mutex);
+./mm/slab.c:1102:       mutex_lock(&slab_mutex);
+./mm/slab.c:1104:       mutex_unlock(&slab_mutex);
+./mm/slab.c:1173:               mutex_lock(&slab_mutex);
+./mm/slab.c:1175:               mutex_unlock(&slab_mutex);
+./mm/slab.c:1178:               mutex_lock(&slab_mutex);
+./mm/slab.c:1180:               mutex_unlock(&slab_mutex);
+./mm/slab.c:1322:       mutex_lock(&slab_mutex);
+./mm/slab.c:1326:       mutex_unlock(&slab_mutex);
+./mm/slab.c:4095:       mutex_unlock(&slab_mutex);
+./mm/slab.c:4202:       mutex_lock(&slab_mutex);
+./mm/slab.c:4217:       mutex_unlock(&slab_mutex);
+
+
+void __init kmem_cache_init_late(void)
+{
+        struct kmem_cache *cachep;
+
+        slab_state = UP;
+
+        /* 6) resize the head arrays to their final sizes */
+        mutex_lock(&slab_mutex);
+        list_for_each_entry(cachep, &slab_caches, list)
+                if (enable_cpucache(cachep, GFP_NOWAIT))
+                        BUG();
+        mutex_unlock(&slab_mutex);
+}
+		
+		
+./kernel/locking/mutex.c:216: * mutex_lock - acquire the mutex
+./kernel/locking/mutex.c:236:void __sched mutex_lock(struct mutex *lock)
+./kernel/locking/mutex.c:243:EXPORT_SYMBOL(mutex_lock);		
+
+ffffffff8193fbf0 T mutex_lock   /home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/locking/mutex.c:236
+
+
+
+/**
+ * mutex_lock - acquire the mutex
+ * @lock: the mutex to be acquired
+ *
+ * Lock the mutex exclusively for this task. If the mutex is not
+ * available right now, it will sleep until it can get it.
+ *
+ * The mutex must later on be released by the same task that
+ * acquired it. Recursive locking is not allowed. The task
+ * may not exit without first unlocking the mutex. Also, kernel
+ * memory where the mutex resides must not be freed with
+ * the mutex still locked. The mutex must first be initialized
+ * (or statically defined) before it can be locked. memset()-ing
+ * the mutex to 0 is not allowed.
+ *
+ * ( The CONFIG_DEBUG_MUTEXES .config option turns on debugging
+ *   checks that will enforce the restrictions and will also do
+ *   deadlock debugging. )
+ *
+ * This function is similar to (but not equivalent to) down().
+ */
+void __sched mutex_lock(struct mutex *lock)
+{
+        might_sleep();
+
+        if (!__mutex_trylock_fast(lock))
+                __mutex_lock_slowpath(lock);
+}
+EXPORT_SYMBOL(mutex_lock);
+
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3  ./kernel/locking/mutex.i
+
+
+void __attribute__((__section__(".sched.text"))) mutex_lock(struct mutex *lock)
+{
+ do { _cond_resched(); } while (0);
+
+ if (!__mutex_trylock_fast(lock))
+  __mutex_lock_slowpath(lock);
+}
+
+
+
+/*
+ * Lockdep annotations are contained to the slow paths for simplicity.
+ * There is nothing that would stop spreading the lockdep annotations outwards
+ * except more code.
+ */
+
+/*
+ * Optimistic trylock that only works in the uncontended case. Make sure to
+ * follow with a __mutex_trylock() before failing.
+ */
+static __always_inline bool __mutex_trylock_fast(struct mutex *lock)
+{
+        unsigned long curr = (unsigned long)current;
+
+        if (!atomic_long_cmpxchg_acquire(&lock->owner, 0UL, curr))
+                return true;
+
+        return false;
+}
+
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) bool __mutex_trylock_fast(struct mutex *lock)
+{
+ unsigned long curr = (unsigned long)get_current();
+
+ if (!(atomic64_cmpxchg((atomic64_t *)(&lock->owner), (0UL), (curr))))
+  return true;
+
+ return false;
+}
+
+
+
+#define current get_current()
+
+
+
+static __attribute__((noinline)) void __attribute__((__section__(".sched.text")))
+__mutex_lock_slowpath(struct mutex *lock)
+{
+ __mutex_lock(lock, 2, 0, ((void *)0), (unsigned long)__builtin_return_address(0));
+}
+
+
+static noinline void __sched
+__mutex_lock_slowpath(struct mutex *lock)
+{
+        __mutex_lock(lock, TASK_UNINTERRUPTIBLE, 0, NULL, _RET_IP_);
+}
+
+
+
+static int __sched
+__mutex_lock(struct mutex *lock, long state, unsigned int subclass,
+             struct lockdep_map *nest_lock, unsigned long ip)
+{
+        return __mutex_lock_common(lock, state, subclass, nest_lock, ip, NULL, false);
+}
+
+
+
+
+/*
+ * Lock a mutex (possibly interruptible), slowpath:
+ */
+static __always_inline int __sched
+__mutex_lock_common(struct mutex *lock, long state, unsigned int subclass,
+                    struct lockdep_map *nest_lock, unsigned long ip,
+                    struct ww_acquire_ctx *ww_ctx, const bool use_ww_ctx)
+{
+        struct mutex_waiter waiter;
+        bool first = false;
+        struct ww_mutex *ww;
+        int ret;
+
+        might_sleep();
+
+        ww = container_of(lock, struct ww_mutex, base);
+        if (use_ww_ctx && ww_ctx) {
+                if (unlikely(ww_ctx == READ_ONCE(ww->ctx)))
+                        return -EALREADY;
+        }
+
+        preempt_disable();
+        mutex_acquire_nest(&lock->dep_map, subclass, 0, nest_lock, ip);
+
+        if (__mutex_trylock(lock) ||
+            mutex_optimistic_spin(lock, ww_ctx, use_ww_ctx, NULL)) {
+                /* got the lock, yay! */
+                lock_acquired(&lock->dep_map, ip);
+                if (use_ww_ctx && ww_ctx)
+                        ww_mutex_set_context_fastpath(ww, ww_ctx);
+                preempt_enable();
+                return 0;
+        }
+
+        spin_lock(&lock->wait_lock);
+        /*
+         * After waiting to acquire the wait_lock, try again.
+         */
+        if (__mutex_trylock(lock)) {
+                if (use_ww_ctx && ww_ctx)
+                        __ww_mutex_wakeup_for_backoff(lock, ww_ctx);
+
+                goto skip_wait;
+        }
+
+        debug_mutex_lock_common(lock, &waiter);
+        debug_mutex_add_waiter(lock, &waiter, current);
+
+        lock_contended(&lock->dep_map, ip);
+
+        if (!use_ww_ctx) {
+                /* add waiting tasks to the end of the waitqueue (FIFO): */
+                list_add_tail(&waiter.list, &lock->wait_list);
+
+#ifdef CONFIG_DEBUG_MUTEXES
+                waiter.ww_ctx = MUTEX_POISON_WW_CTX;
+#endif
+        } else {
+                /* Add in stamp order, waking up waiters that must back off. */
+                ret = __ww_mutex_add_waiter(&waiter, lock, ww_ctx);
+                if (ret)
+                        goto err_early_backoff;
+
+                waiter.ww_ctx = ww_ctx;
+        }
+
+        waiter.task = current;
+
+        if (__mutex_waiter_is_first(lock, &waiter))
+                __mutex_set_flag(lock, MUTEX_FLAG_WAITERS);
+
+        set_current_state(state);
+        for (;;) {
+                /*
+                 * Once we hold wait_lock, we're serialized against
+                 * mutex_unlock() handing the lock off to us, do a trylock
+                 * before testing the error conditions to make sure we pick up
+                 * the handoff.
+                 */
+                if (__mutex_trylock(lock))
+                        goto acquired;
+
+                /*
+                 * Check for signals and wound conditions while holding
+                 * wait_lock. This ensures the lock cancellation is ordered
+                 * against mutex_unlock() and wake-ups do not go missing.
+                 */
+                if (unlikely(signal_pending_state(state, current))) {
+                        ret = -EINTR;
+                        goto err;
+                }
+
+                if (use_ww_ctx && ww_ctx && ww_ctx->acquired > 0) {
+                        ret = __ww_mutex_lock_check_stamp(lock, &waiter, ww_ctx);
+                        if (ret)
+                                goto err;
+                }
+
+                spin_unlock(&lock->wait_lock);
+                schedule_preempt_disabled();
+
+                /*
+                 * ww_mutex needs to always recheck its position since its waiter
+                 * list is not FIFO ordered.
+                 */
+                if ((use_ww_ctx && ww_ctx) || !first) {
+                        first = __mutex_waiter_is_first(lock, &waiter);
+                        if (first)
+                                __mutex_set_flag(lock, MUTEX_FLAG_HANDOFF);
+                }
+
+                set_current_state(state);
+                /*
+                 * Here we order against unlock; we must either see it change
+                 * state back to RUNNING and fall through the next schedule(),
+                 * or we must see its unlock and acquire.
+                 */
+                if (__mutex_trylock(lock) ||
+                    (first && mutex_optimistic_spin(lock, ww_ctx, use_ww_ctx, &waiter)))
+                        break;
+
+                spin_lock(&lock->wait_lock);
+        }
+        spin_lock(&lock->wait_lock);
+acquired:
+        __set_current_state(TASK_RUNNING);
+
+        mutex_remove_waiter(lock, &waiter, current);
+        if (likely(list_empty(&lock->wait_list)))
+                __mutex_clear_flag(lock, MUTEX_FLAGS);
+
+        debug_mutex_free_waiter(&waiter);
+
+skip_wait:
+        /* got the lock - cleanup and rejoice! */
+        lock_acquired(&lock->dep_map, ip);
+
+        if (use_ww_ctx && ww_ctx)
+                ww_mutex_set_context_slowpath(ww, ww_ctx);
+
+        spin_unlock(&lock->wait_lock);
+        preempt_enable();
+        return 0;
+
+err:
+        __set_current_state(TASK_RUNNING);
+        mutex_remove_waiter(lock, &waiter, current);
+err_early_backoff:
+        spin_unlock(&lock->wait_lock);
+        debug_mutex_free_waiter(&waiter);
+        mutex_release(&lock->dep_map, 1, ip);
+        preempt_enable();
+        return ret;
+}
+
+
+
+
+
+might_sleep
+这个函数根据代码实际的编译情况，和资料介绍的有很大的不符合，
+需要再仔细确认一下是什么原因？
+=================================
+#define might_sleep() do { might_resched(); } while (0)
+#define might_resched() _cond_resched()
+
+
+
+./kernel/sched/core.c:4946:int __sched _cond_resched(void)
+./kernel/sched/core.c:4954:EXPORT_SYMBOL(_cond_resched);
+
+如果一个函数是内联的一般情况下面，是在.h文件里面定义的。
+不是内联的，一般是在.c文件里面定义的。
+
+
+#ifndef CONFIG_PREEMPT
+int __sched _cond_resched(void)
+{
+        if (should_resched(0)) {
+                preempt_schedule_common();
+                return 1;
+        }
+        return 0;
+}
+EXPORT_SYMBOL(_cond_resched);
+#endif
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3 ./kernel/sched/core.i
+
+ffffffff81caaeca r __kstrtab__cond_resched      /home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c:5026
+
+static void __sched notrace preempt_schedule_common(void)
+{
+        do {
+                /*
+                 * Because the function tracer can trace preempt_count_sub()
+                 * and it also uses preempt_enable/disable_notrace(), if
+                 * NEED_RESCHED is set, the preempt_enable_notrace() called
+                 * by the function tracer will call this function again and
+                 * cause infinite recursion.
+                 *
+                 * Preemption must be disabled here before the function
+                 * tracer can trace. Break up preempt_disable() into two
+                 * calls. One to disable preemption without fear of being
+                 * traced. The other to still record the preemption latency,
+                 * which can also be traced by the function tracer.
+                 */
+                preempt_disable_notrace();
+                preempt_latency_start(1);
+                __schedule(true);
+                preempt_latency_stop(1);
+                preempt_enable_no_resched_notrace();
+
+                /*
+                 * Check again in case we missed a preemption opportunity
+                 * between schedule and now.
+                 */
+        } while (need_resched());
+}
+
+
+
+static void __attribute__((__section__(".sched.text"))) __attribute__((no_instrument_function)) preempt_schedule_common(void)
+{
+ do {
+# 3552 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c"
+  __asm__ __volatile__("": : :"memory");
+  preempt_latency_start(1);
+  __schedule(true);
+  preempt_latency_stop(1);
+  __asm__ __volatile__("": : :"memory");
+ } while (need_resched());
+}
