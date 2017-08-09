@@ -1,8 +1,7 @@
-
-kernel °æ±¾ v4.11.5
+kernel ç‰ˆæœ¬ v4.11.5
 config: make defconfig
 
-config ºó¹û£º
-CONFIG_PREEMPT_VOLUNTROY=y £¨DESKTOP ÀàÐÍ£©
+config åŽæžœï¼š
+CONFIG_PREEMPT_VOLUNTROY=y ï¼ˆDESKTOP ç±»åž‹ï¼‰
 CONFIG_PREEMPT is not set
 CONFIG_PREEMPT_COUNT is not set 
