@@ -132,3 +132,34 @@ mym:331
 yxg:342
 zzm:286
 ```
+
+
+## 2017.8.9 rt-questions
+```
+https://github.com/chyyuu/rt-patch-analysis/blob/master/developers/chy/rt-questions.txt
+
+yxg 
+Q1  3
+Q2  2
+Q3  4
+
+zzm
+Q4  2
+Q5  6
+Q12 1
+
+zw
+Q6  5
+Q7  2
+Q8  2
+
+mym
+Q9  7
+Q10 1
+Q11 1
+
+help info
+grep -w -E "migrate_disable|migrate_enable" ./* -Rn
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3 ./kernel/locking/rtmutex.i
+```
