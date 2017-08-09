@@ -1,0 +1,95 @@
+1 何时需要添加或取消preempt_disable/disable[_rt]
+2 何时需要把XXX替换为preempt_disable/disable[_rt]
+3 何时需要把preempt_enable替换为preempt_enable_nort
+
+1 何时需要添加或取消pmigration_disable/disable
+2 何时需要把XXX替换为migration_disable/disable
+
+1 何时需要添加或取消plocal_irq_disable/enable, local_irq_save/restore[_nort]
+2 何时需要把XXX替换为local_irq_disable/enable, local_irq_save/restore[_nort],
+3 何时需要把local_irq_save/restore替换为cpu_lock/unlock_irqsave/restore?
+4 何时需要把local_irq_disable/enable替换为local_lock/unlock_irq?
+
+1 何时需要添加init_swait_head|swait_event|swait_wake_all|swait_event_interruptible 
+2 何时需要把init_waitqueue_head|wait_event|wake_up_all|wait_event_interruptible替换为init_swait_head|swait_event|swait_wake_all|swait_event_interruptible 
+
+1 何时需要添加get/put_cpu_light
+2 何时需要把get/put_cpu替换为get/put_cpu_light
+3 何时需要把put_cpu_var 替换为get_cpu_light();&per_cpu();put_cpu_light();
+4 何时需要把get_cpu;per_cpu_ptr;put_cpu替换为get/put_cpu_light;per_cpu_ptr;spin_unlock;put_cpu_light PATCH: md: raid5: Make raid5_percpu handling RT aware
+5 何时需要把gut_cpu_var;put_cpu_var 替换为get_locked_var; put_locked_var OR  get_local_var;put_local_var
+6 如何理解 from PATCH: mm/swap: Convert to percpu locked
+-	lru_add_drain_cpu(get_cpu());
+-	put_cpu();
++	lru_add_drain_cpu(local_lock_cpu(swapvec_lock));
++	local_unlock_cpu(swapvec_lock);
+
+1 内核的哪些地方一定要把spin_lock/unlock[_irqsave/restore|irq]换成raw_spin_lock/unlock[_irqsave/restore|irq]，这里面的规律是什么？
+2 何时需要把spin_lock替换为spin_lock_irq
+3 何时需要把XXX替换为 spin_lock_irqsave/spin_unlock_irqrestore
+4 何时需要把XXX（如bit_spin_lock.etc.)替换为spin_lock
+5 何时需要把XXX（如 local_irq_save; bit_spin_lock()) 替换为bh_uptodate_lock_irqsave/bh_uptodate_unlock_irqrestore 其实是一种封装
+6  
+
+1 何时需要添加rcu_read_lock/unlock
+2 何时需要把XXX替换为rcu_read_lock/unlock  这里面有规律吗？
+
+
+1 何时需要添加或取消pmigration_disable/disable
+2 何时需要把XXX替换为migration_disable/disable
+
+1 local_lock/unlock与preempt_disable/enable, OR  local_irq_disable/enable如何相互替换？ 
+from PATCH idr: Use local lock instead of preempt enable/disable
+from PATCH mm/memcontrol: Replace local_irq_disable with local locks
+
+1 local_bh_enable与_local_bh_enable如何相互替换？ from PATCH genirq: Allow disabling of softirq processing in irq thread context
+
+1  何时需要把disable_irq替换为disable_irq_nosync  这里面有规律吗？
+
+1  何时需要把preempt_conditional_sti替换为conditional_sti_ist  这里面有规律吗？
+
+1 何时需要添加io_schedule()？
+
+1 何时需要把yield();替换为msleep(1);?
+
+1 seqlock 如何替换为 simple seqcounter and a rawlock？ PATCH vtime: Split lock and seqcount
+
+1 如何理解resched_softirq在rt v.s. nonrt下的区别？
++#ifndef CONFIG_PREEMPT_RT_FULL
+ extern int __cond_resched_softirq(void);
+ 
+ #define cond_resched_softirq() ({					\
+ 	___might_sleep(__FILE__, __LINE__, SOFTIRQ_DISABLE_OFFSET);	\
+ 	__cond_resched_softirq();					\
+ })
++#else
++# define cond_resched_softirq()		cond_resched()
++#endif
+
+1 如何理解 preempt-rt 对 hotplug的支持？为何cpu_down的重新实现？
++#ifdef CONFIG_PREEMPT_RT_FULL
++# define hotplug_lock()		rt_spin_lock(&cpu_hotplug.lock)
++# define hotplug_trylock()	rt_spin_trylock(&cpu_hotplug.lock)
++# define hotplug_unlock()	rt_spin_unlock(&cpu_hotplug.lock)
++#else
++# define hotplug_lock()		mutex_lock(&cpu_hotplug.lock)
++# define hotplug_trylock()	mutex_trylock(&cpu_hotplug.lock)
++# define hotplug_unlock()	mutex_unlock(&cpu_hotplug.lock)
++#endif
+
+
+
+1如何理解 lg_lock?
++#ifndef CONFIG_PREEMPT_RT_FULL
++# define lg_lock_ptr		arch_spinlock_t
++# define lg_do_lock(l)		arch_spin_lock(l)
++# define lg_do_unlock(l)	arch_spin_unlock(l)
++#else
++# define lg_lock_ptr		struct rt_mutex
++# define lg_do_lock(l)		__rt_spin_lock(l)
++# define lg_do_unlock(l)	__rt_spin_unlock(l)
++#endif
+
+
+
+
