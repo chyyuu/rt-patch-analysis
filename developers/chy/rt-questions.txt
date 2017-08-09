@@ -1,3 +1,8 @@
+
+目标：
+主要是要通过分析（feature中的rtsupport分类，performance分类，和相关文档/代码），找出一些规律，回答一些问题，目的是让开发者知道 1 移植/升级 preempt-rt 也许不是想象中的那么困难  2 在内核使用preempt-rt提供的api时，需要注意哪些事情，可以确保rt 或 提高 rt的性能。
+另外大家还需关注一个问题（下一阶段要考虑），为何对于整个kernel而言，对部分rt api的添加/删除/替换，只改了内核中一部分而不是全部的使用地方？这样是否意味着没改的地方在performance or 正确性上有bug？ 这是在完成这个阶段的分析理解后，在下一阶段：分析bug中，需要考虑的重要问题之一。
+
 1 何时需要添加或取消preempt_disable/disable[_rt]
 2 何时需要把XXX替换为preempt_disable/disable[_rt]
 3 何时需要把preempt_enable替换为preempt_enable_nort
