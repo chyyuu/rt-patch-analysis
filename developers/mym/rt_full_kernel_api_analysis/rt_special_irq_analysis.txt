@@ -1,0 +1,88 @@
+
+include/linux/irqflags.h
+============================
+
++/*
++ * local_irq* variants depending on RT/!RT
++ */
++#ifdef CONFIG_PREEMPT_RT_FULL
++# define local_irq_disable_nort()      do { } while (0)
++# define local_irq_enable_nort()       do { } while (0)
++# define local_irq_save_nort(flags)    local_save_flags(flags)
++# define local_irq_restore_nort(flags) (void)(flags)
++# define local_irq_disable_rt()                local_irq_disable()
++# define local_irq_enable_rt()         local_irq_enable()
++#else
++# define local_irq_disable_nort()      local_irq_disable()
++# define local_irq_enable_nort()       local_irq_enable()
++# define local_irq_save_nort(flags)    local_irq_save(flags)
++# define local_irq_restore_nort(flags) local_irq_restore(flags)
++# define local_irq_disable_rt()                do { } while (0)
++# define local_irq_enable_rt()         do { } while (0)
++#endif
++
+
+local_irq_disable_nort
+local_irq_disable_rt
+local_irq_save_nort
+
+
+local_irq_save_rt
+##这个符号不存在
+
+
+
+
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ grep -w  -E "local_irq_disable_nort|local_irq_enable_nort" ./*  -Rn
+./drivers/ide/ide-io.c:663:             local_irq_disable_nort();
+./drivers/ide/ide-taskfile.c:418:               local_irq_disable_nort();
+./include/linux/irqflags.h:159:# define local_irq_disable_nort()        do { } while (0)
+./include/linux/irqflags.h:160:# define local_irq_enable_nort() do { } while (0)
+./include/linux/irqflags.h:166:# define local_irq_disable_nort()        local_irq_disable()
+./include/linux/irqflags.h:167:# define local_irq_enable_nort() local_irq_enable()
+./include/linux/interrupt.h:202:# define local_irq_enable_in_hardirq()  local_irq_enable_nort()
+./sound/core/pcm_native.c:139:          local_irq_disable_nort();
+./sound/core/pcm_native.c:154:          local_irq_enable_nort();
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$
+
+
+./include/linux/irqflags.h
+====================================
+/*
+ * local_irq* variants depending on RT/!RT
+ */
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define local_irq_disable_nort()       do { } while (0)
+# define local_irq_enable_nort()        do { } while (0)
+# define local_irq_save_nort(flags)     local_save_flags(flags)
+# define local_irq_restore_nort(flags)  (void)(flags)
+# define local_irq_disable_rt()         local_irq_disable()
+# define local_irq_enable_rt()          local_irq_enable()
+#else
+# define local_irq_disable_nort()       local_irq_disable()
+# define local_irq_enable_nort()        local_irq_enable()
+# define local_irq_save_nort(flags)     local_irq_save(flags)
+# define local_irq_restore_nort(flags)  local_irq_restore(flags)
+# define local_irq_disable_rt()         do { } while (0)
+# define local_irq_enable_rt()          do { } while (0)
+#endif
+
+
+local_irq_disable_nort/local_irq_enable_nort
+在CONFIG_PREEMPT_RT_FULL下面变成了空操作。不会关闭本地中断。
+
+
+
+
+
+
+
+
+
+
+ 
+
+local_irq_disable_rt/local_irq_enable_rt
+依然表示关闭本地中断、打开本地中断
+# define local_irq_disable_rt()         local_irq_disable()
+# define local_irq_enable_rt()          local_irq_enable()

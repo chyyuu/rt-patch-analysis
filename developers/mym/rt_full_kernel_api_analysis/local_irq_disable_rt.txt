@@ -1,0 +1,6 @@
+local_irq_disable_rt/local_irq_enable_rt
+此两处宏定义并没有在任何代码中使用。
+
+
+# define local_irq_disable_rt()         local_irq_disable()
+# define local_irq_enable_rt()          local_irq_enable()
