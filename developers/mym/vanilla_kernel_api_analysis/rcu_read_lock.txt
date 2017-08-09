@@ -2,7 +2,9 @@
 在CONFIG_PREEMPT_COUNT is not set 
 CONFIG_PREEEMPT_VOLUNTORY=y
 的情况下，rcu_read_lock和rcu_read_unlock
-变成了memory barrier.
+变成了do nothing.
+
+也就是说RCU里面，读者不需要任何锁。对写者要求比较多。
 
 
 ===============================
