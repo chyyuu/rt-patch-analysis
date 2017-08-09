@@ -5,6 +5,8 @@ CONFIG_PREEEMPT_VOLUNTORY=y
 变成了do nothing.
 
 也就是说RCU里面，读者不需要任何锁。对写者要求比较多。
+参考资料：
+https://www.ibm.com/developerworks/cn/linux/l-rcu/
 
 
 ===============================
