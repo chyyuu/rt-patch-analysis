@@ -1,0 +1,1 @@
+find . -name "*.[chS]" -exec grep -H  '#ifdef.*\bCONFIG_PREEMPT' {} \; >/tmp/linux-preempt-rt-files.txt
