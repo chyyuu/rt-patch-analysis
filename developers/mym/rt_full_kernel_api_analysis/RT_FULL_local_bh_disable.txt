@@ -1,0 +1,47 @@
+
+RT_FULL_local_bh_disable
+==============================
+通过current->softirq_nestcnt计数来实现。
+并且利用了migrate_disable();为啥migrate_disable()可以关闭bottom half?
+
+
+
+static inline __attribute__((no_instrument_function)) void local_bh_disable(void)
+{
+ __local_bh_disable();
+}
+
+static inline __attribute__((no_instrument_function)) void local_bh_enable(void)
+{
+ __local_bh_enable();
+}
+
+./kernel/softirq.c:585:void __local_bh_disable(void)
+./kernel/softirq.c:590:EXPORT_SYMBOL(__local_bh_disable);
+
+void __local_bh_disable(void)
+{
+        if (++current->softirq_nestcnt == 1)
+                migrate_disable();
+		//从这里可以看出如果__local_bh_disable第一次被调用的时候，就migrate_disable
+		//以后再多次调用的时候，只是记录嵌套的深度，而不会再去调用migrate_disable
+}
+EXPORT_SYMBOL(__local_bh_disable);
+
+void __local_bh_enable(void)
+{
+        if (WARN_ON(current->softirq_nestcnt == 0))
+                return;
+
+        local_irq_disable();
+        if (current->softirq_nestcnt == 1 && current->softirqs_raised)
+                do_current_softirqs();
+				//如果嵌套深度为1，并且由softirq需要处理则处理？
+        local_irq_enable();
+
+        if (--current->softirq_nestcnt == 0)
+                migrate_enable();
+		//每次调用都会减少嵌套调用的计数，如果减1后为0，则开启迁移
+		
+}
+EXPORT_SYMBOL(__local_bh_enable);

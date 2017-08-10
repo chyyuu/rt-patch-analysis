@@ -1,0 +1,61 @@
+#define spin_lock_irqsave(lock,flags) do { typecheck(unsigned long, flags); flags = 0; spin_lock(lock); } while (0)
+
+#define spin_unlock_irqrestore(lock,flags) do { typecheck(unsigned long, flags); (void) flags; spin_unlock(lock); } while (0)
+
+#define spin_lock(lock) rt_spin_lock(lock)
+#define spin_unlock(lock) rt_spin_unlock(lock)
+
+这里的spin_lock_irqsave并没有disable irq，并且保存eflags到flags。
+这里的spin_unlock_irqrestore并没有restore eflags
+
+也就是说他们的语义和spin_lock和spin_unlock的语义是等价的。只是多了对flags的typecheck
+
+
+=================================================
+grep -w -E "spin_lock_irqsave|spin_unlock_irqrestore" ./* -Rn
+
+
+./kernel/signal.c:486:  spin_lock_irqsave(&t->sighand->siglock, flags);
+./kernel/signal.c:490:  spin_unlock_irqrestore(&t->sighand->siglock, flags);
+./kernel/signal.c:522:  spin_lock_irqsave(&tsk->sighand->siglock, flags);
+./kernel/signal.c:525:  spin_unlock_irqrestore(&tsk->sighand->siglock, flags);
+./kernel/signal.c:1237: spin_lock_irqsave(&t->sighand->siglock, flags);
+./kernel/signal.c:1251: spin_unlock_irqrestore(&t->sighand->siglock, flags);
+./kernel/signal.c:1555:         spin_lock_irqsave(&p->sighand->siglock, flags);
+./kernel/signal.c:1557:         spin_unlock_irqrestore(&p->sighand->siglock, flags);
+./kernel/signal.c:1612: spin_lock_irqsave(lock, flags);
+./kernel/signal.c:1620: spin_unlock_irqrestore(lock, flags);
+./kernel/signal.c:1736: spin_lock_irqsave(&psig->siglock, flags);
+./kernel/signal.c:1762: spin_unlock_irqrestore(&psig->siglock, flags);
+./kernel/signal.c:1826: spin_lock_irqsave(&sighand->siglock, flags);
+./kernel/signal.c:1834: spin_unlock_irqrestore(&sighand->siglock, flags);
+
+
+void sigqueue_free(struct sigqueue *q)
+{
+        unsigned long flags;
+        spinlock_t *lock = &current->sighand->siglock;
+
+        BUG_ON(!(q->flags & SIGQUEUE_PREALLOC));
+        /*
+         * We must hold ->siglock while testing q->list
+         * to serialize with collect_signal() or with
+         * __exit_signal()->flush_sigqueue().
+         */
+        spin_lock_irqsave(lock, flags);
+        q->flags &= ~SIGQUEUE_PREALLOC;
+        /*
+         * If it is queued it will be freed when dequeued,
+         * like the "regular" sigqueue.
+         */
+        if (!list_empty(&q->list))
+                q = NULL;
+        spin_unlock_irqrestore(lock, flags);
+
+        if (q)
+                __sigqueue_free(q);
+}
+
+
+
+

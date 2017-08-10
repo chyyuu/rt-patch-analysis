@@ -1,0 +1,37 @@
+
+语义没有变化。
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3  ./arch/x86/kernel/process.i
+
+
+# 124 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/irqflags.h"
+#define local_irq_enable() do { raw_local_irq_enable(); } while (0)
+#define local_irq_disable() do { raw_local_irq_disable(); } while (0)
+
+
+#define raw_local_irq_disable() arch_local_irq_disable()
+#define raw_local_irq_enable() arch_local_irq_enable()
+
+ 
+ 
+ static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_disable(void)
+{
+ native_irq_disable();
+}
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_enable(void)
+{
+ native_irq_enable();
+}
+
+
+
+static inline __attribute__((no_instrument_function)) void native_irq_disable(void)
+{
+ asm volatile("cli": : :"memory");
+}
+
+static inline __attribute__((no_instrument_function)) void native_irq_enable(void)
+{
+ asm volatile("sti": : :"memory");
+}

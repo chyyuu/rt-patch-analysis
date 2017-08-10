@@ -1,0 +1,61 @@
+
+rt_spin_lock   底层是mutex_lock,可以睡眠调度，会关闭迁移。
+rt_spin_unlock 底层是mutex_lock,可以睡眠调度，会打开迁移
+
+
+
+./kernel/locking/rtmutex.c:
+
+void __lockfunc rt_spin_lock(spinlock_t *lock)
+{
+        rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+}
+EXPORT_SYMBOL(rt_spin_lock);
+
+
+void __lockfunc rt_spin_unlock(spinlock_t *lock)
+{
+        /* NOTE: we always pass in '1' for nested, for simplicity */
+        spin_release(&lock->dep_map, 1, _RET_IP_);
+        rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+        migrate_enable();
+}
+EXPORT_SYMBOL(rt_spin_unlock);
+
+
+void __attribute__((section(".spinlock.text"))) rt_spin_lock(spinlock_t *lock)
+{
+ rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+ do { } while (0);
+}
+
+
+
+
+rt_spin_lock_fastlock
+rt_spin_lock_fastunlock
+
+
+
+
+rt_spin_lock_slowunlock
+会使用mutex_lock,并且由等待队列，会调用schedule
+
+
+
+===============================================================
+grep -w -E "rt_spin_lock|rt_spin_unlock" ./* -Rn |less
+./include/linux/spinlock_rt.h:25:extern void __lockfunc rt_spin_lock(spinlock_t *lock);
+./include/linux/spinlock_rt.h:28:extern void __lockfunc rt_spin_unlock(spinlock_t *lock);
+./include/linux/spinlock_rt.h:43:#define spin_lock(lock)                        rt_spin_lock(lock)
+./include/linux/spinlock_rt.h:48:               rt_spin_lock(lock);             \
+./include/linux/spinlock_rt.h:113:#define spin_unlock(lock)                     rt_spin_unlock(lock)
+./include/linux/spinlock_rt.h:117:              rt_spin_unlock(lock);                   \
+./kernel/locking/rtmutex.c:1168:void __lockfunc rt_spin_lock(spinlock_t *lock)
+./kernel/locking/rtmutex.c:1173:EXPORT_SYMBOL(rt_spin_lock);
+./kernel/locking/rtmutex.c:1204:void __lockfunc rt_spin_unlock(spinlock_t *lock)
+./kernel/locking/rtmutex.c:1211:EXPORT_SYMBOL(rt_spin_unlock);
+./kernel/locking/rtmutex.c:1290:        rt_spin_lock(lock);
+./kernel/locking/rtmutex.c:1293:        rt_spin_unlock(lock);
+

@@ -1,0 +1,71 @@
+
+#define spin_lock(lock) rt_spin_lock(lock)
+#define spin_unlock(lock) rt_spin_unlock(lock)
+结论：
+RT_FULL 情况下，spin_lock和spin_unlock 的语义已经被替换为rt_spin_lock和rt_spin_unlock
+也就是将原来忙等锁变成了非忙等锁。由原来的关闭抢占变成了关闭迁移。
+
+
+
+
+grep -w  -E "spin_lock|spin_unlock"  ./* -Rn
+
+
+./kernel/signal.c:691:          spin_unlock(&tsk->sighand->siglock);
+./kernel/signal.c:693:          spin_lock(&tsk->sighand->siglock);
+./kernel/signal.c:702: * NOTE! we rely on the previous spin_lock to
+./kernel/signal.c:1342:         spin_lock(&sighand->siglock);
+./kernel/signal.c:1347:         spin_unlock(&sighand->siglock);
+./kernel/signal.c:3731: spin_unlock(&t->sighand->siglock);
+
+ww_mutex_set_context_fastpath
+
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3   ./kernel/signal.i
+
+
+struct sighand_struct *__lock_task_sighand(struct task_struct *tsk,
+                                           unsigned long *flags)
+{
+        struct sighand_struct *sighand;
+
+        for (;;) {
+                /*
+                 * Disable interrupts early to avoid deadlocks.
+                 * See rcu_read_unlock() comment header for details.
+                 */
+                local_irq_save_nort(*flags);
+                rcu_read_lock();
+                sighand = rcu_dereference(tsk->sighand);
+                if (unlikely(sighand == NULL)) {
+                        rcu_read_unlock();
+                        local_irq_restore_nort(*flags);
+                        break;
+                }
+                /*
+                 * This sighand can be already freed and even reused, but
+                 * we rely on SLAB_DESTROY_BY_RCU and sighand_ctor() which
+                 * initializes ->siglock: this slab can't go away, it has
+                 * the same object type, ->siglock can't be reinitialized.
+                 *
+                 * We need to ensure that tsk->sighand is still the same
+                 * after we take the lock, we can race with de_thread() or
+                 * __exit_signal(). In the latter case the next iteration
+                 * must see ->sighand == NULL.
+                 */
+                spin_lock(&sighand->siglock);
+                if (likely(sighand == tsk->sighand)) {
+                        rcu_read_unlock();
+                        break;
+                }
+                spin_unlock(&sighand->siglock);
+                rcu_read_unlock();
+                local_irq_restore_nort(*flags);
+        }
+
+        return sighand;
+}
+
+
+
+
