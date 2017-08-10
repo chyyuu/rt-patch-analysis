@@ -4,3 +4,6 @@ local_irq_disable_rt/local_irq_enable_rt
 
 # define local_irq_disable_rt()         local_irq_disable()
 # define local_irq_enable_rt()          local_irq_enable()
+
+
+语义和vanilla kernel 中的local_irq_disable()/local_irq_enable() 一样
