@@ -1,0 +1,41 @@
+
+v4.11.5-rt1 内核的获取和编译方法：
+
+访问 https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/refs/tags
+
+找到v4.11.5的下载url
+cd ~/work
+wget https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/snapshot/linux-stable-4.11.5.tar.gz
+
+tar zxf linux-stable-4.11.5.tar.gz
+
+
+访问 https://www.kernel.org/pub/linux/kernel/projects/rt/
+
+找到v4.11.5-rt1对应用的补丁文件下载URL
+
+cd ~/work
+wget https://www.kernel.org/pub/linux/kernel/projects/rt/4.11/older/patch-4.11.5-rt1.patch.gz 
+
+gunzip  patch-4.11.5-rt1.patch.gz
+
+cd ~/work/linux-stable-4.11.5
+
+patch -p1 <../patch-4.11.5-rt1.patch
+
+然后
+make O=../v4.11.5-rt1/ defconfig
+make  O=../v4.11.5-rt1/  menuconfig
+打开 
+
+ Processor type and features  --->
+      Preemption Model (Voluntary Kernel Preemption (Desktop))  --->
+	  ( ) Fully Preemptible Kernel (RT)  
+然后连续按下esc最后选择save 保存.config文件
+
+根据你特定需要编译预处理某个.c文件，为.i文件，此时.i文件中宏定义以及填进去。函数里面的宏定义也已经展开。可以查到宏定义的展开过程。
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3  ./kernel/sched/core.i
+	  
+vim ../v4.11.5-rt1/kernel/sched/core.i
+
