@@ -97,3 +97,70 @@ static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
 }
 
 
+
+
+下面函数的_ip后缀和ip参数的意思是_RET_IP_宏定义。不太明白其是什么原理。
+disable_bh是通过__preempt_count_add实现的？
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+{
+ __preempt_count_add(cnt);
+ __asm__ __volatile__("": : :"memory");
+}
+
+
+./kernel/softirq.c:159:void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+./kernel/softirq.c:190:EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+{
+        WARN_ON_ONCE(in_irq() || irqs_disabled());
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_disable();
+#endif
+        /*
+         * Are softirqs going to be turned on now:
+         */
+        if (softirq_count() == SOFTIRQ_DISABLE_OFFSET)
+                trace_softirqs_on(ip);
+        /*
+         * Keep preemption disabled until we are done with
+         * softirq processing:
+         */
+        preempt_count_sub(cnt - 1);
+
+        if (unlikely(!in_interrupt() && local_softirq_pending())) {
+                /*
+                 * Run softirq if any pending. And do it in its own stack
+                 * as we may be calling this deep in a task call stack already.
+                 */
+                do_softirq();
+        }
+
+        preempt_count_dec();
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_enable();
+#endif
+        preempt_check_resched();
+}
+EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+需要注意
+preempt_count_dec 和 preempt_count_sub 的区别。
+
+
+
+
+
+
+
+
+
+//注意下面的__local_bh_disable_ip并不像真正要用的__local_bh_disable_ip，
+//是#ifdef CONFIG_TRACE_IRQFLAGS条件编译的缘故
+./kernel/softirq.c:106:void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+./kernel/softirq.c:135:EXPORT_SYMBOL(__local_bh_disable_ip);
+
