@@ -1,7 +1,11 @@
 
-rt_spin_lock   底层是mutex_lock,可以睡眠调度，会关闭迁移。
-rt_spin_unlock 底层是mutex_lock,可以睡眠调度，会打开迁移
+rt_spin_lock   
+底层是rt_mutex lock,会关闭迁移（不允许迁移），开启抢占(不会关闭抢占)，不会睡眠，会spin,并且spin的进程会根据先后顺序进行排队
+如果有进程释放锁，先来的进程会先获取到锁。
 
+rt_spin_unlock 底层是rt_mutex lock
+
+RT_FULL_spin_lock会关闭迁移，开启抢占，不会睡眠、会spin
 
 
 ./kernel/locking/rtmutex.c:
@@ -9,6 +13,7 @@ rt_spin_unlock 底层是mutex_lock,可以睡眠调度，会打开迁移
 void __lockfunc rt_spin_lock(spinlock_t *lock)
 {
         rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+		//会隐含调用rt_spin_lock_slowlock函数指针所指向的函数。
         spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
 }
 EXPORT_SYMBOL(rt_spin_lock);
@@ -27,20 +32,277 @@ EXPORT_SYMBOL(rt_spin_unlock);
 void __attribute__((section(".spinlock.text"))) rt_spin_lock(spinlock_t *lock)
 {
  rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+ //会隐含调用rt_spin_lock_slowlock函数指针所指向的函数。
  do { } while (0);
 }
 
 
 
+#ifdef CONFIG_PREEMPT_RT_FULL
+/*
+ * preemptible spin_lock functions:
+ */
+static inline void rt_spin_lock_fastlock(struct rt_mutex *lock,
+                                         void  (*slowfn)(struct rt_mutex *lock,
+                                                         bool mg_off),
+                                         bool do_mig_dis)
+{
+        might_sleep_no_state_check();
 
-rt_spin_lock_fastlock
-rt_spin_lock_fastunlock
+        if (do_mig_dis)
+                migrate_disable();
+
+        if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
+                return;
+        else
+                slowfn(lock, do_mig_dis);
+				//函数指针
+}
+
+
+
+static inline void rt_spin_lock_fastunlock(struct rt_mutex *lock,
+                                           void  (*slowfn)(struct rt_mutex *lock))
+{
+        if (likely(rt_mutex_cmpxchg_release(lock, current, NULL)))
+                return;
+        else
+                slowfn(lock);
+				//函数指针
+}
 
 
 
 
-rt_spin_lock_slowunlock
-会使用mutex_lock,并且由等待队列，会调用schedule
+///这个函数会好像不会进行睡眠。
+static int __try_to_take_rt_mutex(struct rt_mutex *lock,
+				  struct task_struct *task,
+				  struct rt_mutex_waiter *waiter, int mode)
+{
+	lockdep_assert_held(&lock->wait_lock);
+
+	/*
+	 * Before testing whether we can acquire @lock, we set the
+	 * RT_MUTEX_HAS_WAITERS bit in @lock->owner. This forces all
+	 * other tasks which try to modify @lock into the slow path
+	 * and they serialize on @lock->wait_lock.
+	 *
+	 * The RT_MUTEX_HAS_WAITERS bit can have a transitional state
+	 * as explained at the top of this file if and only if:
+	 *
+	 * - There is a lock owner. The caller must fixup the
+	 *   transient state if it does a trylock or leaves the lock
+	 *   function due to a signal or timeout.
+	 *
+	 * - @task acquires the lock and there are no other
+	 *   waiters. This is undone in rt_mutex_set_owner(@task) at
+	 *   the end of this function.
+	 */
+	mark_rt_mutex_waiters(lock);
+
+	/*
+	 * If @lock has an owner, give up.
+	 */
+	if (rt_mutex_owner(lock))
+		//没有获取到锁直接返回0，失败
+		return 0;
+
+	/*
+	 * If @waiter != NULL, @task has already enqueued the waiter
+	 * into @lock waiter tree. If @waiter == NULL then this is a
+	 * trylock attempt.
+	 */
+	if (waiter) {
+		/*
+		 * If waiter is not the highest priority waiter of
+		 * @lock, give up.
+		 */
+		if (waiter != rt_mutex_top_waiter(lock)) {
+			/* XXX rt_mutex_waiter_less() ? */
+			return 0;
+		}
+
+		/*
+		 * We can acquire the lock. Remove the waiter from the
+		 * lock waiters tree.
+		 */
+		rt_mutex_dequeue(lock, waiter);
+
+	} else {
+		/*
+		 * If the lock has waiters already we check whether @task is
+		 * eligible to take over the lock.
+		 *
+		 * If there are no other waiters, @task can acquire
+		 * the lock.  @task->pi_blocked_on is NULL, so it does
+		 * not need to be dequeued.
+		 */
+		if (rt_mutex_has_waiters(lock)) {
+			struct task_struct *pown = rt_mutex_top_waiter(lock)->task;
+
+			if (task != pown)
+				return 0;
+
+			/*
+			 * Note that RT tasks are excluded from lateral-steals
+			 * to prevent the introduction of an unbounded latency.
+			 */
+			if (rt_task(task))
+				mode = STEAL_NORMAL;
+			/*
+			 * If @task->prio is greater than or equal to
+			 * the top waiter priority (kernel view),
+			 * @task lost.
+			 */
+			if (!rt_mutex_waiter_less(task_to_waiter(task),
+						  rt_mutex_top_waiter(lock),
+						  mode))
+				return 0;
+			/*
+			 * The current top waiter stays enqueued. We
+			 * don't have to change anything in the lock
+			 * waiters order.
+			 */
+		} else {
+			/*
+			 * No waiters. Take the lock without the
+			 * pi_lock dance.@task->pi_blocked_on is NULL
+			 * and we have no waiters to enqueue in @task
+			 * pi waiters tree.
+			 */
+			goto takeit;
+		}
+	}
+
+	/*
+	 * Clear @task->pi_blocked_on. Requires protection by
+	 * @task->pi_lock. Redundant operation for the @waiter == NULL
+	 * case, but conditionals are more expensive than a redundant
+	 * store.
+	 */
+	raw_spin_lock(&task->pi_lock);
+	task->pi_blocked_on = NULL;
+	/*
+	 * Finish the lock acquisition. @task is the new owner. If
+	 * other waiters exist we have to insert the highest priority
+	 * waiter into @task->pi_waiters tree.
+	 */
+	if (rt_mutex_has_waiters(lock))
+		rt_mutex_enqueue_pi(task, rt_mutex_top_waiter(lock));
+	raw_spin_unlock(&task->pi_lock);
+
+takeit:
+	/* We got the lock. */
+	debug_rt_mutex_lock(lock);
+
+	/*
+	 * This either preserves the RT_MUTEX_HAS_WAITERS bit if there
+	 * are still waiters or clears it.
+	 */
+	rt_mutex_set_owner(lock, task);
+
+	return 1;
+}
+
+
+
+
+//这个函数也不会睡眠通过不断的调用__try_to_take_rt_mutex函数，
+//来获取rt_mutex lock，如果获取不到锁，就一直spin，但是开启了抢占，其可以被抢占。
+//如果是rt_spin_lock调用它的话，会使得mg_off=true。即关闭迁移。也就是RT_FULL_spin_lock会关闭迁移，开启抢占，不会睡眠、会spin
+static void  noinline __sched rt_spin_lock_slowlock(struct rt_mutex *lock,
+						    bool mg_off)
+{
+	struct task_struct *lock_owner, *self = current;
+	struct rt_mutex_waiter waiter, *top_waiter;
+	unsigned long flags;
+	int ret;
+
+	rt_mutex_init_waiter(&waiter, true);
+
+	raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+	if (__try_to_take_rt_mutex(lock, self, NULL, STEAL_LATERAL)) {
+		raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+		//获取到了rt_mutex lock
+		return;
+	}
+
+	BUG_ON(rt_mutex_owner(lock) == self);
+
+	/*
+	 * We save whatever state the task is in and we'll restore it
+	 * after acquiring the lock taking real wakeups into account
+	 * as well. We are serialized via pi_lock against wakeups. See
+	 * try_to_wake_up().
+	 */
+	raw_spin_lock(&self->pi_lock);
+	self->saved_state = self->state;
+	__set_current_state_no_track(TASK_UNINTERRUPTIBLE);
+	//此处没有获取到rt_mutex lock，因此要将进程设置为睡眠状态
+	raw_spin_unlock(&self->pi_lock);
+
+	ret = task_blocks_on_rt_mutex(lock, &waiter, self, RT_MUTEX_MIN_CHAINWALK);
+	BUG_ON(ret);
+
+	for (;;) {
+		/* Try to acquire the lock again. */
+		if (__try_to_take_rt_mutex(lock, self, &waiter, STEAL_LATERAL))
+		   //此函数会不断的执行，直到获取到了锁才会跳出循环。
+			break;
+
+		top_waiter = rt_mutex_top_waiter(lock);
+		lock_owner = rt_mutex_owner(lock);
+
+		raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+		debug_rt_mutex_print_deadlock(&waiter);
+
+		if (top_waiter != &waiter || adaptive_wait(lock, lock_owner)) {
+			if (mg_off)
+				migrate_enable();
+			schedule();
+			if (mg_off)
+				migrate_disable();
+		}
+
+		raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+		raw_spin_lock(&self->pi_lock);
+		__set_current_state_no_track(TASK_UNINTERRUPTIBLE);
+		raw_spin_unlock(&self->pi_lock);
+	}
+
+	/*
+	 * Restore the task state to current->saved_state. We set it
+	 * to the original state above and the try_to_wake_up() code
+	 * has possibly updated it when a real (non-rtmutex) wakeup
+	 * happened while we were blocked. Clear saved_state so
+	 * try_to_wakeup() does not get confused.
+	 */
+	//此处已经获取到了rt_mutex lock
+	//将进程的状态恢复到原来的状态TASK_RUNNING ？
+	raw_spin_lock(&self->pi_lock);
+	__set_current_state_no_track(self->saved_state);
+	self->saved_state = TASK_RUNNING;
+	raw_spin_unlock(&self->pi_lock);
+
+	/*
+	 * try_to_take_rt_mutex() sets the waiter bit
+	 * unconditionally. We might have to fix that up:
+	 */
+	fixup_rt_mutex_waiters(lock);
+
+	BUG_ON(rt_mutex_has_waiters(lock) && &waiter == rt_mutex_top_waiter(lock));
+	BUG_ON(!RB_EMPTY_NODE(&waiter.tree_entry));
+
+	raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+	debug_rt_mutex_free_waiter(&waiter);
+}	
+
+
+
 
 
 
@@ -59,3 +321,4 @@ grep -w -E "rt_spin_lock|rt_spin_unlock" ./* -Rn |less
 ./kernel/locking/rtmutex.c:1290:        rt_spin_lock(lock);
 ./kernel/locking/rtmutex.c:1293:        rt_spin_unlock(lock);
 
+	
