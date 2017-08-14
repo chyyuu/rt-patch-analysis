@@ -16,6 +16,8 @@ rt_linux里面把spin_lock换成了睡眠锁，这样不是会导致性能下降
 	Making in-kernel locking-primitives (using spinlocks) preemptible though reimplementation with 
 rtmutexes.(把自旋锁换成了互斥锁，但是rtmutexes并不会睡眠？）
 
+还是因为中断处理程序已经线程化了？因此可以在中断处理线程的线程上下文里面进行sleep了？
+
 
 问题2：
 自旋锁开启抢占以后，会导致优先级翻转和死锁，该如何解决？
