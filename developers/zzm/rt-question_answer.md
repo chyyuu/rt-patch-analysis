@@ -80,18 +80,31 @@ Q5.
 	get/put_cpu 宏定义：
 	#define get_cpu() ({ preempt_disable(); smp_processor_id(); })
 	#define put_cpu() preempt_enable()
-
-
+		/*
+		 * smp_processor_id(): get the current CPU ID.
+		 *
+		 * if DEBUG_PREEMPT is enabled then we check whether it is
+		 * used in a preemption-safe way. (smp_processor_id() is safe
+		 * if it's used in a preemption-off critical section, or in
+		 * a thread that is bound to the current CPU.)
+		 *
+		 * NOTE: raw_smp_processor_id() is for internal use only
+		 * (smp_processor_id() is the preferred variant), but in rare
+		 * instances it might also be used to turn off false positives
+		 * (i.e. smp_processor_id() use that the debugging code reports but
+		 * which use for some reason is legal). Don't use this to hack around
+		 * the warning message, as your code might not work under PREEMPT.
+		 */
+- 从注释中**`smp_processor_id()` is safe if it's used in a preemption-off critical section, or in a thread that is bound to the current CPU.**可以看出`smp_processor_id()`只要保证调用它的线程不被迁移到其他CPU上就可以，因此完全可以用`get/put_cpu_light`来替换`get/put_cpu`增加可抢占区域
+- 对于-RT来说，在抢占禁止区域获取可睡眠锁对实时性来说是有问题的。
+- 需要替换的时刻为：
+	- 在-RT下，为了保证内核实时性的性能，避免在抢占禁止的情况下获取睡眠锁的时候，需要把`get/put_cpu`替换为`get/put_cpu_light`。
 - 存在`get/put_cpu`替换为`get/put_cpu_light`的补丁有：
 
 	- block-mq-drop-preempt-disable.patch
 	- block-mq-use-cpu_light.patch
-	- epoll-use-get-cpu-light.patch
+	- epoll-use-get-cpu-light.patch 等
 
-
-- 需要替换的时刻为：
-	- 在-RT下，当调用了get_cpu()时禁止抢占，同时又持有睡眠锁的时候，这时可能会在抢断禁止的情况下产生调度（中断），从而对实时性产生影响甚至会死锁。
-	
 
 **3.何时需要把`get_cpu_var` 替换为`get_cpu_light();&per_cpu();put_cpu_light()`;**
 
@@ -99,12 +112,13 @@ Q5.
 
 - `gut_cpu_var`:先禁用内核抢占，然后在每CPU数组name中，为本地CPU选择元素：`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时又持有睡眠锁的时候，可能会在抢断禁止的情况下产生调度（中断），从而影响实时性产生影响甚至会死锁。
+- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时随后可能会持有睡眠锁，可能会在抢断禁止的情况下产生调度，从而影响实时性。
 
  **4.何时需要把`get_cpu;per_cpu_ptr;put_cpu`替换为`get_cpu_light;per_cpu_ptr;spin_un/lock;put_cpu_light`**
 
 - 相关补丁：PATCH: md: raid5: Make raid5_percpu handling RT aware
-- `get_cpu;per_cpu_ptr;put_cpu`禁止了抢占，并且获取了本地CPU变量，但是本地非线程化的中断并没有禁止，有可能在对`per_cpu`变量操作时，造成中断，破坏`per_cpu`变量。通过`get_cpu_light;per_cpu_ptr;spin_un/lock;put_cpu_light`，可以禁止进程迁移，然后获取per_cpu lock保护了每CPU变量。
+- `per_cpu_ptr(pointer, cpu)`返回每CPU数组中与cpu对应CPU元素地址，pointer给出数组地址： #define `per_cpu_ptr(ptr, cpu)` ({ (void)(cpu); (ptr); })
+- 该函数per_cpu_ptr()返回了指定处理器上的惟一数据。这个函数不会禁止内核抢占，如果需要访问另外的处理器数据，一定要给数据加锁，因此对于-RT来说，如果为了扩大抢占区域，将preempt_disable()替换为migration_disable(),不能禁止其他处理器上的线程抢占，因此需要加`spin_un/lock`对per_cpu数据进行保护。
 
 
 **5.何时需要把`get_cpu_var;put_cpu_var` 替换为`get_locked_var; put_locked_var OR  get_local_var;put_local_var`**
