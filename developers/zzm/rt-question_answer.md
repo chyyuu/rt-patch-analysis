@@ -35,8 +35,7 @@ Q4.
 		+# define wakeup_timer_waiters(b)	do { } while (0)
 		+#endif
 		
-		
-		   +#ifdef CONFIG_PREEMPT_RT_FULL
+		+#ifdef CONFIG_PREEMPT_RT_FULL
 		+		init_swait_queue_head(&base->wait_for_running_timer);
 		+#endif
 
@@ -69,17 +68,22 @@ Q5.
 
 - `get/put_cpu_light`的宏定义为：
 	
-		- #define get_cpu_light()   ({migrate_disable();smp_processor_id();})
-		- #define put_cpu_light()	migrate_enable(); 
-		- `get_cpu_light`：关闭线程（进程）迁移，并且返回当前的`CPU_ID`；` put_cpu`：开启线程（进程）迁移
+		 #define get_cpu_light()   ({migrate_disable();smp_processor_id();})
+		 #define put_cpu_light()	migrate_enable(); 
 
-- 在COMFIG_PREEMPT_RT_FULL 和 COMFIG_SMP配置的情况下，需要添加`get/put_cpu_light`
+-  `get_cpu_light`：关闭线程（进程）迁移，并且返回当前的`CPU_ID`；` put_cpu`：开启线程（进程）迁移
+
+- 在`COMFIG_PREEMPT_RT_FULL`和`COMFIG_SMP`配置的情况下，需要添加`get/put_cpu_light`
 
 **2.何时需要把`get/put_cpu`替换为`get/put_cpu_light`**
 
 	get/put_cpu 宏定义：
 	#define get_cpu() ({ preempt_disable(); smp_processor_id(); })
 	#define put_cpu() preempt_enable()
+
+- 其中对于`smp_processor_id()`的源代码中的注释为：
+
+
 		/*
 		 * smp_processor_id(): get the current CPU ID.
 		 *
@@ -96,9 +100,7 @@ Q5.
 		 * the warning message, as your code might not work under PREEMPT.
 		 */
 - 从注释中**`smp_processor_id()` is safe if it's used in a preemption-off critical section, or in a thread that is bound to the current CPU.**可以看出`smp_processor_id()`只要保证调用它的线程不被迁移到其他CPU上就可以，因此完全可以用`get/put_cpu_light`来替换`get/put_cpu`增加可抢占区域
-- 对于-RT来说，在抢占禁止区域获取可睡眠锁对实时性来说是有问题的。
-- 需要替换的时刻为：
-	- 在-RT下，为了保证内核实时性的性能，避免在抢占禁止的情况下获取睡眠锁的时候，需要把`get/put_cpu`替换为`get/put_cpu_light`。
+- 对于-RT来说，`get_cpu()`既禁止了抢占，又可能对随后分配的可睡眠锁产生问题，因此选用只是禁止了迁移的`get_cpu_light`更加合适。
 - 存在`get/put_cpu`替换为`get/put_cpu_light`的补丁有：
 
 	- block-mq-drop-preempt-disable.patch
@@ -112,13 +114,13 @@ Q5.
 
 - `gut_cpu_var`:先禁用内核抢占，然后在每CPU数组name中，为本地CPU选择元素：`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时随后可能会持有睡眠锁，可能会在抢断禁止的情况下产生调度，从而影响实时性。
+- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时可能会持有睡眠锁，在抢断禁止的情况可能产生调度，从而影响实时性。
 
  **4.何时需要把`get_cpu;per_cpu_ptr;put_cpu`替换为`get_cpu_light;per_cpu_ptr;spin_un/lock;put_cpu_light`**
 
 - 相关补丁：PATCH: md: raid5: Make raid5_percpu handling RT aware
 - `per_cpu_ptr(pointer, cpu)`返回每CPU数组中与cpu对应CPU元素地址，pointer给出数组地址： #define `per_cpu_ptr(ptr, cpu)` ({ (void)(cpu); (ptr); })
-- 该函数per_cpu_ptr()返回了指定处理器上的惟一数据。这个函数不会禁止内核抢占，如果需要访问另外的处理器数据，一定要给数据加锁，因此对于-RT来说，如果为了扩大抢占区域，将preempt_disable()替换为migration_disable(),不能禁止其他处理器上的线程抢占，因此需要加`spin_un/lock`对per_cpu数据进行保护。
+- 该函数`per_cpu_ptr()`返回了指定处理器上的惟一数据。这个函数不会禁止内核抢占，如果需要访问另外的处理器数据，一定要给数据加锁，因此对于-RT来说，如果为了扩大抢占区域，将preempt_disable()替换为migration_disable(),这将不能禁止其他处理器上的线程抢占，因此需要加`spin_un/lock`对`per_cpu`数据进行保护。
 
 
 **5.何时需要把`get_cpu_var;put_cpu_var` 替换为`get_locked_var; put_locked_var OR  get_local_var;put_local_var`**
@@ -172,7 +174,7 @@ Q5.
 	
 			 `#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-	因此，在!RT或UP内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT或SMP内核中，为增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
+从代码中可以看出，在!RT或UP内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT或SMP内核中，为增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
 
 
 
@@ -238,7 +240,7 @@ Q5.
 	    	else
 	    		slowfn(lock, do_mig_dis);
 	    }
-因为，`do_mig_dis`默认为false，因此`migrate_disable()`没有执行，`local_lock_cpu()`最后只是获取了一个原子操作或者`rt_mutex`锁，并没有禁止抢占（但此处好像不应该获取睡眠锁，在抢占禁止的情况下不能使用睡眠锁？？）来保护per_cpu.
+因为，`do_mig_dis`默认为false，因此`migrate_disable()`没有执行，`local_lock_cpu()`最后只是获取了一个原子操作或者`rt_mutex`锁，并没有禁止抢占或线程迁移（但此处好像不应该获取睡眠锁，在抢占禁止的情况下不能使用睡眠锁？？）来保护per_cpu.
 
 Q12.
 
