@@ -3,7 +3,8 @@
 #define spin_unlock(lock) rt_spin_unlock(lock)
 结论：
 RT_FULL 情况下，spin_lock和spin_unlock 的语义已经被替换为rt_spin_lock和rt_spin_unlock
-此时的spin_lock，开启了抢占，即在持有自旋锁的情况下，仍然会被别的（高优先级的？）进程抢占。如果没有获取到锁，则会spin.如果出现优先级翻转，高优先级进程会睡眠，主动让出CPU，等待被别的进程的spin_unlock来唤醒。
+此时的spin_lock，开启了抢占，即在持有自旋锁的情况下，仍然会被别的（高优先级的？）进程抢占。如果没有获取到锁，则会spin.如果出现优先级翻转，
+高优先级进程会睡眠，主动让出CPU，等待被别的进程的spin_unlock来唤醒。
 
 
 
