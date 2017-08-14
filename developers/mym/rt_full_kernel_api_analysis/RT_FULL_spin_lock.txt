@@ -6,8 +6,50 @@ RT_FULL 情况下，spin_lock和spin_unlock 的语义已经被替换为rt_spin_l
 也就是将原来忙等锁变成了非忙等锁。由原来的关闭抢占变成了关闭迁移。
 
 
+问题思考：
+=====================
+思考问题1：
+spin_lock使用的地方一般自旋的时间都很短，如果使用mutex_lock的话，需要进行上下文切换，花费时间会更长。
+rt_linux里面把spin_lock换成了睡眠锁，这样不是会导致性能下降吗？
+
+调研答案：
+	Making in-kernel locking-primitives (using spinlocks) preemptible though reimplementation with rtmutexes.(把自旋锁换成了互斥锁，但是rtmutexes并不会睡眠？）
 
 
+问题2：
+自旋锁开启抢占以后，会导致优先级翻转和死锁，该如何解决？
+
+Critical sections protected by i.e. spinlock_t and rwlock_t are now preemptible. The creation of non-preemptible sections (in kernel) is still possible with raw_spinlock_t (same APIs like spinlock_t).（使得自旋锁和读写锁可抢占，而且还提供了raw_spinlock来提供不可抢占的自旋锁）
+
+	Implementing priority inheritance for in-kernel spinlocks and semaphores. For more information on priority inversion and priority inheritance please consult Introduction to Priority Inversion.（对自旋锁和信号量增加了优先级继承功能）
+
+可抢占以后会增加优先级翻转导致的死锁问题，但是可以通过优先级继承来解决。
+
+
+情景分析：
+rt_linux把spin_lock仅仅变成了可以抢占，但是还是不能睡眠的是吗？也就是说获取spin_lock可以继续自旋或者被抢占，但是不能被推入等待队列睡眠。
+
+
+情景1：
+thread A 持有L1,有更优先级的thread B产生了，会抢占thread A执行，但是thrad B不会获取L1。thread B执行完毕以后，后续thread A会继续执行。
+
+情景2：
+thread A 持有L1,有更优先级的thread B产生了，会抢占thread A执行，并且thread B也会尝试获取L1，此时获取不到L1, thread B并不会被推入等待队列？而是在自旋并且可以被抢占。（此时会死锁），但是根据优先级继承规则，thread A 的优先级会被提升，然后thread A会被调度执行，然后释放L1。然后thread B会继续获取到L1，然后继续执行。
+
+问题3：
+为啥有的地方不在需要关闭中断了？
+
+	Converting interrupt handlers into preemptible kernel threads: The RT-Preempt patch treats soft interrupt handlers in kernel thread context, which is represented by a task_struct like a common user space process. However it is also possible to register an IRQ in kernel context.（将中断处理程序转换成了可抢占的内核线程）
+
+这样的话在中断处理线程的上下文里面就可以是睡眠函数？而且不在需要关闭中断来保护？因为 中断处理程序之间的竞争，已经变成了普通的两个线程之间的竞争。因此只需要
+开启抢占的spin_lock就可以了？不再需要raw_spin_lock_irqsave?
+
+
+
+
+
+
+======================================================
 grep -w  -E "spin_lock|spin_unlock"  ./* -Rn
 
 
