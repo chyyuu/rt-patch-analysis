@@ -124,7 +124,35 @@ Q5.
 **5.何时需要把`get_cpu_var;put_cpu_var` 替换为`get_locked_var; put_locked_var OR  get_local_var;put_local_var`**
 
 - 在patch：rt-local-irq-lock.patch中，定义`get_locked_var; put_locked_var OR  get_local_var;put_local_var`
-	- 如果定义了`CONFIG_PREEMPT_RT_FULL`，local_lock定义为：
+   
+		   	 #define get_locked_var(lvar, var)		get_cpu_var(var)
+
+			 #define get_locked_var(lvar, var)					\
+		    	(*({								\
+		    		local_lock(lvar);					\
+		    		this_cpu_ptr(&var);					\
+		    	}))
+	
+			#define local_lock(lvar)					\
+			do { __local_lock(&get_local_var(lvar)); } while (0)
+
+			#define this_cpu_ptr(ptr) raw_cpu_ptr(ptr)
+			
+			#define raw_cpu_ptr(ptr)						\
+				({									\
+					__verify_pcpu_ptr(ptr);						\
+					arch_raw_cpu_ptr(ptr);						\
+				})
+			#define arch_raw_cpu_ptr(ptr)				\
+				({							\
+					unsigned long tcp_ptr__;			\
+					asm volatile("add " __percpu_arg(1) ", %0"	\
+						     : "=r" (tcp_ptr__)			\
+						     : "m" (this_cpu_off), "0" (ptr));	\
+					(typeof(*(ptr)) __kernel __force *)tcp_ptr__;	\
+				})
+			
+	- 如果定义了`CONFIG_PREEMPT_RT_FULL`，`get_local_var`定义为：
 
 			+#ifdef CONFIG_PREEMPT_RT_FULL
 			+
@@ -132,37 +160,21 @@ Q5.
 			+	migrate_disable();	\
 			+	this_cpu_ptr(&var);	}))
 			+
-			+#define put_local_var(var) do {	\
-			+	(void)&(var);		\
-			+	migrate_enable();	\
-			+} while (0)
-			+
-			+# define get_local_ptr(var) ({	\
-			+	migrate_disable();	\
-			+	this_cpu_ptr(var);	})
-			+
-			+# define put_local_ptr(var) do {	\
-			+	(void)(var);			\
-			+	migrate_enable();		\
-			+} while (0)
 
 	- 如果没有定义`CONFIG_PREEMPT_RT_FULL`，local_lock定义为：
 
 		    +#else
 		    +
 		    +#define get_local_var(var)	get_cpu_var(var)
-		    +#define put_local_var(var)	put_cpu_var(var)
-		    +#define get_local_ptr(var)	get_cpu_ptr(var)
-		    +#define put_local_ptr(var)	put_cpu_ptr(var)
-		    +
 		    +#endif
 
+			
+			
 	- 而`get_cpu_var()`的定义为（禁止了抢占）
 	
 			 `#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-				#define __get_cpu_var(var)per_cpu__##var
-因此，在RT内核中，禁止抢占，同时又持有睡眠锁这是有问题。需要`get_cpu_var;put_cpu_var` 替换为`get_locked_var; put_locked_var OR  get_local_var;put_local_var`，增加了抢占区域，同时保护了per_cpu变量。
+因此，在!RT内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT内核中，增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
 
 
 
@@ -173,10 +185,9 @@ Q5.
 		+	`lru_add_drain_cpu(local_lock_cpu(swapvec_lock));`
 		+	`local_unlock_cpu(swapvec_lock);`
 
-- 对`lru_add_drain_cpu(int cpu)`源代码解释为：Drain pages out of the cpu's pagevecs. Either"cpu" is the current CPU, and preemption has already been disabled; or"cpu" is being hot-unplugged, and is already dead.可见此处已经禁止抢占，而不需要在用get_cpu().
+- 对`lru_add_drain_cpu(int cpu)`源代码解释为：Drain pages out of the cpu's pagevecs. Either"cpu" is the current CPU, and preemption has already been disabled; or"cpu" is being hot-unplugged, and is already dead.可见此处已经禁止抢占，而不需要再用get_cpu().
 
 - 分析local_lock_cpu()的源码
-
 
 	    +#define local_lock_cpu(lvar)						\
 	    +	({								\
@@ -199,15 +210,15 @@ Q5.
 	    +}
 	    +
 	    
-		/# `ifdef CONFIG_PREEMPT_RT_FULL`
-		/# `define spin_lock_local(lock)		rt_spin_lock__no_mg(lock)`
-		/# `define spin_trylock_local(lock)		rt_spin_trylock__no_mg(lock)`
-		/# `define spin_unlock_local(lock)		rt_spin_unlock__no_mg(lock)`
-		/#`else`
-		/# `define spin_lock_local(lock)		spin_lock(lock)`
-		/# `define spin_trylock_local(lock)		spin_trylock(lock)`
-		/# `define spin_unlock_local(lock)		spin_unlock(lock)`
-		/#`endif`
+		# `ifdef CONFIG_PREEMPT_RT_FULL`
+		# `define spin_lock_local(lock)		rt_spin_lock__no_mg(lock)`
+		# `define spin_trylock_local(lock)		rt_spin_trylock__no_mg(lock)`
+		# `define spin_unlock_local(lock)		rt_spin_unlock__no_mg(lock)`
+		#`else`
+		# `define spin_lock_local(lock)		spin_lock(lock)`
+		# `define spin_trylock_local(lock)		spin_trylock(lock)`
+		# `define spin_unlock_local(lock)		spin_unlock(lock)`
+		#`endif`
 	    void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock)
 	    {
 	    	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, false);
