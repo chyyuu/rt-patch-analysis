@@ -125,17 +125,21 @@ Q5.
 
 - 在patch：rt-local-irq-lock.patch中，定义`get_locked_var; put_locked_var OR  get_local_var;put_local_var`
    
-		   	 #define get_locked_var(lvar, var)		get_cpu_var(var)
+	- 对于`get_local_var`的定义，如下：
 
-			 #define get_locked_var(lvar, var)					\
-		    	(*({								\
-		    		local_lock(lvar);					\
-		    		this_cpu_ptr(&var);					\
-		    	}))
-	
+			ifndef CONFIG_SMP
+		   	 	#define get_locked_var(lvar, var)	get_cpu_var(var)
+			else
+			 	#define get_locked_var(lvar, var)					\
+			    	(*({								\
+			    		local_lock(lvar);					\
+			    		this_cpu_ptr(&var);					\
+			    	}))
+
 			#define local_lock(lvar)					\
 			do { __local_lock(&get_local_var(lvar)); } while (0)
 
+			
 			#define this_cpu_ptr(ptr) raw_cpu_ptr(ptr)
 			
 			#define raw_cpu_ptr(ptr)						\
@@ -143,6 +147,7 @@ Q5.
 					__verify_pcpu_ptr(ptr);						\
 					arch_raw_cpu_ptr(ptr);						\
 				})
+
 			#define arch_raw_cpu_ptr(ptr)				\
 				({							\
 					unsigned long tcp_ptr__;			\
@@ -152,29 +157,22 @@ Q5.
 					(typeof(*(ptr)) __kernel __force *)tcp_ptr__;	\
 				})
 			
-	- 如果定义了`CONFIG_PREEMPT_RT_FULL`，`get_local_var`定义为：
+	- 对于`get_local_var`的定义如下：
 
 			+#ifdef CONFIG_PREEMPT_RT_FULL
 			+
-			+#define get_local_var(var) (*({	\
-			+	migrate_disable();	\
-			+	this_cpu_ptr(&var);	}))
-			+
-
-	- 如果没有定义`CONFIG_PREEMPT_RT_FULL`，local_lock定义为：
-
+				+#define get_local_var(var) (*({	\
+				+	migrate_disable();	\
+				+	this_cpu_ptr(&var);	}))
 		    +#else
-		    +
-		    +#define get_local_var(var)	get_cpu_var(var)
+		    	+#define get_local_var(var)	get_cpu_var(var)
 		    +#endif
-
-			
 			
 	- 而`get_cpu_var()`的定义为（禁止了抢占）
 	
 			 `#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-因此，在!RT内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT内核中，增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
+	因此，在!RT或UP内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT或SMP内核中，为增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
 
 
 
@@ -187,7 +185,7 @@ Q5.
 
 - 对`lru_add_drain_cpu(int cpu)`源代码解释为：Drain pages out of the cpu's pagevecs. Either"cpu" is the current CPU, and preemption has already been disabled; or"cpu" is being hot-unplugged, and is already dead.可见此处已经禁止抢占，而不需要再用get_cpu().
 
-- 分析local_lock_cpu()的源码
+- 分析`local_lock_cpu()`的源码
 
 	    +#define local_lock_cpu(lvar)						\
 	    +	({								\
@@ -240,12 +238,9 @@ Q5.
 	    	else
 	    		slowfn(lock, do_mig_dis);
 	    }
-`local_lock_cpu()`最后只是获取了一个锁（但此处好像获取的是睡眠锁，而在抢占禁止的情况下不能使用睡眠锁？？）来保护per_cpu.
+因为，`do_mig_dis`默认为false，因此`migrate_disable()`没有执行，`local_lock_cpu()`最后只是获取了一个原子操作或者`rt_mutex`锁，并没有禁止抢占（但此处好像不应该获取睡眠锁，在抢占禁止的情况下不能使用睡眠锁？？）来保护per_cpu.
 
 Q12.
-
-
-
 
 **1. 如何理解 lg_lock?**
 
@@ -290,4 +285,4 @@ Q12.
 			slowfn(lock, do_mig_dis);
 		}
 
-可以看出，通过`__rt_spin_lock(l)`禁止了进程迁移，并通过if-else 获取一个可睡眠锁，增加了可抢占区域，并保护了per_cpu变量。
+可以看出，通过`__rt_spin_lock(l)`禁止了进程迁移，并通过if-else 获取一个原子操作，或者获取一个rt_mutex锁，增加了可抢占区域，并保护了`per_cpu`变量。
