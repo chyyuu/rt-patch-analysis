@@ -1,5 +1,16 @@
+# 对 history.org中的bug分类进行进一步分析
 
+## semantics
+- migration  yxg
+- preempt    zzm
+- sched      zw
+- irq/softirq  mym
 
+## concurrency
+- atomicity:  yxg
+- order:      zzm
+- deadlock:   zw
+- livelock:   mym
 
 
 # bug items
