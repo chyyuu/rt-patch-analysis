@@ -5,6 +5,10 @@ Q4.
 - https://lwn.net/Articles/577370/文章中提到，wait_queue的callback mechanism 对于实时内核是有问题的，因为回调机制是可以睡眠的，这阻止了使用原始的自旋锁来保护等待队列本身。
 	
 - https://lwn.net/Articles/661424/文中提到，Simple wait queues是一个简单的等待队列机制，但是这并不能作为添加另一个等待队列机制的理由。真正的驱动力是实时内核，the simple waitqueue allows fordeterministic behaviour -- IOW it has strictly bounded IRQ and lock hold times. 
+```
+The problem with this feature, from the realtime developers' point of view, is that they have no control over how long the custom wake function will take to run. This feature thus makes it harder for them to provide response-time guarantees. Beyond that, these callbacks require that the wait-queue structure be protected by an ordinary spinlock, which is a sleeping lock in the realtime tree. That, too, gets in the way in the realtime world; it prevents, for example, the use of wake_up() in hard (as opposed to threaded) interrupt handlers
+```
+
 
 - 因此，对于RT-linux是需添加`INIT_SWAIT_HEAD|SWAIT_EVENT|SWAIT_WAKE_ALL|SWAIT_EVENT_INTERRUPTIBLE`
 
@@ -60,6 +64,7 @@ Q4.
 	
 	- 不再有回调机制，避免等待队列锁的竞争。
 	- 在-RT，避免回调机制睡眠，采用swait。
+        - in hard (as opposed to threaded) interrupt handlers
 
 Q5.
 
@@ -114,7 +119,7 @@ Q5.
 
 - `gut_cpu_var`:先禁用内核抢占，然后在每CPU数组name中，为本地CPU选择元素：`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
-- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时可能会持有睡眠锁，在抢断禁止的情况可能产生调度，从而影响实时性。
+- 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时可能会持有睡眠锁，在抢断禁止的情况可能导致调度延迟，从而影响实时性，所以需要用`get_cpu_light();&per_cpu();put_cpu_light()`这样的组合，允许抢占，但不允许迁移。
 
  **4.何时需要把`get_cpu;per_cpu_ptr;put_cpu`替换为`get_cpu_light;per_cpu_ptr;spin_un/lock;put_cpu_light`**
 
@@ -174,9 +179,45 @@ Q5.
 	
 			 `#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
+
 从代码中可以看出，在!RT或UP内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT或SMP内核中，为增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
 
+补充：
 
+```
+//spinlock_rt.h
+#define spin_lock(lock)				\
+	do {					\
+		migrate_disable();		\
+		rt_spin_lock(lock);		\
+	} while (0)
+
+
+//in locallock.h
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define spin_lock_local(lock)			rt_spin_lock(lock)
+# define spin_trylock_local(lock)		rt_spin_trylock(lock)
+# define spin_unlock_local(lock)		rt_spin_unlock(lock)
+#else
+# define spin_lock_local(lock)			spin_lock(lock)
+# define spin_trylock_local(lock)		spin_trylock(lock)
+# define spin_unlock_local(lock)		spin_unlock(lock)
+#endif
+
+static inline void __local_lock(struct local_irq_lock *lv)
+{
+	if (lv->owner != current) {
+		spin_lock_local(&lv->lock);
+		LL_WARN(lv->owner);
+		LL_WARN(lv->nestcnt);
+		lv->owner = current;
+	}
+	lv->nestcnt++;
+}
+
+```
+
+从上面的代码可以看出，在CONFIG_PREEMPT_RT_FULL下，__local_lock等价为rt_spin_lock(lock)，而spin_lock比rt_spin_lock要多了一个migrate_disable的操作
 
 **6.如何理解 `from PATCH: mm/swap: Convert to percpu locked`**
 
@@ -242,9 +283,70 @@ Q5.
 	    }
 因为，`do_mig_dis`默认为false，因此`migrate_disable()`没有执行，`local_lock_cpu()`最后只是获取了一个原子操作或者`rt_mutex`锁，并没有禁止抢占或线程迁移（但此处好像不应该获取睡眠锁，在抢占禁止的情况下不能使用睡眠锁？？）来保护per_cpu.
 
+>> chyyuu ??? 
+我看的代码 v4.1.15-rt17 没有如下代码片段
+```
+	    	if (do_mig_dis)
+	    		migrate_disable();
+```
+所以上述的区别，就是从preempt_disable/enable 改为了更适合rt的migrate_diasable/enable 
+
+
 Q12.
 
 **1. 如何理解 lg_lock?**
+kernel/Documentation/locking/lglock.txt 中有比较详细的介绍
+
+Design Goal:
+------------
+
+Improve scalability of globally used large data sets that are
+distributed over all CPUs as per_cpu elements.
+
+Design:
+-------
+
+Basically it is an array of per_cpu spinlocks with the
+lg_local_lock/unlock accessing the local CPUs lock object and the
+lg_local_lock_cpu/unlock_cpu accessing a remote CPUs lock object
+
+The lg_global_lock/unlock locks all underlying spinlocks of all
+possible CPUs (including those off-line). The preemption disable/enable
+are needed in the non-RT kernels to prevent deadlocks like:
+
+                     on cpu 1
+
+              task A          task B
+         lg_global_lock
+           got cpu 0 lock
+                 <<<< preempt <<<<
+                         lg_local_lock_cpu for cpu 0
+                           spin on cpu 0 lock
+
+On -RT this deadlock scenario is resolved by the arch_spin_locks in the
+lglocks being replaced by rt_mutexes which resolve the above deadlock
+by boosting the lock-holder.
+
+Usage:
+------
+
+From the locking semantics it is a spinlock. It could be called a
+locality aware spinlock. lg_local_* behaves like a per_cpu
+spinlock and lg_global_* like a global spinlock.
+No surprises in the API.
+
+  lg_local_lock(*lglock);
+     access to protected per_cpu object on this CPU
+  lg_local_unlock(*lglock);
+
+  lg_local_lock_cpu(*lglock, cpu);
+     access to protected per_cpu object on other CPU cpu
+  lg_local_unlock_cpu(*lglock, cpu);
+
+  lg_global_lock(*lglock);
+     access all protected per_cpu objects on all CPUs
+  lg_global_unlock(*lglock);
+
 
 	+#`ifndef CONFIG_PREEMPT_RT_FULL`
 	+# define lg_lock_ptr		arch_spinlock_t
@@ -288,3 +390,23 @@ Q12.
 		}
 
 可以看出，通过`__rt_spin_lock(l)`禁止了进程迁移，并通过if-else 获取一个原子操作，或者获取一个rt_mutex锁，增加了可抢占区域，并保护了`per_cpu`变量。
+
+
+补充：在最新的kernel中，已经去掉了lg_spin_lock
+唯一用的地方 fs/locks.c
+```
+
+static void locks_delete_global_locks(struct file_lock *fl)
+...
+FROM::
+	lg_local_lock_cpu(&file_lock_lglock, fl->fl_link_cpu);
+	hlist_del_init(&fl->fl_link);
+	lg_local_unlock_cpu(&file_lock_lglock, fl->fl_link_cpu);
+
+TO::
+	fll = per_cpu_ptr(&file_lock_list, fl->fl_link_cpu);
+	spin_lock(&fll->lock);
+	hlist_del_init(&fl->fl_link);
+	spin_unlock(&fll->lock);
+...                                                                                                                                                                                    
+```
