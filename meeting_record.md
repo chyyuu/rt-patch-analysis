@@ -166,3 +166,18 @@ make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3 ./kernel/locking/rtmutex.i
 https://github.com/chyyuu/rt-patch-analysis/blob/master/rt-linux-lkp/how_to_get_compile_rt_linux_kernel.txt
 
 ```
+
+## 2017.8.15 rt-bug-analysis
+```
+## semantics
+- migration  yxg
+- preempt    zzm
+- sched      zw
+- irq/softirq  mym
+
+## concurrency
+- atomicity:  yxg
+- order:      zzm
+- deadlock:   zw
+- livelock:   mym
+```
