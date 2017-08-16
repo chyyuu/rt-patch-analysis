@@ -1,16 +1,16 @@
 bug_irq 有57个，一共分了21种模式
 
 出现次数比较多的patten
-PATTEN4:8次
-PATTEN6:4次
-PATTEN17：2次
+PATTERN4:8次
+PATTERN6:4次
+PATTERN17：2次
 
 
 
 
 
 
-PATTEN1：
+PATTERN1：
 将spin_lock_irqsave换成了local_irq_save，
 
 意思是说不需要锁了，只需要关中断就可以了。
@@ -24,7 +24,7 @@ PATCHES:
 
 
 
-PATTEN2:
+PATTERN2:
 scheduling with irqs disabled
 在关中断的时候，执行了schedule因此报错。
 解决方法：enable soft/hard irq,然后就可以执行schedule了。
@@ -33,7 +33,7 @@ PATCHES:
 [[file:2.6.22/preempt-irqs-ppc-fix-b6.patch]
 
 
-PATTEN3:
+PATTERN3:
 使用__spin_trylock_irq代替_spin_trylock_irq 
 
 PATCHES:
@@ -41,7 +41,7 @@ PATCHES:
 
 
 
-PATTEN4:
+PATTERN4:
 
 有call stack 显示调用了mightsleep  
   API替换
@@ -81,7 +81,7 @@ PATCHES:
 [[file:3.0/drivers-net-vortex-fix-locking-issues.patch]
 [[file:3.6/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.6]]
 
-PATTEN5:
+PATTERN5:
 check need_resched() inside the irq disabled region
 需要在local_irq_disable的区域执行need_resched() 检测
 
@@ -108,7 +108,7 @@ PATCHES:
 
 
 
-PATTEN6:
+PATTERN6:
 simple irq handler 相关
 handle_simple_irq 这个API很容易出错。
 
@@ -133,7 +133,7 @@ PATCHES:
 [[file:2.6.24/use-edge-triggered-irq-handler-instead-of-simple-irq.patch]
 
 
-PATTEN7:
+PATTERN7:
 
 
 使用__lock_cpu_pcp代替local_irq_disable  
@@ -149,7 +149,7 @@ PATCHES:
 [[file:2.6.24/page-alloc-use-real-time-pcp-locking-for-page-draining.patch]
 
 
-PATTEN8:
+PATTERN8:
 时钟中断不能线程化IRQF_NODELAY表示不能线程化
 
  static struct irqaction pit_irq = {
@@ -163,7 +163,7 @@ PATCHES:
 [[file:2.6.26/preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch]
 
 
-PATTEN9:
+PATTERN9:
 
 在PREEMPT_RT情况下，不能在irq disable的时候，调用wake_up
 否则会触发might_sleep check
@@ -185,7 +185,7 @@ PATCHES:
 
 
 
-PATTEN10:
+PATTERN10:
 NOHZ相关：
 如果在idle loop里面则可以开启NOHZ，即只有在idle loop里面才能开启NOHZ
 也就是说关闭tick来节能。（因为调度了idle loop来执行，说明系统里面负载很低，或者干脆没有任务可以执行）
@@ -219,7 +219,7 @@ PATCHES:
 [[file:2.6.26/idle-fix.patch][2.6.26]]
 
  
-PATTEN11：
+PATTERN11：
 api替换，语义bug    
 -	local_irq_save(flags);
 +	raw_local_irq_save(flags);
@@ -227,7 +227,7 @@ api替换，语义bug
 PATCHES:
 [[file:2.6.26/generic-cmpxchg-use-raw-local-irq-variant.patch]
 
-PATTEN12：
+PATTERN12：
 api替换，语义bug  
   把spin_lock_irq
   替换成了local_irq_save
@@ -236,7 +236,7 @@ PATCHES:
 [[file:2.6.29/preempt-realtime-timer-cpu-hotplug-fix.patch]
 
 
-PATTEN13：
+PATTERN13：
 不能中断线程化。  
 会中断丢失
 外部中断边沿触发和电平触发的区别
@@ -246,7 +246,7 @@ PATCHES:
 
 
 
-PATTEN14：
+PATTERN14：
   很重要但是没有看懂：
   When CONFIG_PREEMPT_RT_FULL is enabled, tasklets run as threads,
 and spinlocks turn are mutexes. But this can cause issues with
@@ -262,7 +262,7 @@ PATCHES:
 
 
 
-PATTEN15：
+PATTERN15：
 没有看懂
 有call stack
 The reason is that ARM need irq enabled when doing activate_mm().
@@ -278,7 +278,7 @@ PATCHES:
 [[file:3.6/mm-protect-activate_mm-by-preempt_-disable-7cenable-_rt.patch]
 
 
-PATTEN16：
+PATTERN16：
   很重要的语义变化。
   On RT  softirq processing context can be preempted
   on mainline softirq processing context cannot be preempted
@@ -296,7 +296,7 @@ PATCHES:
 
 
 
-PATTEN17：
+PATTERN17：
 会睡眠的函数放到内核线程里面去运行
 
 schedule_delayed_work()会调用spinlock  
@@ -350,8 +350,8 @@ PATCHES:
 [[file:3.10/move_sched_delayed_work_to_helper.patch]
 [[file:3.12/hrtimer-Move-schedule_work-call-to-helper-thread.patch]
 
-PATTEN18:
-和PATTEN2很像
+PATTERN18:
+和PATTERN2很像
 在中断关闭的情况下面，调用了sleep相关的函数（是不是通过spin_lock间接调用了睡眠的函数？）。
  
 解决方法是去掉了下面的函数调用。 
@@ -366,7 +366,7 @@ PATCHES:
 
 
 
-PATTEN19：
+PATTERN19：
 
 增加了local_irq_save(flags); 进行保护
 
