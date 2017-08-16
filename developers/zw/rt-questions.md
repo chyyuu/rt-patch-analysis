@@ -8,10 +8,33 @@ PREEMPT_RT配置下spin_lock是可睡眠的，因此凡是不可睡眠的地方�
   * arm-kprobe-replace-patch_lock-to-raw-lock.patch
   * arm-unwind-use_raw_lock.patch
   * cpuset-Convert-callback_lock-to-raw_spinlock_t.patch
-2. 另外，虽然PREEMPT_RT配置下进行了中断线程化，但一些硬件中断（如per-CPU timer interrupt）未线程化，这类中断没有进程上下文，因此也不能睡眠。
+2. 另外，虽然PREEMPT_RT配置下进行了中断线程化，但一些硬件中断（如per-CPU timer interrupt）未线程化，这类中断没有进程上下文，因此也不能睡眠。相关patch有
+  * timer-make-the-base-lock-raw.patch //That means the lock can be made raw and held in IRQ context.
+
 3. 此外，spin_lock会带来额外的上下文切换开销，如果要保护的代码段较短可以用raw_spin_lock提高吞吐量，且对实时性影响很小，相关patch有
   * cpuset-Convert-callback_lock-to-raw_spinlock_t.patch
   * delayacct-use-raw_spinlocks.patch。
+  * mm-enable-slub.patch
+
+4. （对3的补充）在某些非官方的atomic region或下面的片段，由于不属于hardirq handler区域，所以是有进程上下文的，临界区中不能有sleepable 函数，否则会死锁
+注意：skbufhead-raw-lock.patch
+```
+Use the rps lock as rawlock so we can keep irq-off regions. It looks low
+latency. However we can't kfree() from this context therefore we defer this
+to the softirq and use the tofree_queue list for it (similar to process_queue).
+```
+这里的context为何不能执行kfree? 
+原因是这一块rps lock算是irq-off region，即属于atomic context，不能有睡眠
+
+```
+-			kfree_skb(skb);
++			__skb_queue_tail(&sd->tofree_queue, skb);
+ 			input_queue_head_incr(sd);
+ 		}
+ 	}
++	if (!skb_queue_empty(&sd->tofree_queue))
++		raise_softirq_irqoff(NET_RX_SOFTIRQ);
+```
 
 ## 何时需要把spin_lock替换为spin_lock_irq?
 
@@ -142,6 +165,7 @@ static inline void bit_spin_lock(int bitnum, unsigned long *addr)
  		return false;
  	}
 ```
+local_irq_disable 屏蔽了中断，而rcu_read_lock disable preempt
 
 # Q8
 
@@ -179,5 +203,7 @@ static inline void bit_spin_lock(int bitnum, unsigned long *addr)
 +		migrate_enable();
  	} else
 ```
+对于upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch，感觉如果加了rcu_read_lock其实就是preempt_disable, 如果这样，还需migrate_disable吗???
+
 
 使用preempt_disable/enable也是为了防止迁移，但效果过强，换成语义较弱的migrate_disable/enable可以提高性能。

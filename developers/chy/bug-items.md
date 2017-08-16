@@ -1,16 +1,62 @@
 # 对 history.org中的bug分类进行进一步分析
 
 ## semantics
+
 - migration  yxg
+
 - preempt    zzm
+
 - sched      zw
+
 - irq/softirq  mym
 
 ## concurrency
+
 - atomicity:  yxg
+
 - order:      zzm
+
 - deadlock:   zw
+
 - livelock:   mym
+  - cpu_chill -->> cpu_relax (实际上是pause指令，一般在忙等，循环)
+
+get_online_cpu 语义已经修改了，导致会出现deadlock， nest_lock
+ref cnt -->> rt_mutex   不能出现ABBA
+
+cpu_hotplug_disable 可能会引入新的bug
+
+====
+ [[file:4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+ 	if (!substream->pcm->nonatomic)
+-		local_irq_disable();
++		local_irq_disable_nort();
+ 	snd_pcm_stream_lock(substream);
+ }
+|BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:915
+|in_atomic(): 0, irqs_disabled(): 1, pid: 5947, name: alsa-sink-ALC88
+|CPU: 5 PID: 5947 Comm: alsa-sink-ALC88 Not tainted 3.18.7-rt1 #9
+|Hardware name: MEDION MS-7848/MS-7848, BIOS M7848W08.404 11/06/2014
+| ffff880409316240 ffff88040866fa38 ffffffff815bdeb5 0000000000000002
+| 0000000000000000 ffff88040866fa58 ffffffff81073c86 ffffffffa03b2640
+| ffff88040239ec00 ffff88040866fa78 ffffffff815c3d34 ffffffffa03b2640
+|Call Trace:
+| [<ffffffff815bdeb5>] dump_stack+0x4f/0x9e
+| [<ffffffff81073c86>] __might_sleep+0xe6/0x150
+| [<ffffffff815c3d34>] __rt_spin_lock+0x24/0x50
+| [<ffffffff815c4044>] rt_read_lock+0x34/0x40
+| [<ffffffffa03a2979>] snd_pcm_stream_lock+0x29/0x70 [snd_pcm]
+
+在atomic context 中引入了mutex, 即snd_pcm_stream_lock， 会 sleeping
+
+
+
+对于per_cpu而言，比较好的内核设计是：
+n个cpu，则有 n个kernel_thread，每个cpu一个，不会出现在一个cpu上运行多个kernel_thread的情况。
+这样，用per_cpu就很好了，即有本地的var可以访问，且不用担心对var的独占访问。因为不会在一个cpu上存在两个kernel_thread/process，且都会访问per_cpu的var.
+
+我如何知道这个变量的访问是否可以在process context or kernel thread context?
+
 
 
 # bug items

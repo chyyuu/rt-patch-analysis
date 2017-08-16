@@ -14,18 +14,51 @@ https://www.kernel.org/pub/linux/kernel/projects/rt/4.9/older/patches-4.9-rt1.ta
 local_lock/unlock与preempt_disable/enable 的关系。
 
 
+```
+rt_spin_lock 即没有migration_disable, 并有rt_mutex
+------------------------------------
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define spin_lock_local(lock)			rt_spin_lock(lock)
+
+------------------------------------
+static inline void __local_lock(struct local_irq_lock *lv)
+{
+	if (lv->owner != current) {
+		spin_lock_local(&lv->lock);
+		LL_WARN(lv->owner);
+		LL_WARN(lv->nestcnt);
+		lv->owner = current;
+	}
+	lv->nestcnt++;
+}
+------------------------------------
+#ifdef CONFIG_PREEMPT_RT_FULL
+
+#define get_local_var(var) (*({		\
+	       migrate_disable();	\
+	       this_cpu_ptr(&var);	}))
 
 
-local_lock主要是可迁移，并且使用mutex类型的lock,并且可抢占
+------------------------------------
+#define local_lock(lvar)					\
+	do { __local_lock(&get_local_var(lvar)); } while (0)
 
-preempt_disable主要是关闭抢占
+```
 
+local_lock主要是disable migrate，并且使用rt_mutex类型的lock,并且可抢占
+
+preempt_disable主要是关闭本地抢占，但其实没有实现smp互斥
+
+local_irq_disable 是关闭本地中断,，但其实没有实现smp互斥
+
+三者是有区别的
 
 从这两个api的diff来看，只需要锁就行，可以抢占、可以迁移的。
 We need to protect the per cpu variable and prevent migration.
 但是和其注释信息是相矛盾的。
 
 这里原来为啥需要关闭抢占？
+A: 保证不能有单cpu上由于进程抢占，导致另外进程访问带来的潜在single cpu下的互斥
 
 
 
@@ -42,27 +75,14 @@ from PATCH mm/memcontrol: Replace local_irq_disable with local locks
 
  
  
- 1 local_bh_enable与_local_bh_enable如何相互替换？
+ 1 local_bh_disable/enable与_local_bh_doisable/enable如何相互替换？
 
  from PATCH genirq: Allow disabling of softirq processing in irq thread context
 
  
  * [   3.4 -   4.11] genirq: Allow disabling of softirq processing in irq thread context{C::performance::irq::Allow disabling of softirq processing in irq thread context}
   + [[file:3.4/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.4]]
-  m [[file:3.6/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.6]]
-    [[file:3.8/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.8]]
-    [[file:3.10/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.10]]
-    [[file:3.12/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.12]]
-  M [[file:3.14/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.14]]
-    [[file:3.18/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][3.18]]
-  m [[file:4.0/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.0]]
-  M [[file:4.1/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.1]]
-  M [[file:4.4/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.4]]
-    [[file:4.6/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.6]]
-    [[file:4.8/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.8]]
-    [[file:4.9/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.9]]
-    [[file:4.11/irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch][4.11]]
- 
+
 将local_bh_enable替换为_local_bh_enable，发现是减少了检查、并且执行
 do_current_softirqs的工作。
 （这里都是比较的RT版本的API。没有和VNINLLA版本做对比。感觉应该是对的。）
@@ -95,9 +115,18 @@ EXPORT_SYMBOL(__local_bh_enable);
 
 原因：说是在RT情况下面少做一些事情，来提供性能。
 
+loca_bh_disable在non-rt和rt下语义发生了比较大的变化
 
+在non-rt下，loca_bh_disable会add  __preempt_count
+DEFINE_PER_CPU(int, __preempt_count) = INIT_PREEMPT_COUNT;
+使得调度器不执行此cpu中的softirq 代码
+
+在rt下，softirq都是kernel thread了. loca_bh_disable的语义为禁止迁移 migrate_disable
 
 1  何时需要把disable_irq替换为disable_irq_nosync  这里面有规律吗？
+chyyuu: 我看到disable_irq 和 disable_irq_nosync 在non-rt和rt下的实现是一样的。所以这里的问题不应该是rt独有的问题。
+chyyuu:在vanilla中，也有disable_irq和disable_irq_nosync的大量使用。
+
 ./drivers-net-8139-disable-irq-nosync.patch:3:Subject: drivers/net: Use disable_irq_nosync() in 8139too
 ./drivers-net-8139-disable-irq-nosync.patch:5:Use disable_irq_nosync() instead of disable_irq() as this might be
 ./drivers-net-8139-disable-irq-nosync.patch:21:-        disable_irq(irq);
@@ -287,7 +316,7 @@ preempt_count_inc 和preempt_count_dec 加了编译选项，只有CONFIG_X86_64
 +			io_schedule();
 
 
-io_schedule会引发进程UNINTERRUPTERBALE睡眠等待，并且是需要唤醒的，这里是为了提高性能。
+io_schedule会引发进程UNINTERRUPTERBALE睡眠等待，并且是需要唤醒的，这里是为了提高实时性能。
 
 blk_plug构建了一个缓存碎片IO的请求队列。用于将顺序请求合并成一个大的请求。
 合并后请求批量从per-task链表移动到设备请求队列，减少了设备请求队列锁竞争，
@@ -310,14 +339,6 @@ task_struct成员
 
 * [  3.14 -   4.11] net: sched: Use msleep() instead of yield(){C::bug::deadlock::deadlock::semantics::sched: Use msleep() instead of yield()}
   + [[file:3.14/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][3.14]]
-    [[file:3.18/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][3.18]]
-    [[file:4.0/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.0]]
-    [[file:4.1/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.1]]
-    [[file:4.4/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.4]]
-    [[file:4.6/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.6]]
-    [[file:4.8/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.8]]
-    [[file:4.9/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.9]]
-    [[file:4.11/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][4.11]]
 
 	
 On PREEMPT_RT enabled systems the interrupt handler run as threads at prio 50
