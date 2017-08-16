@@ -170,14 +170,38 @@ https://github.com/chyyuu/rt-patch-analysis/blob/master/rt-linux-lkp/how_to_get_
 ## 2017.8.15 rt-bug-analysis
 ```
 ## semantics
-- migration  yxg
-- preempt    zzm
-- sched      zw
-- irq/softirq  mym
+- migration 14   yxg
+- preempt   29   zzm
+- sched     10   zw
+- irq/softirq 57+7  mym
 
 ## concurrency
-- atomicity:  yxg
-- order:      zzm
-- deadlock:   zw
-- livelock:   mym
+- atomicity: 43  yxg
+- order:     17  zzm
+- deadlock:  67  zw
+- livelock:  10  mym
+
+
+yxg:57
+zzm:46
+zw:77
+mym:74
+
+
+grep -A 1 -E "C::bug::[^:]*::irq::" ./history.org  >bug_irq.txt
+
+
+grep  -E  "C::bug::[^:]*::irq::"  ./history.org  | wc -l
+
+
+"C::bug::[^:]*::irq::"
+"C::bug::[^:]*::softirq::"
+"C::bug::[^:]*::livelock::"
+
+"C::bug::[^:]*::migration::"
+"C::bug::[^:]*::preempt::"
+"C::bug::[^:]*::sched::"
+"C::bug::[^:]*::atomicity::"
+"C::bug::[^:]*::order::"
+"C::bug::[^:]*::deadlock::"
 ```

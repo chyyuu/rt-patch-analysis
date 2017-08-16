@@ -1,0 +1,414 @@
+bug_irq 有57个，一共分了21种模式
+
+出现次数比较多的patten
+PATTERN4:8次
+PATTERN6:4次
+PATTERN17：2次
+
+
+
+
+
+
+PATTERN1：
+将spin_lock_irqsave换成了local_irq_save，
+
+意思是说不需要锁了，只需要关中断就可以了。
+why?是因为这段代码只会在中断处理程序里面执行吗？因此只需要关中断就可以了？那为何变成了bug?
+spin_lock_irqsave也是可以关中断的吗？是不是不好关中断？
+
+
+
+PATCHES:
+[[file:2.6.22/preempt-rt-cs5530-lock-ide-fix.patch][2.6.22]]
+
+
+
+PATTERN2:
+scheduling with irqs disabled
+在关中断的时候，执行了schedule因此报错。
+解决方法：enable soft/hard irq,然后就可以执行schedule了。
+
+PATCHES:
+[[file:2.6.22/preempt-irqs-ppc-fix-b6.patch]
+
+
+PATTERN3:
+使用__spin_trylock_irq代替_spin_trylock_irq 
+
+PATCHES:
+[[file:2.6.23/fix-PICK_FUNCTION-spin_trylock_irq.patch]
+
+
+
+PATTERN4:
+
+有call stack 显示调用了mightsleep  
+  API替换
+    
+-	local_irq_save(flags);
++	local_irq_save_nort(flags);
+
+
+disable interrupt only on !RT
+只在非rt环境下面才会disable irq
+也就是local_irq_save_nort这个api的含义了？
+
+需要关闭irq 
+
+
+   很重要：
+   Function qla2x00_poll does local_irq_save() before calling qla24xx_intr_handler
+which has a spinlock. Since spinlocks are sleepable on rt, it is not allowed
+to call them with interrupts disabled. Therefore we use local_irq_save_nort()
+instead which saves flags without disabling interrupts.
+
+说是rt下面的spinlock可以睡眠？然后不能在irq disable的情况下面调用spin_lock
+
+-	local_irq_save(flags);
++	local_irq_save_nort(flags);
+
+local_irq_save_nort 不会关闭irq,因此再调用spin_lock就可以睡眠了。
+
+
+PATCHES:
+[[file:2.6.23/preempt-realtime-mellanox-driver-fix.patch]
+[[file:2.6.29/rt-res_counter-fix.patch]
+[[file:2.6.29/ata-irq-save-nort.patch]
+[[file:3.0/tty-use-local-irq-nort.patch]
+[[file:3.0/resource-counters-use-localirq-nort.patch]
+[[file:3.0/fs-ntfs-disable-interrupt-non-rt.patch]
+[[file:3.0/drivers-net-vortex-fix-locking-issues.patch]
+[[file:3.6/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.6]]
+
+PATTERN5:
+check need_resched() inside the irq disabled region
+需要在local_irq_disable的区域执行need_resched() 检测
+
+The missing need_resched() check inside the irq_disabled region can cause
+long latencies, if a interrupt with reschedule request happens between 
+preempt_disable() and the local_irq_disable(). In fact the interrupts are
+disabled inside prepare_guest_switch(), so the race window is rather small.
+  
+ 	local_irq_disable();
+ 
++	if (need_resched()) {
++		local_irq_enable();
++		preempt_enable();
++		r = 1;
++		goto out;
++	}
++
+ 	if (signal_pending(current)) {
+ 		local_irq_enable();
+ 		preempt_enable();  
+
+PATCHES:
+[[file:2.6.24/kvm-fix-preemption-bug.patch]
+
+
+
+PATTERN6:
+simple irq handler 相关
+handle_simple_irq 这个API很容易出错。
+
+thread_simple_irq这个API里面能会丢失pending的中断。
+
+
+  simple_irq()
+  handle_simple_irq() mechanism
+  
+  * The RT kernels has a problem that the interrupt get masked forever while
+the interrupt thread is running and a new interrupt arrives. 
+In the interrupt threads there is masking done in the handle_simple_irq()
+path, while a simple_irq typically cannot be masked.
+  会导致中断丢失
+
+  
+  
+PATCHES:
+[[file:2.6.24/revert-handle-simple-irq-soft-disable.patch]
+[[file:2.6.23/irq-mask-fix.patch][2.6.23]]
+[[file:2.6.24/handle-pending-in-simple-irq.patch]
+[[file:2.6.24/use-edge-triggered-irq-handler-instead-of-simple-irq.patch]
+
+
+PATTERN7:
+
+
+使用__lock_cpu_pcp代替local_irq_disable  
+-		local_irq_disable();
++		unsigned long flags;
++		__lock_cpu_pcp(&flags, cpu);
+ 		__drain_pages(cpu);
+ 		vm_events_fold_cpu(cpu);
+-		local_irq_enable();
++		unlock_cpu_pcp(flags, cpu);
+
+PATCHES:
+[[file:2.6.24/page-alloc-use-real-time-pcp-locking-for-page-draining.patch]
+
+
+PATTERN8:
+时钟中断不能线程化IRQF_NODELAY表示不能线程化
+
+ static struct irqaction pit_irq = {
+ 	.name	 = "timer",
+-	.flags	 = IRQF_DISABLED | IRQF_TIMER,
++	.flags	 = IRQF_DISABLED | IRQF_TIMER | IRQF_NODELAY,
+ 	.handler = pit_tick,
+ };
+ 
+PATCHES:
+[[file:2.6.26/preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch]
+
+
+PATTERN9:
+
+在PREEMPT_RT情况下，不能在irq disable的时候，调用wake_up
+否则会触发might_sleep check
+
+
+  When PREEMPT_RT is enabled then the wakeup code (including the tracer)
+can be called with interrupts disabled which triggers the might sleep
+check in rt_spin_lock_fastlock(). Do not call wakeup when interrupts
+are disabled in the PREEMPT_RT case.
+
+-		wake_up(&trace_wait);
++#ifdef CONFIG_PREEMPT_RT
++		if (!irqs_disabled())
++#endif
++			wake_up(&trace_wait);
+
+PATCHES:
+[[file:2.6.26/trace-do-not-wakeup-when-irqs-disabled.patch]
+
+
+
+PATTERN10:
+NOHZ相关：
+如果在idle loop里面则可以开启NOHZ，即只有在idle loop里面才能开启NOHZ
+也就是说关闭tick来节能。（因为调度了idle loop来执行，说明系统里面负载很低，或者干脆没有任务可以执行）
+如果在idle loop外面开启NOHZ,则会把时钟中断关闭了，导致死机了。
+
+
+      The interrupts can happen at any point inside the race window. The
+    first interrupt stops the tick, the second one causes the scheduler to
+    rerun and switch away from idle again and we end up with the tick
+    disabled.
+    
+    The fact that it needs two interrupts where the first one does not set
+    NEED_RESCHED and the second one does made the bug obscure and extremly
+    hard to reproduce and analyse. Kudos to Jack and Eric.
+    
+    Solution: Limit the NOHZ functionality to the idle loop to make sure
+    that we can not run into such a situation ever again.
+	
+	时钟中断相关，时钟中断有可能关闭了以后，在也无法开启了。
+  * Called either from the idle loop or from irq_exit() when an idle period was
+  * just interrupted by an interrupt which did not cause a reschedule.
+  */
+-void tick_nohz_stop_sched_tick(void)
++void tick_nohz_stop_sched_tick(int inidle)
+
+-		tick_nohz_stop_sched_tick();
++		tick_nohz_stop_sched_tick(1);
+给函数增加了一个标志位，来判断是否在indel loop里面
+
+PATCHES:
+[[file:2.6.26/idle-fix.patch][2.6.26]]
+
+ 
+PATTERN11：
+api替换，语义bug    
+-	local_irq_save(flags);
++	raw_local_irq_save(flags);
+
+PATCHES:
+[[file:2.6.26/generic-cmpxchg-use-raw-local-irq-variant.patch]
+
+PATTERN12：
+api替换，语义bug  
+  把spin_lock_irq
+  替换成了local_irq_save
+  说是不能睡眠和开启中断。
+PATCHES:
+[[file:2.6.29/preempt-realtime-timer-cpu-hotplug-fix.patch]
+
+
+PATTERN13：
+不能中断线程化。  
+会中断丢失
+外部中断边沿触发和电平触发的区别
+
+PATCHES:
+[[file:3.0/drivers-net-ehea-mark-rx-irq-no-thread.patch] 
+
+
+
+PATTERN14：
+  很重要但是没有看懂：
+  When CONFIG_PREEMPT_RT_FULL is enabled, tasklets run as threads,
+and spinlocks turn are mutexes. But this can cause issues with
+tasks disabling tasklets. A tasklet runs under ksoftirqd, and
+if a tasklets are disabled with tasklet_disable(), the tasklet
+count is increased. When a tasklet runs, it checks this counter
+and if it is set, it adds itself back on the softirq queue and
+returns.
+
+PATCHES:
+[[file:3.2/tasklet-rt-prevent-tasklets-from-going-into-infinite-spin-in-rt.patch]
+
+
+
+
+PATTERN15：
+没有看懂
+有call stack
+The reason is that ARM need irq enabled when doing activate_mm().
+According to mm-protect-activate-switch-mm.patch, actually
+preempt_[disable|enable]_rt() is sufficient.
+  
+  
+有api替换，需要打开irq
+  
+-	local_irq_disable_rt();
++	preempt_disable_rt();  
+PATCHES:
+[[file:3.6/mm-protect-activate_mm-by-preempt_-disable-7cenable-_rt.patch]
+
+
+PATTERN16：
+  很重要的语义变化。
+  On RT  softirq processing context can be preempted
+  on mainline softirq processing context cannot be preempted
+
+ 	/* Hardware IRQ handlers cannot block. */
+-	if (in_irq() || in_serving_softirq()) {
++	if (preempt_count() & (HARDIRQ_MASK | SOFTIRQ_OFFSET)) {
+ 		local_irq_restore(flags);
+ 		return;
+ 	}
+	
+PATCHES:
+[[file:3.6/rcu-tiny-solve-rt-mistery.patch]	
+
+
+
+
+PATTERN17：
+会睡眠的函数放到内核线程里面去运行
+
+schedule_delayed_work()会调用spinlock  
+calling schedule_delayed_work()from interrupt is not safe，需要启动一个内核线程，在线程上下文里面来执行这个函数。
+  
+说是内核里面应该还有同类型的错误没有被发现：
+The ntp code for notify_cmos_timer() is called from a hard interrupt
+context. schedule_delayed_work() under PREEMPT_RT_FULL calls spinlocks
+that have been converted to mutexes, thus calling schedule_delayed_work()
+from interrupt is not safe.
+
+Add a helper thread that does the call to schedule_delayed_work and wake
+up that thread instead of calling schedule_delayed_work() directly.
+This is only for CONFIG_PREEMPT_RT_FULL, otherwise the code still calls
+schedule_delayed_work() directly in irq context.
+
+Note: There's a few places in the kernel that do this. Perhaps the RT
+code should have a dedicated thread that does the checks. Just register
+a notifier on boot up for your check and wake up the thread when
+needed. This will be a todo.
+
+
+
+
+
+The clock_was_set_delayed is called in hard IRQ handler (timer interrupt), which
+calls schedule_work.
+
+Under PREEMPT_RT_FULL, schedule_work calls spinlocks which could sleep, so it's
+not safe to call schedule_work in interrupt context.
+
+Reference upstream commit b68d61c705ef02384c0538b8d9374545097899ca
+(rt,ntp: Move call to schedule_delayed_work() to helper thread)
+from git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git, which
+makes a similar change.
+
+add a helper thread which does the call to schedule_work and wake up that
+thread instead of calling schedule_work directly.
+
+
+在PREEMPT_RT_FULL环境下，schedule_work会调用spinlock，然后spinlock会引起睡眠（这里睡眠是不是优先级继承导致的睡眠？）
+所以在中断上下文件里面调用schedule_work会不安全。
+解决方法也是将会睡眠的函数放到一个内核线程里面去执行。
+
+
+
+
+
+
+PATCHES:
+[[file:3.10/move_sched_delayed_work_to_helper.patch]
+[[file:3.12/hrtimer-Move-schedule_work-call-to-helper-thread.patch]
+
+PATTERN18:
+和PATTERN2很像
+在中断关闭的情况下面，调用了sleep相关的函数（是不是通过spin_lock间接调用了睡眠的函数？）。
+ 
+解决方法是去掉了下面的函数调用。 
+- preempt_disable();
+
+有call stack，显示的是 
+| BUG: sleeping function called from invalid context at kernel/rtmutex.c:659
+| in_atomic(): 1, irqs_disabled(): 0, pid: 517, name: Xorg
+
+PATCHES:
+[[file:3.12/drm-remove-preempt_disable-from-drm_calc_vbltimestam.patch]
+
+
+
+PATTERN19：
+
+增加了local_irq_save(flags); 进行保护
+
+Any callers to the function rcu_preempt_qs() must disable irqs in
+order to protect the assignment to ->rcu_read_unlock_special.
+
+PATCHES:
+[[file:3.14/rcutree-rcu_bh_qs-disable-irq-while-calling-rcu_pree.patch]
+
+
+
+APTTEN20：
+API替换  
+-	local_irq_save(flags);
++	local_lock_irqsave(irq_off_lock, flags);  
+
+the local_irq_save() + spin_lock() does not work that well on -RT
+
+PATCHES:
+[[file:3.14/percpu_ida-use-locklocks.patch]
+
+
+
+APTTEN21：
+API替换  
+-		raw_spin_unlock_irq(&task->pi_lock);
++		raw_spin_unlock_irqrestore(&task->pi_lock, flags);
+
+
+In the non-RT case the spin_lock_irq() here disables interrupts as well
+as raw_spin_lock_irq(). So in the unlock case the interrupts are enabled
+too early. 
+raw_spin_unlock_irq会无条件的开启中断，此时会带来问题。例如上面提到的，中断开的太早了。
+  
+-		raw_spin_lock_irq(&task->pi_lock);
++		unsigned long flags;
++
++		raw_spin_lock_irqsave(&task->pi_lock, flags);
+
+
+-		raw_spin_unlock_irq(&task->pi_lock);
++		raw_spin_unlock_irqrestore(&task->pi_lock, flags);
+
+PATCHES:
+[[file:4.6/ptrace-don-t-open-IRQs-in-ptrace_freeze_traced-too-e.patch]
