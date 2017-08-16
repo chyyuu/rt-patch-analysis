@@ -1,7 +1,10 @@
 
+# define local_irq_save_nort(flags)     local_save_flags(flags)
+# define local_irq_restore_nort(flags)  (void)(flags)
 
-local_irq_save_nort/local_irq_restore_nort
-变成了local_save_flags(flags),仅仅是当当前的EFLGS寄存器的值放入到了flags变量里面。
+
+local_irq_save_nort
+变成了local_save_flags(flags),仅仅是把当前的EFLGS寄存器的值放入到了flags变量里面。
 
 local_irq_restore_nort(flags) 
 变成了 (void)(flags) 
