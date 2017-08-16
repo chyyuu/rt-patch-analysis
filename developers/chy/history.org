@@ -8441,8 +8441,7 @@ IPI context.
     [[file:3.18/seqlock-consolidate-spin_lock-unlock-waiting-with-sp.patch][3.18]]
     [[file:4.0/seqlock-consolidate-spin_lock-unlock-waiting-with-sp.patch][4.0]]
   - 4.1
-* [  3.14 -    4.0] timer/rt: Always raise the softirq if there's irq_work to be done{C::bug::hang::softirq::softirq::timer/rt: Always raise the softirq if there's irq_work to
- be done}
+* [  3.14 -    4.0] timer/rt: Always raise the softirq if there's irq_work to be done{C::bug::hang::softirq::softirq::timer/rt: Always raise the softirq if there's irq_work to be done}
   + [[file:3.14/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][3.14]]
     [[file:3.18/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][3.18]]
     [[file:4.0/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][4.0]]
