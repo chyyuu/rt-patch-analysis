@@ -1,0 +1,49 @@
+local_lock_irqsave
+最终会调用spin_lock_irqsave 其并没有disable irq，但是会关闭迁移。
+
+#define local_lock_irqsave(lvar, _flags)				\
+	do {								\
+		if (__local_lock_irqsave(&get_local_var(lvar)))		\
+			put_local_var(lvar);				\
+		_flags = __this_cpu_read(lvar.flags);			\
+	} while (0)
+
+
+static inline int __local_lock_irqsave(struct local_irq_lock *lv)
+{
+	if (lv->owner != current) {
+		__local_lock_irq(lv);
+		return 0;
+	} else {
+		lv->nestcnt++;
+		return 1;
+	}
+}
+
+static inline __attribute__((no_instrument_function)) void __local_lock_irq(struct local_irq_lock *lv)
+{
+ do { ({ unsigned long __dummy; typeof(lv->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); lv->flags = 0; rt_spin_lock(&lv->lock); } while (0);
+ do { } while (0);
+ do { } while (0);
+ lv->owner = get_current();
+ lv->nestcnt = 1;
+}
+
+
+
+static inline void __local_lock_irq(struct local_irq_lock *lv)
+{
+	spin_lock_irqsave(&lv->lock, lv->flags);
+	LL_WARN(lv->owner);
+	LL_WARN(lv->nestcnt);
+	lv->owner = current;
+	lv->nestcnt = 1;
+}
+
+
+#define spin_lock_irqsave(lock, flags)			 \
+	do {						 \
+		typecheck(unsigned long, flags);	 \
+		flags = 0;				 \
+		spin_lock(lock);			 \
+	} while (0)

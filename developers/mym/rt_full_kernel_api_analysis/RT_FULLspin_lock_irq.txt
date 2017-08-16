@@ -1,0 +1,5 @@
+#define spin_lock_irq(lock) spin_lock(lock)
+
+
+RT-FULL 版本的spin_lock_irq已经不能disable_irq了,和RT_FULL spin_lock等价
+开启抢占，关闭迁移，会自旋

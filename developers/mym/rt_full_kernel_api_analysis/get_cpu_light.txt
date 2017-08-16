@@ -1,0 +1,64 @@
+get/put_cpu_light
+
+
+
+#define get_cpu_light() ({ migrate_disable(); smp_processor_id(); })
+#define put_cpu_light() migrate_enable()
+关闭迁移，然后获取到cpuid
+
+
+# 191 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/smp.h"
+  extern unsigned int debug_smp_processor_id(void);
+#define smp_processor_id() debug_smp_processor_id()
+
+
+
+
+
+
+
+
+
+
+
+./block/blk-mq.h:133:   return __blk_mq_get_ctx(q, get_cpu_light());
+./block/blk-mq.c:432:   cpu = get_cpu_light();
+./block/blk-mq.c:1170:          int cpu = get_cpu_light();
+./drivers/md/raid5.c:1989:      cpu = get_cpu_light();
+./drivers/scsi/fcoe/fcoe.c:1467:        int rc, cpu = get_cpu_light();
+./drivers/scsi/fcoe/fcoe.c:1658:        stats = per_cpu_ptr(lport->stats, get_cpu_light());
+./drivers/scsi/fcoe/fcoe.c:1705:        stats = per_cpu_ptr(lport->stats, get_cpu_light());
+./drivers/scsi/fcoe/fcoe_ctlr.c:839:    stats = per_cpu_ptr(fip->lp->stats, get_cpu_light());
+./drivers/scsi/libfc/fc_exch.c:836:     cpu = get_cpu_light();
+./fs/eventpoll.c:513:   int this_cpu = get_cpu_light();
+./include/linux/smp.h:200:#define get_cpu_light()               ({ migrate_disable(); smp_processor_id(); })
+./mm/vmalloc.c:901:     cpu = get_cpu_light();
+./mm/vmalloc.c:990:     cpu = get_cpu_light();
+./mm/memcontrol.c:1789: curcpu = get_cpu_light();
+./mm/compaction.c:1604:                         cpu = get_cpu_light();
+./net/sunrpc/svc_xprt.c:399:    cpu = get_cpu_light();
+./net/core/dev.c:3823:          ret = enqueue_to_backlog(skb, get_cpu_light(), &qtail);
+
+
+
+/**
+ * new_vmap_block - allocates new vmap_block and occupies 2^order pages in this
+ *                  block. Of course pages number can't exceed VMAP_BBMAP_BITS
+ * @order:    how many 2^order pages should be occupied in newly allocated block
+ * @gfp_mask: flags for the page level allocator
+ *
+ * Returns: virtual address in a newly allocated block or ERR_PTR(-errno)
+ */
+static void *new_vmap_block(unsigned int order, gfp_t gfp_mask)
+{
+
+        cpu = get_cpu_light();
+        vbq = this_cpu_ptr(&vmap_block_queue);
+        spin_lock(&vbq->lock);
+        list_add_tail_rcu(&vb->free_list, &vbq->free);
+        spin_unlock(&vbq->lock);
+        put_cpu_light();
+
+        return vaddr;
+}
+

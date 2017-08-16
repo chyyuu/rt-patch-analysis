@@ -1,0 +1,6 @@
+
+
+#define preempt_disable_nort() barrier()
+#define preempt_enable_nort() barrier()
+
+可以认为是空操作

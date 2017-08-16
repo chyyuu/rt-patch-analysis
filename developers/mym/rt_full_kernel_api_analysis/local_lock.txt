@@ -1,0 +1,134 @@
+
+从这里看local_lock和rt_spin_lock__no_mg 区别不大啊？
+唯一区别是锁必须是per_cpu的锁？
+
+
+#define local_lock(lvar) do { __local_lock(&get_local_var(lvar)); } while (0)
+
+static inline __attribute__((no_instrument_function)) void __local_lock(struct local_irq_lock *lv)
+{
+ if (lv->owner != get_current()) {
+  rt_spin_lock__no_mg(&lv->lock);
+  do { } while (0);
+  do { } while (0);
+  lv->owner = get_current();
+ }
+ lv->nestcnt++;
+}
+
+lv->nestcnt++;也进行了嵌套调用计数。
+第一次调用的时候，使用了rt_spin_lock__no_mg，即不会关闭迁移no_mgretion_disable
+
+
+
+#define local_unlock(lvar) do { __local_unlock(this_cpu_ptr(&lvar)); put_local_var(lvar); } while (0)
+
+
+static inline __attribute__((no_instrument_function)) void __local_unlock(struct local_irq_lock *lv)
+{
+ do { } while (0);
+ do { } while (0);
+ if (--lv->nestcnt)
+  return;
+
+ lv->owner = ((void *)0);
+ rt_spin_unlock__no_mg(&lv->lock);
+}
+
+
+
+
+get_local_var 应该是和PERCPU类似
+===================================
+和percpu相关，这里关闭了迁移，然后获取percpu变量。
+
+#define get_local_var(var) (*({ migrate_disable(); this_cpu_ptr(&var); }))
+
+
+#define this_cpu_ptr(ptr) ({ __verify_pcpu_ptr(ptr); SHIFT_PERCPU_PTR(ptr, my_cpu_offset); })
+
+#define SHIFT_PERCPU_PTR(__p,__offset) RELOC_HIDE((typeof(*(__p)) __kernel __force *)(__p), (__offset))
+
+#define my_cpu_offset per_cpu_offset(smp_processor_id())
+
+extern unsigned long __per_cpu_offset[64];
+
+#define per_cpu_offset(x) (__per_cpu_offset[x])
+
+==================================
+
+static inline void __local_lock(struct local_irq_lock *lv)
+{
+        if (lv->owner != current) {
+                spin_lock_local(&lv->lock);
+                LL_WARN(lv->owner);
+                LL_WARN(lv->nestcnt);
+                lv->owner = current;
+        }
+        lv->nestcnt++;
+}
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+# define spin_lock_local(lock)                  rt_spin_lock__no_mg(lock)
+
+
+
+
+
+=========================================================
+./mm/filemap.c:146:     local_lock(shadow_nodes_lock);
+./mm/filemap.c:166:     local_lock(shadow_nodes_lock);
+./mm/truncate.c:44:     local_lock(shadow_nodes_lock);
+
+
+static int page_cache_tree_insert(struct address_space *mapping,
+                                  struct page *page, void **shadowp)
+{       
+        struct radix_tree_node *node;
+        void **slot;
+        int error;
+        
+        error = __radix_tree_create(&mapping->page_tree, page->index, 0,
+                                    &node, &slot);
+        if (error)
+                return error;
+        if (*slot) { 
+                void *p;
+                
+                p = radix_tree_deref_slot_protected(slot, &mapping->tree_lock);
+                if (!radix_tree_exceptional_entry(p))
+                        return -EEXIST;
+                
+                mapping->nrexceptional--;
+                if (!dax_mapping(mapping)) {
+                        if (shadowp)
+                                *shadowp = p;
+                } else {
+                        /* DAX can replace empty locked entry with a hole */
+                        WARN_ON_ONCE(p !=
+                                dax_radix_locked_entry(0, RADIX_DAX_EMPTY));
+                        /* Wakeup waiters for exceptional entry lock */
+                        dax_wake_mapping_entry_waiter(mapping, page->index, p,
+                                                      true);
+                }
+        }
+        local_lock(shadow_nodes_lock);
+        __radix_tree_replace(&mapping->page_tree, node, slot, page,
+                             __workingset_update_node, mapping);
+        local_unlock(shadow_nodes_lock);
+        mapping->nrpages++;
+        return 0;
+}
+
+
+
+ do { __local_lock(&(*({ migrate_disable(); ({ do { const void *__vpp_verify = (typeof((&shadow_nodes_lock) + 0))((void *)0); (void)__vpp_verify; } while (0); ({ unsigned long __ptr; __asm__ ("" : "=r"(__ptr) : "0"((typeof(*(&shadow_nodes_lock)) *)(&shadow_nodes_lock))); (typeof((typeof(*(&shadow_nodes_lock)) *)(&shadow_nodes_lock))) (__ptr + (((__per_cpu_offset[debug_smp_processor_id()])))); }); }); }))); } while (0);
+
+
+ __radix_tree_replace(&mapping->page_tree, node, slot, page,
+        __workingset_update_node, mapping);
+
+
+
+do { __local_unlock(({ do { const void *__vpp_verify = (typeof((&shadow_nodes_lock) + 0))((void *)0); (void)__vpp_verify; } while (0); ({ unsigned long __ptr; __asm__ ("" : "=r"(__ptr) : "0"((typeof(*(&shadow_nodes_lock)) *)(&shadow_nodes_lock))); (typeof((typeof(*(&shadow_nodes_lock)) *)(&shadow_nodes_lock))) (__ptr + (((__per_cpu_offset[debug_smp_processor_id()])))); }); })); do { (void)&(shadow_nodes_lock); migrate_enable(); } while (0); } while (0);
+ mapping->nrpages++;

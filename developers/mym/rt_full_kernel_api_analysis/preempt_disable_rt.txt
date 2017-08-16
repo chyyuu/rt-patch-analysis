@@ -1,0 +1,49 @@
+
+
+#define preempt_disable_rt() preempt_disable()
+#define preempt_enable_rt() preempt_enable()
+
+preempt_disable_rt的语义和RT_FULL_preempt_disable的语义相同。
+即将preempt_count计数加1，禁止抢占
+
+
+
+# 198 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/preempt.h"
+#define preempt_disable() do { preempt_count_inc(); barrier(); } while (0)
+
+
+
+
+
+
+
+
+
+==============================================
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ grep -w  preempt_disable_rt ./* -Rn
+./drivers/gpu/drm/vc4/vc4_crtc.c:166:   /* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+./drivers/gpu/drm/radeon/radeon_display.c:1847: /* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+./drivers/gpu/drm/radeon/radeon_display.c:1848: preempt_disable_rt();
+./drivers/gpu/drm/amd/amdgpu/amdgpu_display.c:855:      /* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+./drivers/gpu/drm/i915/i915_irq.c:869:  /* preempt_disable_rt() should go right here in PREEMPT_RT patchset. */
+./drivers/gpu/drm/i915/i915_irq.c:870:  preempt_disable_rt();
+./fs/exec.c:1025:       preempt_disable_rt();
+./include/linux/vmstat.h:36:    preempt_disable_rt();
+./include/linux/vmstat.h:48:    preempt_disable_rt();
+./include/linux/seqlock.h:231:  preempt_disable_rt();
+./include/linux/preempt.h:354:# define preempt_disable_rt()             preempt_disable()
+./include/linux/preempt.h:359:# define preempt_disable_rt()             barrier()
+./kernel/sched/core.c:588:      preempt_disable_rt();
+./mm/mmu_context.c:28:  preempt_disable_rt();
+./mm/vmstat.c:248:      preempt_disable_rt();
+./mm/vmstat.c:270:      preempt_disable_rt();
+./mm/vmstat.c:313:      preempt_disable_rt();
+./mm/vmstat.c:331:      preempt_disable_rt();
+./mm/vmstat.c:361:      preempt_disable_rt();
+./mm/vmstat.c:379:      preempt_disable_rt();
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ 
+
+
+make O=../v4.11.5-rt1  CFLAGS_KERNEL=-g3 mm/vmstat.i  
+
+

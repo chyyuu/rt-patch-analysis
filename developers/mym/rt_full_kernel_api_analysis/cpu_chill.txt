@@ -1,0 +1,74 @@
+cpu_chill
+会调用__hrtimer_nanosleep发生1milisecond睡眠,进程切换
+
+
+./kernel/time/hrtimer.c:1758:void cpu_chill(void)
+./kernel/time/hrtimer.c:1771:EXPORT_SYMBOL(cpu_chill);
+./kernel/workqueue.c:1307:      cpu_chill();
+
+
+./kernel/time/hrtimer.c
+
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+/*
+ * Sleep for 1 ms in hope whoever holds what we want will let it go.
+ */
+void cpu_chill(void)
+{
+        struct timespec tu = {
+                .tv_nsec = NSEC_PER_MSEC,
+        };
+        unsigned int freeze_flag = current->flags & PF_NOFREEZE;
+
+        current->flags |= PF_NOFREEZE;
+        __hrtimer_nanosleep(&tu, NULL, HRTIMER_MODE_REL, CLOCK_MONOTONIC,
+                            TASK_UNINTERRUPTIBLE);
+        if (!freeze_flag)
+                current->flags &= ~PF_NOFREEZE;
+}
+EXPORT_SYMBOL(cpu_chill);
+#endif
+
+static long
+__hrtimer_nanosleep(struct timespec *rqtp, struct timespec __user *rmtp,
+                    const enum hrtimer_mode mode, const clockid_t clockid,
+                    unsigned long state)
+{
+        struct restart_block *restart;
+        struct hrtimer_sleeper t;
+        int ret = 0;
+        u64 slack;
+
+        slack = current->timer_slack_ns;
+        if (dl_task(current) || rt_task(current))
+                slack = 0;
+
+        hrtimer_init_on_stack(&t.timer, clockid, mode);
+        hrtimer_set_expires_range_ns(&t.timer, timespec_to_ktime(*rqtp), slack);
+        if (do_nanosleep(&t, mode, state))
+                goto out;
+
+        /* Absolute timers do not update the rmtp value and restart: */
+        if (mode == HRTIMER_MODE_ABS) {
+                ret = -ERESTARTNOHAND;
+                goto out;
+        }
+
+        if (rmtp) {
+                ret = update_rmtp(&t.timer, rmtp);
+                if (ret <= 0)
+                        goto out;
+        }
+
+        restart = &current->restart_block;
+        restart->fn = hrtimer_nanosleep_restart;
+        restart->nanosleep.clockid = t.timer.base->clockid;
+        restart->nanosleep.rmtp = rmtp;
+        restart->nanosleep.expires = hrtimer_get_expires_tv64(&t.timer);
+
+        ret = -ERESTART_RESTARTBLOCK;
+out:
+        destroy_hrtimer_on_stack(&t.timer);
+        return ret;
+}
