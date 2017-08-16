@@ -391,19 +391,29 @@
 * context-aware replacements
 ** cpu_relax
 *** cpu_chill
+    fix 'livelock'
+
     [[file:rtl-patches/4.11/block-use-cpu-chill.patch][block-use-cpu-chill.patch]]
     [[file:rtl-patches/4.11/fs-dcache-use-cpu-chill-in-trylock-loops.patch][fs-dcache-use-cpu-chill-in-trylock-loops.patch]]
     [[file:rtl-patches/4.11/net-use-cpu-chill.patch][net-use-cpu-chill.patch]]
     [[file:rtl-patches/4.11/work-queue-work-around-irqsafe-timer-optimization.patch][work-queue-work-around-irqsafe-timer-optimization.patch]]
 *** hrtimer_wait_for_timer
+    subsystem-specific way to fix the livelock?
+
     [[file:rtl-patches/4.11/hrtimers-prepare-full-preemption.patch][hrtimers-prepare-full-preemption.patch]]
 *** wait_for_running_timer
+    subsystem-specific way to fix the livelock?
+
     [[file:rtl-patches/4.11/timers-prepare-for-full-preemption.patch][timers-prepare-for-full-preemption.patch]]
 ** get_online_cpus
 *** cpu_hotplug_disable
+    fix deadlock
+
     [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
     [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
 *** cpus_read_lock
+    rename
+
     [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
     [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
     [[file:rtl-patches/4.11/0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch][0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch]]
@@ -414,19 +424,30 @@
     [[file:rtl-patches/4.11/0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch][0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch]]
     [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
 *** mutex_lock
+    subsystem-specific fix to nested get_online_cpus()
+
     [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
 ** local_irq_disable
 *** local_irq_disable_nort
+    replace (maybe unnecessary?) irq-disabled sections
+
     [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
     [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
 *** local_lock_irq
+    replace irq-disabled sections which are solely for mutual exclusion (really?)
+    how if a process is preempted and then migrated in the middle of an irq_local_lock section?
+      (with CONFIG_PREEMPT_RT_FULL local_lock does not disable migration)
+
     [[file:rtl-patches/4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch]]
     [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
     [[file:rtl-patches/4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][mm-workingset-do-not-protect-workingset_shadow_nodes.patch]]
     [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
 *** rcu_read_lock
+    replace irq-disabled sections which are solely for protecting rcu reads
+
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** local_irq_enable
+   refer to [[local_irq_disable]]
 *** local_irq_enable_nort
     [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
 *** local_unlock_irq
@@ -437,6 +458,7 @@
 *** rcu_read_unlock
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** local_irq_restore
+   refer to [[local_irq_save]]
 *** cpu_unlock_irqrestore
     [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
 *** local_irq_restore_nort
@@ -466,7 +488,10 @@
 *** rcu_read_unlock
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** local_irq_save
+   refer to [[local_irq_disable]] for replacements other than cpu_lock_irqsave
 *** cpu_lock_irqsave
+    replace irq-disabled sections which are solely for accessing other core's per-cpu variables
+
     [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
 *** local_irq_save_nort
     [[file:rtl-patches/4.11/ata-disable-interrupts-if-non-rt.patch][ata-disable-interrupts-if-non-rt.patch]]
@@ -496,13 +521,23 @@
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** preempt_disable
 *** local_lock
+    replace preemption disabled sections which are solely for prohibiting
+      migration (to protect per-cpu variable accesses) + cpu-local mutual
+      exclusion
+    is it a bug that with CONFIG_PREEMPT_RT_FULL local_lock no longer disable migration?)
+
     [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
 *** migrate_disable
+    replace preemption disabled sections which are solely for prohibiting migration
+
     [[file:rtl-patches/4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch]]
     [[file:rtl-patches/4.11/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch]]
 *** preempt_disable_nort
+    replace preemption disabled sections which are unnecessary with -rt
+
     [[file:rtl-patches/4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][mm--rt--Fix-generic-kmap_atomic-for-RT.patch]]
 ** preempt_enable
+   refer to [[preempt_disable]]
 *** local_unlock
     [[file:rtl-patches/4.11/connector-cn_proc-Protect-send_msg-with-a-local-lock.patch][connector-cn_proc-Protect-send_msg-with-a-local-lock.patch]]
     [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
@@ -513,13 +548,18 @@
     [[file:rtl-patches/4.11/mm-rt-kmap-atomic-scheduling.patch][mm-rt-kmap-atomic-scheduling.patch]]
 ** put_cpu_var
 *** put_cpu_light
+    disable preemption -> disable migration. refer to [[preempt_disable]] for similar cases
+
     [[file:rtl-patches/4.11/mm-vmalloc-use-get-cpu-light.patch][mm-vmalloc-use-get-cpu-light.patch]]
     [[file:rtl-patches/4.11/scsi-fcoe-rt-aware.patch][scsi-fcoe-rt-aware.patch]]
 *** put_locked_var
+    disable preemption -> local_lock (w/ migration disabled when !CONFIG_PREEMPT_RT_FULL)
+
     [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
     [[file:rtl-patches/4.11/mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch][mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch]]
     [[file:rtl-patches/4.11/random-avoid-preempt_disable-ed-section.patch][random-avoid-preempt_disable-ed-section.patch]]
 ** put_online_cpus
+   refer to [[get_online_cpus]]
 *** cpu_hotplug_enable
     [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
     [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
@@ -537,22 +577,34 @@
     [[file:rtl-patches/4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][NFSv4-replace-seqcount_t-with-a-seqlock_t.patch]]
 ** spin_lock
 *** raw_spin_lock
+    roll back
+
     [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
     [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
     [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
     [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
     [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
 *** spin_lock_irq
+    equivalent replacement in -rt. Is it for mainline?
+
     [[file:rtl-patches/4.11/block-shorten-interrupt-disabled-regions.patch][block-shorten-interrupt-disabled-regions.patch]]
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 *** spin_lock_irqsave
+    equivalent replacement in -rt. Is it for mainline?
+
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** spin_lock_irqsave
 *** local_lock_irqsave_on
+    (update -rt specific internals)
+
     [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
 *** local_spin_lock_irqsave
+    replace irqsave with local_lock. Refer to [[local_irq_disable]] for similar replacements.
+
     [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
 *** raw_spin_lock_irqsave
+    roll back
+
     [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
     [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
     [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
@@ -563,6 +615,7 @@
     [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
     [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
 ** spin_unlock
+   refer to [[spin_lock]]
 *** raw_spin_unlock
     [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
     [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
@@ -575,6 +628,7 @@
     [[file:rtl-patches/4.11/mm-page_alloc-reduce-lock-sections-further.patch][mm-page_alloc-reduce-lock-sections-further.patch]]
     [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
 ** spin_unlock_irqrestore
+   refer to [[spin_lock_irqsave]]
 *** local_unlock_irqrestore_on
     [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
 *** raw_spin_unlock_irqrestore
