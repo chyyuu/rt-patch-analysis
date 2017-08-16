@@ -80,7 +80,21 @@ def main():
     for k,v in sorted(instances.items()):
         print '** %s -> %s' % (k[0], k[1])
         for f in v:
-            print '   %s' % f
+            print '   [[file:%s][%s]]' % (f, os.path.basename(f))
+
+    rearrange = defaultdict(lambda: [])
+    for k,v in sorted(instances.items()):
+        rearrange[k[0]].append((k[1], v))
+
+    print '* context-aware replacements'
+    for k,v in sorted(rearrange.items()):
+        if len(v) <= 1:
+            continue
+        print '** %s' % k
+        for e in v:
+            print '*** %s' % e[0]
+            for f in e[1]:
+                print '    [[file:%s][%s]]' % (f, os.path.basename(f))
 
 if __name__ == '__main__':
     main()
