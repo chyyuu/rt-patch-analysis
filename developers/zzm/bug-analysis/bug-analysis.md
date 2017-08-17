@@ -6,7 +6,8 @@
 	- 在系统初始阶段调用`local_irq_disable()`来禁止中断和抢占，保护读取sch->tick* 的准确性，
 
 
-- `[   4.9 -   4.11] [[file:4.9/peterz-percpu-rwsem-rt.patch][4.9]]{C::bug::crash::preempt::preempt::remove preempt_disable variants}`
+
+2. `[   4.9 -   4.11] [[file:4.9/peterz-percpu-rwsem-rt.patch][4.9]]{C::bug::crash::preempt::preempt::remove preempt_disable variants}`
 	
 		/*
 		 * We are in an RCU-sched read-side critical section, so the writer
@@ -22,7 +23,7 @@
 		feature/performance.		
 	
 
-- `[   4.6 -   4.11][[file:4.6/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.6]]{C::bug::deadlock::preempt::preempt::add preempt_disable/enable_rt() where recommended}`
+3.`[   4.6 -   4.11][[file:4.6/drmradeoni915_Use_preempt_disableenable_rt()_where_recommended.patch][4.6]]{C::bug::deadlock::preempt::preempt::add preempt_disable/enable_rt() where recommended}`
 
 	此处主要是`local_irq_disable()`替代为`local_lock_irq()`,根据在-RT下源代码（！RT下后者宏定义为前者）可以知道
 		
@@ -53,15 +54,17 @@
 		可以看出，前者禁止了本地中断，而后者没有禁止本地中断，只是获取了spin_lock()
 
 
-- `[   3.8 -   4.11][[file:3.8/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][3.8]]{C::bug::data_err::order::order::net: netfilter: Serialize xt_write_recseq sections on RT}`
+4.`[   3.8 -   4.11][[file:3.8/net-fix-iptable-xt-write-recseq-begin-rt-fallout.patch][3.8]]{C::bug::data_err::order::order::net: netfilter: Serialize xt_write_recseq sections on RT}`
 
 	此处是netfilter在！RT中，需要`local_bh_disable()`对`xt_write_recseq`的隐含序列化，而在RT中则需要通过local_lock()进行明确的序列化。
 
-- `[3.6 -   4.11][[file:3.6/softirq-preempt-fix-3-re.patch][3.6]]{C::bug::rtlatency::preempt::semantics::check preemption after reenable interrupts}`
+5.`[3.6 -   4.11][[file:3.6/softirq-preempt-fix-3-re.patch][3.6]]{C::bug::rtlatency::preempt::semantics::check preemption after reenable interrupts}`
 
-	此处是避免在函数`raise_softirq_irqoff()(禁用中断，唤醒软中断)`以后，重新使能中断时被抢占，造成软中断线程被无限延迟，因此在调用`raise_softirq_irqoff()`并使能中断`local_irq_enable/restore`以后，在RT中增加`preempt_check_resched_rt（）`检查是否有抢占。
+	此处是避免在函数`raise_softirq_irqoff()(禁用中断，唤醒软中断)`以后，重新使能中断时被抢占，
+	造成软中断线程被无限延迟，因此在调用`raise_softirq_irqoff()`并使能中断`local_irq_enable/
+	restore`以后，在RT中增加`preempt_check_resched_rt（）`检查是否有抢占。
 	
-- `[   3.6 -   4.11][[file:3.6/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.6]]{C::bug::crash::atomicity::preempt::replace with migration disable}`
+6.`[   3.6 -   4.11][[file:3.6/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.6]]{C::bug::crash::atomicity::preempt::replace with migration disable}`
 
 		此处实际是preempt_disable/enable替换为migration_disable/enable()，解决了RT-kernel两
 		个方面的问题：（1）实时性：对于enqueue_to_backlog()只需要保证不被迁移，不需要禁止抢占。
@@ -75,9 +78,10 @@
 		#define in_interrupt()   (irq_count()) //在处理硬中断或软中断中
 		#define in_atomic()     ((preempt_count() & ~PREEMPT_ACTIVE) != 0) 
 
-- `[   3.4 -   4.11][[file:3.4/fs-dcache-use-cpu-chill-in-trylock-loops.patch][3.4]]{C::bug::hang::preempt::preempt::use cpu_chill instead}`
+7.`[   3.4 -   4.11][[file:3.4/fs-dcache-use-cpu-chill-in-trylock-loops.patch][3.4]]{C::bug::hang::preempt::preempt::use cpu_chill instead}`
 
-	此处为了避免RT中Retry loops forever when the modifying side was preempted,用`cpu_chill()`代替`cpu_relax()` on RT：`cpu_chill()`会睡眠一秒钟
+	此处为了避免RT中Retry loops forever when the modifying side was preempted,用`cpu_chill()`
+	代替`cpu_relax()` on RT：`cpu_chill()`会睡眠一秒钟
 
 			#ifdef CONFIG_PREEMPT_RT_FULL
 			/*
@@ -98,21 +102,25 @@
 			}
 
 
-- `[   3.4 -   4.11][[file:3.4/net-use-cpu-chill.patch][3.4]]{C::bug::hang::preempt::preempt::use cpu_chill instead}`
+8.`[   3.4 -   4.11][[file:3.4/net-use-cpu-chill.patch][3.4]]{C::bug::hang::preempt::preempt::use cpu_chill instead}`
 
 	与上一个补丁功能类似。
 
 
-- `[   3.2 -   4.11][[file:3.2/arm-convert-boot-lock-to-raw.patch][3.2]]{C::bug::crash::preempt::preempt::replace with raw}`
+9.`[   3.2 -   4.11][[file:3.2/arm-convert-boot-lock-to-raw.patch][3.2]]{C::bug::crash::preempt::preempt::replace with raw}`
 
-	此处是将`spin_lock()`转换成`raw_spin_lock()`：因为`idle_sched_class->enqueue_task == null`,因此，当空闲任务在该锁上阻塞时，将不能被唤醒。
+	此处是将`spin_lock()`转换成`raw_spin_lock()`：因为`idle_sched_class->enqueue_task ==
+	null`,因此，当空闲任务在该锁上阻塞时，将不能被唤醒。
 
 
-- `[   3.0 -   4.11][[file:3.0/md-raid5-percpu-handling-rt-aware.patch][3.0]]{C::bug::crash::preempt::preempt::add locks, and replace with _light to keep serialized}`
+10.`[   3.0 -   4.11][[file:3.0/md-raid5-percpu-handling-rt-aware.patch][3.0]]{C::bug::crash::preempt::preempt::add locks, and replace with _light to keep serialized}`
 	
-	- 此处是将`get_cpu()转换成get_cpu_light()`实质上是`preempt_disable->migration_disable`,目的是：（1）实时性：增加可抢占区域。（2）在RT上，禁止抢占的情况下（原子上下文），如果产生重新调度，或者获取睡眠锁，这在原子上下文是不允许的。并且此处在替换为`migration_diable`后增加了`spin_lock()`是为了避免在current CPU上产生抢占或中断，对`per_cpu`产生影响。
+	此处是将`get_cpu()转换成get_cpu_light()`实质上是`preempt_disable->migration_disable`,目的
+	是：（1）实时性：增加可抢占区域。（2）在RT上，禁止抢占的情况下（原子上下文），如果产生重新调度，
+	或者获取睡眠锁，这在原子上下文是不允许的。并且此处在替换为`migration_diable`后增加了`spin_lock
+	()`是为了避免在current CPU上产生抢占或中断，对`per_cpu`产生影响。
 	
-	- 因此，对于`per_CPU`相关的由`preempt_disable->migration_disable`，在对`per_cpu` var操作时，都应该增加相应的睡眠锁进行互斥保护。
+	因此，对于`per_CPU`相关的由`preempt_disable->migration_disable`，在对`per_cpu` var操作时，都应该增加相应的睡眠锁进行互斥保护。
 
 
 
@@ -121,18 +129,19 @@
 
 
 
-- `[2.6.22 - 2.6.26][[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]]{C::bug::crash::preempt::preempt::replace with raw}`
+11.`[2.6.22 - 2.6.26][[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]]{C::bug::crash::preempt::preempt::replace with raw}`
 
 	此处是在`spin_lock()`转换成`raw_spin_lock()`修复entry_64.s产生的警告或错误。
 
 
-- `[   3.2 -    3.8][[file:3.2/intel_idle-convert-i7300_idle_lock-to-raw-spinlock.patch][3.2]]{C::bug::crash::atomicity::preempt::replace with raw}`
+12.`[   3.2 -    3.8][[file:3.2/intel_idle-convert-i7300_idle_lock-to-raw-spinlock.patch][3.2]]{C::bug::crash::atomicity::preempt::replace with raw}`
 
 	
-	- 此处是在idle thread中将`idle_lock`由`spin_lock()`转换成`raw_spin_lock()`，因为在空闲任务中，调度队列为空，当获取`spin_lock`产生阻塞时，不能再次产生调度，唤醒idle thread。
+	此处是在idle thread中将`idle_lock`由`spin_lock()`转换成`raw_spin_lock()`，因为在空闲任务中，
+	调度队列为空，当获取`spin_lock`产生阻塞时，不能再次产生调度，唤醒idle thread。
 	
 
-- `[   3.2         ][[file:3.2/printk-disable-migration-instead-of-preemption.patch][3.2]]{C::bug::crash::preempt::preempt::replace preempt_disable with migrate_disable}`
+13.`[   3.2         ][[file:3.2/printk-disable-migration-instead-of-preemption.patch][3.2]]{C::bug::crash::preempt::preempt::replace preempt_disable with migrate_disable}`
 
 	此处是`preemption_diable->migration_disable`，在vprintk的源代码中
 
@@ -256,15 +265,17 @@
 		         preempt_enable();
 		         return printed_len;
 		}
-	同时调用了`raw_local_irq_save(flags);与spin_lock(&logbuf_lock)`;因此直接调用`migration_disable`已经足够，并且持有睡眠锁，在原子上下文中是不允许的。	
+	同时调用了`raw_local_irq_save(flags);与spin_lock(&logbuf_lock)`;因此直接调用
+	`migration_disable`已经足够，并且持有睡眠锁，在原子上下文中是不允许的。	
 	
 
-- `[   3.4 -   3.12][[file:3.4/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.4]]{C::bug::data_err::preempt::preempt::add state check}`
+14.`[   3.4 -   3.12][[file:3.4/rfc-sched-rt-fix-wait_task_interactive-to-test-rt_spin_lock-state.patch][3.4]]{C::bug::data_err::preempt::preempt::add state check}`
 
 	此处是当任务调用`wait_task_interactive()`时，它会等待另一个任务到达某一状态时，但是这里并没有考
-	虑到，在RT中`rt_spin_lock`会改变真是的任务状态（当等待的任务被阻塞，并等待唤醒），因此会返回不正确的结果。这里是通过`rt_spin_lock`来保存任务状态，然后通过`wait_task_interactive()`进行检查。	
+	虑到，在RT中`rt_spin_lock`会改变真是的任务状态（当等待的任务被阻塞，并等待唤醒），因此会返回不正
+	确的结果。这里是通过`rt_spin_lock`来保存任务状态，然后通过`wait_task_interactive()`进行检查。	
 
-- `[[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]] {C::bug::idle::order::sync::resume clockevent device before resume tick}`
+15.`[[file:2.6.22/clockevents-fix-resume-logic.patch][2.6.22]] {C::bug::idle::order::sync::resume clockevent device before resume tick}`
 
 
 	- clock event mode的定义如下：
@@ -277,16 +288,17 @@
 			    CLOCK_EVT_MODE_RESUME, －－－－－－－处于系统resume中 
 			};
 
-	- 增加了clock event mode 用来在系统处于空模式的C-states状态恢复过程中的恢复顺序，确保clockevent devices在tick之前被重新启动，避免定时器中断产生，而clock event devices还没有恢复。2.6.23版本以后，该补丁被删除。
+	增加了clock event mode 用来在系统处于空模式的C-states状态恢复过程中的恢复顺序，确保
+	clockevent devices在tick之前被重新启动，避免定时器中断产生，而clock event devices还没有恢复。2.6.23版本以后，该补丁被删除。
 
-- `[[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]{C::bug::hang::order::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}`
+16.`[[file:2.6.22/cpuidle_hang_fix.patch][2.6.22]]{C::bug::hang::order::sync::idle handler to enable intr before returning from idle handler, set current driver to NULL when fail to attach on all devices}`
 
 	此处是为了阻止当ACPI处理器驱动被增加到一个不支持C-states的系统中，x86-64挂起。
 	x86-64希望所有的空操作在返回之前都能够在使能中断。因此，这里通过增加else语句，来使能本地中断。
 
 		
 
-- `[  3.14 -   3.18][[file:3.14/net-ip_send_unicast_reply-add-missing-local-serializ.patch][3.14]]{C::bug::data_err::order::mutex::net: ip_send_unicast_reply: add missing local serialization}`
+17.`[  3.14 -   3.18][[file:3.14/net-ip_send_unicast_reply-add-missing-local-serializ.patch][3.14]]{C::bug::data_err::order::mutex::net: ip_send_unicast_reply: add missing local serialization}`
 
 	- 此处是用`get_locked_var()`代替了`get_cpu_light();和__get_cpu_var();`
 
@@ -311,7 +323,7 @@
 			此处后续对per_cpu* 操作应该增加其他锁来防止并发（本地进程上下文和中断上下文）
 
 
-- `[  3.12 -    4.8][[file:3.12/hwlat-detector-Use-trace_clock_local-if-available.patch][3.12]]{C::bug::data_err::order::semantics::hwlat-detector: Use trace_clock_local if available}`
+18.`[  3.12 -    4.8][[file:3.12/hwlat-detector-Use-trace_clock_local-if-available.patch][3.12]]{C::bug::data_err::order::semantics::hwlat-detector: Use trace_clock_local if available}`
 
 			u64 notrace trace_clock_local(void)
 			{
@@ -354,9 +366,11 @@
 				}
 			这里是在调用ktime_get()时获取的是read_seq(),防止其他CPUs抢占read_seq(),
 			对获取的time有影响，因此在available的地方选用trace_clock_local(void)
-- `[   3.8         ][[file:3.8/fix-2-2-slub-tid-must-be-retrieved-from-the-percpu-area-of-the-current-processor.patch][3.8]]{C::bug::data_err::preempt::preempt::slub: Tid must be retrieved from the percpu area of the current proces}`
+19.`[   3.8         ][[file:3.8/fix-2-2-slub-tid-must-be-retrieved-from-the-percpu-area-of-the-current-processor.patch][3.8]]{C::bug::data_err::preempt::preempt::slub: Tid must be retrieved from the percpu area of the current proces}`
 
-	此处加入`preempt_disable()`是为了避免在获取`Per_CPU`指针之后，对tid检查之前，被调度到其他CPU上，从而破坏了current `Per_CPU` var，但是在随后的补丁中去除了该补丁。在目前最新的内核中，并没有添加任何的限制，而是把Per_CPU指针和tid检查顺序调整了，并给出这样的commit：
+	此处加入`preempt_disable()`是为了避免在获取`Per_CPU`指针之后，对tid检查之前，被调度到其他CPU
+	上，从而破坏了current `Per_CPU` var，但是在随后的补丁中去除了该补丁。在目前最新的内核中，并没有
+	添加任何的限制，而是把Per_CPU指针和tid检查顺序调整了，并给出这样的commit：
 
 			/*
 			 * Must read kmem_cache cpu data via this cpu ptr. Preemption is
@@ -375,7 +389,7 @@
 				 unlikely(tid != READ_ONCE(c->tid)));
 
 
-- `[   3.0         ][[file:3.0/drivers-dca-convert-dcalock-to-raw.patch][3.0]]{C::bug::deadlock::preempt::preempt::replace with raw}`
+20.`[   3.0         ][[file:3.0/drivers-dca-convert-dcalock-to-raw.patch][3.0]]{C::bug::deadlock::preempt::preempt::replace with raw}`
 
 			#define raw_spin_lock_irqsave(lock, flags)			\
 			do {						\
@@ -420,132 +434,138 @@
 	从源代码中可以看出在RT中`spin_lock_irqsave(lock, flags)`并没有禁止中断。
 			
 
-- `[2.6.29         ][[file:2.6.29/x86-pae-preempt-realtime-fix.patch][2.6.29]]{C::bug::crash::preempt::preempt::add preempt_disable protect}`
+21.`[2.6.29         ][[file:2.6.29/x86-pae-preempt-realtime-fix.patch][2.6.29]]{C::bug::crash::preempt::preempt::add preempt_disable protect}`
 
 	此处在RT中，添加preempt_disable/enable()保护临界区资源。后续patch可能有更好办法。
 
-- `[[file:2.6.29/sched-generic-hide-smp-warning.patch][2.6.29]]{C::bug::crash::preempt::preempt::use preempt_disable() to supress waring message}`
+22.`[[file:2.6.29/sched-generic-hide-smp-warning.patch][2.6.29]]{C::bug::crash::preempt::preempt::use preempt_disable() to supress waring message}`
 
 	此处增加`preempt_disable/enable()`来保护`per_CPU `var,后续的patch可能有更好的办法。
 
-- `[[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]{C::bug::rtlatency::preempt::preempt::nfs: fix missing preemption check}`
+23.`[[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]{C::bug::rtlatency::preempt::preempt::nfs: fix missing preemption check}`
 
 	`get_cpu()/put_cpu_no_preempt()->get_cpu()/put_cpu()`这里是一种对可抢占的一种优化，避免高优先级的任务长时间的延迟。
 
-- `[[file:2.6.26/ftrace-wakeup-rawspinlock.patch][2.6.26]]{C::bug::hang::preempt::preempt::ftrace: user raw spin lock for wakeup function trace}`
+24.`[[file:2.6.26/ftrace-wakeup-rawspinlock.patch][2.6.26]]{C::bug::hang::preempt::preempt::ftrace: user raw spin lock for wakeup function trace}`
 	
 	此处是在fix RT中的`spin_lock`，因此用原始自旋锁代替`spin_lock`
 
--  `[2.6.22         ] [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]] {C::bug::crash::order::sync::module reloaded when still need to be used, add a atomic counter to counting reads and writes in progress}`
+25. `[2.6.22         ] [[file:2.6.22/module-pde-race-fixes.patch][2.6.22]] {C::bug::crash::order::sync::module reloaded when still need to be used, add a atomic counter to counting reads and writes in progress}`
 
 	
 
-* `[2.6.22         ] [[file:2.6.22/s_files-proc-generic-fix.patch][2.6.22]] {C::bug::na::order::sync::advance filevec_add_drain_all()}`
+26.`[2.6.22         ] [[file:2.6.22/s_files-proc-generic-fix.patch][2.6.22]] {C::bug::na::order::sync::advance filevec_add_drain_all()}`
 
 	此处变换了函数的位置
 
-* `[2.6.22 - 2.6.24] [[file:2.6.22/rcu-preempt-fix-nmi-watchdog.patch][2.6.22]]{C::bug::irq::preempt::preempt::not NMI-safe,replace atomic_notifier_call_chain to raw_...}`
+27.`[2.6.22 - 2.6.24] [[file:2.6.22/rcu-preempt-fix-nmi-watchdog.patch][2.6.22]]{C::bug::irq::preempt::preempt::not NMI-safe,replace atomic_notifier_call_chain to raw_...}`
 
 	此处是在RT上将`atomic_notifier_call_chain()->raw notifier_call_chain()` for rcu_lock()/unlock，在RT上需要作如此改变。
 
-	原子通知链（ Atomic notifier chains ）：通知链元素的回调函数（当事件发生时要执行的函数）在中断或原子操作上下文中运行，不允许阻塞。
+	原子通知链(Atomic notifier chains)：通知链元素的回调函数（当事件发生时要执行的函数）在中断或原子操作上下文中运行，不允许阻塞。
 
 				struct atomic_notifier_head {
 		        spinlock_t  lock;
 		        struct  notifier_block *head;
 				};
-	原始通知链（ Raw notifierchains ）：对通知链元素的回调函数没有任何限制，所有锁和保护机制都由调用者维护。
+	
+	原始通知链(Raw notifierchains)：对通知链元素的回调函数没有任何限制，所有锁和保护机制都由调用者维护。
 	
 	
 
-* [2.6.22 - 2.6.25][[file:2.6.22/rcu-various-fixups.patch][2.6.22]] {C::bug::crash::preempt::preempt::add rcu_read lock pair}
+28.[2.6.22 - 2.6.25][[file:2.6.22/rcu-various-fixups.patch][2.6.22]] {C::bug::crash::preempt::preempt::add rcu_read lock pair}
 
 	增加`rcu_read_lock`和`rcu_read_unlock`，这两个函数用来标记一个RCU读过程的开始和结束。其实作用就是帮助检测宽限期是否结束。
 
-* [2.6.22 - 2.6.25] [[file:2.6.22/tasklet-more-fixes.patch][2.6.22]]{C::bug::crash::order::sync::add statement}
+29.[2.6.22 - 2.6.25] [[file:2.6.22/tasklet-more-fixes.patch][2.6.22]]{C::bug::crash::order::sync::add statement}
 
 	此处通过增加检查（或循环检查）避免tasklet在上锁之后，增加到队列之前被竞争，并且避免队列中没有
 	scheduled tasklets。
 
-* [2.6.22 - 2.6.25] [[file:2.6.22/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.22]]{C::bug::hang::order::order::restore preempt_none method}
+30.[2.6.22 - 2.6.25] [[file:2.6.22/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.22]]{C::bug::hang::order::order::restore preempt_none method}
 
 	此处恢复preempt_none method 来修复kernel hang
 
-* [2.6.22 - 2.6.26] [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]] {C::bug::data_err::preempt::preempt::replace with raw}
+31.[2.6.22 - 2.6.26] [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]] {C::bug::data_err::preempt::preempt::replace with raw}
 
 	修复了在SMP上`get_cpu_var()`
 
-* [2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]{C::bug::crash::preempt::preempt::preempt_disable added}
+32.[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]{C::bug::crash::preempt::preempt::preempt_disable added}
 
 	此处增加`preempt_disable/enable()来保护per_cpu` var
 
-* [2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]] {C::bug::crash::preempt::preempt::replace with raw}
+33.[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]] {C::bug::crash::preempt::preempt::replace with raw}
 
 
 	在RT上用`raw_spin_lock代替spin_lock`来修复警告或错误。
 
 
 
-* [2.6.22 - 2.6.26] [[file:2.6.22/s_files-pipe-fix.patch][2.6.22]] {C::bug::data_err::order::sync::add cleanup var}
+34.[2.6.22 - 2.6.26] [[file:2.6.22/s_files-pipe-fix.patch][2.6.22]] {C::bug::data_err::order::sync::add cleanup var}
 
 	此处是确保在文件之前释放inode
 
-* [2.6.22 - 2.6.29] [[file:2.6.22/fix-emergency-reboot.patch][2.6.22]]{C::bug::hang::preempt::preempt::add emergency restart}
+35.[2.6.22 - 2.6.29] [[file:2.6.22/fix-emergency-reboot.patch][2.6.22]]{C::bug::hang::preempt::preempt::add emergency restart}
 
 	此处如果处在可抢断环境中，增加reboot notifier list的调用，解决reboot 问题 
 
-* [2.6.23 - 2.6.24] [[file:2.6.23/rt-wakeup-fix.patch][2.6.23]] {C::bug::rtlatency::preempt::preempt::move a section of code up}
+36.[2.6.23 - 2.6.24] [[file:2.6.23/rt-wakeup-fix.patch][2.6.23]] {C::bug::rtlatency::preempt::preempt::move a section of code up}
 
  	此处是一个唤醒修复操作在RT
 
-* [2.6.24 - 2.6.25] [[file:2.6.24/kvm-lapic-migrate-latency-fix.patch][2.6.24]]{C::bug::crash::preempt::semantics::move the apic timer migration}
+37.[2.6.24 - 2.6.25] [[file:2.6.24/kvm-lapic-migrate-latency-fix.patch][2.6.24]]{C::bug::crash::preempt::semantics::move the apic timer migration}
 
 	在RT-preempt，移动`kvm_migrate_apic_timer()`修复在等待队列中可能产生的sleeps。
 
-* [2.6.24 - 2.6.26] [[file:2.6.24/rt-workqueue-barrier.patch][2.6.24]] {C::bug::rtlatency::order::sync::The solution used is to nest plist structures.}
+38.[2.6.24 - 2.6.26] [[file:2.6.24/rt-workqueue-barrier.patch][2.6.24]] {C::bug::rtlatency::order::sync::The solution used is to nest plist structures.}
 
 	此处通过fix barrier stack of run_workqueue ,to avoid callstack nesting.
 
-* [2.6.24 - 2.6.26] [[file:2.6.24/rt-wq-barrier-fix.patch][2.6.24]]{C::bug::rtlatency::order::sync::using a wait_queue to target at a worklet in a nested list}
+39.[2.6.24 - 2.6.26] [[file:2.6.24/rt-wq-barrier-fix.patch][2.6.24]]{C::bug::rtlatency::order::sync::using a wait_queue to target at a worklet in a nested list}
 
 	此处用`wait_queue()`代替wait_on_work(),避免worklet in nested list complete too late.
 
-* [2.6.24 - 2.6.26] [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]] {C::bug::deadlock::preempt::preempt::add careful checks}
+40.[2.6.24 - 2.6.26] [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]] {C::bug::deadlock::preempt::preempt::add careful checks}
 
 	此处是对`rcu-preempt-boost`的修复，通过增加检查
 
-* [2.6.25         ] [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]] {C::bug::data_err::preempt::preempt::add protection to per_cpu variables in pcounter addition}
+41.[2.6.25         ] [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]] {C::bug::data_err::preempt::preempt::add protection to per_cpu variables in pcounter addition}
 
  	此处增加`preempt_disable/enable()`来保护`per_cpu`变量
 
-* [2.6.25 - 2.6.26] [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]] {C::bug::data_err::preempt::preempt::protect use of smp_processor_id in genhd.h with preempt disable}
+42.[2.6.25 - 2.6.26] [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]] {C::bug::data_err::preempt::preempt::protect use of smp_processor_id in genhd.h with preempt disable}
 
 	此处是增加`preempt_disable/enable()`保护`per_cpu` var在以后的patch中会有新的方法。
 
-* [2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-1.patch][2.6.25]]{C::bug::crash::order::order::send NMI after nmi_show_regs on}
+43.[2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-1.patch][2.6.25]]{C::bug::crash::order::order::send NMI after nmi_show_regs on}
 
-	`nmi_watchdog`用于检测内核中关中断死锁(也称硬死锁)的情况，是调测内核死机或死锁问题的一大利器。内核中，如果代码编写不好可能会出现关中断死锁的情况，即进入内核态后，关中断，然后在内核态中死锁，或长时间运行，导致该CPU无法响应中断(因为中断已关)，也无法得到调度(对于没有启用内核抢占的内核来说)，外在表现可能为系统挂死、无法ping通、没有响应。而`nmi_watchdog`正是针对这种情况而设计的。
-	其基本原理为：注册nmi中断(3号中断)，为不可屏蔽中断，由硬件定期触发(通过性能计数器)。在时钟中断中更新相关计数器，在nmi中断处理中，判断相关计数器是否更新，如果超过5s(默认情况下)没有更新，则触发`nmi_watchdog`，默认情况下，最终会进入panic流程。  
+	`nmi_watchdog`用于检测内核中关中断死锁(也称硬死锁)的情况，是调测内核死机或死锁问题的一大利器。
+	内核中，如果代码编写不好可能会出现关中断死锁的情况，即进入内核态后，关中断，然后在内核态中死锁，
+	或长时间运行，导致该CPU无法响应中断(因为中断已关)，也无法得到调度(对于没有启用内核抢占的内核来
+	说)，外在表现可能为系统挂死、无法ping通、没有响应。而`nmi_watchdog`正是针对这种情况而设计的。
+	其基本原理为：注册nmi中断(3号中断)，为不可屏蔽中断，由硬件定期触发(通过性能计数器)。在时钟中断
+	中更新相关计数器，在nmi中断处理中，判断相关计数器是否更新，如果超过5s(默认情况下)没有更新，则触
+	发`nmi_watchdog`，默认情况下，最终会进入panic流程。  
 
 	此处是确保 send NMI 在nmi_show_regs 之后
 
-* `[2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-4.patch][2.6.25]]{C::bug::crash::order::order::clear nmi_show_regs after show_regs() is called}`
+44.`[2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-4.patch][2.6.25]]{C::bug::crash::order::order::clear nmi_show_regs after show_regs() is called}`
 
   	此处是确保:clear `nmi_show_regs 在 show_regs()`之后
 
-* `[2.6.25 - 2.6.26][[file:2.6.25/nmi-watchdog-fix-3.patch][2.6.25]]{C::bug::crash::order::order::change nmi_watchdog fucntion}`
+45.`[2.6.25 - 2.6.26][[file:2.6.25/nmi-watchdog-fix-3.patch][2.6.25]]{C::bug::crash::order::order::change nmi_watchdog fucntion}`
 
 	此处是对RT kernel nmi-watchdog 不能立即返回lockup info 的修复。
 
 
-* `[2.6.25 - 2.6.26] [[file:2.6.25/cycles-to-ns-trace-fix.patch][2.6.25]] {C::bug::data_err::time::preempt::preempt disable for getting time}`
+46.`[2.6.25 - 2.6.26] [[file:2.6.25/cycles-to-ns-trace-fix.patch][2.6.25]] {C::bug::data_err::time::preempt::preempt disable for getting time}`
 
 		此处增添了preempt_disable/enable_notrace()函数对，preempt_disable/enable_notrace()的
 		实际代码就是preempt_count + 1,增加preempt_disable 的嵌套层数，保护time获取值的准确性，后续补丁可能有更好方法。
 		#define add_preempt_count_notrace(val)			\
 		do { preempt_count() += (val); } while (0)
 
-* `[2.6.26         ] [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]{C::bug::data_err::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}`
+47.`[2.6.26         ] [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]{C::bug::data_err::preempt::preempt::Fix preempt unsafe paths accessing per_cpu variables}`
 
   	以前用`spin_lock`保护的`per_CPU`变量，但在RT中，`spin_lock`进程照样会睡眠，然后调度到别的CPU上。因此，引入了一个新的宏来定义一种可以锁住的`per_CPU`变量。`DEFINE_PER_CPU_LOCKED`，就是这样的宏，通过`get_cpu_var_locked`来操作`per_CPU`变量。在后续的patch中去除了该宏和函数，
 
