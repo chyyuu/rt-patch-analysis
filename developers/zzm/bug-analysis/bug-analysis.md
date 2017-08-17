@@ -473,71 +473,71 @@
 	
 	
 
-28.[2.6.22 - 2.6.25][[file:2.6.22/rcu-various-fixups.patch][2.6.22]] {C::bug::crash::preempt::preempt::add rcu_read lock pair}
+28.`[2.6.22 - 2.6.25][[file:2.6.22/rcu-various-fixups.patch][2.6.22]] {C::bug::crash::preempt::preempt::add rcu_read lock pair}`
 
 	增加`rcu_read_lock`和`rcu_read_unlock`，这两个函数用来标记一个RCU读过程的开始和结束。其实作用就是帮助检测宽限期是否结束。
 
-29.[2.6.22 - 2.6.25] [[file:2.6.22/tasklet-more-fixes.patch][2.6.22]]{C::bug::crash::order::sync::add statement}
+29.`[2.6.22 - 2.6.25] [[file:2.6.22/tasklet-more-fixes.patch][2.6.22]]{C::bug::crash::order::sync::add statement}`
 
 	此处通过增加检查（或循环检查）避免tasklet在上锁之后，增加到队列之前被竞争，并且避免队列中没有
 	scheduled tasklets。
 
-30.[2.6.22 - 2.6.25] [[file:2.6.22/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.22]]{C::bug::hang::order::order::restore preempt_none method}
+30.`[2.6.22 - 2.6.25] [[file:2.6.22/preempt-irqs-ppc-celleb-beatic-eoi.patch][2.6.22]]{C::bug::hang::order::order::restore preempt_none method}`
 
 	此处恢复preempt_none method 来修复kernel hang
 
-31.[2.6.22 - 2.6.26] [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]] {C::bug::data_err::preempt::preempt::replace with raw}
+31.`[2.6.22 - 2.6.26] [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]] {C::bug::data_err::preempt::preempt::replace with raw}`
 
 	修复了在SMP上`get_cpu_var()`
 
-32.[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]{C::bug::crash::preempt::preempt::preempt_disable added}
+32.`[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]{C::bug::crash::preempt::preempt::preempt_disable added}`
 
 	此处增加`preempt_disable/enable()来保护per_cpu` var
 
-33.[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]] {C::bug::crash::preempt::preempt::replace with raw}
+33.`[2.6.22 - 2.6.26] [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]] {C::bug::crash::preempt::preempt::replace with raw}`
 
 
 	在RT上用`raw_spin_lock代替spin_lock`来修复警告或错误。
 
 
 
-34.[2.6.22 - 2.6.26] [[file:2.6.22/s_files-pipe-fix.patch][2.6.22]] {C::bug::data_err::order::sync::add cleanup var}
+34.`[2.6.22 - 2.6.26] [[file:2.6.22/s_files-pipe-fix.patch][2.6.22]] {C::bug::data_err::order::sync::add cleanup var}`
 
 	此处是确保在文件之前释放inode
 
-35.[2.6.22 - 2.6.29] [[file:2.6.22/fix-emergency-reboot.patch][2.6.22]]{C::bug::hang::preempt::preempt::add emergency restart}
+35.`[2.6.22 - 2.6.29] [[file:2.6.22/fix-emergency-reboot.patch][2.6.22]]{C::bug::hang::preempt::preempt::add emergency restart}`
 
 	此处如果处在可抢断环境中，增加reboot notifier list的调用，解决reboot 问题 
 
-36.[2.6.23 - 2.6.24] [[file:2.6.23/rt-wakeup-fix.patch][2.6.23]] {C::bug::rtlatency::preempt::preempt::move a section of code up}
+36.`[2.6.23 - 2.6.24] [[file:2.6.23/rt-wakeup-fix.patch][2.6.23]] {C::bug::rtlatency::preempt::preempt::move a section of code up}`
 
  	此处是一个唤醒修复操作在RT
 
-37.[2.6.24 - 2.6.25] [[file:2.6.24/kvm-lapic-migrate-latency-fix.patch][2.6.24]]{C::bug::crash::preempt::semantics::move the apic timer migration}
+37.`[2.6.24 - 2.6.25] [[file:2.6.24/kvm-lapic-migrate-latency-fix.patch][2.6.24]]{C::bug::crash::preempt::semantics::move the apic timer migration}`
 
 	在RT-preempt，移动`kvm_migrate_apic_timer()`修复在等待队列中可能产生的sleeps。
 
-38.[2.6.24 - 2.6.26] [[file:2.6.24/rt-workqueue-barrier.patch][2.6.24]] {C::bug::rtlatency::order::sync::The solution used is to nest plist structures.}
+38.`[2.6.24 - 2.6.26] [[file:2.6.24/rt-workqueue-barrier.patch][2.6.24]] {C::bug::rtlatency::order::sync::The solution used is to nest plist structures.}`
 
 	此处通过fix barrier stack of run_workqueue ,to avoid callstack nesting.
 
-39.[2.6.24 - 2.6.26] [[file:2.6.24/rt-wq-barrier-fix.patch][2.6.24]]{C::bug::rtlatency::order::sync::using a wait_queue to target at a worklet in a nested list}
+39.`[2.6.24 - 2.6.26] [[file:2.6.24/rt-wq-barrier-fix.patch][2.6.24]]{C::bug::rtlatency::order::sync::using a wait_queue to target at a worklet in a nested list}`
 
 	此处用`wait_queue()`代替wait_on_work(),避免worklet in nested list complete too late.
 
-40.[2.6.24 - 2.6.26] [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]] {C::bug::deadlock::preempt::preempt::add careful checks}
+40.`[2.6.24 - 2.6.26] [[file:2.6.24/rcu-preempt-boost-fix.patch][2.6.24]] {C::bug::deadlock::preempt::preempt::add careful checks}`
 
 	此处是对`rcu-preempt-boost`的修复，通过增加检查
 
-41.[2.6.25         ] [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]] {C::bug::data_err::preempt::preempt::add protection to per_cpu variables in pcounter addition}
+41.`[2.6.25         ] [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]] {C::bug::data_err::preempt::preempt::add protection to per_cpu variables in pcounter addition}`
 
  	此处增加`preempt_disable/enable()`来保护`per_cpu`变量
 
-42.[2.6.25 - 2.6.26] [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]] {C::bug::data_err::preempt::preempt::protect use of smp_processor_id in genhd.h with preempt disable}
+42.`[2.6.25 - 2.6.26] [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]] {C::bug::data_err::preempt::preempt::protect use of smp_processor_id in genhd.h with preempt disable}`
 
 	此处是增加`preempt_disable/enable()`保护`per_cpu` var在以后的patch中会有新的方法。
 
-43.[2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-1.patch][2.6.25]]{C::bug::crash::order::order::send NMI after nmi_show_regs on}
+43.`[2.6.25 - 2.6.26] [[file:2.6.25/nmi-watchdog-fix-1.patch][2.6.25]]{C::bug::crash::order::order::send NMI after nmi_show_regs on}`
 
 	`nmi_watchdog`用于检测内核中关中断死锁(也称硬死锁)的情况，是调测内核死机或死锁问题的一大利器。
 	内核中，如果代码编写不好可能会出现关中断死锁的情况，即进入内核态后，关中断，然后在内核态中死锁，
