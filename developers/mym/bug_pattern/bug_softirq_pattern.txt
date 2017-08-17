@@ -1,0 +1,40 @@
+
+有比较多的bug没有看懂rootcause...
+
+PATTERN1：
+
+API替换
+-	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
++	raise_softirq_irqoff(NET_RX_SOFTIRQ);
+
+
+PATCHES:
+[[file:2.6.22/preempt-realtime-net-softirq-fixups.patch][2.6.22]]
+
+
+
+PATTERN2:
+
+在rt kernel不会在IRQ上下文里面运行softirq，而是在thread context里面运行
+softirq
+
+non-RT kernel could deadlock on rt_mutex_trylock() in softirq context. On
+-RT we don't run softirqs in IRQ context but in thread context so it is
+not a issue here.
+
+PATCHES:
+[[file:4.4/rtmutex-trylock-is-okay-on-RT.patch][4.4]]
+
+
+
+PATTERN3:
+和ksoftirq和ktimersoftirq相关。
+
+This patch moves the TIMER and HRTIMER softirqs out of the `ksoftirqd`
+thread into its own `ktimersoftd`. The former can now run SCHED_OTHER
+(same as mainline) and the latter at SCHED_FIFO due to the wakeups.
+
+
+PATCHES:
+[[file:4.6/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.6]]
+[[file:4.11/softirq-wake-the-timer-softirq-if-needed.patch][4.11]]

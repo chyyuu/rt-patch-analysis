@@ -1,0 +1,43 @@
+* [2.6.22         ] new-softirq-code-fixlets.patch {C::bug::na::softirq::softirq::a condition err in if statement is fixed & some precompiling code added}
+  + [[file:2.6.22/new-softirq-code-fixlets.patch][2.6.22]] {MOD::kernel}
+--
+* [2.6.22 - 2.6.25] Fix TASKLET_STATE_SCHED WARN_ON() {C::bug::crash::softirq::sync::add an cond-statement}
+  + [[file:2.6.22/tasklet-fix-preemption-race.patch][2.6.22]]
+--
+* [2.6.22 - 2.6.29] NOHZ: local_softirq_pending with tickless {C::bug::softirq::softirq::softirq::replace fun}
+  + [[file:2.6.22/preempt-realtime-net-softirq-fixups.patch][2.6.22]]
+
+API替换
+-	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
++	raise_softirq_irqoff(NET_RX_SOFTIRQ);
+
+--
+* [  3.14 -    4.0] timer/rt: Always raise the softirq if there's irq_work to be done{C::bug::hang::softirq::softirq::timer/rt: Always raise the softirq if there's irq_work to be done}
+  + [[file:3.14/timer-rt-Always-raise-the-softirq-if-there-s-irq_wor.patch][3.14]]
+  有关irq_work和softirq 没有看明白原理
+--
+* [   4.4 -   4.11] rtmutex: trylock is okay on -RT{C::bug::deadlock::softirq::softirq::add #ifdef avoidding deadlock}
+  + [[file:4.4/rtmutex-trylock-is-okay-on-RT.patch][4.4]]
+  
+  non-RT kernel could deadlock on rt_mutex_trylock() in softirq context. On
+-RT we don't run softirqs in IRQ context but in thread context so it is
+not a issue here.
+
+
+--
+* [   4.6 -   4.11] softirq: split timer softirqs out of ksoftirqd{C::bug::crash::softirq::softirq::split timer softirqs out of ksoftirqd}
+  + [[file:4.6/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.6]]
+  
+This patch moves the TIMER and HRTIMER softirqs out of the `ksoftirqd`
+thread into its own `ktimersoftd`. The former can now run SCHED_OTHER
+(same as mainline) and the latter at SCHED_FIFO due to the wakeups.
+
+  
+--
+* [  4.11         ] softirq: wake the timer softirq if needed{C::bug::softirq::softirq::softirq::the timer softirq if needed}
+  + [[file:4.11/softirq-wake-the-timer-softirq-if-needed.patch][4.11]]
+
+和ksoftirq和ktimersoftirq相关。
+[[file:4.6/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][4.6]]
+
+  
