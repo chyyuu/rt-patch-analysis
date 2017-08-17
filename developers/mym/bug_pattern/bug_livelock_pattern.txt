@@ -1,0 +1,27 @@
+
+
+PATTERN1：
+
+API替换
+-			cpu_relax();
++			cpu_chill();
+  
+
+Retry loops on RT might loop forever when the modifying side was
+preempted. Steven also observed a live lock when there was a
+concurrent priority boosting going on.
+
+Use cpu_chill() instead of cpu_relax() to let the system
+make progress.
+
+PATCHES:
+[[file:3.8/block-use-cpu-chill.patch][3.8]]
+[[file:3.10/work-queue-work-around-irqsafe-timer-optimization.patch][3.10]]
+
+
+PATTERN2：
+
+和优先级继承相关
+
+PATCHES:
+[[file:4.8/kernel-futex-don-t-deboost-too-early.patch][4.8]]

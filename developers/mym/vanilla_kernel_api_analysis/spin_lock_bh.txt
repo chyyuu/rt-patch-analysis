@@ -1,0 +1,166 @@
+spin_lock_bh
+使用自旋锁的同时关闭bf，可以防止被bf打断
+
+spin_unlock_bh
+
+
+
+grep -w  -E "spin_lock_bh|spin_unlock_bh" ./* -Rn
+
+./Documentation/DocBook/kernel-locking.tmpl:316:      <function>spin_lock_bh()</function> 
+
+
+./net/core/sock.c:2037:         spin_unlock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2039:         spin_lock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2055:         spin_unlock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2069:         spin_lock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2081: spin_lock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2083: spin_unlock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2540: spin_lock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2555: spin_lock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2568: spin_unlock_bh(&sk->sk_lock.slock);
+./net/core/sock.c:2585: spin_lock_bh(&sk->sk_lock.slock);
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3  ./net/core/sock.i
+
+
+static void __lock_sock(struct sock *sk)
+        __releases(&sk->sk_lock.slock)
+        __acquires(&sk->sk_lock.slock)
+{       
+        DEFINE_WAIT(wait);
+        
+        for (;;) {
+                prepare_to_wait_exclusive(&sk->sk_lock.wq, &wait,
+                                        TASK_UNINTERRUPTIBLE);
+                spin_unlock_bh(&sk->sk_lock.slock);
+                schedule();
+                spin_lock_bh(&sk->sk_lock.slock);
+                if (!sock_owned_by_user(sk))
+                        break;
+        }
+        finish_wait(&sk->sk_lock.wq, &wait);
+}
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void spin_unlock_bh(spinlock_t *lock)
+{
+ _raw_spin_unlock_bh(&lock->rlock);
+}
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void spin_lock_bh(spinlock_t *lock)
+{
+ _raw_spin_lock_bh(&lock->rlock);
+}
+
+
+
+./kernel/locking/spinlock.c:173:void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
+./kernel/locking/spinlock.c:177:EXPORT_SYMBOL(_raw_spin_lock_bh);
+
+./kernel/locking/spinlock.c:205:void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
+./kernel/locking/spinlock.c:209:EXPORT_SYMBOL(_raw_spin_unlock_bh);
+
+#ifndef CONFIG_INLINE_SPIN_LOCK_BH
+void __lockfunc _raw_spin_lock_bh(raw_spinlock_t *lock)
+{
+        __raw_spin_lock_bh(lock);
+}
+EXPORT_SYMBOL(_raw_spin_lock_bh);
+#endif
+
+
+#ifndef CONFIG_INLINE_SPIN_UNLOCK_BH
+void __lockfunc _raw_spin_unlock_bh(raw_spinlock_t *lock)
+{
+        __raw_spin_unlock_bh(lock);
+}
+EXPORT_SYMBOL(_raw_spin_unlock_bh);
+#endif
+
+
+./include/linux/spinlock_api_smp.h:132:static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
+
+static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
+{
+        __local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+}
+
+
+static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
+{
+        spin_release(&lock->dep_map, 1, _RET_IP_);
+        do_raw_spin_unlock(lock);
+        __local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+}
+
+
+
+
+下面函数的_ip后缀和ip参数的意思是_RET_IP_宏定义。不太明白其是什么原理。
+disable_bh是通过__preempt_count_add实现的？
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+{
+ __preempt_count_add(cnt);
+ __asm__ __volatile__("": : :"memory");
+}
+
+
+./kernel/softirq.c:159:void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+./kernel/softirq.c:190:EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+void __local_bh_enable_ip(unsigned long ip, unsigned int cnt)
+{
+        WARN_ON_ONCE(in_irq() || irqs_disabled());
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_disable();
+#endif
+        /*
+         * Are softirqs going to be turned on now:
+         */
+        if (softirq_count() == SOFTIRQ_DISABLE_OFFSET)
+                trace_softirqs_on(ip);
+        /*
+         * Keep preemption disabled until we are done with
+         * softirq processing:
+         */
+        preempt_count_sub(cnt - 1);
+
+        if (unlikely(!in_interrupt() && local_softirq_pending())) {
+                /*
+                 * Run softirq if any pending. And do it in its own stack
+                 * as we may be calling this deep in a task call stack already.
+                 */
+                do_softirq();
+        }
+
+        preempt_count_dec();
+#ifdef CONFIG_TRACE_IRQFLAGS
+        local_irq_enable();
+#endif
+        preempt_check_resched();
+}
+EXPORT_SYMBOL(__local_bh_enable_ip);
+
+
+需要注意
+preempt_count_dec 和 preempt_count_sub 的区别。
+
+
+
+
+
+
+
+
+
+//注意下面的__local_bh_disable_ip并不像真正要用的__local_bh_disable_ip，
+//是#ifdef CONFIG_TRACE_IRQFLAGS条件编译的缘故
+./kernel/softirq.c:106:void __local_bh_disable_ip(unsigned long ip, unsigned int cnt)
+./kernel/softirq.c:135:EXPORT_SYMBOL(__local_bh_disable_ip);
+

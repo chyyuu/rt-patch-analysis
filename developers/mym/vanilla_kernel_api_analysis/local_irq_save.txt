@@ -1,0 +1,119 @@
+local_irq_save
+会保存当前FLAGS寄存器状态(pushf)，然后关闭本地中断(cli)。
+
+
+local_irq_restore
+会使用flags变量恢复FLAGS寄存器的状态(popf)，然后没有开启本地中断的操作（要注意）。
+也就是说如果原来本地中断是关闭的，local_irq_restore以后本地中断依然关闭。
+
+
+与 disable_irq不同, local_irq_disable不会维护对多次的调用的跟踪。 如果调用链中有多个函数需要禁止中断, 应该使用local_irq_save.
+
+make O=../v4.11.5/ CFLAGS_KERNEL=-g3 ./mm/slab.i
+
+
+./mm/slab.c:3317:       local_irq_save(save_flags);
+./mm/slab.c:3396:       local_irq_save(save_flags);
+./mm/slab.c:3767:       local_irq_save(flags);
+./mm/slab.c:3822:       local_irq_save(flags)
+
+
+
+/**
+ * kfree - free previously allocated memory
+ * @objp: pointer returned by kmalloc.
+ *
+ * If @objp is NULL, no operation is performed.
+ *
+ * Don't free memory not originally allocated by kmalloc()
+ * or you will run into trouble.
+ */
+void kfree(const void *objp)
+{
+        struct kmem_cache *c;
+        unsigned long flags;
+
+        trace_kfree(_RET_IP_, objp);
+
+        if (unlikely(ZERO_OR_NULL_PTR(objp)))
+                return;
+        local_irq_save(flags);
+        kfree_debugcheck(objp);
+        c = virt_to_cache(objp);
+        debug_check_no_locks_freed(objp, c->object_size);
+
+        debug_check_no_obj_freed(objp, c->object_size);
+        __cache_free(c, (void *)objp, _RET_IP_);
+        local_irq_restore(flags);
+}
+EXPORT_SYMBOL(kfree);
+
+
+#define local_irq_save(flags) do { raw_local_irq_save(flags); } while (0)
+#define local_irq_restore(flags) do { raw_local_irq_restore(flags); } while (0)
+
+
+local_irq_save
+上面的宏定义展开以后的结果
+do { do { ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); flags = arch_local_irq_save(); } while (0); } while (0);
+
+要注意的是，会把flags通过值传递的方式传递回去再覆盖了。
+flags = arch_local_irq_save();
+
+
+local_irq_restore
+上面的宏定义展开以后的结果
+do { do { ({ unsigned long __dummy; typeof(flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); arch_local_irq_restore(flags); } while (0); } while (0);
+}
+
+
+#define raw_local_irq_save(flags) do { typecheck(unsigned long, flags); flags = arch_local_irq_save(); } while (0)
+
+#define raw_local_irq_restore(flags) do { typecheck(unsigned long, flags); arch_local_irq_restore(flags); } while (0)
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) unsigned long arch_local_irq_save(void)
+{
+ unsigned long flags = arch_local_save_flags();
+ arch_local_irq_disable();
+ return flags;
+}
+
+
+
+# 69 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/irqflags.h"
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) unsigned long arch_local_save_flags(void)
+{
+ return native_save_fl();
+}
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_restore(unsigned long flags)
+{
+ native_restore_fl(flags);
+}
+
+
+
+
+static inline __attribute__((no_instrument_function)) unsigned long native_save_fl(void)
+{
+ unsigned long flags;
+
+ asm volatile("# __raw_save_flags\n\t"
+       "pushf ; pop %0"
+       : "=rm" (flags)
+       :
+       : "memory");
+
+ return flags;
+}
+
+static inline __attribute__((no_instrument_function)) void native_restore_fl(unsigned long flags)
+{
+ asm volatile("push %0 ; popf"
+       :
+       :"g" (flags)
+       :"memory", "cc");
+}
+
+关键在于pushf和popf 指令

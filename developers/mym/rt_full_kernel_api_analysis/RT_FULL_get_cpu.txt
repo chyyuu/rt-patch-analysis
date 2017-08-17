@@ -1,0 +1,11 @@
+
+#define get_cpu() ({ preempt_disable(); smp_processor_id(); })
+#define put_cpu() preempt_enable()
+
+关闭抢占然后获取到cpuid
+
+
+# 198 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/preempt.h"
+#define preempt_disable() do { preempt_count_inc(); barrier(); } while (0)
+
+

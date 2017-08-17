@@ -1,0 +1,119 @@
+
+#define spin_lock(lock) rt_spin_lock(lock)
+#define spin_unlock(lock) rt_spin_unlock(lock)
+结论：
+RT_FULL 情况下，spin_lock和spin_unlock 的语义已经被替换为rt_spin_lock和rt_spin_unlock
+此时的spin_lock，关闭了进程迁移（不允许迁移），开启了抢占，即在持有自旋锁的情况下，仍然会被别的（高优先级的？）进程抢占。如果没有获取到锁，
+则会spin.如果出现优先级翻转，高优先级进程会睡眠，主动让出CPU，等待被别的进程的spin_unlock来唤醒。
+
+
+
+详细信息见
+developers/mym/rt_full_kernel_api_analysis/rt_spin_lock.txt
+
+
+
+问题思考：
+=====================
+思考问题1：
+spin_lock使用的地方一般自旋的时间都很短，如果使用mutex_lock的话，需要进行上下文切换，花费时间会更长。
+rt_linux里面把spin_lock换成了睡眠锁，这样不是会导致性能下降吗？
+
+调研答案：
+上面的认识是错误的。
+Making in-kernel locking-primitives (using spinlocks) preemptible though reimplementation with 
+rtmutexes.
+这里是把原来的spin_lock转变成可抢占的了，其获取不到锁的时候依然会spin。 并不是将spin_lock换成了mutex_lock（会睡眠）
+
+
+问题2：
+自旋锁开启抢占以后，会导致优先级翻转和死锁，该如何解决？
+
+Critical sections protected by i.e. spinlock_t and rwlock_t are now preemptible. The creation of 
+non-preemptible sections (in kernel) is still possible with raw_spinlock_t (same APIs like 
+spinlock_t).（使得自旋锁和读写锁可抢占，而且还提供了raw_spinlock来提供不可抢占的自旋锁）
+
+	Implementing priority inheritance for in-kernel spinlocks and semaphores. For more information on 
+priority inversion and priority inheritance please consult Introduction to Priority 
+Inversion.（对自旋锁和信号量增加了优先级继承功能）
+
+可抢占以后会增加优先级翻转导致的死锁问题，但是可以通过优先级继承来解决。
+
+
+情景分析：
+rt_linux把spin_lock仅仅变成了可以抢占，也就是说，已持有锁也会被抢占，未获取到spin_lock可以继续自旋或者被抢占
+，但是不能被推入等待队列睡眠。
+
+
+情景1：
+thread A 持有L1,有更高优先级的thread B产生了，会抢占thread A执行，但是thrad B不会获取L1。thread 
+B执行完毕以后，后续thread A会继续执行。
+
+情景2：
+thread A 持有L1,有更高优先级的thread B产生了，会抢占thread A执行，并且thread 
+B也会尝试获取L1，此时获取不到L1, 但是根据优先级继承规则，thread B会自动让出CPU,并被推入睡眠队列。等待其他进程spin_unlock来唤醒它。thread A 
+的优先级会被提升，然后thread A会被调度执行，然后释放L1。然后thread B被唤醒以后，会继续获取到L1，然后继续执行。
+
+
+======================================================
+grep -w  -E "spin_lock|spin_unlock"  ./* -Rn
+
+
+./kernel/signal.c:691:          spin_unlock(&tsk->sighand->siglock);
+./kernel/signal.c:693:          spin_lock(&tsk->sighand->siglock);
+./kernel/signal.c:702: * NOTE! we rely on the previous spin_lock to
+./kernel/signal.c:1342:         spin_lock(&sighand->siglock);
+./kernel/signal.c:1347:         spin_unlock(&sighand->siglock);
+./kernel/signal.c:3731: spin_unlock(&t->sighand->siglock);
+
+ww_mutex_set_context_fastpath
+
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3   ./kernel/signal.i
+
+
+struct sighand_struct *__lock_task_sighand(struct task_struct *tsk,
+                                           unsigned long *flags)
+{
+        struct sighand_struct *sighand;
+
+        for (;;) {
+                /*
+                 * Disable interrupts early to avoid deadlocks.
+                 * See rcu_read_unlock() comment header for details.
+                 */
+                local_irq_save_nort(*flags);
+                rcu_read_lock();
+                sighand = rcu_dereference(tsk->sighand);
+                if (unlikely(sighand == NULL)) {
+                        rcu_read_unlock();
+                        local_irq_restore_nort(*flags);
+                        break;
+                }
+                /*
+                 * This sighand can be already freed and even reused, but
+                 * we rely on SLAB_DESTROY_BY_RCU and sighand_ctor() which
+                 * initializes ->siglock: this slab can't go away, it has
+                 * the same object type, ->siglock can't be reinitialized.
+                 *
+                 * We need to ensure that tsk->sighand is still the same
+                 * after we take the lock, we can race with de_thread() or
+                 * __exit_signal(). In the latter case the next iteration
+                 * must see ->sighand == NULL.
+                 */
+                spin_lock(&sighand->siglock);
+                if (likely(sighand == tsk->sighand)) {
+                        rcu_read_unlock();
+                        break;
+                }
+                spin_unlock(&sighand->siglock);
+                rcu_read_unlock();
+                local_irq_restore_nort(*flags);
+        }
+
+        return sighand;
+}
+
+
+
+

@@ -1,0 +1,286 @@
+preempt_disable
+将preempt_count这个percpu变量加1，禁止抢占。
+
+在vanilla kernel中由于CONFIG_PREEMPT_VOLUNTARY 的缘故，其为空操作，内核本身应该是preempt disable的？
+
+
+# 198 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/preempt.h"
+
+
+#define preempt_disable() do { preempt_count_inc(); barrier(); } while (0)
+
+#define preempt_enable() \
+do { \
+        barrier(); \
+        if (unlikely(preempt_count_dec_and_test())) \
+                __preempt_schedule(); \
+} while (0)
+
+
+#define preempt_count_dec_and_test() ({ preempt_count_sub(1); should_resched(0); })
+
+
+
+#define preempt_count_inc() preempt_count_add(1)
+#define preempt_count_dec() preempt_count_sub(1)
+
+
+# 7 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h" 2
+
+/*
+ * Returns true when we need to resched and can (barring IRQ state).
+ */
+static __always_inline bool should_resched(int preempt_offset)
+{
+#ifdef CONFIG_PREEMPT_LAZY
+        u32 tmp;
+
+        tmp = raw_cpu_read_4(__preempt_count);
+        if (tmp == preempt_offset)
+                return true;
+
+        /* preempt count == 0 ? */
+        tmp &= ~PREEMPT_NEED_RESCHED;
+        if (tmp)
+                return false;
+        if (current_thread_info()->preempt_lazy_count)
+                return false;
+        return test_thread_flag(TIF_NEED_RESCHED_LAZY);
+#else
+        return unlikely(raw_cpu_read_4(__preempt_count) == preempt_offset);
+#endif
+}
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) bool should_resched(int preempt_offset)
+{
+
+ u32 tmp;
+
+ tmp = ({ typeof(__preempt_count) pfo_ret__; switch (sizeof(__preempt_count)) { case 1: asm("mov" "b ""%%""gs"":" "%" "1"",%0" : "=q" (pfo_ret__) : "m" (__preempt_count)); break; case 2: asm("mov" "w ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; case 4: asm("mov" "l ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; case 8: asm("mov" "q ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; default: __bad_percpu_size(); } pfo_ret__; });
+ if (tmp == preempt_offset)
+  return true;
+
+
+ tmp &= ~0x80000000;
+ if (tmp)
+  return false;
+ if (((struct thread_info *)get_current())->preempt_lazy_count)
+  return false;
+ return test_ti_thread_flag(((struct thread_info *)get_current()), 9);
+
+
+
+}
+
+
+
+./kernel/sched/core.c:3308:void preempt_count_add(int val)
+./kernel/sched/core.c:3327:EXPORT_SYMBOL(preempt_count_add);
+./kernel/sched/core.c:3328:NOKPROBE_SYMBOL(preempt_count_add);
+
+
+void preempt_count_add(int val)
+{
+#ifdef CONFIG_DEBUG_PREEMPT
+        /*
+         * Underflow?
+         */
+        if (DEBUG_LOCKS_WARN_ON((preempt_count() < 0)))
+                return;
+#endif
+        __preempt_count_add(val);
+		//将计数加val
+#ifdef CONFIG_DEBUG_PREEMPT
+        /*
+         * Spinlock count overflowing soon?
+         */
+        DEBUG_LOCKS_WARN_ON((preempt_count() & PREEMPT_MASK) >=
+                                PREEMPT_MASK - 10);
+#endif
+        preempt_latency_start(val);
+		//此函数的作用是区分各个task_sturct?
+}
+EXPORT_SYMBOL(preempt_count_add);
+NOKPROBE_SYMBOL(preempt_count_add);
+
+make O=../v4.11.5-rt1 CFLAGS_KERNEL=-g3  ./kernel/sched/core.i
+
+
+
+void preempt_count_add(int val)
+{
+
+ if (({ int __ret = 0; if (!oops_in_progress && __builtin_expect(!!((preempt_count() < 0)), 0)) { if (debug_locks_off() && !debug_locks_silent) ({ int __ret_warn_on = !!(1); if (__builtin_expect(!!(__ret_warn_on), 0)) warn_slowpath_fmt("/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c", 3314, "DEBUG_LOCKS_WARN_ON(%s)", "(preempt_count() < 0)"); __builtin_expect(!!(__ret_warn_on), 0); }); __ret = 1; } __ret; }))
+  return;
+
+ __preempt_count_add(val);
+
+
+ ({ int __ret = 0; if (!oops_in_progress && __builtin_expect(!!((preempt_count() & (((1UL << (8))-1) << 0)) >= (((1UL << (8))-1) << 0) - 10), 0)) { if (debug_locks_off() && !debug_locks_silent) ({ int __ret_warn_on = !!(1); if (__builtin_expect(!!(__ret_warn_on), 0)) warn_slowpath_fmt(
+                     "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c"
+# 3322 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c"
+ ,
+                     3323
+# 3322 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/kernel/sched/core.c"
+ , "DEBUG_LOCKS_WARN_ON(%s)", "(preempt_count() & PREEMPT_MASK) >= PREEMPT_MASK - 10"); __builtin_expect(!!(__ret_warn_on), 0); }); __ret = 1; } __ret; })
+                      ;
+
+ preempt_latency_start(val);
+}
+
+
+
+# 54 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h"
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) void __preempt_count_add(int val)
+{
+ do { typedef typeof((__preempt_count)) pao_T__; const int pao_ID__ = (__builtin_constant_p(val) && ((val) == 1 || (val) == -1)) ? (int)(val) : 0; if (0) { pao_T__ pao_tmp__; pao_tmp__ = (val); (void)pao_tmp__; } switch (sizeof((__preempt_count))) { case 1: if (pao_ID__ == 1) asm("incb ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else if (pao_ID__ == -1) asm("decb ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else asm("addb %1, ""%%""gs"":" "%" "0" : "+m" ((__preempt_count)) : "qi" ((pao_T__)(val))); break; case 2: if (pao_ID__ == 1) asm("incw ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else if (pao_ID__ == -1) asm("decw ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else asm("addw %1, ""%%""gs"":" "%" "0" : "+m" ((__preempt_count)) : "ri" ((pao_T__)(val))); break; case 4: if (pao_ID__ == 1) asm("incl ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else if (pao_ID__ == -1) asm("decl ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else asm("addl %1, ""%%""gs"":" "%" "0" : "+m" ((__preempt_count)) : "ri" ((pao_T__)(val))); break; case 8: if (pao_ID__ == 1) asm("incq ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else if (pao_ID__ == -1) asm("decq ""%%""gs"":" "%" "0" : "+m" ((__preempt_count))); else asm("addq %1, ""%%""gs"":" "%" "0" : "+m" ((__preempt_count)) : "re" ((pao_T__)(val))); break; default: __bad_percpu_size(); } } while (0);
+}
+
+
+
+DECLARE_PER_CPU(int, __preempt_count);
+
+__preempt_count 是一个percpu变量
+
+
+
+__preempt_count_add
+的原理就是将percpu变量增加val
+
+/*
+ * The various preempt_count add/sub methods
+ */
+
+static __always_inline void __preempt_count_add(int val)
+{
+        raw_cpu_add_4(__preempt_count, val);
+}
+
+static __always_inline void __preempt_count_sub(int val)
+{
+        raw_cpu_add_4(__preempt_count, -val);
+}
+
+
+#define raw_cpu_add_4(pcp,val) percpu_add_op((pcp), val)
+
+
+# 126 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/percpu.h"
+
+
+#define __percpu_arg(x) __percpu_prefix "%" #x
+#define __percpu_prefix "%%"__stringify(__percpu_seg)":"
+#define __stringify_1(x...) #x
+#define __stringify(x...) __stringify_1(x)
+
+/*
+ * Generate a percpu add to memory instruction and optimize code
+ * if one is added or subtracted.
+ */
+#define percpu_add_op(var, val)                                         \
+do {                                                                    \
+        typedef typeof(var) pao_T__;                                    \
+        const int pao_ID__ = (__builtin_constant_p(val) &&              \
+                              ((val) == 1 || (val) == -1)) ?            \
+                                (int)(val) : 0;                         \
+        if (0) {                                                        \
+                pao_T__ pao_tmp__;                                      \
+                pao_tmp__ = (val);                                      \
+                (void)pao_tmp__;                                        \
+        }                                                               \
+        switch (sizeof(var)) {                                          \
+        case 1:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incb "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decb "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addb %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "qi" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 2:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incw "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decw "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addw %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "ri" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 4:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incl "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decl "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addl %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "ri" ((pao_T__)(val)));                   \
+                break;                                                  \
+        case 8:                                                         \
+                if (pao_ID__ == 1)                                      \
+                        asm("incq "__percpu_arg(0) : "+m" (var));       \
+                else if (pao_ID__ == -1)                                \
+                        asm("decq "__percpu_arg(0) : "+m" (var));       \
+                else                                                    \
+                        asm("addq %1, "__percpu_arg(0)                  \
+                            : "+m" (var)                                \
+                            : "re" ((pao_T__)(val)));                   \
+                break;                                                  \
+        default: __bad_percpu_size();                                   \
+        }                                                               \
+} while (0)
+
+
+static inline __attribute__((no_instrument_function)) void preempt_latency_start(int val)
+{
+ if (preempt_count() == val) {
+  unsigned long ip = get_lock_parent_ip();
+
+  get_current()->preempt_disable_ip = ip;
+
+  do { } while (0);
+ }
+}
+
+
+===============================================================
+./arch/x86/kernel/process.c:134:        preempt_disable();
+./arch/x86/kernel/process.c:151:        preempt_disable();
+
+
+
+
+void disable_TSC(void)
+{
+        preempt_disable();
+        if (!test_and_set_thread_flag(TIF_NOTSC))
+                /*
+                 * Must flip the CPU state synchronously with
+                 * TIF_NOTSC in the current running context.
+                 */
+                hard_disable_TSC();
+        preempt_enable();
+}
+
+
+
+void disable_TSC(void)
+{
+ do { preempt_count_add(1); __asm__ __volatile__("": : :"memory"); } while (0);
+ if (!test_and_set_ti_thread_flag(((struct thread_info *)get_current()), 16))
+
+  hard_disable_TSC();
+ do { __asm__ __volatile__("": : :"memory"); if (__builtin_expect(!!(({ preempt_count_sub(1); should_resched(0); })), 0)) ({ register void *__sp asm("rsp"); asm volatile ("call ___preempt_schedule" : "+r"(__sp)); }); } while (0);
+}
+
+
+
+
+
+make O=../v4.11.5-rt1 CFLAGS_KERNEL=-g3  ./arch/x86/kernel/process.i

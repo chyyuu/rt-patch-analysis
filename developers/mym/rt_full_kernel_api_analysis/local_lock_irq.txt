@@ -1,0 +1,73 @@
+local_lock_irq
+
+./include/linux/locallock.h:122:#define local_lock_irq(lvar)                                            \
+./include/linux/locallock.h:199:                local_lock_irq(lvar);                                   \
+./include/linux/locallock.h:208:                local_lock_irq(lvar);                                   \
+./include/linux/locallock.h:255:#define local_lock_irq(lvar)                    local_irq_disable()
+./kernel/workqueue.c:3024:      local_lock_irq(pendingb_lock);
+./mm/memcontrol.c:4542: local_lock_irq(event_lock);
+./mm/memcontrol.c:5429: local_lock_irq(event_lock);
+
+
+# 93 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/locallock.h"
+
+static inline __attribute__((no_instrument_function)) void __local_lock_irq(struct local_irq_lock *lv)
+{
+ do { ({ unsigned long __dummy; typeof(lv->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); lv->flags = 0; rt_spin_lock(&lv->lock); } while (0);
+ do { } while (0);
+ do { } while (0);
+ lv->owner = get_current();
+ lv->nestcnt = 1;
+}
+
+#define local_lock_irq(lvar) do { __local_lock_irq(&get_local_var(lvar)); } while (0)
+
+static inline void __local_lock_irq(struct local_irq_lock *lv)
+{
+        spin_lock_irqsave(&lv->lock, lv->flags);
+        LL_WARN(lv->owner);
+        LL_WARN(lv->nestcnt);
+        lv->owner = current;
+        lv->nestcnt = 1;
+}
+
+#define spin_lock_irqsave(lock,flags) do { typecheck(unsigned long, flags); flags = 0; spin_lock(lock); } while (0)
+
+
+
+static inline __attribute__((no_instrument_function)) void __local_lock_irq(struct local_irq_lock *lv)
+{
+ do { ({ unsigned long __dummy; typeof(lv->flags) __dummy2; (void)(&__dummy == &__dummy2); 1; }); lv->flags = 0; rt_spin_lock(&lv->lock); } while (0);
+ do { } while (0);
+ do { } while (0);
+ lv->owner = get_current();
+ lv->nestcnt = 1;
+}
+
+
+static inline void __local_unlock_irq(struct local_irq_lock *lv)
+{
+        LL_WARN(!lv->nestcnt);
+        LL_WARN(lv->owner != current);
+        lv->owner = NULL;
+        lv->nestcnt = 0;
+        spin_unlock_irq(&lv->lock);
+}
+
+
+
+static inline __attribute__((no_instrument_function)) void __local_unlock_irq(struct local_irq_lock *lv)
+{
+ do { } while (0);
+ do { } while (0);
+ lv->owner = ((void *)0);
+ lv->nestcnt = 0;
+ rt_spin_unlock(&lv->lock);
+}
+
+#define local_unlock_irq(lvar)                                          \
+        do {                                                            \
+                __local_unlock_irq(this_cpu_ptr(&lvar));                \
+                put_local_var(lvar);                                    \
+        } 
+		

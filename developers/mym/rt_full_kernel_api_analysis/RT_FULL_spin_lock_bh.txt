@@ -1,0 +1,19 @@
+
+spin_lock_bh
+在local_bh_disable的基础上执行rt_spin_lock
+但是local_bh_disable只是关闭迁移而不是vanilla的关闭抢占？
+
+
+#define spin_lock_bh(lock) do { local_bh_disable(); rt_spin_lock(lock); } while (0)
+
+#define spin_unlock_bh(lock) do { rt_spin_unlock(lock); local_bh_enable(); } while (0)
+
+
+
+
+
+==========================================================
+grep -w -E "spin_lock_bh|spin_unlock_bh" ./* -Rn 
+
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3  ./net/core/sock.i

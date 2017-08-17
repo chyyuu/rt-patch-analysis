@@ -1,0 +1,111 @@
+-	disable_irq(irq);
++	disable_irq_nosync(irq);
+
+Use disable_irq_nosync() instead of disable_irq() as this might be
+called in atomic context with netpoll.
+
+
+./kernel/irq/manage.c:506: *    Unlike disable_irq(), this function does not ensure existing
+./kernel/irq/manage.c:518: *    disable_irq - disable an irq and wait for completion
+./kernel/irq/manage.c:529:void disable_irq(unsigned int irq)
+./kernel/irq/manage.c:534:EXPORT_SYMBOL(disable_irq);
+./kernel/irq/manage.c:588: *    Undoes the effect of one call to disable_irq().  If this
+./kernel/irq/manage.c:1767:             disable_irq(irq);
+./kernel/irq/chip.c:249: * disable_irq[_nosync] instead.
+
+
+./drivers/net/ethernet/realtek/8139too.c:2226:  disable_irq_nosync(irq);
+./drivers/net/ethernet/realtek/8139cp.c:637:    disable_irq(irq);
+
+
+
+/**
+ *      disable_irq - disable an irq and wait for completion
+ *      @irq: Interrupt to disable
+ *
+ *      Disable the selected interrupt line.  Enables and Disables are
+ *      nested.
+ *      This function waits for any pending IRQ handlers for this interrupt
+ *      to complete before returning. If you use this function while
+ *      holding a resource the IRQ handler may need you will deadlock.
+ *
+ *      This function may be called - with care - from IRQ context.
+ */
+void disable_irq(unsigned int irq)
+{
+        if (!__disable_irq_nosync(irq))
+                synchronize_irq(irq);
+}
+EXPORT_SYMBOL(disable_irq);
+
+/**
+ *      disable_irq_nosync - disable an irq without waiting
+ *      @irq: Interrupt to disable
+ *
+ *      Disable the selected interrupt line.  Disables and Enables are
+ *      nested.
+ *      Unlike disable_irq(), this function does not ensure existing
+ *      instances of the IRQ handler have completed before returning.
+ *
+ *      This function may be called from IRQ context.
+ */
+void disable_irq_nosync(unsigned int irq)
+{
+        __disable_irq_nosync(irq);
+}
+EXPORT_SYMBOL(disable_irq_nosync);
+
+static int __disable_irq_nosync(unsigned int irq)
+{
+ unsigned long flags;
+ struct irq_desc *desc = irq_get_desc_buslock(irq, &flags, ((1 << 0)));
+
+ if (!desc)
+  return -22;
+ __disable_irq(desc);
+ irq_put_desc_busunlock(desc, flags);
+ return 0;
+}
+
+
+
+
+/**
+ *      synchronize_irq - wait for pending IRQ handlers (on other CPUs)
+ *      @irq: interrupt number to wait for
+ *
+ *      This function waits for any pending IRQ handlers for this interrupt
+ *      to complete before returning. If you use this function while
+ *      holding a resource the IRQ handler may need you will deadlock.
+ *
+ *      This function may be called - with care - from IRQ context.
+ */
+void synchronize_irq(unsigned int irq)
+{
+        struct irq_desc *desc = irq_to_desc(irq);
+
+        if (desc) {
+                __synchronize_hardirq(desc);
+                /*
+                 * We made sure that no hardirq handler is
+                 * running. Now verify that no threaded handlers are
+                 * active.
+                 */
+                wait_event(desc->wait_for_threads,
+                           !atomic_read(&desc->threads_active));
+        }
+}
+EXPORT_SYMBOL(synchronize_irq);
+
+
+void synchronize_irq(unsigned int irq)
+{
+ struct irq_desc *desc = irq_to_desc(irq);
+
+ if (desc) {
+  __synchronize_hardirq(desc);
+
+  do { do { do { } while (0); } while (0); if (!atomic_read(&desc->threads_active)) break; (void)({ __label__ __out; wait_queue_t __wait; long __ret = 0; init_wait_entry(&__wait, 0 ? 0x01 : 0); for (;;) { long __int = prepare_to_wait_event(&desc->wait_for_threads, &__wait, 2); if (!atomic_read(&desc->threads_active)) break; if ((!__builtin_constant_p(2) || 2 == 1 || 2 == (128 | 2)) && __int) { __ret = __int; goto __out; } schedule(); } finish_wait(&desc->wait_for_threads, &__wait); __out: __ret; }); } while (0)
+                                          ;
+ }
+}

@@ -1,0 +1,315 @@
+
+
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ grep -w  -E "rt_spin_lock__no_mg|rt_spin_unlock__no_mg" ./* -Rn 
+
+*/
+
+./include/linux/spinlock_rt.h:21:void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock);
+./include/linux/spinlock_rt.h:22:void __lockfunc rt_spin_unlock__no_mg(spinlock_t *lock);
+./include/linux/locallock.h:46:# define spin_lock_local(lock)                   rt_spin_lock__no_mg(lock)
+./include/linux/locallock.h:48:# define spin_unlock_local(lock)         rt_spin_unlock__no_mg(lock)
+./kernel/cpu.c:275:# define hotplug_lock(hp) rt_spin_lock__no_mg(&(hp)->lock)
+./kernel/cpu.c:276:# define hotplug_unlock(hp) rt_spin_unlock__no_mg(&(hp)->lock)
+./kernel/locking/rtmutex.c:1161:void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock)
+./kernel/locking/rtmutex.c:1166:EXPORT_SYMBOL(rt_spin_lock__no_mg);
+./kernel/locking/rtmutex.c:1196:void __lockfunc rt_spin_unlock__no_mg(spinlock_t *lock)
+./kernel/locking/rtmutex.c:1202:EXPORT_SYMBOL(rt_spin_unlock__no_mg);
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ 
+
+
+void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock)
+{
+        rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, false);
+		//这里可能调用函数指针 rt_spin_lock_slowlock
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+}
+EXPORT_SYMBOL(rt_spin_lock__no_mg);
+
+
+
+void __lockfunc rt_spin_unlock__no_mg(spinlock_t *lock)
+{
+        /* NOTE: we always pass in '1' for nested, for simplicity */
+        spin_release(&lock->dep_map, 1, _RET_IP_);
+        rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+		//这里可能调用函数指针 rt_spin_lock_slowunlock
+}
+EXPORT_SYMBOL(rt_spin_unlock__no_mg);
+
+
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+/*
+ * preemptible spin_lock functions:
+ */
+static inline void rt_spin_lock_fastlock(struct rt_mutex *lock,
+                                         void  (*slowfn)(struct rt_mutex *lock,
+                                                         bool mg_off),
+                                         bool do_mig_dis)
+{
+        might_sleep_no_state_check();
+
+        if (do_mig_dis)
+                migrate_disable();
+
+        if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
+                return;
+        else
+                slowfn(lock, do_mig_dis);
+				//函数指针
+}
+
+
+
+static inline void rt_spin_lock_fastunlock(struct rt_mutex *lock,
+                                           void  (*slowfn)(struct rt_mutex *lock))
+{
+        if (likely(rt_mutex_cmpxchg_release(lock, current, NULL)))
+                return;
+        else
+                slowfn(lock);
+				//函数指针
+}
+
+
+
+__try_to_take_rt_mutex
+//获取mutex_lock
+
+__set_current_state_no_track
+//
+
+
+/*
+ * Slow path lock function spin_lock style: this variant is very
+ * careful not to miss any non-lock wakeups.
+ *
+ * We store the current state under p->pi_lock in p->saved_state and
+ * the try_to_wake_up() code handles this accordingly.
+ */
+static void  noinline __sched rt_spin_lock_slowlock(struct rt_mutex *lock,
+                                                    bool mg_off)
+{
+        struct task_struct *lock_owner, *self = current;
+        struct rt_mutex_waiter waiter, *top_waiter;
+        unsigned long flags;
+        int ret;
+
+        rt_mutex_init_waiter(&waiter, true);
+
+        raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+        if (__try_to_take_rt_mutex(lock, self, NULL, STEAL_LATERAL)) {
+                raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+                return;
+        }
+
+        BUG_ON(rt_mutex_owner(lock) == self);
+
+        /*
+         * We save whatever state the task is in and we'll restore it
+         * after acquiring the lock taking real wakeups into account
+         * as well. We are serialized via pi_lock against wakeups. See
+         * try_to_wake_up().
+         */
+        raw_spin_lock(&self->pi_lock);
+        self->saved_state = self->state;
+        __set_current_state_no_track(TASK_UNINTERRUPTIBLE);
+        raw_spin_unlock(&self->pi_lock);
+
+        ret = task_blocks_on_rt_mutex(lock, &waiter, self, RT_MUTEX_MIN_CHAINWALK);
+        BUG_ON(ret);
+
+        for (;;) {
+                /* Try to acquire the lock again. */
+                if (__try_to_take_rt_mutex(lock, self, &waiter, STEAL_LATERAL))
+                        break;
+
+                top_waiter = rt_mutex_top_waiter(lock);
+                lock_owner = rt_mutex_owner(lock);
+
+                raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+                debug_rt_mutex_print_deadlock(&waiter);
+
+                if (top_waiter != &waiter || adaptive_wait(lock, lock_owner)) {
+                        if (mg_off)
+                                migrate_enable();
+                        schedule();
+                        if (mg_off)
+                                migrate_disable();
+                }
+
+                raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+                raw_spin_lock(&self->pi_lock);
+                __set_current_state_no_track(TASK_UNINTERRUPTIBLE);
+                raw_spin_unlock(&self->pi_lock);
+        }
+
+        /*
+         * Restore the task state to current->saved_state. We set it
+         * to the original state above and the try_to_wake_up() code
+         * has possibly updated it when a real (non-rtmutex) wakeup
+         * happened while we were blocked. Clear saved_state so
+         * try_to_wakeup() does not get confused.
+         */
+        raw_spin_lock(&self->pi_lock);
+        __set_current_state_no_track(self->saved_state);
+        self->saved_state = TASK_RUNNING;
+        raw_spin_unlock(&self->pi_lock);
+
+        /*
+         * try_to_take_rt_mutex() sets the waiter bit
+         * unconditionally. We might have to fix that up:
+         */
+        fixup_rt_mutex_waiters(lock);
+
+        BUG_ON(rt_mutex_has_waiters(lock) && &waiter == rt_mutex_top_waiter(lock));
+        BUG_ON(!RB_EMPTY_NODE(&waiter.tree_entry));
+
+        raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+        debug_rt_mutex_free_waiter(&waiter);
+}
+
+
+
+/*
+ * Slow path to release a rt_mutex spin_lock style
+ */
+static void  noinline __sched rt_spin_lock_slowunlock(struct rt_mutex *lock)
+{
+        unsigned long flags;
+        DEFINE_WAKE_Q(wake_q);
+        DEFINE_WAKE_Q(wake_sleeper_q);
+        bool postunlock;
+
+        raw_spin_lock_irqsave(&lock->wait_lock, flags);
+        postunlock = __rt_mutex_unlock_common(lock, &wake_q, &wake_sleeper_q);
+        raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+        if (postunlock)
+                rt_mutex_postunlock(&wake_q, &wake_sleeper_q);
+}
+
+
+
+
+
+
+/*
+ * We can speed up the acquire/release, if there's no debugging state to be
+ * set up.
+ */
+#ifndef CONFIG_DEBUG_RT_MUTEXES
+# define rt_mutex_cmpxchg_relaxed(l,c,n) (cmpxchg_relaxed(&l->owner, c, n) == c)
+# define rt_mutex_cmpxchg_acquire(l,c,n) (cmpxchg_acquire(&l->owner, c, n) == c)
+# define rt_mutex_cmpxchg_release(l,c,n) (cmpxchg_release(&l->owner, c, n) == c)
+
+#define cmpxchg_relaxed cmpxchg
+#define cmpxchg_acquire cmpxchg
+#define cmpxchg_release cmpxchg
+
+#define cmpxchg(ptr,old,new) __cmpxchg(ptr, old, new, sizeof(*(ptr)))
+
+#define __cmpxchg(ptr,old,new,size) __raw_cmpxchg((ptr), (old), (new), (size), LOCK_PREFIX)
+
+
+
+/*
+ * Atomic compare and exchange.  Compare OLD with MEM, if identical,
+ * store NEW in MEM.  Return the initial value in MEM.  Success is
+ * indicated by comparing RETURN with OLD.
+ */
+#define __raw_cmpxchg(ptr, old, new, size, lock)                        \
+({                                                                      \
+        __typeof__(*(ptr)) __ret;                                       \
+        __typeof__(*(ptr)) __old = (old);                               \
+        __typeof__(*(ptr)) __new = (new);                               \
+        switch (size) {                                                 \
+        case __X86_CASE_B:                                              \
+        {                                                               \
+                volatile u8 *__ptr = (volatile u8 *)(ptr);              \
+                asm volatile(lock "cmpxchgb %2,%1"                      \
+                             : "=a" (__ret), "+m" (*__ptr)              \
+                             : "q" (__new), "0" (__old)                 \
+                             : "memory");                               \
+                break;                                                  \
+        }                                                               \
+        case __X86_CASE_W:                                              \
+        {                                                               \
+                volatile u16 *__ptr = (volatile u16 *)(ptr);            \
+                asm volatile(lock "cmpxchgw %2,%1"                      \
+                             : "=a" (__ret), "+m" (*__ptr)              \
+                             : "r" (__new), "0" (__old)                 \
+                             : "memory");                               \
+                break;                                                  \
+        }                                                               \
+        case __X86_CASE_L:                                              \
+        {                                                               \
+                volatile u32 *__ptr = (volatile u32 *)(ptr);            \
+                asm volatile(lock "cmpxchgl %2,%1"                      \
+                             : "=a" (__ret), "+m" (*__ptr)              \
+                             : "r" (__new), "0" (__old)                 \
+                             : "memory");                               \
+                break;                                                  \
+        }                                                               \
+        case __X86_CASE_Q:                                              \
+        {                                                               \
+                volatile u64 *__ptr = (volatile u64 *)(ptr);            \
+                asm volatile(lock "cmpxchgq %2,%1"                      \
+                             : "=a" (__ret), "+m" (*__ptr)              \
+                             : "r" (__new), "0" (__old)                 \
+                             : "memory");                               \
+                break;                                                  \
+        }                                                               \
+        default:                                                        \
+                __cmpxchg_wrong_size();                                 \
+        }                                                               \
+        __ret;                                                          \
+})
+
+
+
+展开的结果
+========================
+void __attribute__((section(".spinlock.text"))) rt_spin_lock__no_mg(spinlock_t *lock)
+{
+ rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, false);
+ do { } while (0);
+}
+
+
+void __attribute__((section(".spinlock.text"))) rt_spin_unlock__no_mg(spinlock_t *lock)
+{
+
+ do { } while (0);
+ rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+}
+
+
+static inline __attribute__((no_instrument_function)) void rt_spin_lock_fastlock(struct rt_mutex *lock,
+      void (*slowfn)(struct rt_mutex *lock,
+        bool mg_off),
+      bool do_mig_dis)
+{
+ do { do { } while (0); } while (0);
+ 
+ if (do_mig_dis)
+  migrate_disable();
+ 
+ if (__builtin_expect(!!((({ __typeof__(*((&lock->owner))) __ret; __typeof__(*((&lock->owner))) __old = ((((void *)0))); __typeof__(*((&lock->owner))) __new = ((get_current())); switch ((sizeof(*(&lock->owner)))) { case 1: { volatile u8 *__ptr = (volatile u8 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgb %2,%1" : "=a" (__ret), "+m" (*__ptr) : "q" (__new), "0" (__old) : "memory"); break; } case 2: { volatile u16 *__ptr = (volatile u16 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgw %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } case 4: { volatile u32 *__ptr = (volatile u32 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgl %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } case 8: { volatile u64 *__ptr = (volatile u64 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgq %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } default: __cmpxchg_wrong_size(); } __ret; }) == ((void *)0))), 1))
+  return;
+ else
+  slowfn(lock, do_mig_dis);
+}
+
+static inline __attribute__((no_instrument_function)) void rt_spin_lock_fastunlock(struct rt_mutex *lock,
+        void (*slowfn)(struct rt_mutex *lock))
+{
+ if (__builtin_expect(!!((({ __typeof__(*((&lock->owner))) __ret; __typeof__(*((&lock->owner))) __old = ((get_current())); __typeof__(*((&lock->owner))) __new = ((((void *)0))); switch ((sizeof(*(&lock->owner)))) { case 1: { volatile u8 *__ptr = (volatile u8 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgb %2,%1" : "=a" (__ret), "+m" (*__ptr) : "q" (__new), "0" (__old) : "memory"); break; } case 2: { volatile u16 *__ptr = (volatile u16 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgw %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } case 4: { volatile u32 *__ptr = (volatile u32 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgl %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } case 8: { volatile u64 *__ptr = (volatile u64 *)((&lock->owner)); asm volatile(".pushsection .smp_locks,\"a\"\n" ".balign 4\n" ".long 671f - .\n" ".popsection\n" "671:" "\n\tlock; " "cmpxchgq %2,%1" : "=a" (__ret), "+m" (*__ptr) : "r" (__new), "0" (__old) : "memory"); break; } default: __cmpxchg_wrong_size(); } __ret; }) == get_current())), 1))
+  return;
+ else
+  slowfn(lock);
+}

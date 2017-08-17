@@ -1,0 +1,60 @@
+
+和vanilla的语义没有区别。
+
+make O=../v4.11.5-rt1/  CFLAGS_KERNEL=-g3 ./mm/slab.i 
+
+
+
+#define local_irq_save(flags) do { raw_local_irq_save(flags); } while (0)
+#define local_irq_restore(flags) do { raw_local_irq_restore(flags); } while (0)
+
+#define raw_local_irq_save(flags) do { typecheck(unsigned long, flags); flags = arch_local_irq_save(); } while (0)
+
+
+#define raw_local_irq_restore(flags) do { typecheck(unsigned long, flags); arch_local_irq_restore(flags); } while (0)
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) unsigned long arch_local_irq_save(void)
+{
+ unsigned long flags = arch_local_save_flags();
+ arch_local_irq_disable();
+ return flags;
+}
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) void arch_local_irq_restore(unsigned long flags)
+{
+ native_restore_fl(flags);
+}
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((no_instrument_function)) unsigned long arch_local_save_flags(void)
+{
+ return native_save_fl();
+}
+
+
+
+static inline __attribute__((no_instrument_function)) unsigned long native_save_fl(void)
+{
+ unsigned long flags;
+
+ asm volatile("# __raw_save_flags\n\t"
+       "pushf ; pop %0"
+       : "=rm" (flags)
+       :
+       : "memory");
+
+ return flags;
+}
+
+static inline __attribute__((no_instrument_function)) void native_restore_fl(unsigned long flags)
+{
+ asm volatile("push %0 ; popf"
+       :
+       :"g" (flags)
+       :"memory", "cc");
+}
+
+
+

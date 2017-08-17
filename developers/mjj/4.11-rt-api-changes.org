@@ -1,0 +1,643 @@
+* raw data
+** BLOCKING_NOTIFIER_HEAD -> SRCU_NOTIFIER_HEAD
+   [[file:rtl-patches/4.11/peterz-srcu-crypto-chain.patch][peterz-srcu-crypto-chain.patch]]
+** BUG_ON -> BUG_ON_NONRT
+   [[file:rtl-patches/4.11/dm-make-rt-aware.patch][dm-make-rt-aware.patch]]
+   [[file:rtl-patches/4.11/irqwork-push_most_work_into_softirq_context.patch][irqwork-push_most_work_into_softirq_context.patch]]
+** DECLARE_WAITQUEUE -> DECLARE_SWAITQUEUE
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** DECLARE_WAIT_QUEUE_HEAD_ONSTACK -> DECLARE_SWAIT_QUEUE_HEAD_ONSTACK
+   [[file:rtl-patches/4.11/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][fs-dcache-use-swait_queue-instead-of-waitqueue.patch]]
+** DEFINE_SPINLOCK -> DEFINE_RAW_SPINLOCK
+   [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+   [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
+   [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
+   [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+** WARN_ON -> WARN_ON_NONRT
+   [[file:rtl-patches/4.11/fs-block-rt-support.patch][fs-block-rt-support.patch]]
+   [[file:rtl-patches/4.11/i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch][i915-bogus-warning-from-i915-when-running-on-PREEMPT.patch]]
+** WARN_ON_ONCE -> WARN_ON_ONCE_NONRT
+   [[file:rtl-patches/4.11/net-wireless-warn-nort.patch][net-wireless-warn-nort.patch]]
+   [[file:rtl-patches/4.11/posix-timers-thread-posix-cpu-timers-on-rt.patch][posix-timers-thread-posix-cpu-timers-on-rt.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+** __WAIT_QUEUE_HEAD_INITIALIZER -> __SWAIT_QUEUE_HEAD_INITIALIZER
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** __add_wait_queue_tail_exclusive -> __prepare_to_swait
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** __raise_softirq_irqoff -> __raise_softirq_irqoff_ksoft
+   [[file:rtl-patches/4.11/net-provide-a-way-to-delegate-processing-a-softirq-t.patch][net-provide-a-way-to-delegate-processing-a-softirq-t.patch]]
+** __remove_wait_queue -> __finish_swait
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** __rt_mutex_adjust_prio -> rt_mutex_adjust_prio
+   [[file:rtl-patches/4.11/0005-sched-rtmutex-Refactor-rt_mutex_setprio.patch][0005-sched-rtmutex-Refactor-rt_mutex_setprio.patch]]
+** __rt_mutex_init -> rt_mutex_init
+   [[file:rtl-patches/4.11/rt-add-rt-locks.patch][rt-add-rt-locks.patch]]
+** __sigqueue_free -> sigqueue_free_current
+   [[file:rtl-patches/4.11/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch][signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch]]
+** __this_cpu_dec -> xmit_rec_dec
+   [[file:rtl-patches/4.11/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][net-move-xmit_recursion-to-per-task-variable-on-RT.patch]]
+** __this_cpu_inc -> xmit_rec_inc
+   [[file:rtl-patches/4.11/net-move-xmit_recursion-to-per-task-variable-on-RT.patch][net-move-xmit_recursion-to-per-task-variable-on-RT.patch]]
+** _local_bh_enable -> _local_bh_enable_nort
+   [[file:rtl-patches/4.11/softirq-split-locks.patch][softirq-split-locks.patch]]
+** acpi_os_acquire_lock -> raw_spin_lock_irqsave
+   [[file:rtl-patches/4.11/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch]]
+** acpi_os_delete_lock -> acpi_os_delete_raw_lock
+   [[file:rtl-patches/4.11/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch]]
+** acpi_os_release_lock -> raw_spin_unlock_irqrestore
+   [[file:rtl-patches/4.11/acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch][acpi-rt-Convert-acpi_gbl_hardware-lock-back-to-a-raw.patch]]
+** atomic_inc -> get_pi_state
+   [[file:rtl-patches/4.11/0006-futex-Cleanup-refcounting.patch][0006-futex-Cleanup-refcounting.patch]]
+** bit_spin_lock -> zram_lock_table
+   [[file:rtl-patches/4.11/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch]]
+** bit_spin_unlock -> zram_unlock_table
+   [[file:rtl-patches/4.11/drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch][drivers-block-zram-Replace-bit-spinlocks-with-rtmute.patch]]
+** blocking_notifier_call_chain -> srcu_notifier_call_chain
+   [[file:rtl-patches/4.11/peterz-srcu-crypto-chain.patch][peterz-srcu-crypto-chain.patch]]
+** blocking_notifier_chain_register -> srcu_notifier_chain_register
+   [[file:rtl-patches/4.11/peterz-srcu-crypto-chain.patch][peterz-srcu-crypto-chain.patch]]
+** blocking_notifier_chain_unregister -> srcu_notifier_chain_unregister
+   [[file:rtl-patches/4.11/peterz-srcu-crypto-chain.patch][peterz-srcu-crypto-chain.patch]]
+** call_on_cpu -> work_on_cpu_safe
+   [[file:rtl-patches/4.11/0003-ia64-salinfo-Replace-racy-task-affinity-logic.patch][0003-ia64-salinfo-Replace-racy-task-affinity-logic.patch]]
+** call_rcu_sched -> call_rcu
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** clk_enable -> tc_clk_enable
+   [[file:rtl-patches/4.11/at91_dont_enable_disable_clock.patch][at91_dont_enable_disable_clock.patch]]
+** cpu_hotplug_begin -> cpus_write_lock
+   [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+** cpu_hotplug_done -> cpus_write_unlock
+   [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+** cpu_relax -> cpu_chill
+   [[file:rtl-patches/4.11/block-use-cpu-chill.patch][block-use-cpu-chill.patch]]
+   [[file:rtl-patches/4.11/fs-dcache-use-cpu-chill-in-trylock-loops.patch][fs-dcache-use-cpu-chill-in-trylock-loops.patch]]
+   [[file:rtl-patches/4.11/net-use-cpu-chill.patch][net-use-cpu-chill.patch]]
+   [[file:rtl-patches/4.11/work-queue-work-around-irqsafe-timer-optimization.patch][work-queue-work-around-irqsafe-timer-optimization.patch]]
+** cpu_relax -> hrtimer_wait_for_timer
+   [[file:rtl-patches/4.11/hrtimers-prepare-full-preemption.patch][hrtimers-prepare-full-preemption.patch]]
+** cpu_relax -> wait_for_running_timer
+   [[file:rtl-patches/4.11/timers-prepare-for-full-preemption.patch][timers-prepare-for-full-preemption.patch]]
+** cpuhp_remove_state_nocalls -> cpuhp_remove_state_nocalls_cpuslocked
+   [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
+** del_timer_sync -> hrtimer_cancel
+   [[file:rtl-patches/4.11/x86-mce-timer-hrtimer.patch][x86-mce-timer-hrtimer.patch]]
+** disable_irq -> disable_irq_nosync
+   [[file:rtl-patches/4.11/drivers-net-8139-disable-irq-nosync.patch][drivers-net-8139-disable-irq-nosync.patch]]
+** do_set_cpus_allowed -> set_cpus_allowed_ptr
+   [[file:rtl-patches/4.11/hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch][hotplug-Use-set_cpus_allowed_ptr-in-sync_unplug_thre.patch]]
+** down_read_non_owner -> nfs_down_anon
+   [[file:rtl-patches/4.11/fs-nfs-turn-rmdir_sem-into-a-semaphore.patch][fs-nfs-turn-rmdir_sem-into-a-semaphore.patch]]
+** flush_sigqueue -> flush_task_sigqueue
+   [[file:rtl-patches/4.11/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch][signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch]]
+** free_ioctx_users -> free_ioctx_users_work
+   [[file:rtl-patches/4.11/fs-aio-simple-simple-work.patch][fs-aio-simple-simple-work.patch]]
+** get_cpu -> get_cpu_light
+   [[file:rtl-patches/4.11/block-mq-drop-preempt-disable.patch][block-mq-drop-preempt-disable.patch]]
+   [[file:rtl-patches/4.11/block-mq-use-cpu_light.patch][block-mq-use-cpu_light.patch]]
+   [[file:rtl-patches/4.11/epoll-use-get-cpu-light.patch][epoll-use-get-cpu-light.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch]]
+   [[file:rtl-patches/4.11/scsi-fcoe-rt-aware.patch][scsi-fcoe-rt-aware.patch]]
+   [[file:rtl-patches/4.11/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch]]
+** get_cpu_ptr -> raw_cpu_ptr
+   [[file:rtl-patches/4.11/iommu-iova-don-t-disable-preempt-around-this_cpu_ptr.patch][iommu-iova-don-t-disable-preempt-around-this_cpu_ptr.patch]]
+** get_online_cpus -> cpu_hotplug_disable
+   [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
+   [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
+** get_online_cpus -> cpus_read_lock
+   [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+   [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch][0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch]]
+   [[file:rtl-patches/4.11/0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch][0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch]]
+   [[file:rtl-patches/4.11/0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch][0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch]]
+   [[file:rtl-patches/4.11/0013-perf-x86-intel-cqm-Use-cpuhp_setup_state_cpuslocked.patch][0013-perf-x86-intel-cqm-Use-cpuhp_setup_state_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch][0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch][0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** get_online_cpus -> mutex_lock
+   [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** hotplug_lock -> mutex_lock
+   [[file:rtl-patches/4.11/cpu-rt-rework-cpu-down.patch][cpu-rt-rework-cpu-down.patch]]
+** hotplug_unlock -> mutex_unlock
+   [[file:rtl-patches/4.11/cpu-rt-rework-cpu-down.patch][cpu-rt-rework-cpu-down.patch]]
+** init_waitqueue_head -> init_swait_queue_head
+   [[file:rtl-patches/4.11/block-blk-mq-use-swait.patch][block-blk-mq-use-swait.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][fs-dcache-use-swait_queue-instead-of-waitqueue.patch]]
+** kfree_skb -> __skb_queue_tail
+   [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
+** local_bh_disable -> local_bh_disable_nort
+   [[file:rtl-patches/4.11/softirq-split-locks.patch][softirq-split-locks.patch]]
+** local_irq_disable -> local_irq_disable_nort
+   [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+   [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+** local_irq_disable -> local_lock_irq
+   [[file:rtl-patches/4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+   [[file:rtl-patches/4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][mm-workingset-do-not-protect-workingset_shadow_nodes.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+** local_irq_disable -> rcu_read_lock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_enable -> local_irq_enable_nort
+   [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+** local_irq_enable -> local_unlock_irq
+   [[file:rtl-patches/4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+   [[file:rtl-patches/4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][mm-workingset-do-not-protect-workingset_shadow_nodes.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+** local_irq_enable -> rcu_read_unlock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_restore -> cpu_unlock_irqrestore
+   [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+** local_irq_restore -> local_irq_restore_nort
+   [[file:rtl-patches/4.11/ata-disable-interrupts-if-non-rt.patch][ata-disable-interrupts-if-non-rt.patch]]
+   [[file:rtl-patches/4.11/drivers-net-vortex-fix-locking-issues.patch][drivers-net-vortex-fix-locking-issues.patch]]
+   [[file:rtl-patches/4.11/fs-ntfs-disable-interrupt-non-rt.patch][fs-ntfs-disable-interrupt-non-rt.patch]]
+   [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+   [[file:rtl-patches/4.11/infiniband-mellanox-ib-use-nort-irq.patch][infiniband-mellanox-ib-use-nort-irq.patch]]
+   [[file:rtl-patches/4.11/inpt-gameport-use-local-irq-nort.patch][inpt-gameport-use-local-irq-nort.patch]]
+   [[file:rtl-patches/4.11/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch]]
+   [[file:rtl-patches/4.11/mm-bounce-local-irq-save-nort.patch][mm-bounce-local-irq-save-nort.patch]]
+   [[file:rtl-patches/4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch]]
+   [[file:rtl-patches/4.11/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch]]
+   [[file:rtl-patches/4.11/signal-fix-up-rcu-wreckage.patch][signal-fix-up-rcu-wreckage.patch]]
+   [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+   [[file:rtl-patches/4.11/usb-use-_nort-in-giveback.patch][usb-use-_nort-in-giveback.patch]]
+   [[file:rtl-patches/4.11/user-use-local-irq-nort.patch][user-use-local-irq-nort.patch]]
+** local_irq_restore -> local_unlock_irqrestore
+   [[file:rtl-patches/4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][cgroups-scheduling-while-atomic-in-cgroup-code.patch]]
+   [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch]]
+   [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+   [[file:rtl-patches/4.11/net-another-local-irq-disable-alloc-atomic-headache.patch][net-another-local-irq-disable-alloc-atomic-headache.patch]]
+   [[file:rtl-patches/4.11/percpu_ida-use-locklocks.patch][percpu_ida-use-locklocks.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+** local_irq_restore -> rcu_read_unlock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_save -> cpu_lock_irqsave
+   [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+** local_irq_save -> local_irq_save_nort
+   [[file:rtl-patches/4.11/ata-disable-interrupts-if-non-rt.patch][ata-disable-interrupts-if-non-rt.patch]]
+   [[file:rtl-patches/4.11/drivers-net-vortex-fix-locking-issues.patch][drivers-net-vortex-fix-locking-issues.patch]]
+   [[file:rtl-patches/4.11/fs-ntfs-disable-interrupt-non-rt.patch][fs-ntfs-disable-interrupt-non-rt.patch]]
+   [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+   [[file:rtl-patches/4.11/infiniband-mellanox-ib-use-nort-irq.patch][infiniband-mellanox-ib-use-nort-irq.patch]]
+   [[file:rtl-patches/4.11/inpt-gameport-use-local-irq-nort.patch][inpt-gameport-use-local-irq-nort.patch]]
+   [[file:rtl-patches/4.11/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch]]
+   [[file:rtl-patches/4.11/mm-bounce-local-irq-save-nort.patch][mm-bounce-local-irq-save-nort.patch]]
+   [[file:rtl-patches/4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch]]
+   [[file:rtl-patches/4.11/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch]]
+   [[file:rtl-patches/4.11/signal-fix-up-rcu-wreckage.patch][signal-fix-up-rcu-wreckage.patch]]
+   [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+   [[file:rtl-patches/4.11/usb-use-_nort-in-giveback.patch][usb-use-_nort-in-giveback.patch]]
+   [[file:rtl-patches/4.11/user-use-local-irq-nort.patch][user-use-local-irq-nort.patch]]
+** local_irq_save -> local_lock_irqsave
+   [[file:rtl-patches/4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][cgroups-scheduling-while-atomic-in-cgroup-code.patch]]
+   [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch]]
+   [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+   [[file:rtl-patches/4.11/net-another-local-irq-disable-alloc-atomic-headache.patch][net-another-local-irq-disable-alloc-atomic-headache.patch]]
+   [[file:rtl-patches/4.11/percpu_ida-use-locklocks.patch][percpu_ida-use-locklocks.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+** local_irq_save -> rcu_read_lock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** mutex_lock -> hotplug_lock
+   [[file:rtl-patches/4.11/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch]]
+** mutex_unlock -> hotplug_unlock
+   [[file:rtl-patches/4.11/cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch][cpu-rt-make-hotplug-lock-a-sleeping-spinlock-on-rt.patch]]
+** percpu_down_read_preempt_disable -> percpu_down_read
+   [[file:rtl-patches/4.11/peterz-percpu-rwsem-rt.patch][peterz-percpu-rwsem-rt.patch]]
+** percpu_up_read_preempt_enable -> percpu_up_read
+   [[file:rtl-patches/4.11/peterz-percpu-rwsem-rt.patch][peterz-percpu-rwsem-rt.patch]]
+** perf_event_init_cpu -> perf_swevent_init_cpu
+   [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** pkg_thermal_notify -> pkg_thermal_notify_work
+   [[file:rtl-patches/4.11/thermal-Defer-thermal-wakups-to-threads.patch][thermal-Defer-thermal-wakups-to-threads.patch]]
+** preempt_disable -> local_lock
+   [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
+** preempt_disable -> migrate_disable
+   [[file:rtl-patches/4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch]]
+   [[file:rtl-patches/4.11/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch]]
+** preempt_disable -> preempt_disable_nort
+   [[file:rtl-patches/4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][mm--rt--Fix-generic-kmap_atomic-for-RT.patch]]
+** preempt_enable -> local_unlock
+   [[file:rtl-patches/4.11/connector-cn_proc-Protect-send_msg-with-a-local-lock.patch][connector-cn_proc-Protect-send_msg-with-a-local-lock.patch]]
+   [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
+** preempt_enable -> migrate_enable
+   [[file:rtl-patches/4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch]]
+** preempt_enable -> preempt_enable_nort
+   [[file:rtl-patches/4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][mm--rt--Fix-generic-kmap_atomic-for-RT.patch]]
+   [[file:rtl-patches/4.11/mm-rt-kmap-atomic-scheduling.patch][mm-rt-kmap-atomic-scheduling.patch]]
+** put_cpu -> put_cpu_light
+   [[file:rtl-patches/4.11/block-mq-drop-preempt-disable.patch][block-mq-drop-preempt-disable.patch]]
+   [[file:rtl-patches/4.11/block-mq-use-cpu_light.patch][block-mq-use-cpu_light.patch]]
+   [[file:rtl-patches/4.11/epoll-use-get-cpu-light.patch][epoll-use-get-cpu-light.patch]]
+   [[file:rtl-patches/4.11/mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch][mm-memcontrol-Don-t-call-schedule_work_on-in-preempt.patch]]
+   [[file:rtl-patches/4.11/scsi-fcoe-rt-aware.patch][scsi-fcoe-rt-aware.patch]]
+   [[file:rtl-patches/4.11/sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch][sunrpc-make-svc_xprt_do_enqueue-use-get_cpu_light.patch]]
+** put_cpu_var -> put_cpu_light
+   [[file:rtl-patches/4.11/mm-vmalloc-use-get-cpu-light.patch][mm-vmalloc-use-get-cpu-light.patch]]
+   [[file:rtl-patches/4.11/scsi-fcoe-rt-aware.patch][scsi-fcoe-rt-aware.patch]]
+** put_cpu_var -> put_locked_var
+   [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+   [[file:rtl-patches/4.11/mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch][mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch]]
+   [[file:rtl-patches/4.11/random-avoid-preempt_disable-ed-section.patch][random-avoid-preempt_disable-ed-section.patch]]
+** put_online_cpus -> cpu_hotplug_enable
+   [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
+   [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
+** put_online_cpus -> cpus_read_unlock
+   [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+   [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch][0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch]]
+   [[file:rtl-patches/4.11/0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch][0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch]]
+   [[file:rtl-patches/4.11/0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch][0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch]]
+   [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** raw_seqcount_begin -> read_seqbegin
+   [[file:rtl-patches/4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][NFSv4-replace-seqcount_t-with-a-seqlock_t.patch]]
+** rcu_preempt_depth -> sched_rcu_preempt_depth
+   [[file:rtl-patches/4.11/sched-might-sleep-do-not-account-rcu-depth.patch][sched-might-sleep-do-not-account-rcu-depth.patch]]
+** rcu_read_lock_sched -> rcu_read_lock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** rcu_read_unlock_sched -> rcu_read_unlock
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** read_seqbegin -> read_seqcount_begin
+   [[file:rtl-patches/4.11/timekeeping-split-jiffies-lock.patch][timekeeping-split-jiffies-lock.patch]]
+** read_seqcount_begin -> net_seq_begin
+   [[file:rtl-patches/4.11/net-Qdisc-use-a-seqlock-instead-seqcount.patch][net-Qdisc-use-a-seqlock-instead-seqcount.patch]]
+** read_seqcount_retry -> net_seq_retry
+   [[file:rtl-patches/4.11/net-Qdisc-use-a-seqlock-instead-seqcount.patch][net-Qdisc-use-a-seqlock-instead-seqcount.patch]]
+** read_seqcount_retry -> read_seqretry
+   [[file:rtl-patches/4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][NFSv4-replace-seqcount_t-with-a-seqlock_t.patch]]
+** resched_curr -> resched_curr_lazy
+   [[file:rtl-patches/4.11/preempt-lazy-support.patch][preempt-lazy-support.patch]]
+** rt_mutex_adjust_prio -> rt_mutex_postunlock
+   [[file:rtl-patches/4.11/0001-rtmutex-Deboost-before-waking-up-the-top-waiter.patch][0001-rtmutex-Deboost-before-waking-up-the-top-waiter.patch]]
+** rt_mutex_get_effective_prio -> rt_effective_prio
+   [[file:rtl-patches/4.11/0005-sched-rtmutex-Refactor-rt_mutex_setprio.patch][0005-sched-rtmutex-Refactor-rt_mutex_setprio.patch]]
+** rt_mutex_trylock -> rt_mutex_futex_trylock
+   [[file:rtl-patches/4.11/0004-futex-rt_mutex-Provide-futex-specific-rt_mutex-API.patch][0004-futex-rt_mutex-Provide-futex-specific-rt_mutex-API.patch]]
+** rt_mutex_unlock -> rt_mutex_futex_unlock
+   [[file:rtl-patches/4.11/0004-futex-rt_mutex-Provide-futex-specific-rt_mutex-API.patch][0004-futex-rt_mutex-Provide-futex-specific-rt_mutex-API.patch]]
+** run_posix_cpu_timers -> __run_posix_cpu_timers
+   [[file:rtl-patches/4.11/posix-timers-thread-posix-cpu-timers-on-rt.patch][posix-timers-thread-posix-cpu-timers-on-rt.patch]]
+** seqcount_init -> seqlock_init
+   [[file:rtl-patches/4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][NFSv4-replace-seqcount_t-with-a-seqlock_t.patch]]
+** skb_dequeue -> __skb_dequeue
+   [[file:rtl-patches/4.11/net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch][net-core-cpuhotplug-drain-input_pkt_queue-lockless.patch]]
+** smp_processor_id -> fixmap_idx
+   [[file:rtl-patches/4.11/arm-enable-highmem-for-rt.patch][arm-enable-highmem-for-rt.patch]]
+** spin_lock -> raw_spin_lock
+   [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+   [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_lock -> spin_lock_irq
+   [[file:rtl-patches/4.11/block-shorten-interrupt-disabled-regions.patch][block-shorten-interrupt-disabled-regions.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** spin_lock -> spin_lock_irqsave
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** spin_lock_init -> raw_spin_lock_init
+   [[file:rtl-patches/4.11/delayacct-use-raw_spinlocks.patch][delayacct-use-raw_spinlocks.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+   [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_lock_irq -> raw_spin_lock_irq
+   [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+** spin_lock_irqsave -> local_lock_irqsave_on
+   [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
+** spin_lock_irqsave -> local_spin_lock_irqsave
+   [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+** spin_lock_irqsave -> raw_spin_lock_irqsave
+   [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
+   [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+   [[file:rtl-patches/4.11/delayacct-use-raw_spinlocks.patch][delayacct-use-raw_spinlocks.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+   [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_unlock -> raw_spin_unlock
+   [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+   [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_unlock -> spin_unlock_irq
+   [[file:rtl-patches/4.11/block-shorten-interrupt-disabled-regions.patch][block-shorten-interrupt-disabled-regions.patch]]
+** spin_unlock -> spin_unlock_irqrestore
+   [[file:rtl-patches/4.11/mm-page_alloc-reduce-lock-sections-further.patch][mm-page_alloc-reduce-lock-sections-further.patch]]
+   [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** spin_unlock_irq -> raw_spin_unlock_irq
+   [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+** spin_unlock_irqrestore -> local_unlock_irqrestore_on
+   [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
+** spin_unlock_irqrestore -> raw_spin_unlock_irqrestore
+   [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
+   [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+   [[file:rtl-patches/4.11/delayacct-use-raw_spinlocks.patch][delayacct-use-raw_spinlocks.patch]]
+   [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+   [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+   [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+   [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_unlock_wait -> raw_spin_unlock_wait
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** stop_machine -> stop_machine_cpuslocked
+   [[file:rtl-patches/4.11/0027-arm-Prevent-hotplug-rwsem-recursion.patch][0027-arm-Prevent-hotplug-rwsem-recursion.patch]]
+   [[file:rtl-patches/4.11/0028-s390-Prevent-hotplug-rwsem-recursion.patch][0028-s390-Prevent-hotplug-rwsem-recursion.patch]]
+** trace_preemptirqsoff_hist -> trace_preemptirqsoff_hist_rcuidle
+   [[file:rtl-patches/4.11/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch]]
+** up_read_non_owner -> nfs_up_anon
+   [[file:rtl-patches/4.11/fs-nfs-turn-rmdir_sem-into-a-semaphore.patch][fs-nfs-turn-rmdir_sem-into-a-semaphore.patch]]
+** wait_event_interruptible -> swait_event_interruptible
+   [[file:rtl-patches/4.11/block-blk-mq-use-swait.patch][block-blk-mq-use-swait.patch]]
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+   [[file:rtl-patches/4.11/powerpc-ps3-device-init.c-adapt-to-completions-using.patch][powerpc-ps3-device-init.c-adapt-to-completions-using.patch]]
+** wait_event_timeout -> swait_event_timeout
+   [[file:rtl-patches/4.11/block-blk-mq-use-swait.patch][block-blk-mq-use-swait.patch]]
+** waitqueue_active -> swait_active
+   [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+** wake_up_all -> swake_up_all
+   [[file:rtl-patches/4.11/block-blk-mq-use-swait.patch][block-blk-mq-use-swait.patch]]
+   [[file:rtl-patches/4.11/fs-dcache-use-swait_queue-instead-of-waitqueue.patch][fs-dcache-use-swait_queue-instead-of-waitqueue.patch]]
+** wake_up_q -> __wake_up_q
+   [[file:rtl-patches/4.11/rt-add-rt-locks.patch][rt-add-rt-locks.patch]]
+** wakeup_softirqd -> wakeup_proper_softirq
+   [[file:rtl-patches/4.11/softirq-split-timer-softirqs-out-of-ksoftirqd.patch][softirq-split-timer-softirqs-out-of-ksoftirqd.patch]]
+** work_on_cpu -> call_on_cpu
+   [[file:rtl-patches/4.11/0031-acpi-processor-Prevent-cpu-hotplug-deadlock.patch][0031-acpi-processor-Prevent-cpu-hotplug-deadlock.patch]]
+** write_seqcount_begin -> __raw_write_seqcount_begin
+   [[file:rtl-patches/4.11/seqlock-prevent-rt-starvation.patch][seqlock-prevent-rt-starvation.patch]]
+** write_seqcount_end -> __raw_write_seqcount_end
+   [[file:rtl-patches/4.11/seqlock-prevent-rt-starvation.patch][seqlock-prevent-rt-starvation.patch]]
+** yield -> msleep
+   [[file:rtl-patches/4.11/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch]]
+   [[file:rtl-patches/4.11/tasklet-rt-prevent-tasklets-from-going-into-infinite-spin-in-rt.patch][tasklet-rt-prevent-tasklets-from-going-into-infinite-spin-in-rt.patch]]
+* context-aware replacements
+** cpu_relax
+*** cpu_chill
+    fix 'livelock'
+
+    [[file:rtl-patches/4.11/block-use-cpu-chill.patch][block-use-cpu-chill.patch]]
+    [[file:rtl-patches/4.11/fs-dcache-use-cpu-chill-in-trylock-loops.patch][fs-dcache-use-cpu-chill-in-trylock-loops.patch]]
+    [[file:rtl-patches/4.11/net-use-cpu-chill.patch][net-use-cpu-chill.patch]]
+    [[file:rtl-patches/4.11/work-queue-work-around-irqsafe-timer-optimization.patch][work-queue-work-around-irqsafe-timer-optimization.patch]]
+*** hrtimer_wait_for_timer
+    subsystem-specific way to fix the livelock?
+
+    [[file:rtl-patches/4.11/hrtimers-prepare-full-preemption.patch][hrtimers-prepare-full-preemption.patch]]
+*** wait_for_running_timer
+    subsystem-specific way to fix the livelock?
+
+    [[file:rtl-patches/4.11/timers-prepare-for-full-preemption.patch][timers-prepare-for-full-preemption.patch]]
+** get_online_cpus
+*** cpu_hotplug_disable
+    fix deadlock
+
+    [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
+    [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
+*** cpus_read_lock
+    rename
+
+    [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+    [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch][0010-KVM-PPC-Book3S-HV-Use-cpuhp_setup_state_nocalls_cpus.patch]]
+    [[file:rtl-patches/4.11/0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch][0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch]]
+    [[file:rtl-patches/4.11/0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch][0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch]]
+    [[file:rtl-patches/4.11/0013-perf-x86-intel-cqm-Use-cpuhp_setup_state_cpuslocked.patch][0013-perf-x86-intel-cqm-Use-cpuhp_setup_state_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch][0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch][0016-powerpc-powernv-Use-stop_machine_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+*** mutex_lock
+    subsystem-specific fix to nested get_online_cpus()
+
+    [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** local_irq_disable
+*** local_irq_disable_nort
+    replace (maybe unnecessary?) irq-disabled sections
+
+    [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+    [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+*** local_lock_irq
+    replace irq-disabled sections which are solely for mutual exclusion (really?)
+    how if a process is preempted and then migrated in the middle of an irq_local_lock section?
+      (with CONFIG_PREEMPT_RT_FULL local_lock does not disable migration)
+
+    [[file:rtl-patches/4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+    [[file:rtl-patches/4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][mm-workingset-do-not-protect-workingset_shadow_nodes.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+*** rcu_read_lock
+    replace irq-disabled sections which are solely for protecting rcu reads
+
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_enable
+   refer to [[local_irq_disable]]
+*** local_irq_enable_nort
+    [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+*** local_unlock_irq
+    [[file:rtl-patches/4.11/drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch][drmi915_Use_local_lockunlock_irq()_in_intel_pipe_update_startend().patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+    [[file:rtl-patches/4.11/mm-workingset-do-not-protect-workingset_shadow_nodes.patch][mm-workingset-do-not-protect-workingset_shadow_nodes.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+*** rcu_read_unlock
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_restore
+   refer to [[local_irq_save]]
+*** cpu_unlock_irqrestore
+    [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+*** local_irq_restore_nort
+    [[file:rtl-patches/4.11/ata-disable-interrupts-if-non-rt.patch][ata-disable-interrupts-if-non-rt.patch]]
+    [[file:rtl-patches/4.11/drivers-net-vortex-fix-locking-issues.patch][drivers-net-vortex-fix-locking-issues.patch]]
+    [[file:rtl-patches/4.11/fs-ntfs-disable-interrupt-non-rt.patch][fs-ntfs-disable-interrupt-non-rt.patch]]
+    [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+    [[file:rtl-patches/4.11/infiniband-mellanox-ib-use-nort-irq.patch][infiniband-mellanox-ib-use-nort-irq.patch]]
+    [[file:rtl-patches/4.11/inpt-gameport-use-local-irq-nort.patch][inpt-gameport-use-local-irq-nort.patch]]
+    [[file:rtl-patches/4.11/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch]]
+    [[file:rtl-patches/4.11/mm-bounce-local-irq-save-nort.patch][mm-bounce-local-irq-save-nort.patch]]
+    [[file:rtl-patches/4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch]]
+    [[file:rtl-patches/4.11/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch]]
+    [[file:rtl-patches/4.11/signal-fix-up-rcu-wreckage.patch][signal-fix-up-rcu-wreckage.patch]]
+    [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+    [[file:rtl-patches/4.11/usb-use-_nort-in-giveback.patch][usb-use-_nort-in-giveback.patch]]
+    [[file:rtl-patches/4.11/user-use-local-irq-nort.patch][user-use-local-irq-nort.patch]]
+*** local_unlock_irqrestore
+    [[file:rtl-patches/4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][cgroups-scheduling-while-atomic-in-cgroup-code.patch]]
+    [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch]]
+    [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+    [[file:rtl-patches/4.11/net-another-local-irq-disable-alloc-atomic-headache.patch][net-another-local-irq-disable-alloc-atomic-headache.patch]]
+    [[file:rtl-patches/4.11/percpu_ida-use-locklocks.patch][percpu_ida-use-locklocks.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+*** rcu_read_unlock
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** local_irq_save
+   refer to [[local_irq_disable]] for replacements other than cpu_lock_irqsave
+*** cpu_lock_irqsave
+    replace irq-disabled sections which are solely for accessing other core's per-cpu variables
+
+    [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+*** local_irq_save_nort
+    [[file:rtl-patches/4.11/ata-disable-interrupts-if-non-rt.patch][ata-disable-interrupts-if-non-rt.patch]]
+    [[file:rtl-patches/4.11/drivers-net-vortex-fix-locking-issues.patch][drivers-net-vortex-fix-locking-issues.patch]]
+    [[file:rtl-patches/4.11/fs-ntfs-disable-interrupt-non-rt.patch][fs-ntfs-disable-interrupt-non-rt.patch]]
+    [[file:rtl-patches/4.11/ide-use-nort-local-irq-variants.patch][ide-use-nort-local-irq-variants.patch]]
+    [[file:rtl-patches/4.11/infiniband-mellanox-ib-use-nort-irq.patch][infiniband-mellanox-ib-use-nort-irq.patch]]
+    [[file:rtl-patches/4.11/inpt-gameport-use-local-irq-nort.patch][inpt-gameport-use-local-irq-nort.patch]]
+    [[file:rtl-patches/4.11/mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch][mm-backing-dev-don-t-disable-IRQs-in-wb_congested_pu.patch]]
+    [[file:rtl-patches/4.11/mm-bounce-local-irq-save-nort.patch][mm-bounce-local-irq-save-nort.patch]]
+    [[file:rtl-patches/4.11/sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch][sas-ata-isci-dont-t-disable-interrupts-in-qc_issue-h.patch]]
+    [[file:rtl-patches/4.11/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch]]
+    [[file:rtl-patches/4.11/signal-fix-up-rcu-wreckage.patch][signal-fix-up-rcu-wreckage.patch]]
+    [[file:rtl-patches/4.11/snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch][snd-pcm-fix-snd_pcm_stream_lock-irqs_disabled-splats.patch]]
+    [[file:rtl-patches/4.11/usb-use-_nort-in-giveback.patch][usb-use-_nort-in-giveback.patch]]
+    [[file:rtl-patches/4.11/user-use-local-irq-nort.patch][user-use-local-irq-nort.patch]]
+*** local_lock_irqsave
+    [[file:rtl-patches/4.11/cgroups-scheduling-while-atomic-in-cgroup-code.patch][cgroups-scheduling-while-atomic-in-cgroup-code.patch]]
+    [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-do_not_disable_irq.patch][mm-memcontrol-do_not_disable_irq.patch]]
+    [[file:rtl-patches/4.11/mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch][mm-memcontrol-mem_cgroup_migrate-replace-another-loc.patch]]
+    [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+    [[file:rtl-patches/4.11/net-another-local-irq-disable-alloc-atomic-headache.patch][net-another-local-irq-disable-alloc-atomic-headache.patch]]
+    [[file:rtl-patches/4.11/percpu_ida-use-locklocks.patch][percpu_ida-use-locklocks.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-locallock.patch][workqueue-use-locallock.patch]]
+*** rcu_read_lock
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** preempt_disable
+*** local_lock
+    replace preemption disabled sections which are solely for prohibiting
+      migration (to protect per-cpu variable accesses) + cpu-local mutual
+      exclusion
+    is it a bug that with CONFIG_PREEMPT_RT_FULL local_lock no longer disable migration?)
+
+    [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
+*** migrate_disable
+    replace preemption disabled sections which are solely for prohibiting migration
+
+    [[file:rtl-patches/4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch]]
+    [[file:rtl-patches/4.11/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch]]
+*** preempt_disable_nort
+    replace preemption disabled sections which are unnecessary with -rt
+
+    [[file:rtl-patches/4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][mm--rt--Fix-generic-kmap_atomic-for-RT.patch]]
+** preempt_enable
+   refer to [[preempt_disable]]
+*** local_unlock
+    [[file:rtl-patches/4.11/connector-cn_proc-Protect-send_msg-with-a-local-lock.patch][connector-cn_proc-Protect-send_msg-with-a-local-lock.patch]]
+    [[file:rtl-patches/4.11/radix-tree-use-local-locks.patch][radix-tree-use-local-locks.patch]]
+*** migrate_enable
+    [[file:rtl-patches/4.11/KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch][KVM-arm-arm64-downgrade-preempt_disable-d-region-to-.patch]]
+*** preempt_enable_nort
+    [[file:rtl-patches/4.11/mm--rt--Fix-generic-kmap_atomic-for-RT.patch][mm--rt--Fix-generic-kmap_atomic-for-RT.patch]]
+    [[file:rtl-patches/4.11/mm-rt-kmap-atomic-scheduling.patch][mm-rt-kmap-atomic-scheduling.patch]]
+** put_cpu_var
+*** put_cpu_light
+    disable preemption -> disable migration. refer to [[preempt_disable]] for similar cases
+
+    [[file:rtl-patches/4.11/mm-vmalloc-use-get-cpu-light.patch][mm-vmalloc-use-get-cpu-light.patch]]
+    [[file:rtl-patches/4.11/scsi-fcoe-rt-aware.patch][scsi-fcoe-rt-aware.patch]]
+*** put_locked_var
+    disable preemption -> local_lock (w/ migration disabled when !CONFIG_PREEMPT_RT_FULL)
+
+    [[file:rtl-patches/4.11/mm-convert-swap-to-percpu-locked.patch][mm-convert-swap-to-percpu-locked.patch]]
+    [[file:rtl-patches/4.11/mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch][mm_zsmalloc_copy_with_get_cpu_var_and_locking.patch]]
+    [[file:rtl-patches/4.11/random-avoid-preempt_disable-ed-section.patch][random-avoid-preempt_disable-ed-section.patch]]
+** put_online_cpus
+   refer to [[get_online_cpus]]
+*** cpu_hotplug_enable
+    [[file:rtl-patches/4.11/0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch][0020-PCI-Use-cpu_hotplug_disable-instead-of-get_online_cp.patch]]
+    [[file:rtl-patches/4.11/0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch][0022-ACPI-processor-Use-cpu_hotplug_disable-instead-of-ge.patch]]
+*** cpus_read_unlock
+    [[file:rtl-patches/4.11/0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch][0001-cpu-hotplug-Provide-cpus_read-write_-un-lock.patch]]
+    [[file:rtl-patches/4.11/0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch][0009-cpufreq-Use-cpuhp_setup_state_nocalls_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch][0011-hwtracing-coresight-etm3x-Use-cpuhp_setup_state_noca.patch]]
+    [[file:rtl-patches/4.11/0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch][0012-hwtracing-coresight-etm4x-Use-cpuhp_setup_state_noca.patch]]
+    [[file:rtl-patches/4.11/0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch][0014-ARM-hw_breakpoint-Use-cpuhp_setup_state_cpuslocked.patch]]
+    [[file:rtl-patches/4.11/0023-perf-tracing-cpuhotplug-Fix-locking-order.patch][0023-perf-tracing-cpuhotplug-Fix-locking-order.patch]]
+** read_seqcount_retry
+*** net_seq_retry
+    [[file:rtl-patches/4.11/net-Qdisc-use-a-seqlock-instead-seqcount.patch][net-Qdisc-use-a-seqlock-instead-seqcount.patch]]
+*** read_seqretry
+    [[file:rtl-patches/4.11/NFSv4-replace-seqcount_t-with-a-seqlock_t.patch][NFSv4-replace-seqcount_t-with-a-seqlock_t.patch]]
+** spin_lock
+*** raw_spin_lock
+    roll back
+
+    [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+    [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+    [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
+    [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+    [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+*** spin_lock_irq
+    equivalent replacement in -rt. Is it for mainline?
+
+    [[file:rtl-patches/4.11/block-shorten-interrupt-disabled-regions.patch][block-shorten-interrupt-disabled-regions.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+*** spin_lock_irqsave
+    equivalent replacement in -rt. Is it for mainline?
+
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** spin_lock_irqsave
+*** local_lock_irqsave_on
+    (update -rt specific internals)
+
+    [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
+*** local_spin_lock_irqsave
+    replace irqsave with local_lock. Refer to [[local_irq_disable]] for similar replacements.
+
+    [[file:rtl-patches/4.11/mm-page_alloc-rt-friendly-per-cpu-pages.patch][mm-page_alloc-rt-friendly-per-cpu-pages.patch]]
+*** raw_spin_lock_irqsave
+    roll back
+
+    [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
+    [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
+    [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+    [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+    [[file:rtl-patches/4.11/delayacct-use-raw_spinlocks.patch][delayacct-use-raw_spinlocks.patch]]
+    [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+    [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+    [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+    [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+** spin_unlock
+   refer to [[spin_lock]]
+*** raw_spin_unlock
+    [[file:rtl-patches/4.11/arm-convert-boot-lock-to-raw.patch][arm-convert-boot-lock-to-raw.patch]]
+    [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+    [[file:rtl-patches/4.11/skbufhead-raw-lock.patch][skbufhead-raw-lock.patch]]
+    [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+    [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]
+*** spin_unlock_irq
+    [[file:rtl-patches/4.11/block-shorten-interrupt-disabled-regions.patch][block-shorten-interrupt-disabled-regions.patch]]
+*** spin_unlock_irqrestore
+    [[file:rtl-patches/4.11/mm-page_alloc-reduce-lock-sections-further.patch][mm-page_alloc-reduce-lock-sections-further.patch]]
+    [[file:rtl-patches/4.11/workqueue-use-rcu.patch][workqueue-use-rcu.patch]]
+** spin_unlock_irqrestore
+   refer to [[spin_lock_irqsave]]
+*** local_unlock_irqrestore_on
+    [[file:rtl-patches/4.11/mm-page-alloc-use-local-lock-on-target-cpu.patch][mm-page-alloc-use-local-lock-on-target-cpu.patch]]
+*** raw_spin_unlock_irqrestore
+    [[file:rtl-patches/4.11/arm-kprobe-replace-patch_lock-to-raw-lock.patch][arm-kprobe-replace-patch_lock-to-raw-lock.patch]]
+    [[file:rtl-patches/4.11/arm-unwind-use_raw_lock.patch][arm-unwind-use_raw_lock.patch]]
+    [[file:rtl-patches/4.11/completion-use-simple-wait-queues.patch][completion-use-simple-wait-queues.patch]]
+    [[file:rtl-patches/4.11/cpuset-Convert-callback_lock-to-raw_spinlock_t.patch][cpuset-Convert-callback_lock-to-raw_spinlock_t.patch]]
+    [[file:rtl-patches/4.11/delayacct-use-raw_spinlocks.patch][delayacct-use-raw_spinlocks.patch]]
+    [[file:rtl-patches/4.11/mm-enable-slub.patch][mm-enable-slub.patch]]
+    [[file:rtl-patches/4.11/stop-machine-raw-lock.patch][stop-machine-raw-lock.patch]]
+    [[file:rtl-patches/4.11/timer-make-the-base-lock-raw.patch][timer-make-the-base-lock-raw.patch]]
+    [[file:rtl-patches/4.11/x86-UV-raw_spinlock-conversion.patch][x86-UV-raw_spinlock-conversion.patch]]

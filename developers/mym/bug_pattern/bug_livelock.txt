@@ -1,0 +1,48 @@
+* [2.6.22         ] mm-lockless-preempt-fixup.patch {C::bug::livelock::livelock::preempt::create/use new functions}
+  + [[file:2.6.22/mm-lockless-preempt-fixup.patch][2.6.22]]  {MOD::inlcude/linux}
+--
+* [2.6.23 - 2.6.24] fix the softlockup watchdog to actually do something {C::bug::hang::livelock::semantics::fix the softlockup watchdog so it reports lockups}
+  + [[file:2.6.23/softlockup-fix.patch][2.6.23]]
+--
+* [   3.0 -    4.6] drivers/net: fix livelock issues{C::bug::livelock::livelock::semantics::rm NETDEV_TX_LOCKED macro optimization}
+  + [[file:3.0/drivers-net-fix-livelock-issues.patch][3.0]]
+--
+* [   3.4 -   4.11] timer-fd: Prevent live lock{C::bug::livelock::livelock::semantics::wait for return before cpu_relax}
+  + [[file:3.4/timer-fd-avoid-live-lock.patch][3.4]]
+--
+* [   3.8 -   4.11] block: Use cpu_chill() for retry loops{C::bug::livelock::livelock::semantics::block: Use cpu_chill() for retry loops}
+  + [[file:3.8/block-use-cpu-chill.patch][3.8]]
+
+Retry loops on RT might loop forever when the modifying side was
+preempted. Steven also observed a live lock when there was a
+concurrent priority boosting going on.
+
+Use cpu_chill() instead of cpu_relax() to let the system
+make progress.
+
+API替换
+-			cpu_relax();
++			cpu_chill();
+  
+--
+* [  3.10 -   4.11] workqueue: Prevent workqueue versus ata-piix livelock{C::bug::livelock::livelock::semantics::workqueue: Prevent workqueue versus ata-piix livelock}
+  + [[file:3.10/work-queue-work-around-irqsafe-timer-optimization.patch][3.10]]
+
+API替换  
+-	cpu_relax();
++	cpu_chill();
+  
+--
+* [  3.14 -   4.11] fs: jbd2: pull your plug when waiting for space{C::bug::livelock::livelock::semantics::fs: jbd2: pull your plug when waiting for space}
+  + [[file:3.14/fs-jbd2-pull-your-plug-when-waiting-for-space.patch][3.14]]
+--
+* [  3.14 -   4.11] cpu_chill: Add a UNINTERRUPTIBLE hrtimer_nanosleep{C::bug::livelock::livelock::semantics::cpu_chill: Add a UNINTERRUPTIBLE hrtimer_nanosleep}
+  + [[file:3.14/cpu_chill-Add-a-UNINTERRUPTIBLE-hrtimer_nanosleep.patch][3.14]]
+--
+* [   4.0         ] xfs: Disable percpu SB on PREEMPT_RT_FULL {C::bug::livelock::livelock::config::add config}
+  + [[file:4.0/xfs-Disable-percpu-SB-on-PREEMPT_RT_FULL.patch][4.0]]
+--
+* [   4.8 -    4.9] kernel/futex: don't deboost too early{C::bug::livelock::livelock::order::do unlock without deboost and deboost after wake up waiter}
+  + [[file:4.8/kernel-futex-don-t-deboost-too-early.patch][4.8]]
+  
+和优先级继承有关，没有看懂。  

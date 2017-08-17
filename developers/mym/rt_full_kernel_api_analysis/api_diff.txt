@@ -1,0 +1,49 @@
+
+vanilla spin_lock_bh和rt full spin_lock_bh的区别
+前者是通过preemt_count实现的，后者是通过preempt_disable来实现的。
+
+
+
+
+rt_spin_lock__no_mg 和rt_spin_lock区别是
+============================
+rt_spin_lock  会关闭迁移migrate_disable
+rt_spin_lock__no_mg 不会关闭迁移no_mgretion_disable
+
+
+rt_spin_unlock 会执行migrate_enable
+rt_spin_unlock__no_mg 不会执行会执行migrate_enable
+
+
+================
+void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock)
+{
+        rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, false);
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+}
+EXPORT_SYMBOL(rt_spin_lock__no_mg);
+
+void __lockfunc rt_spin_lock(spinlock_t *lock)
+{
+        rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+        spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+}
+EXPORT_SYMBOL(rt_spin_lock);
+
+
+void __lockfunc rt_spin_unlock__no_mg(spinlock_t *lock)
+{
+        /* NOTE: we always pass in '1' for nested, for simplicity */
+        spin_release(&lock->dep_map, 1, _RET_IP_);
+        rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+}
+EXPORT_SYMBOL(rt_spin_unlock__no_mg);
+
+void __lockfunc rt_spin_unlock(spinlock_t *lock)
+{
+        /* NOTE: we always pass in '1' for nested, for simplicity */
+        spin_release(&lock->dep_map, 1, _RET_IP_);
+        rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
+        migrate_enable();
+}
+EXPORT_SYMBOL(rt_spin_unlock);

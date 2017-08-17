@@ -132,3 +132,76 @@ mym:331
 yxg:342
 zzm:286
 ```
+
+
+## 2017.8.9 rt-questions
+```
+https://github.com/chyyuu/rt-patch-analysis/blob/master/developers/chy/rt-questions.txt
+
+yxg 
+Q1  3
+Q2  2
+Q3  4
+
+zzm
+Q4  2
+Q5  6
+Q12 1
+
+zw
+Q6  5
+Q7  2
+Q8  2
+
+mym
+Q9  7
+Q10 1
+Q11 1
+
+help info
+grep -w -E "migrate_disable|migrate_enable" ./* -Rn
+
+make O=../v4.11.5-rt1/ CFLAGS_KERNEL=-g3 ./kernel/locking/rtmutex.i
+
+https://github.com/chyyuu/rt-patch-analysis/blob/master/rt-linux-lkp/how_to_get_compile_rt_linux_kernel.txt
+
+```
+
+## 2017.8.15 rt-bug-analysis
+```
+## semantics
+- migration 14   yxg
+- preempt   29   zzm
+- sched     10   zw
+- irq/softirq 57+7  mym
+
+## concurrency
+- atomicity: 43  yxg
+- order:     17  zzm
+- deadlock:  67  zw
+- livelock:  10  mym
+
+
+yxg:57
+zzm:46
+zw:77
+mym:74
+
+
+grep -A 1 -E "C::bug::[^:]*::irq::" ./history.org  >bug_irq.txt
+
+
+grep  -E  "C::bug::[^:]*::irq::"  ./history.org  | wc -l
+
+
+"C::bug::[^:]*::irq::"
+"C::bug::[^:]*::softirq::"
+"C::bug::[^:]*::livelock::"
+
+"C::bug::[^:]*::migration::"
+"C::bug::[^:]*::preempt::"
+"C::bug::[^:]*::sched::"
+"C::bug::[^:]*::atomicity::"
+"C::bug::[^:]*::order::"
+"C::bug::[^:]*::deadlock::"
+```
