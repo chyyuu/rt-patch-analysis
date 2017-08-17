@@ -16,6 +16,7 @@ PREEMPT_RT配置下spin_lock是可睡眠的，因此凡是不可睡眠的地方�
   * delayacct-use-raw_spinlocks.patch。
   * mm-enable-slub.patch
 
+>>chyyuu
 4. （对3的补充）在某些非官方的atomic region或下面的片段，由于不属于hardirq handler区域，所以是有进程上下文的，临界区中不能有sleepable 函数，否则会死锁
 注意：skbufhead-raw-lock.patch
 ```
@@ -35,6 +36,38 @@ to the softirq and use the tofree_queue list for it (similar to process_queue).
 +	if (!skb_queue_empty(&sd->tofree_queue))
 +		raise_softirq_irqoff(NET_RX_SOFTIRQ);
 ```
+
+
+补充：
+用 
+```
+$ cd ../linux-rt-devel/; ag '\braw_spin_lock\('|wc; cd - 
+
+284     615   17715
+
+$ cd ../linux-tuna/;ag '\braw_spin_lock\('|wc;cd -
+251     509   15543
+
+``` 
+可以看出，rt patch可能大致修改了33个spin_lock 为raw_spin_lock
+
+From paper "The evolution of real-time linux" 可看到
+```
+Not every spinlock in the Linux Kernel, can be con-
+verted to a mutex. Certain critical sections of low-
+level code are not preemptible, and must be pro-
+tected by the legacy non-preemptible spinlock.
+Examples of non-preemptible critical sections
+are:
+ - short-held locks, where a context switch would require greater overhead
+ - locks protecting hardware registers that must be non-preemptible for correct system operation
+ - locks nested within other non-preemptible spinlocks
+ - The scheduler’s runqueue locks, as well as the synchronization code that 
+   synchronizes access to the real-time mutexes, are examples of non-
+   preemptable code.
+
+```
+
 
 ## 何时需要把spin_lock替换为spin_lock_irq?
 
