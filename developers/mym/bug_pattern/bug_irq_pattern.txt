@@ -163,6 +163,27 @@ PATCHES:
 [[file:2.6.26/preempt-irqs-m68knommu-make-timer-interrupt-non-threaded.patch]
 
 
+>>chyyuu  分析不能线程化的hard irq
+#define IRQF_TIMER		(__IRQF_TIMER | IRQF_NO_SUSPEND | IRQF_NO_THREAD)
+
+$ag 'flags.*=.*IRQF_NO_THREAD'>/tmp/out
+
+arch/x86/kernel/irqinit.c:51:	.flags = IRQF_NO_THREAD,
+arch/powerpc/platforms/8xx/m8xx_setup.c:43:	.flags = IRQF_NO_THREAD,
+arch/powerpc/platforms/85xx/mpc85xx_cds.c:215:	.flags = IRQF_SHARED | IRQF_NO_THREAD,
+arch/powerpc/platforms/powermac/smp.c:408:	.flags = IRQF_PERCPU | IRQF_NO_THREAD,
+arch/powerpc/sysdev/cpm1.c:123:	.flags = IRQF_NO_THREAD,
+...
+===========================================================================
+$ ag 'flags.*=.*IRQF_TIMER'>/tmp/out
+arch/unicore32/kernel/time.c:89:	.flags		= IRQF_TIMER | IRQF_IRQPOLL,
+arch/x86/kernel/time.c:65:	.flags = IRQF_NOBALANCING | IRQF_IRQPOLL | IRQF_TIMER,
+arch/blackfin/kernel/time-ts.c:209:	.flags		= IRQF_TIMER | IRQF_IRQPOLL | IRQF_PERCPU,
+arch/blackfin/kernel/time-ts.c:318:	.flags		= IRQF_TIMER | IRQF_IRQPOLL | IRQF_PERCPU,
+arch/cris/arch-v32/kernel/time.c:241:	.flags = IRQF_TIMER | IRQF_SHARED,
+....
+
+
 PATTERN9:
 
 在PREEMPT_RT情况下，不能在irq disable的时候，调用wake_up
