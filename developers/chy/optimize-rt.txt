@@ -1,0 +1,32 @@
+## Optimizing preemption
+
+https://lwn.net/Articles/563185/
+
+### The problem with full preemption
+
+So configuring full preemption into the kernel can make performance-sensitive code slower. Users who are concerned about latency may well be willing to make that tradeoff, but those who want throughput will not be so agreeable. The good news is that it might be possible to do something about this problem and keep both camps happy. 
+
+https://lwn.net/Articles/563190/
+
+Actually, the big thing for true preemption is not so much the preempt
+count itself, but the fact that when the preempt count goes back to
+zero we have that "check if we should have been preempted" thing.
+
+he thing is, even if that is almost never taken, just the fact that
+there is a conditional function call very often makes code generation
+*much* worse. A function that is a leaf function with no stack frame
+with no preemption often turns into a non-leaf function with stack
+frames when you enable preemption, just because it had a RCU read
+region which disabled preemption.
+
+### Optimizing full preemption
+
+The root of the problem is accesses to the variable known as the "preemption count," which can be found in the thread_info structure, which, in turn lives at the bottom of the kernel stack. It is not just a counter, though; instead it is a 32-bit quantity that has been divided up into several subfields: 
+
+- The actual preemption count, indicating how many times kernel code has disabled preemption. This counter allows calls like preempt_disable() to be nested and still do the right thing (eight bits).
+
+- The software interrupt count, indicating how many nested software interrupts are being handled at the moment (eight bits).
+
+- The hardware interrupt count (ten bits on most architectures).
+
+- The PREEMPT_ACTIVE bit indicating that the current thread is being (or just has been) preempted. 
