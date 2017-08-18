@@ -205,7 +205,10 @@ static __always_inline void __local_bh_disable_ip(unsigned long ip, unsigned int
 
 static __always_inline void __preempt_count_add(int val)
 {
-        raw_cpu_add_4(__preempt_count, val);
+        //这里在修改percpu变量的时候，并没有使用get_cpu/put_cpu来关闭抢占，
+	//因为在CONFIG_PREEMPT_VOLUNTARY情况下，内核是关闭抢占的
+	//因此可以直接操作PERCPU变量
+        raw_cpu_add_4(__preempt_count, val);
 }
 
 static __always_inline void __preempt_count_sub(int val)
