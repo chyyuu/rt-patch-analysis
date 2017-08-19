@@ -1,4 +1,4 @@
-# A Study of Real-Time Linux Evolution
+# A Study of Real-Time Linux Kernel with Preempt-RT Evolution
 
 这个报告的基本目标是：
 
@@ -12,97 +12,34 @@ Challenge：
 
 ## Abstract
 
-我们对Real-Time Linux based on rt-patch的演进进行了全面深入的分析。通过研究XX年的
-XXXX个patches来分析Real-Time Linux的变化，我们得到了很多对Real-Time Linux开发的新
-的理解。我们的结果对于Real-Time Linux的进一步开发和改进bug-finding工具都会提供帮助。
-
-
+我们对Linux Kernel with Preempt-RT的演进进行了全面深入的分析。通过研究2007~2017年的22个kernel版本中的
+6900个patches来分析Linux Kernel with Preempt-RT的变化，我们得到了很多对Linux Kernel with Preempt-RT开发的新
+的理解。我们的结果对于推动Linux Kernel with Preempt-RT的进一步开发，加强Linux Kernel的实时性和改进bug-finding工具都会提供帮助。
 
 ## 1 Introduction
 
 RT-PATCH的起源，开发和广泛应用情况
 
-Real-time together with GNU/Linux seems to be on the rise, but there is no “one-fits-it-all” solution to bring real-time capabilities to it.  The reason is that there is no silver bullet to make something as big and complex as GNU/Linux 100% real-time aware since this is extremely costly in terms of maintenance. Just keep in mind that, as noted above,  one needs to keep up with the fast development cycle of 2 months practiced by the GNU/Linux kernel community.  
+对于通用Linux操作系统而言，对其实时性能的需求越来越强烈，为此出现了多种对Linux操作系统的实时改进方案，但其主要的改进方案包括：CONFIG_PREEMPT_RT(Preempt_RT)，Dual-OS/Dual-Core (Xenomai, RTAI)，Nested OS（L4Linux）等。由于CONFIG_PREEMPT方案直接与在官方内核主线同步发展，而基于CONFIG_PREEMPT的Preempt_RT也能基于内核 LTS版同步发展，确保了有更广泛社区支持，其patches也在不断地进入官方内核，可支持更广泛的硬件平台，更容易开发支持基于实时POSIX标准的应用。
 
-it is clear that Linux can support significant realtime requirements, as it is already being used heavily in the realtime arena.
+但是，尽管基于基于PREEMPT_RT方案的实时Linux占据了主流，不少Preempt_RT的patches已经被官方Linux kernel采纳，且有部分CONFIG_PREEMPT方案的实时性能分析，但还缺少对此方案的更深入和广泛的定量理解与分析。比如，对与官方Linux kernel而言，需要多少的代码移植工作才能把Preempt_RT移植/改进到新的内核版本上？相对于官方内核版本，把Preempt_RT的移植/改进会对Linux kernel中的API语义带来哪些变化，是否容易误导内核开发者对相关API的使用？具有Preempt_RT属性的Linux Kernel存在哪些类型的Bug，存在哪些实时性能特征。这些问题 的答案对于不同的社区会很重要：对于内核开发人员，他们可提高移植Preempt_RT的效率，减少犯错的可能性；对于内核测试人员，他们可知道如何设计有效的测试用例来测试Preempt_RT属性的Linux Kernel；对于工具设计人员，他们可知道如何设计开发工具/检查bug工具来提高Preempt_RT属性的Linux Kernel的可靠性；对于实时应用开发/使用人员，可以更好地理解Preempt_RT属性的Linux Kernel的实时性能，从而更好地在Preempt_RT属性的Linux Kernel上开发和使用各种类型的实时应用。最终可让Preempt_RT属性的Linux Kernel被内核社区和实时应用领域得到更快捷和广泛的认可与采纳。
 
-The following general approaches to Linux realtime have been proposed,
-along with many variations on each of these themes:
+对上述问题的分析与解答可通过研究Preempt_RT的开发历史来了解。由于Preempt_RT的开发代码/补丁相对比较完整地保存在[内核主网址][1]和[内核主开发网址][2]中，所以我们可以对源码和每个patchesf记录，包括log信息，代码修改处，开发时间等，进行详细的分析。
 
-1.  non-CONFIG_PREEMPT
-    2.CONFIG_PREEMPT
-    3.CONFIG_PREEMPT_RT
-    4.Nested OS
-    5.Dual-OS/Dual-Core (Xenomai, RTAI)
+在本文中，我们第一次对Preempt_RT的演化过程进行了全面的研究，时间跨度为10年，涉及22个内核版本，包括6900个patches。我们仔细检查了每个patches来理解其意图，并从不同的维度来定量地了解Preempt_RT的开发过程。从而能够回答诸如“patches/bugs有哪些分类”，“哪些patch很跨了多个内核版本，具有较高的重复性？”，“哪些类型的bug最普遍？”，“新的API与被其替换的API的语义一同是什么？”，从而能够从新的角度来理解Preempt_RT的演化。
 
-    6.Migration Between OSes
-    7.Migration Within OS
+我们得到了如下一些高层的观察结果（Sec. 3)。有较大部分的patches是跨越多个版本的，在22个内核中6900个patches中，具有唯一性的patches数量为1625个，重复率高达76.4%。在这些具有唯一性的patches中，较大部分的patches属于feature patches，占了大约45%，大部分集中在与同步互斥相关的部分，反映了Preempt_RT的开发过程中在改动Linux kernel，并设计和实现real-time能力方面做了大量的工作。另外处于第二位的是fix-bug patches，占了大约29.7%，这也说明了由于Preempt_RT的引入，触发或带来了更多的内核bug，且某些fix-bug patches在多个版本存在，有着比较长的生命周期。
 
-The idea of PREEMPT_RT is to make the Linux kernel preemptive e.g. by replacing spinlocks by preemptible objects as well as making interrupts preemptible. By enabling PREEMPT_RT on a single processor SMP bugs can be uncovered, which is an indicator that PREEMPT_RT acts as a warning mechanism for future mainline kernel problems.  It is very well suited for applications, where it’s difficult to separate the real-time from the non real-time part. The standard programming model is POSIX which allows reuse of mainline drivers. The PREEMPT_RTpatch is more than 80% mainline and there are high hopes that some time around the near future it will be fully mainline.
+通过把bug类的patches进行进一步分析和划分，我们发现semantic bug和concurrency bug占了大部分（Sec. 4)。对于语义bug，占了bug数量的48.3%。这类bug需要能够对相关的上下文，比如硬件特性，时钟，irq/softirq等，有比较清楚的了解，才能修改，所以修复的难度较大。但其中的有较大部分的此类bug还是与concurrency有直接和间接的关系。对于concurrency bug，则是另外一大类bug，占了bug数量的28.2%，在这里面，might_sleep，atomicity violation和deadlock/livelock类占了大部分。其他类型的bug主要属于memory bugs和error_code bugs。在memory bugs中，变量未初始化，数据处理错误，资源/动态分配的内存没有释放等问题依然存在；而对于error _code bugs，编译错误和配置错误占了主要部分，这方面的修改相对比较容易一些。
 
-But how far should Linux extend its realtime support, and what is the best way to extend Linux in this direction?  Can one approach to realtime satisfy all reasonable requirements, or would it be better to support multiple approaches, each with its area of applicability?
+通过分析，我们发现为了提高Linux的实时响应能力，以及修复由于实现real-time的能力而与已有kernel实现冲突引入的bug，Preempt_RT的内核设计与开发人员对与scheduling/Concurrency等相关的API进行了两个层面的修改（Sec. 5)。第一层面是保持API的接口，但修改了内部实现的语义，使得与原有API在具体功能上有区别；第二个层面是增加了新的API接口和实现。对于这两种层面的API，并替换了在官方Linux中相对的老的API接口和调用方式。以最新的Linux 4.11 Preempt-RT为例，符合这样特征的API替换有127对。在API替换中，有两个特点需要注意：
 
+1. 部分替换：新API只是替换部分老API，对于哪些老API需要替换，取决于Preempt_RT内核开发者对老API的使用场景的理解。比如在官方内核中的cpu_relax函数有1117处存在，但Preempt_RT的patch中，只在12处用了cpu_chill函数替换了cpu_relax函数。
+2. 1对N替换：有15对API替换存在1:2或1:3的情况，即同一个API在不同的semantic context下，会替换/被替换为不同类型的API。比如preempt_disable函数，会在不同的semantic context下，被local_lock函数，migrate_disable函数或preempt_disable_nort替换。
 
+这使得其他内核开发者在移植/定制Preempt_RT到新的内核版本或新的平台上时，容易产生混淆，不清楚在那种semantic context下应该使用具有那种特征的Kernel API，在确保没有bug的情况下，还能提升实时性能。
 
-The CONFIG_PREEMPT_RT patch by Ingo Molnar introduces additional preemption, allowing most spinlock (now "mutexes") critical sections, RCU read-side critical sections, and interrupt handlers to be preempted. Preemption of spinlock critical sections requires that priority inheritance be added to prevent the "priority inversion" problem where
-a low-priority task holding a lock is preempted by a medium-priority task, while a high-priority task is blocked waiting on the lock.
-
-The key point of the PREEMPT_RT patch is to minimize the amount of kernel code that is non-preemptible, while also minimizing the amount of code that must be changed in order to provide this added preemptibility. In particular, critical sections, interrupt handlers, and interrupt-disable code sequences are normally preemptible. The PREEMPT_RT patch leverages the SMP capabilities of the Linux kernel to add this extra preemptibility without requiring a complete kernel rewrite. In a sense, one can loosely think of a preemption as the addition of a new CPU to the system, and then use the normal locking primitives to synchronize with any action taken by the preempting task.
-
-
-
-RT-PATCH的问题
-1 here is little quantitative understanding of their code bases.
-一些具体的问题
-
-Where does the complexity of such systems lie?
-
-what are most patches for?
-
-What types of bugs are common?
-
-Which performance features exist? Which reliability features are utilized?
-
-如果解决的这些问题，会带来的好处
-
-for developers, so that they can improve current designs and implementations
-and create better systems;
-
-for tool builders, so that they can improve their tools to match reality (e.g.,
-by finding the types of bugs that plague existing systems).
-
-解决方法
-
-1 comprehensive study of the evolution of RT-Linux, focusing on 2.6.x
-3.x, 4.x
-
-2.6.22/23/24/25/26/29/31/33   8 vers.
-
-3.0/2/4/6/8/10/12/14/18   9 vers
-
-4.0/1/4/6/8/9/11   7 vers
-
-total 24 vers.
-
-2 examine every rt-patch in the Linux over a period of XX years including XXXX patches. By carefully studying each patch to understand its intention, and then labeling the patch accordingly along numerous important axes,  we can gain deep quantitative insight into the rt-linux development process.
-
-一些分析的结论
-
-1  A large number of patches (nearly XX%) are XXX( e.g. maintenance) patches. The remaining dominant category is XXX(e.g. bugs)
-
-2 breaking down the bug category further,  we find that semantic bugs, which require an understanding of rt-linux semantics to find or fix, are the dominant
-bug category (over XX% of all bugs).  Most of them are hard to detect via generic bug detection tools.
-
-3 while bug patches comprise most of our study, performance and reliability patches are also prevalent, accounting for XX% and XX% of patches respectively.
-
-4 the study consequence of bugs.
-
-5 Beyond these results, another outcome of our work is an annotated dataset of rt-linux patches, which we make publicly available for further study
-
-The contributions of our work are as follows:
-
--  We provide a repeatable methodology for finding faults in Linux code, based on open source tools, and a publicly available archive containing our complete results.
--  Although fault-finding tools are now being used regularly in Linux development, they seem to have only had a small impact on the kinds of faults we consider. Research is thus needed on how such tools can be better integrated into the development process.
+除了上述的高层结论，我们工作的另外一个成果是对这6900个patch的注释数据集Preempt_RT_DB，已经生成相关数据和统计的脚本，我们把它们公布在了github上。我们展示了如何通过Preempt_RT_DB来进行case study(Sec. 6)。通过这个演示实例，我们可以看到对于某个与Preempt_RT相关的函数，应该在哪类semantic context下使用，需要注意和规避的关键点在哪里，是否可进一步提升实时性能等。这样，可便于内核开发者，bug-finding tools开发者，实时应用开发者进行进一步的研究，开发，升级，改进和使用基于Preempt_RT的Linux Kernel。
 
 ## 2 Methodology
 

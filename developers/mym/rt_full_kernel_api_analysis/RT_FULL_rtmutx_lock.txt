@@ -1,0 +1,129 @@
+
+那么还有问题：
+rt_mutex_lock获取不到锁的时候会睡眠，获取到锁的时候也可以睡眠，并且实现的优先级继承。
+
+
+rt_spin_lock/RT_FULL_spin_lock要求：没有获取到锁的时候去睡眠，
+但是一旦获取到锁的时候不能再去睡眠了（不过这里也是编程的时候限制程序员不能调用sleep/schedule),允许抢占（增加实时性），不允许迁移（why?)，也实现了优先级继承。
+
+从上面的分析看，rt_spin_lock/RT_FULL_spin_lock的语义和rt_mutex_lock的语义是等价的。
+
+下面的方法是否可行？：
+直接把spin_lock换成rt_mutex_lock
+spinlock_t换成rt_mutex不就行了吗？
+
+rt_mutex_lock/RT_FULL_spin_lock和rt_spin_lock有什么区别？
+
+
+
+优先级继承部分是在哪里实现的？
+
+
+
+./kernel/locking/rtmutex.c:2060:void __sched rt_mutex_lock(struct rt_mutex *lock)
+./kernel/locking/rtmutex.c:2064:EXPORT_SYMBOL_GPL(rt_mutex_lock);
+
+
+
+
+/**
+ * rt_mutex_lock - lock a rt_mutex
+ *
+ * @lock: the rt_mutex to be locked
+ */
+void __sched rt_mutex_lock(struct rt_mutex *lock)
+{
+        rt_mutex_lock_state(lock, TASK_UNINTERRUPTIBLE);
+}
+EXPORT_SYMBOL_GPL(rt_mutex_lock);
+
+
+/**
+ * rt_mutex_lock_state - lock a rt_mutex with a given state
+ *
+ * @lock:       The rt_mutex to be locked
+ * @state:      The state to set when blocking on the rt_mutex
+ */
+int __sched rt_mutex_lock_state(struct rt_mutex *lock, int state)
+{
+        might_sleep();
+
+        return rt_mutex_fastlock(lock, state, NULL, rt_mutex_slowlock);
+}
+
+
+
+/*
+ * debug aware fast / slowpath lock,trylock,unlock
+ *
+ * The atomic acquire/release ops are compiled away, when either the
+ * architecture does not support cmpxchg or when debugging is enabled.
+ */
+static inline int
+rt_mutex_fastlock(struct rt_mutex *lock, int state,
+                  struct ww_acquire_ctx *ww_ctx,
+                  int (*slowfn)(struct rt_mutex *lock, int state,
+                                struct hrtimer_sleeper *timeout,
+                                enum rtmutex_chainwalk chwalk,
+                                struct ww_acquire_ctx *ww_ctx))
+{
+        if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
+                return 0;
+
+        return slowfn(lock, state, NULL, RT_MUTEX_MIN_CHAINWALK, ww_ctx);
+}
+
+
+
+
+/**
+ * __rt_mutex_slowlock() - Perform the wait-wake-try-to-take loop
+ * @lock:                the rt_mutex to take
+ * @state:               the state the task should block in (TASK_INTERRUPTIBLE
+ *                       or TASK_UNINTERRUPTIBLE)
+ * @timeout:             the pre-initialized and started timer, or NULL for none
+ * @waiter:              the pre-initialized rt_mutex_waiter
+ *
+ * Must be called with lock->wait_lock held and interrupts disabled
+ */
+static int __sched
+__rt_mutex_slowlock(struct rt_mutex *lock, int state,
+                    struct hrtimer_sleeper *timeout,
+                    struct rt_mutex_waiter *waiter,
+                    struct ww_acquire_ctx *ww_ctx)
+{
+        int ret = 0;
+
+        for (;;) {
+                /* Try to acquire the lock: */
+                if (try_to_take_rt_mutex(lock, current, waiter))
+                        break;
+
+                if (timeout && !timeout->task) {
+                        ret = -ETIMEDOUT;
+                        break;
+                }
+                if (signal_pending_state(state, current)) {
+                        ret = -EINTR;
+                        break;
+                }
+
+                if (ww_ctx && ww_ctx->acquired > 0) {
+                        ret = __mutex_lock_check_stamp(lock, ww_ctx);
+                        if (ret)
+                                break;
+                }
+
+                raw_spin_unlock_irq(&lock->wait_lock);
+
+                debug_rt_mutex_print_deadlock(waiter);
+
+                schedule();
+
+                raw_spin_lock_irq(&lock->wait_lock);
+                set_current_state(state);
+        }
+
+        __set_current_state(TASK_RUNNING);
+        return ret;
+}
