@@ -43,137 +43,77 @@ RT-PATCH的起源，开发和广泛应用情况
 
 ## 2 Methodology
 
-### 2.1 Target: rt-patch
+在这一节中，我们首先将简要描述Preempt_RT的设计与实现，然后用一个例子来介绍我们是如何分析Preempt_RT patech的。最后，我们介绍一下我们方法的局限性。
 
-### 2.2 the degree of **determinism** on rt-linux
+### 2.1 Overview of Preempt_RT 
 
-In the PREEMPT_RT kernel there are 4 essential types of contexts: "hard interrupt context", "interrupt context", "soft interrupt context" and "process context". The hard interrupt context is an extremely small shim in essence - a few tens of lines total, per arch - it just deals with the interrupt controller, masks the IRQ line, acks the controller and returns. The "interrupt context" is a separate per-IRQ interrupt thread, which behaves like a process and is fully preemptible. "Soft interrupt context" is a separate per-softirq system-thread too, fully preemptible. "Process context" is what it used to be, and fully preemptible too. ['fully preemptible' means it's preemptible for in essence everything but the scheduler code and the basic RT-mutex/PI code]
+我们的目标是理解Preempt_RT的设计与实现。由于Preempt_RT的演进过程大致从2006年开始，一直持续到现在，有不少起源于Preempt_RT的patches已经合并到了官方Linux中，但依然还有大约近300个左右的Preempt_RT的patches需要移植到不同版本的Linux kernel中。为此，我们需要分析针对Linux kernel 2.6.33～4.11，共22个版本的Preempt_RT patches，理解其变化规律和一些不变的属性。
 
-considering the above description, your comment about "the lesser we run in interrupt context, the better" is indeed correct: in PREEMPT_RT the hardirq context execution time and complexity has been reduced to an absolute physical minimum. It is a fundamentally good and important thing to achieve determinism. Everything else is a "thread", as far as the scheduler is concerned, and is as preemptible as possible. You can then use individual thread priorities to make some interrupts more important than others.
+通过Preempt_RT来实现Linux实时性的关键点是减少内核中非抢占性（non-preemptible）的代码量，且要尽量减少对实际的代码的修改量。为了减少内核中非抢占性（non-preemptible）的代码量，需要实现对临界区（critical secitons），中断处理例程（interrupt handlers），中断屏蔽代码段（interrupt-disable code sequences）的可抢占性。为了减少对实际的代码的修改量，Preempt_RT patches 充分重用了LInux  kernel对SMP的支持能力，从而避免了对Linux kernel的大量重写。
 
-There is (inevitably) some scheduling overhead due to having more contexts, i've measured it to be 3-5%, worst-case [80 thousand irqs/sec], and near zero for the common case [couple of thousand irqs/sec], which is pretty good.
+### 2.2 Classification of Preempt_RT  patches
 
-1) PREEMPT_NONE*. That's the default scheduler of a vanilla GNU/Linux kernel. It's geared towards maximum raw processing power and throughput. Every process gets it's fair share of  the CPU as it is  typical for a classical Unix multi-user environment. By default processes can not be preempted while they execute system calls and since, among other things, the timing behavior of some kernel services is non deterministic the whole thing is not deterministic as well.
+我们对2007~2017年的22个kernel版本中的6900个Preempt_RT patches进行了全面的研究（comprehensive study）。这些pathces由增加new feature，fix bug，提升性能，代码维护（maintenance）等大类组成。味蕾更好地理解Preempt_RT的演化过程，我们进行比较广泛的研究（conduct a broad study）来回答下面三类基础问题（three categories of fundamental questions）：
 
-*2) PREEMPT_VOLUNTARY\**.*** Around 2001 Ingo Molnar and later on Andrew Morton introduced preemption points in long running pieces of code, which is widely known as “low-latency patches”. This  reduces the latency at the cost of slightly lower throughput. This enables reacting to interactive events by allowing a low priority process to voluntarily preempt itself even if it is in kernel mode executing a system call.[4]
+- Overview: Preempt_RT  patches最常见的类型是什么？Preempt_RT  patches是如何随着官方Linux kernel演进的?
+- Bugs:加了 Preempt_RT  patches后，在内核中会出现哪些类型的bugs？内核中的哪些子系统存在更多的bugs？不同类型的bug会带来哪些类型的后果（consequences）?
+- Performance: 哪些技术可以用于提高LInux kernel的实时性能？
+- API usage: 对于具有 Preempt_RT能力的Linux kernel，如何理解名字未变/语义改变的RT相关API，如何理解新增加的RT相关API？在具有 Preempt_RT能力的Linux kernel中，应该如何使用这些API来避免bug，提高试试性能？
 
-*3) PREEMPT_(DESKTOP).* Explicit preemption points are hard to find, so Robert Love and others went out to seek for implicit preemption points. Among other things spinlocks and interrupt return code were modified to implement implicit preemption points.
+为了回答这些问题，我们手动分析了每个patch来理解其目的和功能（purpose and functionality），并对每个patch进行了分类，形成具有annotation的patch iterm，其格式如下：
 
- 
+```
+PATCH_ITEM ::= * VERSIONS  PATCH_TITLE {CHARACTERISTIC::ASPECT} \n PATCH_CHANGS
+VERSIONS ::= '['BEGIN_VERSION - END_VERSION']'|'['BEGIN_VERSION']'
+BEGIN_VERSION|END_VERSION ::= [2..4].[0..18].[22..29]
+PATCH_TITLE ::= TITLE.patch 
+TITLE|DESCRIPT = ['a'..'z','A'..'Z']*|NULL //string or nothing
+CHARACTERISTIC ::='C'
+ASPECT ::= FEATURE|BUG|PERFORMANCE|MAINTAIN
+FEATURE ::= 'feature'::FEATURE_METHOD::DESCRIPT
+FEATURE_METHOD::= 'hardware'|'debuginfo'|'idle'|'hrtimer'|'statistics'|'delay'
+BUG ::= 'bug'::BUG_CONSEQUENCE::BUG_TYPE::FIX_METHOD::DESCRIPT
+BUG_CONSEQUENCE ::='corrupt'|'hang'|'crash'|'leak'|'irq'|'livelock'|'na'|'??'|...
+BUG_TYPE ::= SEMANTIC|CONCURRENCY|MEMORY|ERRORCODE
+SEMANTIC ::= 'hardware'|'softirq'|'migration'|'preempt'|'irq'|'na'|...
+CONCURRENCY ::= 'atomicity'|'order'|'deadlock'|'livelock'|...
+MEMORY ::= 'resource leak'|'uninit var'|'buf overflow'|...
+ERRORCODE ::= 'compiling err'|'config err'|'runtime err'|'var type'|...
+FIX_METHOD ::= 'hardware'|'lock'|'irq'|'preempt'|'migration'|'other'|...
+PERFORMANCE ::= 'performance'::PERF_METHOD::DESCRIPT
+PERF_METHOD ::= 'cache'|'msleep'|'softirq'|'barrier'|'idle'|'mm'|'hrtimer'|...
+MAINTAIN ::='maintain'::MAINTAIN_METHOD
+MAINTAIN_METHOD ::='refactor'|'donothing'|...
+```
 
-A spinlock is, similar to a mutex, used to protect access to shared resources. It's usually implemented by a hardware test and set operation. When a process attempts to access a resource that is in use by another process, the “blocked” process(es) will “spin” (busy wait) until the resource becomes available. 
+我们通过分析，发现有属于不同内核版本的不少patches是相同或近似的，为此我们把这些patches合并为一个，用PATCH_CHANGS来表示他们的关系，一个例子如下
 
- 
-
-This option further reduces the latency of the kernel by making all kernel code that is executing in a critical section preemptible.  The latency is further reduced at the cost of slightly lower throughput and a slight runtime overhead to kernel code.[4]
-
- 
-
-*4) PREEMPT_RT[GR-2].* The goal of the real-time preemption patch is to make fixed priority preemptive scheduling (i.e. POSIX SCHED_FIFO and SCHED_RR classes) as close as possible to their ideal behavior and all this with no impact for users/processes not interested in real-time. 
-
-> [Mao] Shall we discuss the difference among PREEMPT_RT_BASE, PREEMPT_RT_FULL
-> and PREEMPT_LAZY?
-
-
-
-####  Comparing Priority Inversion
-
-spinlock related
-
-...
-
- preempt_disable
-
-Note that preempt_disable() causes priority inversion:
-
-- Task 0 at priority 0 disables preemption on single-CPU system
-- Task 1 at priority 1 awakens, and is “born preempted” due to task 0's disabling of preemption
-
- migration_disable
-
-Note that migration_disable() causes priority inversion:
-
--  Task 1 at priority 1 running on CPU 0 disables migration
--  Task 2 at priority 2 awakens and runs on CPU 1
--  Task 3 at priority 3 awakens and preempts task 0 on CPU 0
--  Task 3 disables migration
--  Task 2 blocks, but neither task 1 nor task 3 can be migrated to CPU 1
--  This is a priority inversion involving the idle loop
--  Similar sequences result in more typical priority-inversion situations
-
-Disabling migration produces order-of-magnitude reductions in probability of priority inversion
-
- Lesson: If you disable long enough, bad things are probable
-
-
-
-Disabling migration produces better results than does disabling preemption in all scenarios analyzed
-
-
-
-### 2.3 Classification of RT patches
-
-we conduct a comprehensive study of its evolution by examining all RT patches from Linux 2.6.22
-(Jul ’07) to 4.11 (Jun ’17).
-
-To better understand the evolution of different RT-linux, we conduct a broad study to answer three categories
-of fundamental questions:
-
-- Overview: What are the common types of patches in rt-linux and how do patches change as linux evolve? Do patches of different types have different sizes?
-- Bugs: What types of bugs appear in rt-linux? Do some components of rt-linux contain more bugs than others? What types of consequences do different bugs have?
-- Performance and Reliability: What techniques are used by rtlinux to improve real-time performance? What common reliability enhancements are proposed in rt-linux?
-
-To answer these questions, we manually analyzed each patch to understand its purpose and functionality, examining XXXX patches from the selected Linux 2.6.22-4.11.
-
-rt-linux generally have similar logical components, such as scheduling, locking, and waiting. To enable precise analysis, we partition each rt-linux into  X logical components (Table X).
-
-
-
-| Name                             | Begin Version | Description |
-| -------------------------------- | ------------- | ----------- |
-| Deterministic Scheduler          | 2.6.22        |             |
-| Preemption Support               | 2.6.24        |             |
-| PI Mutexes                       | OoM           |             |
-| High-Resolution Timer            | 2.6.24        |             |
-| Preemptive Read-Copy Update      | 2.6.25        |             |
-| IRQ Threads                      | 2.6.30        |             |
-| Raw Spinlock Annotation          | 2.6.33        |             |
-| Forced IRQ Threads               | 2.6.39        |             |
-| R/W Semaphore Cleanup            | 2.6.39        |             |
-| Full Realtime Preemption Support | OoM           |             |
-
-Table 2: Logical Components of rt-linux. This table shows the classification and definition of rt-linux logical components. (OoM: Out of Mainline Kernel)
-
-
-
-Each of the following categories of code might need to be inspected:
-
-a.	The low-level interrupt-handing code.
-
-b.	The realtime process scheduler.
-
-c.	Any code that disables interrupts.
-
-d.	Any code that disables preemption.
-
-e.	Any code that holds a lock, mutex, semaphore, or other resource
-	that is needed by the code implementing your new feature, as
-	well as the code that actually implements the lock, mutex,
-	semaphore, or other resource.
-
-f.	Any code that manipulates hardware that can stall the bus,
-	delay interrupts, or otherwise interfere with forward progress.
-	Note that it is also necessary to inspect user-level code that
-	directly manipulates such hardware.
-Limitations:
-
- Our study is limited by the rt-linux we chose, which may not reflect the characteristics of other real-time implementations based on Linux or  other non-Linux RTOS.   As for bug representativeness, we only studied the bugs reported and fixed in patches, which is a biased subset; there may be (many) other bugs not yet reported.
-
-
+```
+      + [[file:2.6.22/new-softirq-code.patch][2.6.22]]  {MOD::arch/i386}
+      M [[file:2.6.23/new-softirq-code.patch][2.6.23]]
+      m [[file:2.6.24/new-softirq-code.patch][2.6.24]]
+        [[file:2.6.25/new-softirq-code.patch][2.6.25]]
+      - 2.6.26
+   Meaning of the first character:
+      [+]        This patch is introduced in this version (not seen in previous ones).
+      [-]        This patch appears in the previous version but disappears in this one.
+      [ ]        This patch is seen in both the previous and current version.
+                 This patch is identical in the two versions.
+      [m]        This patch is seen in both the previous and current version.
+                 The changed lines in the patches are identical, but the contexts are not.
+      [M]        This patch is seen in both the previous and current version.
+                 The changed lines in the patches are different.
+      KER_MOD    The 1~2 level directories(means kernel modules) of kernel src code
+```
+Limitations: 我们的研究仅局限在我们分析的这22个版本的Preempt_RT patches。对于不属于这22个版本的Linux kernel，由于缺少相应的Preempt_RT patches，使得不能反映Linux对Preempt_RT能力支持的所有演化过程。且对于与Real-Time Linux kernel有关，但不属于Preempt_RT patches的其他patches，我们没有分析到。另外，我们并没有研究属于其他实现方式的Real-Time Linux方案，如RTAI，Xenomai，L4Linux等。这将是我们未来的工作。
 
 ## 3 PATCH Overview
 
 rt-linux evolve through patches. A large number of patches are discussed and submitted to mailing lists, bug report websites, and other forums. Some are used to implement new features, while others fix existing bugs. In this section, we investigate three general questions regarding rt-linux patches. First, what are rt-linux patch types? Second, how do patches change over time? Lastly, what is the distribution of patch sizes?
+
+In the PREEMPT_RT kernel there are 4 essential types of contexts: "hard interrupt context", "interrupt context", "soft interrupt context" and "process context". The hard interrupt context is an extremely small shim in essence - a few tens of lines total, per arch - it just deals with the interrupt controller, masks the IRQ line, acks the controller and returns. The "interrupt context" is a separate per-IRQ interrupt thread, which behaves like a process and is fully preemptible. "Soft interrupt context" is a separate per-softirq system-thread too, fully preemptible. "Process context" is what it used to be, and fully preemptible too. ['fully preemptible' means it's preemptible for in essence everything but the scheduler code and the basic RT-mutex/PI code]
+
+## 
 
 ### 3.1 patch overview
 
