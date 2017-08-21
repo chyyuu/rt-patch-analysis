@@ -9,22 +9,22 @@ cr以linux 4.11-rt为参考对象
 |                                          | rt-full |         N        |      Y      |     Y     |     Y     |    Y      |      N      |
 | local_irq_save/restore                   | vanilla |         N        |      Y      |     Y     |     Y     |    Y      |      N      |
 |                                          | rt-full |         N        |      Y      |     Y     |     Y     |     Y     |      N      |
-| local_bh_disable/enable                  | vanilla |         N        |      N      |     Y     |     Y     |     Y     |             |
-|                                          | rt-full |                  |             |           |     Y     |     Y     |             |
+| local_bh_disable/enable                  | vanilla |         N        |      N      |     Y     |     Y     |     Y     |      N      |
+|                                          | rt-full |         N        |      N      |     N     |     Y     |     Y     |      Y?     |
 | spin_lock/unlock                         | vanilla |        Y         |      N      |     Y     |     Y     |     N     |      N      |
-|                                          | rt-full |        Y         |             |           |     Y     |           |             |
-| spin_lock/unlock_irqsave/restore         | vanilla |        Y         |      Y      |     Y     |           |           |             |
-|                                          | rt-full |        Y         |             |           |     Y     |           |             |
-| spin_lock/unlock_bh                      | vanilla |        Y         |             |     Y     |           |     Y     |             |
-|                                          | rt-full |        Y         |             |           |     Y     |     Y     |             |
-| preempt_disable/enable                   | vanilla |        N         |             |     Y     |           |           |             |
-|                                          | rt-full |                  |             |     Y     |     Y     |           |             |
-| mutex_lock/unlock                        | vanilla |        Y         |             |           |           |           |             |
-|                                          | rt-full |        Y         |             |           |           |           |             |
-| rcu_read_lock/unlock                     | vanilla |                  |             |     *     |           |           |             |
+|                                          | rt-full |        Y         |      N      |     N     |     Y     |     N     |      Y?     |
+| spin_lock/unlock_irqsave/restore         | vanilla |        Y         |      Y      |     Y     |     Y     |     Y     |      N      |
+|                                          | rt-full |        Y         |      N      |     N     |     Y     |     N     |      Y?     |
+| spin_lock/unlock_bh                      | vanilla |        Y         |      N      |     Y     |     Y     |     Y     |      N      |
+|                                          | rt-full |        Y         |      N      |     Y     |     Y     |     Y     |      Y?     |
+| preempt_disable/enable                   | vanilla |        N         |      N      |     Y     |     Y     |     N     |      N?     |
+|                                          | rt-full |        N         |      N      |     Y     |     Y     |     N     |      N?     |
+| mutex_lock/unlock                        | vanilla |        Y         |      N      |     N     |     N     |     N     |      Y      |
+|                                          | rt-full |        Y         |      N      |     N     |     N     |     N     |      Y      |
+| rcu_read_lock/unlock                     | vanilla |        N         |      N      |     *     |           |           |             |
 |                                          | rt-full |                  |             |           |           |           |             |
-| get/put_cpu                              | vanilla |                  |             |     Y     |           |           |             |
-|                                          | rt-full |                  |             |     Y     |     Y     |           |             |
+| get/put_cpu                              | vanilla |        N         |      N      |     Y     |     Y     |     N?    |      N      |
+|                                          | rt-full |        N         |      N      |     Y     |     Y     |     N??   |      N      |
 | local_irq_disable/enable_nort            | vanilla |                  |      Y      |     Y     |           |           |             |
 |                                          | rt-full |                  |             |           |           |           |             |
 | local_irq_disable/enable_rt              | vanilla |                  |             |           |           |           |             |
