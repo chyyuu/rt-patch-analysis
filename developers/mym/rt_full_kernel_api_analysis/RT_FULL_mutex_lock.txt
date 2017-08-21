@@ -1,0 +1,91 @@
+mutex_lock和rt_mutex_lock等价
+mutex_unlock和rt_mutex_unlock
+
+#define mutex_lock(l) _mutex_lock(l)
+#define mutex_unlock(l) _mutex_unlock(l)
+
+
+./include/linux/mutex_rt.h:30:
+extern void __lockfunc _mutex_lock(struct mutex *lock);
+extern void __attribute__((section(".spinlock.text"))) _mutex_lock(struct mutex *lock);
+
+
+
+./kernel/locking/rt.c:89:void __lockfunc _mutex_lock(struct mutex *lock)
+./kernel/locking/rt.c:94:EXPORT_SYMBOL(_mutex_lock);
+
+
+
+
+void __lockfunc _mutex_lock(struct mutex *lock)
+{
+        mutex_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+        rt_mutex_lock(&lock->lock);
+}
+EXPORT_SYMBOL(_mutex_lock);
+
+void __lockfunc _mutex_unlock(struct mutex *lock)
+{
+        mutex_release(&lock->dep_map, 1, _RET_IP_);
+        rt_mutex_unlock(&lock->lock);
+}
+EXPORT_SYMBOL(_mutex_unlock);
+
+void __attribute__((section(".spinlock.text"))) _mutex_lock(struct mutex *lock)
+{
+ do { } while (0);
+ rt_mutex_lock(&lock->lock);
+}
+
+
+
+void __attribute__((section(".spinlock.text"))) _mutex_unlock(struct mutex *lock)
+{
+ do { } while (0);
+ rt_mutex_unlock(&lock->lock);
+}
+
+
+./include/linux/lockdep.h:559
+
+#define mutex_acquire(l,s,t,i) lock_acquire_exclusive(l, s, t, NULL, i)
+
+#define lock_acquire_exclusive(l,s,t,n,i) lock_acquire(l, s, t, 0, 1, n, i)
+
+
+#define lock_acquire(l,s,t,r,c,n,i) do { } while (0)
+
+
+
+#define mutex_release(l,n,i) lock_release(l, n, i)
+#define lock_release(l,n,i) do { } while (0)
+
+
+
+
+
+
+
+
+========================================
+./kernel/sched/core.c:1162:     mutex_lock(&sched_down_mutex);
+./kernel/sched/core.c:1169:     mutex_lock(&sched_down_mutex);
+./kernel/sched/core.c:1205:     mutex_lock(&sched_down_mutex);
+./kernel/sched/core.c:6148:     mutex_lock(&sched_domains_mutex);
+./kernel/sched/core.c:6811:     mutex_lock(&rt_constraints_mutex);
+./kernel/sched/core.c:6885:     mutex_lock(&rt_constraints_mutex);
+./kernel/sched/core.c:7013:     mutex_lock(&mutex);
+./kernel/sched/core.c:7052:     mutex_lock(&mutex);
+./kernel/sched/core.c:7233:     mutex_lock(&cfs_constraints_mutex);
+
+
+
+void tell_sched_cpu_down_begin(int cpu)
+{
+        mutex_lock(&sched_down_mutex);
+        cpumask_set_cpu(cpu, &sched_down_cpumask);
+        mutex_unlock(&sched_down_mutex);
+}
+
+
+
