@@ -97,7 +97,22 @@ static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
 }
 
 
+static inline __attribute__((no_instrument_function)) void __raw_spin_lock_bh(raw_spinlock_t *lock)
+{
+ __local_bh_disable_ip((unsigned long)__builtin_return_address(0), ((2 * (1UL << (0 + 8))) + 0));
+ do { } while (0);
+ do_raw_spin_lock(lock);
+ //do_raw_spin_lock等价于spin_lock
+ //vanilla CONFIG_PREEMPT_VOLUNTARY情况下，本身就不支持内核抢占的
+}
 
+
+static inline __attribute__((no_instrument_function)) void __raw_spin_unlock_bh(raw_spinlock_t *lock)
+{
+ do { } while (0);
+ do_raw_spin_unlock(lock);
+ __local_bh_enable_ip((unsigned long)__builtin_return_address(0), ((2 * (1UL << (0 + 8))) + 0));
+}
 
 下面函数的_ip后缀和ip参数的意思是_RET_IP_宏定义。不太明白其是什么原理。
 disable_bh是通过__preempt_count_add实现的？
