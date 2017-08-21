@@ -1,13 +1,13 @@
 
 rt_spin_lock   
-底层是rt_mutex lock,会关闭迁移（不允许迁移），开启抢占(不会关闭抢占)，不会睡眠，会spin,并且spin的进程会根据先后顺序进行排队
+底层是rt_mutex lock,会关闭迁移（不允许迁移），开启抢占(不会关闭抢占)，获取不到锁的时候会睡眠，,并且等待锁的进程会根据先后顺序进行排队?
 如果有进程释放锁，先来的进程会先获取到锁。
 如果低优先级进程持有锁，然后高优先级进程也要获取同一个锁，此时会产生优先级继承，导致高优先级进程睡眠，让出CPU，直到有人释放锁再唤醒它。
-同优先级的多个进程如果获取不到锁的时候，应该不会睡眠，只会spin
+同优先级的多个进程如果获取不到锁的时候，会睡眠。
 
 rt_spin_unlock 底层是rt_mutex lock
 
-RT_FULL_spin_lock会关闭迁移，开启抢占，不会睡眠、会spin
+RT_FULL_spin_lock会关闭迁移，开启抢占，获取不到锁的时候会睡眠。
 
 
 ./kernel/locking/rtmutex.c:
@@ -210,7 +210,7 @@ takeit:
 
 
 //这个函数通过不断的调用__try_to_take_rt_mutex函数，
-//来获取rt_mutex lock，如果获取不到锁，就会spin，但是开启了抢占，其可以被抢占,并在在已经持有锁的情况被别的进程抢占。
+//来获取rt_mutex lock，如果获取不到锁，就会睡眠，但是开启了抢占，其可以被抢占,并在在已经持有锁的情况被别的进程抢占。
 //如果是rt_spin_lock调用它的话，会使得mg_off=true。即关闭迁移。也就是RT_FULL_spin_lock会关闭迁移，开启抢占。
 static void  noinline __sched rt_spin_lock_slowlock(struct rt_mutex *lock,
 						    bool mg_off)
@@ -261,13 +261,11 @@ static void  noinline __sched rt_spin_lock_slowlock(struct rt_mutex *lock,
 		debug_rt_mutex_print_deadlock(&waiter);
 
 		if (top_waiter != &waiter || adaptive_wait(lock, lock_owner)) {
-		//这个分支会在什么样的条件下执行？是由于优先级继承，导致优先级提升以后执行吗？
-		//应该是高优先级的进程在等待低优先级的进程释放锁的时候，主动放弃CPU，让低优先级的进程去执行？
+		//这个分支会在什么样的条件下执行？
 			if (mg_off)
 				migrate_enable();
 			schedule();
-        //高优先级进程主动放弃CPU，变成了睡眠状态，让低优先级进程运行，来解决优先级翻转？
-		//第优先级进程执行完以后，唤醒高优先级进程，让其继续去尝试获取锁？
+                        //获取不到锁就会设置为TASK_UNINTERRUPTIBLE,然后切换到别的进程执行吗？
 			if (mg_off)
 				migrate_disable();
 		}

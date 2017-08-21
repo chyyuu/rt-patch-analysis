@@ -20,10 +20,10 @@ spin_lock使用的地方一般自旋的时间都很短，如果使用mutex_lock�
 rt_linux里面把spin_lock换成了睡眠锁，这样不是会导致性能下降吗？
 
 调研答案：
-上面的认识是错误的。
 Making in-kernel locking-primitives (using spinlocks) preemptible though reimplementation with 
 rtmutexes.
-这里是把原来的spin_lock转变成可抢占的了，其获取不到锁的时候依然会spin。 并不是将spin_lock换成了mutex_lock（会睡眠）
+这里是把原来的spin_lock转变成可抢占的了，其获取不到锁的时候会睡眠，但是持有锁的情况下却可以别抢占，因此高优先级的进程不会被持有自旋锁的低优先级进程的
+临界区执行时间长度的不确定性锁干扰。增加的实时性，但是性能应该会下降(不在乎快慢，而是在乎实时性）。
 
 
 问题2：
@@ -41,8 +41,8 @@ Inversion.（对自旋锁和信号量增加了优先级继承功能）
 
 
 情景分析：
-rt_linux把spin_lock仅仅变成了可以抢占，也就是说，已持有锁也会被抢占，未获取到spin_lock可以继续自旋或者被抢占
-，但是不能被推入等待队列睡眠。
+rt_linux把spin_lock仅仅变成了可以抢占，也就是说，已持有锁也会被抢占，未获取到spin_lock会睡眠。
+
 
 
 情景1：
