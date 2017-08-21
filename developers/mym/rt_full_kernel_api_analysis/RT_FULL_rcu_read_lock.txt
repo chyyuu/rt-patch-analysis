@@ -1,0 +1,226 @@
+
+
+rcu_read_lock主要是通过下面的计数器进行计数
+
+current->rcu_read_lock_nesting++;
+
+
+# 802 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/rcupdate.h"
+static inline __attribute__((no_instrument_function)) void rcu_read_lock(void)
+{
+ __rcu_read_lock();
+ (void)0;
+ do { } while (0);
+ do { } while (0)
+                                                ;
+}
+# 856 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/rcupdate.h"
+static inline __attribute__((no_instrument_function)) void rcu_read_unlock(void)
+{
+ do { } while (0)
+                                                  ;
+ (void)0;
+ __rcu_read_unlock();
+ do { } while (0);
+}
+
+void __rcu_read_lock(void);
+void __rcu_read_unlock(void);
+
+
+
+
+/**
+ * rcu_read_lock() - mark the beginning of an RCU read-side critical section
+ *
+ * When synchronize_rcu() is invoked on one CPU while other CPUs
+ * are within RCU read-side critical sections, then the
+ * synchronize_rcu() is guaranteed to block until after all the other
+ * CPUs exit their critical sections.  Similarly, if call_rcu() is invoked
+ * on one CPU while other CPUs are within RCU read-side critical
+ * sections, invocation of the corresponding RCU callback is deferred
+ * until after the all the other CPUs exit their critical sections.
+ *
+ * Note, however, that RCU callbacks are permitted to run concurrently
+ * with new RCU read-side critical sections.  One way that this can happen
+ * is via the following sequence of events: (1) CPU 0 enters an RCU
+ * read-side critical section, (2) CPU 1 invokes call_rcu() to register
+ * an RCU callback, (3) CPU 0 exits the RCU read-side critical section,
+ * (4) CPU 2 enters a RCU read-side critical section, (5) the RCU
+ * callback is invoked.  This is legal, because the RCU read-side critical
+ * section that was running concurrently with the call_rcu() (and which
+ * therefore might be referencing something that the corresponding RCU
+ * callback would free up) has completed before the corresponding
+ * RCU callback is invoked.
+ *
+ * RCU read-side critical sections may be nested.  Any deferred actions
+ * will be deferred until the outermost RCU read-side critical section
+ * completes.
+ *
+ * You can avoid reading and understanding the next paragraph by
+ * following this rule: don't put anything in an rcu_read_lock() RCU
+ * read-side critical section that would block in a !PREEMPT kernel.
+ * But if you want the full story, read on!
+ *
+ * In non-preemptible RCU implementations (TREE_RCU and TINY_RCU),
+ * it is illegal to block while in an RCU read-side critical section.
+ * In preemptible RCU implementations (PREEMPT_RCU) in CONFIG_PREEMPT
+ * kernel builds, RCU read-side critical sections may be preempted,
+ * but explicit blocking is illegal.  Finally, in preemptible RCU
+ * implementations in real-time (with -rt patchset) kernel builds, RCU
+ * read-side critical sections may be preempted and they may also block, but
+ * only when acquiring spinlocks that are subject to priority inheritance.
+ */
+static inline void rcu_read_lock(void)
+{
+        __rcu_read_lock();
+        __acquire(RCU);
+        rcu_lock_acquire(&rcu_lock_map);
+        RCU_LOCKDEP_WARN(!rcu_is_watching(),
+                         "rcu_read_lock() used illegally while idle");
+}
+
+/*
+ * So where is rcu_write_lock()?  It does not exist, as there is no
+ * way for writers to lock out RCU readers.  This is a feature, not
+ * a bug -- this property is what provides RCU's performance benefits.
+ * Of course, writers must coordinate with each other.  The normal
+ * spinlock primitives work well for this, but any other technique may be
+ * used as well.  RCU does not care how the writers keep out of each
+ * others' way, as long as they do so.
+ */
+
+/**
+ * rcu_read_unlock() - marks the end of an RCU read-side critical section.
+ *
+ * In most situations, rcu_read_unlock() is immune from deadlock.
+ * However, in kernels built with CONFIG_RCU_BOOST, rcu_read_unlock()
+ * is responsible for deboosting, which it does via rt_mutex_unlock().
+ * Unfortunately, this function acquires the scheduler's runqueue and
+ * priority-inheritance spinlocks.  This means that deadlock could result
+ * if the caller of rcu_read_unlock() already holds one of these locks or
+ * any lock that is ever acquired while holding them; or any lock which
+ * can be taken from interrupt context because rcu_boost()->rt_mutex_lock()
+ * does not disable irqs while taking ->wait_lock.
+ *
+ * That said, RCU readers are never priority boosted unless they were
+ * preempted.  Therefore, one way to avoid deadlock is to make sure
+ * that preemption never happens within any RCU read-side critical
+ * section whose outermost rcu_read_unlock() is called with one of
+ * rt_mutex_unlock()'s locks held.  Such preemption can be avoided in
+ * a number of ways, for example, by invoking preempt_disable() before
+ * critical section's outermost rcu_read_lock().
+ *
+ * Given that the set of locks acquired by rt_mutex_unlock() might change
+ * at any time, a somewhat more future-proofed approach is to make sure
+ * that that preemption never happens within any RCU read-side critical
+ * section whose outermost rcu_read_unlock() is called with irqs disabled.
+ * This approach relies on the fact that rt_mutex_unlock() currently only
+ * acquires irq-disabled locks.
+ *
+ * The second of these two approaches is best in most situations,
+ * however, the first approach can also be useful, at least to those
+ * developers willing to keep abreast of the set of locks acquired by
+ * rt_mutex_unlock().
+ *
+ * See rcu_read_lock() for more information.
+ */
+static inline void rcu_read_unlock(void)
+{
+        RCU_LOCKDEP_WARN(!rcu_is_watching(),
+                         "rcu_read_unlock() used illegally while idle");
+        __release(RCU);
+        __rcu_read_unlock();
+        rcu_lock_release(&rcu_lock_map); /* Keep acq info for rls diags. */
+}
+
+
+./kernel/rcu/update.c:200:void __rcu_read_lock(void)
+./kernel/rcu/update.c:205:EXPORT_SYMBOL_GPL(__rcu_read_lock);
+
+
+#ifdef CONFIG_PREEMPT_RCU
+
+/*
+ * Preemptible RCU implementation for rcu_read_lock().
+ * Just increment ->rcu_read_lock_nesting, shared state will be updated
+ * if we block.
+ */
+void __rcu_read_lock(void)
+{
+        current->rcu_read_lock_nesting++;
+        barrier();  /* critical section after entry code. */
+}
+EXPORT_SYMBOL_GPL(__rcu_read_lock);
+
+/*
+ * Preemptible RCU implementation for rcu_read_unlock().
+ * Decrement ->rcu_read_lock_nesting.  If the result is zero (outermost
+ * rcu_read_unlock()) and ->rcu_read_unlock_special is non-zero, then
+ * invoke rcu_read_unlock_special() to clean up after a context switch
+ * in an RCU read-side critical section and other special cases.
+ */
+void __rcu_read_unlock(void)
+{
+        struct task_struct *t = current;
+
+        if (t->rcu_read_lock_nesting != 1) {
+                --t->rcu_read_lock_nesting;
+        } else {
+                barrier();  /* critical section before exit code. */
+                t->rcu_read_lock_nesting = INT_MIN;
+                barrier();  /* assign before ->rcu_read_unlock_special load */
+                if (unlikely(READ_ONCE(t->rcu_read_unlock_special.s)))
+                        rcu_read_unlock_special(t);
+                barrier();  /* ->rcu_read_unlock_special load before assign */
+                t->rcu_read_lock_nesting = 0;
+        }
+#ifdef CONFIG_PROVE_LOCKING
+        {
+                int rrln = READ_ONCE(t->rcu_read_lock_nesting);
+
+                WARN_ON_ONCE(rrln < 0 && rrln > INT_MIN / 2);
+        }
+#endif /* #ifdef CONFIG_PROVE_LOCKING */
+}
+EXPORT_SYMBOL_GPL(__rcu_read_unlock);
+
+#endif /* #ifdef CONFIG_PREEMPT_RCU */
+
+
+================================================
+void wake_up_if_idle(int cpu)
+{
+        struct rq *rq = cpu_rq(cpu);
+        unsigned long flags;
+
+        rcu_read_lock();
+
+        if (!is_idle_task(rcu_dereference(rq->curr)))
+                goto out;
+
+        if (set_nr_if_polling(rq->idle)) {
+                trace_sched_wake_idle_without_ipi(cpu);
+        } else {
+                raw_spin_lock_irqsave(&rq->lock, flags);
+                if (is_idle_task(rq->curr))
+                        smp_send_reschedule(cpu);
+                /* Else CPU is not idle, do nothing here: */
+                raw_spin_unlock_irqrestore(&rq->lock, flags);
+        }
+
+out:
+        rcu_read_unlock();
+}
+
+
+
+
+./kernel/sched/core.c:594:      rcu_read_lock();
+./kernel/sched/core.c:1788:             rcu_read_lock();
+./kernel/sched/core.c:1982:     rcu_read_lock();
+./kernel/sched/core.c:4330:     rcu_read_lock();
+./kernel/sched/core.c:4663:     rcu_read_lock();
+./kernel/sched/core.c:4794:     rcu_read_lock();
+./kernel/sched/core.c:4820:     rcu_read_lock();
+./kernel/sched/core.c:4849:     rcu_read_lock();
