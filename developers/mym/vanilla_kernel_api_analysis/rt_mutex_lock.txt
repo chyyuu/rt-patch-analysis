@@ -1,7 +1,4 @@
-
-
-
-
+其和RT_FULL_rt_mutex_lock的区别是什么？好像vanilla的rt_mutex_lock也实现了优先级继承。
 
 
 ./kernel/locking/rtmutex.c:1472:void __sched rt_mutex_lock(struct rt_mutex *lock)
