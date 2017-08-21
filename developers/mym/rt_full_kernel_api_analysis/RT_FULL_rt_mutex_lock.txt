@@ -12,7 +12,7 @@ rt_spin_lock/RT_FULL_spin_lock要求：没有获取到锁的时候去睡眠，
 直接把spin_lock换成rt_mutex_lock
 spinlock_t换成rt_mutex不就行了吗？
 
-rt_mutex_lock/RT_FULL_spin_lock和rt_spin_lock有什么区别？
+rt_mutex_lock和RT_FULL_spin_lock/rt_spin_lock有什么区别？
 
 
 
@@ -36,6 +36,19 @@ void __sched rt_mutex_lock(struct rt_mutex *lock)
         rt_mutex_lock_state(lock, TASK_UNINTERRUPTIBLE);
 }
 EXPORT_SYMBOL_GPL(rt_mutex_lock);
+
+
+/**
+ * rt_mutex_unlock - unlock a rt_mutex
+ *
+ * @lock: the rt_mutex to be unlocked
+ */
+void __sched rt_mutex_unlock(struct rt_mutex *lock)
+{
+        rt_mutex_fastunlock(lock, rt_mutex_slowunlock);
+}
+EXPORT_SYMBOL_GPL(rt_mutex_unlock);
+
 
 
 /**
@@ -74,6 +87,110 @@ rt_mutex_fastlock(struct rt_mutex *lock, int state,
 }
 
 
+
+
+/*
+ * Slow path lock function:
+ */
+static int __sched
+rt_mutex_slowlock(struct rt_mutex *lock, int state,
+                  struct hrtimer_sleeper *timeout,
+                  enum rtmutex_chainwalk chwalk,
+                  struct ww_acquire_ctx *ww_ctx)
+{
+        struct rt_mutex_waiter waiter;
+        unsigned long flags;
+        int ret = 0;
+
+        rt_mutex_init_waiter(&waiter, false);
+
+        /*
+         * Technically we could use raw_spin_[un]lock_irq() here, but this can
+         * be called in early boot if the cmpxchg() fast path is disabled
+         * (debug, no architecture support). In this case we will acquire the
+         * rtmutex with lock->wait_lock held. But we cannot unconditionally
+         * enable interrupts in that early boot case. So we need to use the
+         * irqsave/restore variants.
+         */
+        raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+        ret = rt_mutex_slowlock_locked(lock, state, timeout, chwalk, ww_ctx,
+                                       &waiter);
+
+        raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+        /* Remove pending timer: */
+        if (unlikely(timeout))
+                hrtimer_cancel(&timeout->timer);
+
+        debug_rt_mutex_free_waiter(&waiter);
+
+        return ret;
+}
+
+
+
+int __sched rt_mutex_slowlock_locked(struct rt_mutex *lock, int state,
+                                     struct hrtimer_sleeper *timeout,
+                                     enum rtmutex_chainwalk chwalk,
+                                     struct ww_acquire_ctx *ww_ctx,
+                                     struct rt_mutex_waiter *waiter)
+{
+        int ret;
+
+#ifdef CONFIG_PREEMPT_RT_FULL
+        if (ww_ctx) {
+                struct ww_mutex *ww;
+
+                ww = container_of(lock, struct ww_mutex, base.lock);
+                if (unlikely(ww_ctx == READ_ONCE(ww->ctx)))
+                        return -EALREADY;
+        }
+#endif
+
+        /* Try to acquire the lock again: */
+        if (try_to_take_rt_mutex(lock, current, NULL)) {
+                if (ww_ctx)
+                        ww_mutex_account_lock(lock, ww_ctx);
+                return 0;
+        }
+
+        set_current_state(state);
+
+        /* Setup the timer, when timeout != NULL */
+        if (unlikely(timeout))
+                hrtimer_start_expires(&timeout->timer, HRTIMER_MODE_ABS);
+
+        ret = task_blocks_on_rt_mutex(lock, waiter, current, chwalk);
+
+        if (likely(!ret)) {
+                /* sleep on the mutex */
+                ret = __rt_mutex_slowlock(lock, state, timeout, waiter,
+                                          ww_ctx);
+        } else if (ww_ctx) {
+                /* ww_mutex received EDEADLK, let it become EALREADY */
+                ret = __mutex_lock_check_stamp(lock, ww_ctx);
+                BUG_ON(!ret);
+        }
+
+        if (unlikely(ret)) {
+                __set_current_state(TASK_RUNNING);
+                if (rt_mutex_has_waiters(lock))
+                        remove_waiter(lock, waiter);
+                /* ww_mutex want to report EDEADLK/EALREADY, let them */
+                if (!ww_ctx)
+                        rt_mutex_handle_deadlock(ret, chwalk, waiter);
+        } else if (ww_ctx) {
+                ww_mutex_account_lock(lock, ww_ctx);
+        }
+
+        /*
+         * try_to_take_rt_mutex() sets the waiter bit
+         * unconditionally. We might have to fix that up.
+         */
+        fixup_rt_mutex_waiters(lock);
+        return ret;
+}
 
 
 /**
@@ -127,3 +244,92 @@ __rt_mutex_slowlock(struct rt_mutex *lock, int state,
         __set_current_state(TASK_RUNNING);
         return ret;
 }
+
+
+
+
+static inline void
+rt_mutex_fastunlock(struct rt_mutex *lock,
+                    bool (*slowfn)(struct rt_mutex *lock,
+                                   struct wake_q_head *wqh,
+                                   struct wake_q_head *wq_sleeper))
+{
+        DEFINE_WAKE_Q(wake_q);
+        DEFINE_WAKE_Q(wake_sleeper_q);
+
+        if (likely(rt_mutex_cmpxchg_release(lock, current, NULL)))
+                return;
+
+        if (slowfn(lock, &wake_q, &wake_sleeper_q))
+                rt_mutex_postunlock(&wake_q, &wake_sleeper_q);
+}
+
+
+
+/*
+ * Slow path to release a rt-mutex.
+ *
+ * Return whether the current task needs to call rt_mutex_postunlock().
+ */
+static bool __sched rt_mutex_slowunlock(struct rt_mutex *lock,
+                                        struct wake_q_head *wake_q,
+                                        struct wake_q_head *wake_sleeper_q)
+{
+        unsigned long flags;
+
+        /* irqsave required to support early boot calls */
+        raw_spin_lock_irqsave(&lock->wait_lock, flags);
+
+        debug_rt_mutex_unlock(lock);
+
+        /*
+         * We must be careful here if the fast path is enabled. If we
+         * have no waiters queued we cannot set owner to NULL here
+         * because of:
+         *
+         * foo->lock->owner = NULL;
+         *                      rtmutex_lock(foo->lock);   <- fast path
+         *                      free = atomic_dec_and_test(foo->refcnt);
+         *                      rtmutex_unlock(foo->lock); <- fast path
+         *                      if (free)
+         *                              kfree(foo);
+         * raw_spin_unlock(foo->lock->wait_lock);
+         *
+         * So for the fastpath enabled kernel:
+         *
+         * Nothing can set the waiters bit as long as we hold
+         * lock->wait_lock. So we do the following sequence:
+         *
+         *      owner = rt_mutex_owner(lock);
+         *      clear_rt_mutex_waiters(lock);
+         *      raw_spin_unlock(&lock->wait_lock);
+         *      if (cmpxchg(&lock->owner, owner, 0) == owner)
+         *              return;
+         *      goto retry;
+         *
+         * The fastpath disabled variant is simple as all access to
+         * lock->owner is serialized by lock->wait_lock:
+         *
+         *      lock->owner = NULL;
+         *      raw_spin_unlock(&lock->wait_lock);
+         */
+        while (!rt_mutex_has_waiters(lock)) {
+                /* Drops lock->wait_lock ! */
+                if (unlock_rt_mutex_safe(lock, flags) == true)
+                        return false;
+                /* Relock the rtmutex and try again */
+                raw_spin_lock_irqsave(&lock->wait_lock, flags);
+        }
+
+        /*
+         * The wakeup next waiter path does not suffer from the above
+         * race. See the comments there.
+         *
+         * Queue the next waiter for wakeup once we release the wait_lock.
+         */
+        mark_wakeup_next_waiter(wake_q, wake_sleeper_q, lock);
+        raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+
+        return true; /* call rt_mutex_postunlock() */
+}
+
