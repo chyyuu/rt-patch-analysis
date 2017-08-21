@@ -304,3 +304,30 @@ grep  -E  "C::bug::[^:]*::irq::"  ./history.org  | wc -l
 "C::bug::[^:]*::order::"
 "C::bug::[^:]*::deadlock::"
 ```
+## 2017.8.18工作安排
+1. 毛英明  
+接下来需要细化相关内容。
+请把你的分析的api进行进一步整理
+   1.  是完善 chy/api-analysis.md ，把没有添加的api添加到表格中，并填写相关属性。
+   1.  建立api的调用关系层次结构，可以形成一个格（lattice）结构；
+   1.  茅俊杰生成了一个api替换表，请理解在什么情况下某些api要换成另外一些api， 
+   1.  建立api的使用pattern，比如对于per_cpu var，大致的访问patter是...，对于global var,大致的访问pattern是...。（可基于前面同学的api分析）
+1. 张之敏 
+接下来需要细化对bug的分析内容，请也看看其他同学（包括我修改的）bug分析内容，进一步总结其中的bug pattern。
+请注意 chy/api-analysis.md中列出的属性来进行归类总结，考虑为了在critical section（分为 per cpu var, global var, 
+might_sleep等情况）中进行正确且实时性高的保护，应该如何设置lock/unclok (有各种变种)，写critical section需要关注的点是啥？
+
+1. 张蔚 
+ 我们已经发现might_sleep类的bug是最多的，但内核中其实还有大量调用了might_sleep的函数，比如linux 4.11 with preempt-rt 
+大约有372个调用了might_sleep的函数，我们能否用某种方法（也许基于call graph等方法）可以找到类似的新的bug？建议用比较轻量和准确的静态分析方法。
+
+1. 杨兴杲  
+ 继续抓紧完成还没有完成的分析工作
+
+1. 肖络元
+ 请把preempt-rt的kvm实验环境在实验室搭好，便于下周同学们可以进行编译rt kernel，并进行动态测试。
+
+1. 陈老师
+ 开始修改和写技术报告，有问题随时交流。
+
+
