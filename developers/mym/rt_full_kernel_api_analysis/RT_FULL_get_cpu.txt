@@ -2,7 +2,7 @@
 #define get_cpu() ({ preempt_disable(); smp_processor_id(); })
 #define put_cpu() preempt_enable()
 
-关闭抢占然后获取到cpuid
+关闭迁移(到了RT里面preempt_disable()其实是关闭了迁移)然后获取到cpuid
 
 
 # 198 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/preempt.h"
