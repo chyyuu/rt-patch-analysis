@@ -133,6 +133,105 @@ yxg:342
 zzm:286
 ```
 
+## 2017.8.7 rt patches analysis
+
+### zw 重复度
+#### 分析重复度
+
+简述分析patch重复度的方法（即如何根据位于24个版本的9k个rt patch形成 history.org的）
+
+需要分析出这些patchs中相同的部分，形成实际的patch重复度分析图
+
+patch的重复度：
+
+x axis:  重复出现数（）
+
+y axis:  patch 个数
+
+比如 x=2, y=59 表示只出现了2次(4.1, 4.2 OR 4.9,4.11)的patch个数为59个
+
+并对此图进行分析，给出对此图的个人理解/观点
+
+#### 形成不同版本的patch独特度的分析图
+
+x axis:  kernel 版本号
+
+y axis:  只在这个版本才出现的patch 个数
+
+并对此图进行分析，给出对此图的个人理解/观点
+
+
+
+#### 分析rt patch中修改的文件在内核源码中的分布，即分析 kernel componenet(基于 kernel src目录)的分布情况图
+
+x axis:  内核的目录（arch,drivers+sound, fs, net, mm, kernel+init, block, ipc, other(include+lib+crypto +virt )）
+
+y axis:  只在这个目录下才出现的patch中位于x标识的目录中的修改的文件个数
+
+并对此图进行分析，给出对此图的个人理解/观点
+
+
+为了形成第三个图，需要生成更加完整的history.org . 应该用你的detect-modules.py就可以了。
+
+然后在用gnuplot or matlab等你顺手的工具形成图。
+
+### yxg  patch type
+
+We classify patches into four categories (Table 1): bug fixes (bug), performance improvements (performance),  new features (feature), and maintenance and refactoring (maintenance). Each patch usually belongs to a single category.
+
+#### 1 Table 1: Patch Type. This table describes the classification and definition of RT patches.
+
+raw : TYPE  ,  DESCRIPTION
+
+column:
+
+#### 2 Figure X patch type
+
+shows the number and relative percentages of patch types for each rt-linux. Note that even though
+rt-linux exhibit significantly different levels of patch activity (shown by the total number of patches), the percentage breakdowns of patch types are relatively similar.
+
+x axis:  内核版本号
+
+y axis:  不同type的patchs的百分比，顶部是这个内核版本的patch个数
+并对此图进行分析，给出对此图的个人理解/观点
+
+#### 3 Figure X Bug patches
+
+x axis:  内核版本号
+
+y axis:  不同type的bug patchs的百分比，顶部是这个内核版本的bug patch的个数
+
+挑选数量最多的4 or 5类bug patch，其他的用 other 表示
+并对此图进行分析，给出对此图的个人理解/观点
+#### 4 Figure X performance patches
+
+x axis:  内核版本号
+
+y axis:  不同type的perf patchs的百分比，顶部是这个内核版本的perf patch的个数
+
+挑选数量最多的4 or 5类perf patch，其他的用 other 表示
+并对此图进行分析，给出对此图的个人理解/观点
+#### 5 Figure X  feature patches
+
+x axis:  内核版本号
+
+y axis:  不同type的feature patchs的百分比，顶部是这个内核版本的feature patch的个数
+
+挑选数量最多的4 or 5类feature patch，其他的用 other 表示
+并对此图进行分析，给出对此图的个人理解/观点
+
+
+### zzm Patch Size
+
+Patch size is one approximate way to quantify the complexity of a patch, and is defined here as the sum of linesof added and deleted by a patch. Figure X displays the size distribution of bug, performance, maintain, and feature patches. Most bug patches are small; XX% are less than 10 lines of code. However,  feature patches are significantly larger than other patch types. Over XX% of these patches have more than 100 lines of code; XX% have over 1000 lines of code.
+
+#### 1 Figure X: Patch Size.
+
+This figure shows the size distribution for different patch types (bug, performance, maintain, and feature), in terms of lines of modifications.
+
+x axis:  Lines of modified Code  标注点：1, 10, 100, 1000, 1000
+
+y axis:  4 types的patchs的百分比 标注点：0.0, 0.2, 0.4, 0.6, 0.8, 1.0
 
 ## 2017.8.9 rt-questions
 ```

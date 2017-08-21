@@ -1,4 +1,4 @@
-# A Study of Real-Time Linux Kernel with Preempt-RT Evolution
+#  A Study of Real-Time Linux Kernel with Preempt-RT Evolution
 
 这个报告的基本目标是：
 
@@ -28,7 +28,7 @@ RT-PATCH的起源，开发和广泛应用情况
 
 在本文中，我们第一次对Preempt_RT的演化过程进行了全面的研究，时间跨度为10年，涉及22个内核版本，包括6900个patches。我们仔细检查了每个patches来理解其意图，并从不同的维度来定量地了解Preempt_RT的开发过程。从而能够回答诸如“patches/bugs有哪些分类”，“哪些patch很跨了多个内核版本，具有较高的重复性？”，“哪些类型的bug最普遍？”，“新的API与被其替换的API的语义一同是什么？”，从而能够从新的角度来理解Preempt_RT的演化。
 
-我们得到了如下一些高层的观察结果（Sec. 3)。有较大部分的patches是跨越多个版本的，在22个内核中6900个patches中，具有唯一性的patches数量为1625个，重复率高达76.4%。在这些具有唯一性的patches中，较大部分的patches属于feature patches，占了大约45%，大部分集中在与同步互斥相关的部分，反映了Preempt_RT的开发过程中在改动Linux kernel，并设计和实现real-time能力方面做了大量的工作。另外处于第二位的是fix-bug patches，占了大约29.7%，这也说明了由于Preempt_RT的引入，触发或带来了更多的内核bug，且某些fix-bug patches在多个版本存在，有着比较长的生命周期。
+我们得到了如下一些高层的观察结果（Sec. 3)。有较大部分的patches是跨越多个版本的，在22个内核中6900个patches中，具有唯一性的patches数量为1625个，冗余度（uniqueness patches/total patches ）高达76.4%。在这些具有唯一性的patches中，较大部分的patches属于feature patches，占了大约45%，大部分集中在与同步互斥相关的部分，反映了Preempt_RT的开发过程中在改动Linux kernel，并设计和实现real-time能力方面做了大量的工作。另外处于第二位的是fix-bug patches，占了大约29.7%，这也说明了由于Preempt_RT的引入，触发或带来了更多的内核bug，且某些fix-bug patches在多个版本存在，有着比较长的生命周期。
 
 通过把bug类的patches进行进一步分析和划分，我们发现semantic bug和concurrency bug占了大部分（Sec. 4)。对于语义bug，占了bug数量的48.3%。这类bug需要能够对相关的上下文，比如硬件特性，时钟，irq/softirq等，有比较清楚的了解，才能修改，所以修复的难度较大。但其中的有较大部分的此类bug还是与concurrency有直接和间接的关系。对于concurrency bug，则是另外一大类bug，占了bug数量的28.2%，在这里面，might_sleep，atomicity violation和deadlock/livelock类占了大部分。其他类型的bug主要属于memory bugs和error_code bugs。在memory bugs中，变量未初始化，数据处理错误，资源/动态分配的内存没有释放等问题依然存在；而对于error _code bugs，编译错误和配置错误占了主要部分，这方面的修改相对比较容易一些。
 
@@ -55,7 +55,7 @@ RT-PATCH的起源，开发和广泛应用情况
 
 我们对2007~2017年的22个kernel版本中的6900个Preempt_RT patches进行了全面的研究（comprehensive study）。这些pathces由增加new feature，fix bug，提升性能，代码维护（maintenance）等大类组成。味蕾更好地理解Preempt_RT的演化过程，我们进行比较广泛的研究（conduct a broad study）来回答下面三类基础问题（three categories of fundamental questions）：
 
-- Overview: Preempt_RT  patches最常见的类型是什么？Preempt_RT  patches是如何随着官方Linux kernel演进的?
+- Overview: Preempt_RT  patches最常见的类型是什么？Preempt_RT  patches的冗余程度如何？Preempt_RT  patches是如何随着官方Linux kernel演进的?
 - Bugs:加了 Preempt_RT  patches后，在内核中会出现哪些类型的bugs？内核中的哪些子系统存在更多的bugs？不同类型的bug会带来哪些类型的后果（consequences）?
 - Performance: 哪些技术可以用于提高LInux kernel的实时性能？
 - API usage: 对于具有 Preempt_RT能力的Linux kernel，如何理解名字未变/语义改变的RT相关API，如何理解新增加的RT相关API？在具有 Preempt_RT能力的Linux kernel中，应该如何使用这些API来避免bug，提高试试性能？
@@ -105,7 +105,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
                  The changed lines in the patches are different.
       KER_MOD    The 1~2 level directories(means kernel modules) of kernel src code
 ```
-Limitations: 我们的研究仅局限在我们分析的这22个版本的Preempt_RT patches。对于不属于这22个版本的Linux kernel，由于缺少相应的Preempt_RT patches，使得不能反映Linux对Preempt_RT能力支持的所有演化过程。且对于与Real-Time Linux kernel有关，但不属于Preempt_RT patches的其他patches，我们没有分析到。另外，我们并没有研究属于其他实现方式的Real-Time Linux方案，如RTAI，Xenomai，L4Linux等。这将是我们未来的工作。
+Limitations: 我们的研究仅局限在我们分析的这22个版本的Preempt_RT patches。对于不属于这22个版本的Linux kernel，	由于缺少相应的Preempt_RT patches，使得不能反映Linux对Preempt_RT能力支持的所有演化过程。且对于与Real-Time Linux kernel有关，但不属于Preempt_RT patches的其他patches，我们没有分析到。另外，我们并没有研究属于其他实现方式的Real-Time Linux方案，如RTAI，Xenomai，L4Linux等。这将是我们未来的工作。
 
 ## 3 PATCH Overview
 
@@ -117,112 +117,76 @@ In the PREEMPT_RT kernel there are 4 essential types of contexts: "hard interrup
 
 ### 3.1 patch overview
 
-#### 1 分析重复度
+针对我们分析的每个内核版本，大约有300个左右的patches组成了Preempt_RT的功能。这些patches在kernel maillist，bug report websites， [lwn website][3]等地方被大量讨论。在本节中，我们将调查有关这些patches的普遍问题：(1) Preempt_RT的patches的冗余度如何？(2) (3)
 
-简述分析patch重复度的方法（即如何根据位于24个版本的9k个rt patch形成 history.org的）
+### 3.2 redundancy and uniqueness  of patches
 
-需要分析出这些patchs中相同的部分，形成实际的patch重复度分析图
+####  redundancy 
 
-patch的重复度：
+我们分析的Preempt_RT的patches横跨22个版本，一共有6900个，其中针对每个版本的patche数量在200～400之间，通过分析，我们发现这些patches中存在大量的冗余，通过分析我们得到的出现Preempt_RT的patches的冗余度分布图如下
 
-x axis:  重复出现数（）
+![Patch Frequency](chy_figs/patch_frequency.png)
 
-y axis:  patch 个数
+可以看出整张图像类似长尾分布，虽然大部分patch出现的次数较少，只有少量patch出现多次。特别是出现了22次的两个feature类型的patch，在分析的各个内核版本中都有出现，一个与网络驱动相关，一个与屏蔽中断相关。然而，在上述分布图中，由于分析的patch对应的内核版本为从2.6.22~4.11，因此凡是4.11中引入的patch只可能出现一次，同样，在4.9中引入的patch出现次数也不会超过两次，以此类推，我们可以认为patches的冗余程度可能更高。
 
-比如 x=2, y=59 表示只出现了2次(4.1, 4.2 OR 4.9,4.11)的patch个数为59个
+####  uniqueness
 
-并对此图进行分析，给出对此图的个人理解/观点
+由于Preempt_RT的patches的冗余度较大，所以我们进一步分析了在不同内核版本中独有的Preempt_RT patches的数量，Preempt_RT的patches的唯一性分布图如下所示：
 
-#### 2 形成不同版本的patch独特度的分析图
+![Patch Uniqueness](chy_figs/patch_uniqueness.png)
 
-x axis:  kernel 版本号
+对应某个内核版本的patch如果没有在其他版本出现过则被认为是独有的，由于在分析中2.6.22版本没有前驱，4.11版本没有后继，因而二者独有的patch数目最多。为了看的更加清楚，我们可以考虑新引入的patch，即在某一版本前都不存在，在该版本新引入的patch的分布。不同内核版本中新引入的RT patch的数量分布如下图：
 
-y axis:  只在这个版本才出现的patch 个数
+![New Patch Frequency](chy_figs/new_patch_frequency.png)
 
-并对此图进行分析，给出对此图的个人理解/观点
+从图中可以看出在除了2.6.22由于是第一次引入Preempt_RT patches，不具有参考性。内核2.6x中新patch数量平均小于100个，其中2.625的patch数量小于50个。在3.x以后的版本中，除了3.0和4.11，新引入的patch数量也小于50个。3.0和4.11的新patches数量相对多的原因是由于增加和改进了irq/softirq的thread化能力，已经从新实现和改进对hotplug的real-time能力的支持。总体而言，我们可以认为将Linux改进为实时操作系统的工作量较大，但如果不增加新real-time功能或对内核模块进行real-time改造，那完善后在各个版本间升级维护的代价相对较小。
 
-#### 3 分析rt patch中修改的文件在内核源码中的分布，即分析 kernel componenet(基于 kernel src目录)的分布情况图
+### 3.2  patch type
 
-x axis:  内核的目录（arch,drivers+sound, fs, net, mm, kernel+init, block, ipc, other(include+lib+crypto +virt )）
+对Preempt_RT patches的分类描述如表一所示。我们把patches分为new features(feature)，bug fixes(bug)，performance improvements(performance)，maintenance and refactoring(maintenance)四类。对于每一类还可进行细分到二级分类（feature，performance，maintenance）或三级分类(bug)，比如对于bug类patches，还可细分为：semantics，concurrency，memory，error_code等四个二级类，每个二级bug分类有4～5个三级分类。每一个patches通常属于单个分类中。为了分析的准确性，我们在统计patches的分类时，只考虑unique的patches。
 
-y axis:  只在这个目录下才出现的patch中位于x标识的目录中的修改的文件个数
+表一：Patch Type：对Preempt_RT patches的分类描述
 
-并对此图进行分析，给出对此图的个人理解/观点
+|    Type     |               Description                |
+| :---------: | :--------------------------------------: |
+|   Feature   | 实现新的RT Feature，确保新添加的功能不影响non-RT config下Linux Kernel的语义 |
+|     Bug     |                 修复已有bugs                 |
+| Performance |    通过语义/IRQ/Concurrency等方面修改，提高实时响应能力    |
+| Maintenance |           维护文档和维护/重构代码（不改变语义）            |
 
-### 3.2 patch type
+如果不考虑从6900个Preempt_RT patches的冗余度，那么大约有76.4%的patches可以可参考上一个一个内核版本中几乎相同的修改内容完成对当前版本的修改。所以，其实从某种程度上来讲，这些patches都可归类于Maintenance 类型，这样Maintenance 类型的patches占了绝大多数。但如果只考虑unique patches，那么情况有所不同，下图显示了unique Preempt_RT patches在不同内核版本中的数量，以及不同类型的patches所占的百分比。在这些具有唯一性的patches中，较大部分的patches属于feature patches，占了大约45%，大部分集中在与同步互斥相关的部分。另外处于第二位的是fix-bug patches，占了大约29.7%，这也说明了由于Preempt_RT的引入，容易触发更多的内核bug。
 
-We classify patches into four categories (Table 1): bug fixes (bug), performance improvements (performance),  new features (feature), and maintenance and refactoring (maintenance). Each patch usually belongs to a single category.
+![patch type](chy_figs/patch-type.png)
 
-#### 1 Table 1: Patch Type. This table describes the classification and definition of RT patches.
+对于占大多数的feature patches，我们可进一步把它们细分了“trace/statistics”、“hardware/architecture”、“rt_suppor/kernel_subsystem”类型。rt_support/kernel_subsystem patches实现了Linux kernel中与硬件无关的Preempt_RT核心能力，主要体现在对spin_lock的基于rt_mutex的实时改造，full preempt支持，irq/softirq的强制内核线程化支持等，并进一步修改内核中的核心子系统lock/mutex/synchronization/shceduling/memory menagement/network等，从而形成了Linux with Preempt_RT的核心框架 。
 
-raw : TYPE  ,  DESCRIPTION
+hardware/architecture patches是在Linux with Preempt_RT核心框架的基础上，完成对不同硬件体系结构和外设的支持。当前主要支持的体系结构包括x86/arm/mips/powerpc/68knommu，但68knommu的支持越来越少，可能说明这类硬件在逐步消失。另外一个重要的外设支持是High-Resolution Timer，这是Preempt_RT的重要feature之一。而cpu_hog_plug 子系统的real-time支持相对而言持续时间很长，且改动较大，在kerner 4.11中，有多达近10%的patches与cpu_hog_plug子系统real-time支持相关。
 
-column:
+trace/statistics patches给Linux kernel添加了动态检查bug和分析性能异常的能力，考虑到由于Preempt_RT patches极大提高了Linux kernel的实时抢占能力的同时，也引入了不确定性，从而使得分析kerne with Preempt_RT的bug和performance变得难度加大。为此在Ftrace中引入了对lock/irq/preempt/wakeup latency的动态跟踪支持机制，可以方便地分析出内核中的real-time latency 瓶颈；而lockdep机制的引入加强了对dead lock和live lock的动态探测能力；might_sleep机制加强了对atomic context下不允许sleep行为出现的动态检查能力。
 
-#### 2 Figure X patch type
+通过把bug类的patches进行进一步分析和划分（如下图所示），我们发现semantic bug和concurrency bug占了大部分（Sec. 4)。对于语义bug，占了bug数量的48.3%。对于concurrency bug，占了bug数量的28.2%，语义bug和concurrency bug很难重现，需要能够对相关的上下文，比如硬件特性，时钟，irq/softirq等，有比较清楚的了解，才能修改，所以修复的难度较大。在这里面，might_sleep，atomicity violation和deadlock/livelock类占了大部分。其他类型的bug主要属于memory bugs和error_code bugs。在memory bugs中，变量未初始化，数据处理错误，资源/动态分配的内存没有释放等问题依然存在；而对于error _code bugs，编译错误和配置错误占了主要部分，这方面的修改相对比较容易一些。由于这类bug patches对内核开发者和bug 分析工具很重要，所以我们将在后面小节进行更详细的分析（Sec. 4）
 
-shows the number and relative percentages of patch types for each rt-linux. Note that even though
-rt-linux exhibit significantly different levels of patch activity (shown by the total number of patches), the percentage breakdowns of patch types are relatively similar.
+![bug](chy_figs/bug-type.png)
 
-x axis:  内核版本号
+对于performance patch，尽管在数量比较少，但能在尽量改动代码很少的情况下，兼顾non-RT下的throughput性能和和RT配置下低延迟的性能要求。特别是在Preempt_RT提供了migrate_disable/enable机制和local_lock机制后，通过对内核代码的改动来替换在各种context下的禁止调度和全局互斥的API使用，进一步提高了在UP和SMP场景下，减少preempt_disable/enable机制和全局lock机制引入了的额外开销。而对于maintenance patches，如果不考虑实际上内容重复的冗余patches，其总体数量也比较少，主要是在保证语义不变的情况下，完善和重构代码，并且添加文档。
 
-y axis:  不同type的patchs的百分比，顶部是这个内核版本的patch个数
-并对此图进行分析，给出对此图的个人理解/观点
+### 3.3   Distribution and Size of Patches
 
-#### 3 Figure X Bug patches
+Preempt_RT patches对内核的修改分布在内核的各个方面，下图显示了Preempt_RT patches对主要的内核子系统的修改程度。从中可以看到，在数量上，由于Preempt_RT patches需要支持不同类型的系统结构和硬件特征，所以对arch内核子系统和驱动子系统的修改是最多的，且主要集中在x86和arm cpu上。另外一类是kernel+init内核子系统，这主要是由于Preempt_RT patches需要对抢占（preempt）进行不同的管理与控制，所以对kernel子系统中与scheduling相关的代码进行了较多的修改，确保能够支持除了irq_disable/preempt_disable的context情况，其他情况下都允许实时的CPU抢占发生。另外，在fs/mm/net等重要的内核模块中，为了提高是实时性，也对相应的代码进行了修改，主要是放宽了对CPU抢占的约束，比如把preempt_disable函数换为migrate_disable函数等。
 
-x axis:  内核版本号
+![patch_size](chy_figs/component_distribution.png)
 
-y axis:  不同type的bug patchs的百分比，顶部是这个内核版本的bug patch的个数
+Patch size是一个评价代码复杂性的一种方法。从下图中可以看出大约有50%的bug小于10行的变动，大多数的bug比较小，feature patch相对与其他patch变化比较大，对于feature patch大约有20%的补丁超过了100行，有2%-3%的patch超过了100行。但从数据上看到feature patch相对与其他patch大量存在，这里可能存在问题。feature大约等于其他补丁的总和。
 
-挑选数量最多的4 or 5类bug patch，其他的用 other 表示
-并对此图进行分析，给出对此图的个人理解/观点
-#### 4 Figure X performance patches
+数据需要更新？？？
 
-x axis:  内核版本号
-
-y axis:  不同type的perf patchs的百分比，顶部是这个内核版本的perf patch的个数
-
-挑选数量最多的4 or 5类perf patch，其他的用 other 表示
-并对此图进行分析，给出对此图的个人理解/观点
-#### 5 Figure X  feature patches
-
-x axis:  内核版本号
-
-y axis:  不同type的feature patchs的百分比，顶部是这个内核版本的feature patch的个数
-
-挑选数量最多的4 or 5类feature patch，其他的用 other 表示
-并对此图进行分析，给出对此图的个人理解/观点
-
-Summary:
-
-
-> [Mao] RTL consists of patchsets based on some Linux versions and thus does not
-> have a linear history. Do we need to discuss how many similar patches there
-> are in the patchsets for different versions? How many patches are merged into
-> mainline in each patchset? Looking into these may also reduce the total amount
-> of patches we need to inspect if quite a lot of the older patches are simply
-> re-applied to newer kernels.
-
-### 3.3 Patch Size
-
-Patch size is one approximate way to quantify the complexity of a patch, and is defined here as the sum of linesof added and deleted by a patch. Figure X displays the size distribution of bug, performance, maintain, and feature patches. Most bug patches are small; XX% are less than 10 lines of code. However,  feature patches are significantly larger than other patch types. Over XX% of these patches have more than 100 lines of code; XX% have over 1000 lines of code.
-
-#### 1 Figure X: Patch Size.
-
-This figure shows the size distribution for different patch types (bug, performance, maintain, and feature), in terms of lines of modifications.
-
-x axis:  Lines of modified Code  标注点：1, 10, 100, 1000, 1000
-
-y axis:  4 types的patchs的百分比 标注点：0.0, 0.2, 0.4, 0.6, 0.8, 1.0
+![patch_size](chy_figs/patchsize.png)
 
 
 
-Summary:
 
 
-
-## 4 rt-linux bugs
+## 4 Preempt_RT bugs
 
 In this section, we study rt-linux bugs in detail to understand their patterns and consequences comprehensively. First, we show the distribution of bugs in rt-linux logical components. Second, we describe our bug pattern classification, bug trends, and bug consequences.  Finally, we analyze each type of bug with a more detailed classification and a number of real examples.
 

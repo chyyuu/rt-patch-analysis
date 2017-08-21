@@ -4,3 +4,4 @@
 !/developers/yxg/patch-analysis/reference.md
 !/developers/yxg/patch-analysis/diff.txt
 *.pyc
+/developers/chy/chy_figs/*
