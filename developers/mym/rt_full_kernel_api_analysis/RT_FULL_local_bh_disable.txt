@@ -3,6 +3,8 @@ RT_FULL_local_bh_disable
 ==============================
 通过current->softirq_nestcnt计数来实现。
 并且利用了migrate_disable();为啥migrate_disable()可以关闭bottom half?
+在RT_FULL情况下，由于中断线程化，softirq和tasklet只能在ksoftirqd内核线程里面执行。因此不需要关闭抢占了。
+只需要关于迁移就行了，那这样的话，在ksoftirqd里执行softirq的时候，先local_bh_disable然后再执行softirq对应的函数？
 
 
 
