@@ -39,14 +39,16 @@ cr以linux 4.11-rt为参考对象
 |                                          | rt-full |                  |             |           |           |           |      N      |
 | cpu_chill                                | rt-full |                  |             |           |           |           |      Y      |
 | migrate_disable/enable                   | rt-full |       N          |     N       |     N     |     Y     |     N?    |     Y?      |
-| wake_futex                               | vanilla |                  |             |           |           |           |             |
+| futex_wait/wake                          | vanilla |       Y          |     N       |     N     |     N     |     N     |     Y       |
 | WAKE_Q\|wake_up_q\|wake_q_add\|mark_wake_futex | rt-full |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
 | pagefault_disabled_inc/dec               | rt-full |                  |             |           |           |           |             |
-| pagefault_disable/enable\|pagefault_disabled\|might_fault | rt-full |                  |             |           |           |           |             |
+| pagefault_disable/enable\|pagefault_disabled\|might_fault | rt-full |                  |             |         |    Y     |           |             |
+|                                          | vanilla |                  |             |         |     N     |           |             |
 | in_atomic                                | vanilla |                  |             |           |           |           |             |
-| faulthandler_disabled                    | rt-full |                  |             |           |           |           |             |
-|                                          |         |                  |             |           |           |           |             |
+|                                          | rt-full |                  |             |           |           |           |             |
+| faulthandler_disabled                    | vanilla |                  |             |           |    N      |           |             |
+|                                          | rt-full |                  |             |           |    Y      |           |             |
 | lock/unlock_fpu_owner                    | rt-full |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
