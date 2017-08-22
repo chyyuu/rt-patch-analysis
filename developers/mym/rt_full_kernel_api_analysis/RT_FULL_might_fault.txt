@@ -1,0 +1,113 @@
+
+在RT_FULL情况下面might_fault定义为空
+
+static inline __attribute__((no_instrument_function)) void might_fault(void) { }
+
+
+如果开启了调试：
+./mm/memory.c:4313:void __might_fault(const char *file, int line)
+./mm/memory.c:4331:EXPORT_SYMBOL(__might_fault);
+
+
+会检测__might_sleep和might_lock_read
+
+#if defined(CONFIG_PROVE_LOCKING) || defined(CONFIG_DEBUG_ATOMIC_SLEEP)
+void __might_fault(const char *file, int line)
+{
+        /*
+         * Some code (nfs/sunrpc) uses socket ops on kernel memory while
+         * holding the mmap_sem, this is safe because kernel memory doesn't
+         * get paged out, therefore we'll never actually fault, and the
+         * below annotations will generate false positives.
+         */
+        if (segment_eq(get_fs(), KERNEL_DS))
+                return;
+        if (pagefault_disabled())
+                return;
+        __might_sleep(file, line, 0);
+#if defined(CONFIG_DEBUG_ATOMIC_SLEEP)
+        if (current->mm)
+                might_lock_read(&current->mm->mmap_sem);
+#endif
+}
+EXPORT_SYMBOL(__might_fault);
+#endif
+
+
+
+
+
+
+
+
+
+#if defined(CONFIG_MMU) && \
+        (defined(CONFIG_PROVE_LOCKING) || defined(CONFIG_DEBUG_ATOMIC_SLEEP))
+#define might_fault() __might_fault(__FILE__, __LINE__)
+void __might_fault(const char *file, int line);
+#else
+static inline void might_fault(void) { }
+#endif
+
+
+./include/linux/kernel.h:264:#define might_fault() __might_fault(__FILE__, __LINE__)
+./include/linux/kernel.h:267:static inline void might_fault(void) { }
+
+
+
+
+
+
+
+./arch/x86/include/asm/uaccess.h:718:   might_fault();
+./arch/x86/lib/usercopy_64.c:18:        might_fault();
+./arch/x86/lib/usercopy_32.c:43:        might_fault();
+./arch/x86/lib/usercopy_32.c:73:        might_fault();
+
+
+
+
+
+static __always_inline unsigned long __must_check
+copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+        int sz = __compiletime_object_size(from);
+
+        kasan_check_read(from, n);
+
+        might_fault();
+
+        if (likely(sz < 0 || sz >= n)) {
+                check_object_size(from, n, true);
+                n = _copy_to_user(to, from, n);
+        } else if (!__builtin_constant_p(n))
+                copy_user_overflow(sz, n);
+        else
+                __bad_copy_user();
+
+        return n;
+}
+
+
+
+./kernel/time/time.c:108:               if (copy_to_user(tv, &ktv, sizeof(ktv)))
+./kernel/time/time.c:112:               if (copy_to_user(tz, &sys_tz, sizeof(sys_tz)))
+./kernel/time/time.c:230:       return copy_to_user(txc_p, &txc, sizeof(struct timex)) ? -EFAULT : ret;
+
+
+
+SYSCALL_DEFINE2(gettimeofday, struct timeval __user *, tv,
+                struct timezone __user *, tz)
+{
+        if (likely(tv != NULL)) {
+                struct timeval ktv;
+                do_gettimeofday(&ktv);
+                if (copy_to_user(tv, &ktv, sizeof(ktv)))
+                        return -EFAULT;
+        }
+        if (unlikely(tz != NULL)) {
+                if (copy_to_user(tz, &sys_tz, sizeof(sys_tz)))
+                        return -EFAULT;
+        }
+        return 0;
+}

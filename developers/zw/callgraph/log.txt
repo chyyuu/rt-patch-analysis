@@ -1,0 +1,41 @@
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:225:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:229:__rcu_report_exp_rnp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3084:__this_cpu_preempt_check -> check_preemption_disabled -> printk -> vprintk_func -> vprintk_default -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3103:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3107:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3108:rcu_gp_kthread_wake -> swake_up -> _raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2987:rcu_sched_qs -> rcu_report_exp_cpu_mult -> __rcu_report_exp_rnp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2988:rcu_bh_qs -> rcu_preempt_qs -> __this_cpu_preempt_check -> check_preemption_disabled -> printk -> vprintk_func -> vprintk_default -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2999:rcu_bh_qs -> rcu_preempt_qs -> __this_cpu_preempt_check -> check_preemption_disabled -> printk -> vprintk_func -> vprintk_default -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3003:invoke_rcu_core -> wake_up_process -> try_to_wake_up -> select_fallback_rq -> printk_deferred -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3005:rcu_all_qs -> preempt_count_add -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:1429:dump_cpu_task -> printk -> vprintk_func -> vprintk_default -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:1430:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_plugin.h:512:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_plugin.h:518:sched_show_task -> put_task_stack -> vfree_atomic -> queue_work_on -> rt_spin_lock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_plugin.h:519:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3245:schedule_timeout_interruptible -> schedule_timeout -> schedule -> blk_flush_plug_list -> rt_spin_lock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2515:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2518:warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2527:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2537:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:2549:rcu_report_qs_rsp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4021:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4100:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4132:preempt_count_add -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4135:preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4181:printk -> vprintk_func -> vprintk_default -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4193:sched_setscheduler_nocheck -> _sched_setscheduler -> __sched_setscheduler -> rt_mutex_adjust_pi -> rt_mutex_adjust_prio_chain -> __put_task_struct_cb -> cgroup_free -> rt_spin_lock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4195:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4196:wake_up_process -> try_to_wake_up -> select_fallback_rq -> printk_deferred -> vprintk_emit -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3027:___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3027:rcu_all_qs -> preempt_count_add -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3050:rcu_report_unblock_qs_rnp -> rcu_report_qs_rnp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3064:rcu_report_qs_rnp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:3067:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree.c:4270:panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:392:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:417:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:418:schedule_timeout_uninterruptible -> schedule_timeout -> schedule -> blk_flush_plug_list -> rt_spin_lock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:424:_raw_spin_unlock_irqrestore -> preempt_count_sub -> warn_slowpath_fmt -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep
+/home/zw/linux-stable-4.11.5/kernel/rcu/tree_exp.h:429:rcu_report_exp_cpu_mult -> __rcu_report_exp_rnp -> warn_slowpath_null -> __warn -> panic -> console_flush_on_panic -> console_unlock -> ___might_sleep

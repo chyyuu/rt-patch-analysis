@@ -1,0 +1,62 @@
+
+RT_FULL和vanilla的区别是RT_FUll会在pagefault_disable增加migrate_disable/migrate_enable的调用
+
+
+在pagefault_disabled环境下面，如果用户进程产生了缺页异常，缺页异常处理程序，在
+处理缺页的时候不会引起睡眠？（会使用预先预备好的空闲页吗？）
+
+/*
+ * These routines enable/disable the pagefault handler. If disabled, it will
+ * not take any locks and go straight to the fixup table.
+ *
+ * User access methods will not sleep when called from a pagefault_disabled()
+ * environment.
+ */
+static inline void pagefault_disable(void)
+{       
+        migrate_disable();
+        pagefault_disabled_inc();
+        /*
+         * make sure to have issued the store before a pagefault
+         * can hit.
+         */
+        barrier();
+}
+
+static inline void pagefault_enable(void)
+{
+        /*
+         * make sure to issue those last loads/stores before enabling
+         * the pagefault handler again.
+         */
+        barrier();
+        pagefault_disabled_dec();
+        migrate_enable();
+}
+
+static __always_inline void pagefault_disabled_inc(void)
+{
+        current->pagefault_disabled++;
+}
+
+static __always_inline void pagefault_disabled_dec(void)
+{
+        current->pagefault_disabled--;
+        WARN_ON(current->pagefault_disabled < 0);
+}
+
+
+
+/*
+ * Is the pagefault handler disabled? If so, user access methods will not sleep.
+ */
+#define pagefault_disabled() (current->pagefault_disabled != 0)
+
+
+
+=========================
+elwin@elwin-MMLP7AP-00:~/rt-test-mym/linux-stable-git/linux-stable$ grep -w  pagefault_disabled_inc ./* -Rn
+./include/linux/uaccess.h:7:static __always_inline void pagefault_disabled_inc(void)
+./include/linux/uaccess.h:28:   pagefault_disabled_inc();
+
+
