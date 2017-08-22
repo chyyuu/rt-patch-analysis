@@ -107,13 +107,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ```
 Limitations: 我们的研究仅局限在我们分析的这22个版本的Preempt_RT patches。对于不属于这22个版本的Linux kernel，	由于缺少相应的Preempt_RT patches，使得不能反映Linux对Preempt_RT能力支持的所有演化过程。且对于与Real-Time Linux kernel有关，但不属于Preempt_RT patches的其他patches，我们没有分析到。另外，我们并没有研究属于其他实现方式的Real-Time Linux方案，如RTAI，Xenomai，L4Linux等。这将是我们未来的工作。
 
-## 3 PATCH Overview
-
-rt-linux evolve through patches. A large number of patches are discussed and submitted to mailing lists, bug report websites, and other forums. Some are used to implement new features, while others fix existing bugs. In this section, we investigate three general questions regarding rt-linux patches. First, what are rt-linux patch types? Second, how do patches change over time? Lastly, what is the distribution of patch sizes?
-
-In the PREEMPT_RT kernel there are 4 essential types of contexts: "hard interrupt context", "interrupt context", "soft interrupt context" and "process context". The hard interrupt context is an extremely small shim in essence - a few tens of lines total, per arch - it just deals with the interrupt controller, masks the IRQ line, acks the controller and returns. The "interrupt context" is a separate per-IRQ interrupt thread, which behaves like a process and is fully preemptible. "Soft interrupt context" is a separate per-softirq system-thread too, fully preemptible. "Process context" is what it used to be, and fully preemptible too. ['fully preemptible' means it's preemptible for in essence everything but the scheduler code and the basic RT-mutex/PI code]
-
-## 
+## 3 PATCH Overview 
 
 ### 3.1 patch overview
 
@@ -178,34 +172,52 @@ Preempt_RT patches对内核的修改分布在内核的各个方面，下图显�
 
 Patch size是一个评价代码复杂性的一种方法。从下图中可以看出大约有50%的bug小于10行的变动，大多数的bug比较小，feature patch相对与其他patch变化比较大，对于feature patch大约有20%的补丁超过了100行，有2%-3%的patch超过了100行。但从数据上看到feature patch相对与其他patch大量存在，这里可能存在问题。feature大约等于其他补丁的总和。
 
-数据需要更新？？？
+数据需要更新吗？？？
 
 ![patch_size](chy_figs/patchsize.png)
 
-
-
-
-
 ## 4 Preempt_RT bugs
 
-In this section, we study rt-linux bugs in detail to understand their patterns and consequences comprehensively. First, we show the distribution of bugs in rt-linux logical components. Second, we describe our bug pattern classification, bug trends, and bug consequences.  Finally, we analyze each type of bug with a more detailed classification and a number of real examples.
+在本节，我们将详细研究Preempt_RT bugs，从而理解bug patterns和它的后果（consequences）。首先会对Preempt_RT bugs进行二级分类，并分析不同类型bug的数量和分布情况，并将描述bug patterns和bug consequences，然后重点对与Concurrency Bug进行了详细分析。最后，我们会用实例来分析每类bug。在分析bug前，我们需要对Linux kernel with Preempt_RT的执行上下文（execution context）进行一定的阐述。
+
+在PREEMPT_RT kernel的执行过程中，有4种基本的执行上下文：hard interrupt context，hard interrupt thread context，soft interrupt thread context，process context。hard interrupt context是指操作系统刚接收到硬件中断后，执行屏蔽中断，处理timer等硬件相关基本中断流程，响应硬件控制器，使能中断过程的执行上下文。在此期间，操作系统使用的是中断栈，不可被抢占，可被local_irq_disable来禁止响应中断。hard interrupt thread context是指操作系统以内核线程的执行方式处理某一具体硬件中断过程的执行上下文。在此期间，此内核线程可被高优先级线程完全抢占(fully preemptible)。soft interrupt thread context是指操作系统以内核线程的执行方式处理某一具体软件中断过程的执行上下文。在此期间，此内核线程可被高优先级线程完全抢占(fully preemptible)，也可由其他线程执行local_bh_disable来禁止执行直接处理softirq相关的内核线程。process context是其他用户进程或内核进程执行过程的执行上下文。在此期间，此用户进程或内核进程可被高优先级线程完全抢占(fully preemptible)。这里完全抢占(fully preemptible)是指除了local_irq_disable, preempt_disable, raw_spin_lock外，此执行体中任意位置可以被抢占（preempt）。所以，我们把loca_irq_disable/enable，preempt_disable/enable，raw_spin_lock/unlock之间的代码执行上下文称为原子上下文atomic context，是不允许出现抢占的。如果在atomic context出现了会引起调度的代码，则违反代码执行的原子性，会进一步引起concurrency bug。
+
+### 4.1 bug pattern
+
+通过对Preempt_RT patches的分析，共有482个bugs，占整个patches的近30%。其中可进一步分类为semantics，concurrency，memory，err_code这四类，每类的描述与下表所示。semantics bugs的数量占整个bugs数量的48%，虽然与具有的语义和执行环境相关，且其中不少与concurrency执行异常有关。concurrency bugs的数量占整个bugs数量的28%，大部分与违反原子性（ atomicity-violation）相关，还有一大部分与违反执行顺序（order-violation）相关。memory bugs的数量占整个bugs数量的6%，主要是资源泄漏(resource leak)，资源/变量没有初始化，变量类型错误，缓冲区溢出，数据访问权限错。相对而言，这些错误与concurrency执行异常的关系不够密切。err_code bug的数量占整个bugs数量的16%，主要是kernle的编译错误和config错误。由于Linux kernel支持不同硬件和功能的多选项配置，使得kernel开发者可能只考虑了某些特定选项配置下的编译正确性，而没有足够的时间和精力去检查在其他合法选项配置下的编译正确性，导致这类相对比较简单的错误数量较高。
+
+Table The Description of Bug Category
+
+| Bug Category | Description                              |
+| :----------: | ---------------------------------------- |
+|  semantics   | Inconsistencies with the requirements or the programmers |
+| concurrency  | Mutex/Synchronization problems among the concurrent tasks |
+|    memory    | Bugs caused by improper handling of memory objects. |
+|   err_code   | compiling kernel error or config kernel error |
 
 
-> [Mao] Which bugs are going to be studied? If we only consider those explicitly
-> fixed in the patchset, I doubt if we have an adequate amount of bugs to
-> support our claim (25 patches w/ Call Trace in 4.9-rt1, mostly fixing
-> preemptible spin locks in preempt_disabled sections).
 
-### 4.0 some rules on RT-patch
+### 4.2 Semantic Bug
 
-an overview of the features/rules that the PREEMPT_RT patch provides.
+对于占bug数量比例最多的semantic bug，我们进一步细分为6类bug，具体如下表所示。对于hardware bug，主要与具体硬件和外设相关，比如设置相关寄存器有误等，与concurrency异常/错误没有直接关系。由于在代码编写中，对代码所在的执行上下文考虑不够全面，导致会出现与函数语义不一致的编程逻辑有误，我们把这类错误归结为other，与concurrency异常/错误没有直接关系。而migration/preempt/scheduling/irq/softirq bug与concurrency异常/错误有相对比较近的关系，而这类bug是我们主要的分析对象。
 
-1. Preemptible critical sections
-2. Preemptible interrupt handlers
-3. Preemptible "interrupt disable" code sequences
-4. Priority inheritance for in-kernel spinlocks and semaphores
-5. Deferred operations
-6. Latency-reduction measures
+| Semantic Bug | Description     |
+| ------------ | --------------- |
+| hardware     | 硬件初始化/工作流控制逻辑错误 |
+| migration    | 与线程/进程迁移处理中的错误  |
+| preempt      | 与线程/进程能否抢占相关的错误 |
+| scheduling   | 与线程/进程调度相关的错误   |
+| time         | 时间处理相关的错误       |
+| irq/softirq  | 与设置中断/软中断相关的错误  |
+| other        | 与函数语义不一致的编程逻辑有误 |
+
+
+
+### 4.2 Concurrency Related Bug
+
+rt-linux evolve through patches. A large number of patches are discussed and submitted to mailing lists, bug report websites, and other forums. Some are used to implement new features, while others fix existing bugs. In this section, we investigate three general questions regarding rt-linux patches. First, what are rt-linux patch types? Second, how do patches change over time? Lastly, what is the distribution of patch sizes?
+
+In the PREEMPT_RT kernel there are 4 essential types of contexts: "hard interrupt context", "interrupt context", "soft interrupt context" and "process context". The hard interrupt context is an extremely small shim in essence - a few tens of lines total, per arch - it just deals with the interrupt controller, masks the IRQ line, acks the controller and returns. The "interrupt context" is a separate per-IRQ interrupt thread, which behaves like a process and is fully preemptible. "Soft interrupt context" is a separate per-softirq system-thread too, fully preemptible. "Process context" is what it used to be, and fully preemptible too. ['fully preemptible' means it's preemptible for in essence everything but the scheduler code and the basic RT-mutex/PI code]
 
 #### Preemptible critical sections
 
@@ -271,7 +283,17 @@ rt-linux bugs cause severe consequences; corruptions and crashes are most common
 
 
 
-## 5  determinism of Real-Time Performance
+## 5  Program in Preempt_RT
+
+#### Preemptible critical sections
+
+- In PREEMPT_RT, normal spinlocks (spinlock_t and rwlock_t) are preemptible, as are RCU read-side critical sections (rcu_read_lock() and rcu_read_unlock()). 
+- This preemptibility means that you can block while acquiring a spinlock, which in turn means that it is illegal to acquire a spinlock with either preemption or interrupts disabled (the one exception to this rule being the _trylock variants, at least as long as you don't repeatedly invoke them in a tight loop).
+- This preemptibility also means that spin_lock_irqsave() does -not- disable hardware interrupts when used on a spinlock_t.
+- what to do if you need to acquire a lock when either interrupts or preemption are disabled? You use a raw_spinlock_t instead of a spinlock_t, but continue invoking spin_lock() and friends on the raw_spinlock_t. 
+- These raw locks(raw_spinlock_t,raw_rwlock_t)) should not be needed outside of a few low-level areas, such as the scheduler, architecture-specific code, and RCU.
+- Since critical sections can now be preempted, you cannot rely on a given critical section executing on a single CPU -- it might move to a different CPU due to being preempted. 
+- when you are using per-CPU variables in a critical section, you must separately handle the possibility of preemption: (1) Explicitly disable preemption, either through use of get_cpu_var(), preempt_disable(), or disabling hardware interrupts. (2) Use a per-CPU lock to guard the per-CPU variables. One way to do this is by using the new DEFINE_PER_CPU_LOCKED() primitive
 
 A small but important set of patches improve performance and reliability, which are quantitatively different than bug
 patches (Figure X). Performance and reliability patches account for X% and X% of patches respectively.
@@ -281,6 +303,20 @@ patches (Figure X). Performance and reliability patches account for X% and X% of
 > on bare metal (not in VMs) to remove the interference of the VMM. We need to
 > start this early next week so that the lkp-related stuff can be finished as
 > planned.
+
+an overview of the features/rules that the PREEMPT_RT patch provides.
+
+1. Preemptible critical sections
+2. Preemptible interrupt handlers
+3. Preemptible "interrupt disable" code sequences
+4. Priority inheritance for in-kernel spinlocks and semaphores
+5. Deferred operations
+6. Latency-reduction measures
+
+> [Mao] Which bugs are going to be studied? If we only consider those explicitly 
+> fixed in the patchset, I doubt if we have an adequate amount of bugs to
+> support our claim (25 patches w/ Call Trace in 4.9-rt1, mostly fixing
+> preemptible spin locks in preempt_disabled sections).
 
 ###  5.1  determinism related Performance Patches
 
