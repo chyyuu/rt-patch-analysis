@@ -9,6 +9,9 @@ cr以linux 4.11-rt为参考对象
 |                                          | rt-full |         N        |      Y      |     Y     |     Y     |    Y      |      N      |
 | local_irq_save/restore                   | vanilla |         N        |      Y      |     Y     |     Y     |    Y      |      N      |
 |                                          | rt-full |         N        |      Y      |     Y     |     Y     |     Y     |      N      |
+| local_irq_disable/enable_nort            | rt-full |        N         |      N      |     N     |     N     |     N     |      Y      |
+| local_irq_disable/enable_rt              | rt-full |        N         |      Y      |     Y     |     Y     |     Y     |      Y      |
+| local_irq_save/restore_nort              | rt-full |        N         |      N      |     N     |     N     |     N     |      Y      |
 | local_bh_disable/enable                  | vanilla |         N        |      N      |     Y     |     Y     |     Y     |      N      |
 |                                          | rt-full |         N        |      N      |     N     |     Y     |     Y     |      Y?     |
 | spin_lock/unlock                         | vanilla |        Y         |      N      |     Y     |     Y     |     N     |      N      |
@@ -17,6 +20,9 @@ cr以linux 4.11-rt为参考对象
 |                                          | rt-full |        Y         |      N      |     N     |     Y     |     N     |      Y?     |
 | spin_lock/unlock_bh                      | vanilla |        Y         |      N      |     Y     |     Y     |     Y     |      N      |
 |                                          | rt-full |        Y         |      N      |     Y     |     Y     |     Y     |      Y?     |
+| spin_lock_irq                            | vanilla |       Y          |    Y        |    Y      |     Y     |           |             |
+|                                          | rt-full |       Y          |             |           |     Y     |           |             |
+| spin_lock/unlock_ _no_mg                 | rt-full |       Y          |      N      |     N     |     N     |     N     |      Y      |
 | preempt_disable/enable                   | vanilla |        N         |      N      |     Y     |     Y     |     N     |      N?     |
 |                                          | rt-full |        N         |      N      |     Y     |     Y     |     N     |      N?     |
 | mutex_lock/unlock                        | vanilla |        Y         |      N      |     N     |     N     |     N     |      Y      |
@@ -25,24 +31,14 @@ cr以linux 4.11-rt为参考对象
 |                                          | rt-full |                  |             |           |           |           |             |
 | get/put_cpu                              | vanilla |        N         |      N      |     Y     |     Y     |     N?    |      N      |
 |                                          | rt-full |        N         |      N      |     Y     |     Y     |     N??   |      N      |
-| local_irq_disable/enable_nort            | vanilla |                  |      Y      |     Y     |           |           |             |
-|                                          | rt-full |                  |             |           |           |           |             |
-| local_irq_disable/enable_rt              | vanilla |                  |             |           |           |           |             |
-|                                          | rt-full |                  |      Y      |     Y     |     Y     |           |             |
-| local_irq_save/restore_nort              | vanilla |                  |      Y      |     Y     |           |           |             |
-|                                          | rt-full |                  |             |           |           |           |             |
-| local_irq_save/restore_rt                | vanilla |                  |             |           |           |           |             |
-|                                          | rt-full |                  |      Y      |     Y     |     Y     |           |             |
-| get/put_cpu                              | vanilla |                  |      Y      |           |           |           |             |
-|                                          | rt-full |                  |      Y      |     Y     |           |           |             |
-| local_lock/unlock[_irq]                  | rt-full |        *         |             |           |     Y     |           |             |
-| cpu_relax                                | vanilla |                  |             |           |           |           |             |
-|                                          | rt-full |                  |             |           |           |           |             |
+| get/put_cpu_light                        | rt-full |        N         |      N      |     N     |     Y     |     N     |      Y?     |
+| local_lock/unlock                        | rt-full |        N         |      N      |     N     |     N     |     N?    |      Y?     |
+| local_lock/unlock_irq                    | rt-full |        *         |      N      |     N     |     Y     |     N     |      Y?     |
+| local_lock_irqsave                       | rt-full |        *         |      N      |     N     |     Y     |     N     |      Y?     |
+| cpu_relax                                | vanilla |                  |             |           |           |           |      N      |
+|                                          | rt-full |                  |             |           |           |           |      N      |
 | cpu_chill                                | rt-full |                  |             |           |           |           |      Y      |
-| get/put_cpu                              | rt-full |                  |             |           |     Y     |     Y     |             |
-| get/put_cpu_light                        | rt-full |                  |             |           |           |     Y     |             |
-| migrate_disable/enable                   | rt-full |                  |             |           |           |           |             |
-| spin_lock/unlock_ _no_mg                 | rt-full |                  |             |           |           |           |             |
+| migrate_disable/enable                   | rt-full |       N          |     N       |     N     |     Y     |     N?    |     Y?      |
 | wake_futex                               | vanilla |                  |             |           |           |           |             |
 | WAKE_Q\|wake_up_q\|wake_q_add\|mark_wake_futex | rt-full |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
@@ -52,14 +48,6 @@ cr以linux 4.11-rt为参考对象
 | faulthandler_disabled                    | rt-full |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
 | lock/unlock_fpu_owner                    | rt-full |                  |             |           |           |           |             |
-|                                          |         |                  |             |           |           |           |             |
-|                                          |         |                  |             |           |           |           |             |
-| local_lock_irqsave                       | rt-full |       Y          |             |           |     Y     |           |             |
-| spin_lock_irq                            | vanilla |       Y          |    Y        |    Y      |     Y     |           |             |
-| spin_lock_irq                            | rt-full |       Y          |             |           |     Y     |           |             |
-|                                          |         |                  |             |           |           |           |             |
-|                                          |         |                  |             |           |           |           |             |
-|                                          |         |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
 |                                          |         |                  |             |           |           |           |             |
 
