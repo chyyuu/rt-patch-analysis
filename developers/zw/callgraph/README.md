@@ -28,7 +28,21 @@ make
 make install
 ```
 
-`make menuconfig`后修改Makefile，并在各个`CFLAGS`和`CXXFLAGS`中加入`-fdump-rtl-expand`选项，编译完成后，使用以下命令生成DOT文件
+`make menuconfig`后修改Makefile，并在各个`CFLAGS`和`CXXFLAGS`中加入`-fdump-rtl-expand`选项，在Makefile中找到`# Make variables (CC, etc...)`并进行修改
+
+```diff
+@@ -348,7 +348,7 @@
+ # Make variables (CC, etc...)
+ AS     = $(CROSS_COMPILE)as
+ LD     = $(CROSS_COMPILE)ld
+-CC     = $(CROSS_COMPILE)gcc 
++CC     = $(CROSS_COMPILE)gcc -fdump-rtl-expand
+ CPP        = $(CC) -E
+ AR     = $(CROSS_COMPILE)ar
+ NM     = $(CROSS_COMPILE)nm
+```
+
+编译完成后，使用以下命令生成DOT文件
 
 ```bash
 egypy `find . -name "*.expand"` --include-external > callgraph.dot
@@ -42,7 +56,41 @@ egypy `find . -name "*.expand"` --include-external > callgraph.dot
 
 * LLVM
     - 需要给RT Linux打[LLVM Patch](http://llvm.linuxfoundation.org/index.php/Main_Page)
+* [pycparser](https://github.com/eliben/pycparser)
 * [GCC plugins](https://gcc.gnu.org/wiki/plugins)
     - [GCC Python plugin](https://gcc-python-plugin.readthedocs.io/en/latest/)
 
-TODO
+## pycparser
+
+Linux源码必须先使用C预处理器处理后才能被正常解析，执行
+
+```bash
+find . -type f -name '*.c' -exec sh -c 'make O=../v4.11.5-rt1 "${0%.c}.i"' {} \;
+```
+
+## GCC Python plugin
+
+首先获取并编译[gcc-python-plugin](https://github.com/davidmalcolm/gcc-python-plugin.git)
+
+```bash
+git clone https://github.com/davidmalcolm/gcc-python-plugin.git
+cd gcc-python-plugin
+git checkout tags/v0.15
+make
+```
+
+在Makefile中找到`# Make variables (CC, etc...)`并进行修改
+
+```diff
+@@ -348,7 +348,7 @@
+ # Make variables (CC, etc...)
+ AS     = $(CROSS_COMPILE)as
+ LD     = $(CROSS_COMPILE)ld
+-CC     = $(CROSS_COMPILE)gcc -fdump-rtl-expand
++CC     = $(CROSS_COMPILE)gcc -fplugin=~/gcc-python-plugin/python.so -fplugin-arg-python-script=~/rt-patch-analysis/developers/zw/callgraph/check.py
+ CPP        = $(CC) -E
+ AR     = $(CROSS_COMPILE)ar
+ NM     = $(CROSS_COMPILE)nm
+```
+
+编译完成后检查log.txt文件
