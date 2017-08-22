@@ -1,7 +1,4 @@
-
-
-
-
+使用睡眠锁(类似rt_mutex_lock)，但是不会关闭抢占，不会关闭迁移。
 
 void __lockfunc rt_spin_lock__no_mg(spinlock_t *lock)
 {
