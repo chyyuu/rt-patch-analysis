@@ -17,7 +17,7 @@ static inline __attribute__((no_instrument_function)) void __local_lock(struct l
 }
 
 lv->nestcnt++;也进行了嵌套调用计数。
-第一次调用的时候，使用了rt_spin_lock__no_mg，即不会关闭迁移no_mgretion_disable
+第一次调用的时候，使用了rt_spin_lock__no_mg，即使用睡眠锁(类似rt_mutex_lock)，并且不会关闭迁移no_mgretion_disable
 
 
 
