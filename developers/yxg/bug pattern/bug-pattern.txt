@@ -1,0 +1,109 @@
+首先，preempt，migration和atomicity的分类在当时看patch的时候实际上没有区分的太详细，如果仔细看的话，有很多分类是有问题的。
+
+还有一些增加raw_的，patch中没有明确标记是bug的，一般都放在了rtsupport中，被放在了atomicity中。另外有一些我认为都不算是bug。
+
+我感觉有问题的patch分类：
+- 在migration中应该是preempt的  
+* [   3.2 -   3.18] mm: raw_pagefault_disable{C::bug::crash::migration::migration::replace with raw pgfault disable}  
+  + [[file:3.2/peterz-raw_pagefault_disable.patch][3.2]] 
+
+- 在atomicity中应该是preempt的
+* [2.6.22 - 2.6.24] add might_sleep in rt_spin_lock_fastlock {C::bug::hang::atomicity::runtime::might_sleep fun in rt_spin_lock_fastlock}
+  + [[file:2.6.22/rt-mutex-spinlock-might-sleep.patch][2.6.22]]
+* [2.6.23 - 2.6.29] ARM: use raw lock in __new_context {C::bug::crash::atomicity::mutex::use raw lock in __new_context}
+  + [[file:2.6.23/preempt-realtime-arm-rawlock-in-mmu_context-h.patch][2.6.23]]
+* [2.6.24 - 2.6.29] NMI watchdog trace of deadlock {C::bug::deadlock::atomicity::mutex::replace local_irq_save with local_irq_save_nort}
+  + [[file:2.6.24/ntfs-local-irq-save-nort.patch][2.6.24]]
+* [2.6.25 - 2.6.26] Memory corruption fixes {C::bug::corrupt::atomicity::mutex::call __flush_tlb_pending and hpte_need_flush within non-preempt region}
+  + [[file:2.6.25/ppc-tlbflush-preempt.patch][2.6.25]]
+* [2.6.26 - 2.6.29] raw-spinlocks-for-nmi-print.patch {C::bug::data_err::atomicity::mutex::change spinlock to be raw spinlock when serializing prints from NMI}
+  + [[file:2.6.26/raw-spinlocks-for-nmi-print.patch][2.6.26]]
+* [2.6.29         ] rt: fix perfcounters{C::bug::corrupt::atomicity::mutex:: replace spinlock_t with raw_spinlock_t}
+  + [[file:2.6.29/preempt-realtime-perfcounters.patch][2.6.29]]
+* [   3.2 -    3.8] printk: Don't call printk_tick in printk_needs_cpu() on RT{C::bug::crash::atomicity::semantics::replace with a sleep safe fun}
+  + [[file:3.2/rfc-printk-don-27t-call-printk_tick-in-printk_needs_cpu.patch][3.2]]
+* [   3.6 -   4.11] net: Remove preemption disabling in netif_rx(){C::bug::crash::atomicity::preempt::replace with migration disable}
+  + [[file:3.6/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.6]]
+
+- atomicity中应该是migrate的
+* [2.6.29         ] patches/fix-net-bug-fixes.patch{C::bug::hwerr::atomicity::mutex:: declare it as a PER_CPU_LOCKED, but then never use the extra lock to synchronize data}
+  + [[file:2.6.29/fix-net-bug-fixes.patch][2.6.29]]
+* [   3.6 -   4.11] net: Remove preemption disabling in netif_rx(){C::bug::crash::atomicity::preempt::replace with migration disable}
+  + [[file:3.6/upstream-net-rt-remove-preemption-disabling-in-netif_rx.patch][3.6]]
+
+- 不算是bug  
+* [2.6.23 - 2.6.29] patches/loadavg_fixes_weird_loads.patch {C::bug::data_err::atomicity::semantics::force a variable non-negative}  
+  + [[file:2.6.23/loadavg_fixes_weird_loads.patch][2.6.23]]  
+* [2.6.23 - 2.6.29] Fixes spurious system load spikes in /proc/loadavgrt {C::bug::data_err::atomicity::semantics::additional fix for loadavgrt}
+  + [[file:2.6.23/kstat-fix-spurious-system-load-spikes-in-proc-loadavgrt.patch][2.6.23]]
+* [2.6.26         ] mapping_nrpages-fix.patch {C::bug::data_err::atomicity::mutex::use  atomic_long_read instead of direct access struct member}
+  + [[file:2.6.26/mapping_nrpages-fix.patch][2.6.26]]
+* [2.6.26         ]rwlock-fixes.patch{C::bug::deadlock::atomicity::mutex::rwlock: fix pi_list race conditions} 
+  + [[file:2.6.26/rwlock-fixes.patch][2.6.26]]
+
+- 其他种类的bug
+* [2.6.26         ] rwlocks-fix-no-preempt-rt.patch {C::bug::data_err::atomicity::mutex::the addition of RT_RW_READER broke the non PREEMPT_RT case}
+  + [[file:2.6.26/rwlocks-fix-no-preempt-rt.patch][2.6.26]]
+* [   4.6 -   4.11] trace: Use rcuidle version for preemptoff_hist trace point{C::bug::crash::atomicity::semantics::replace trace_preempt_off to rcuidle}
+  + [[file:4.6/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.6]]
+* [   4.6 -   4.11] net: dev: always take qdisc's busylock in __dev_xmit_skb(){C::bug::hang::atomicity::mutex::take busylock}
+  + [[file:4.6/net-dev-always-take-qdisc-s-busylock-in-__dev_xmit_s.patch][4.6]]
+
+- rtsupport
+* [2.6.29         ] rt: serial console fix{C::bug::data_err::atomicity::mutex::rt: serial console fix }
+  + [[file:2.6.29/preempt-realtime-serial-console-fix.patch][2.6.29]]
+* [2.6.29         ] preempt-realtime-debugobjects-rt-safe.patch{C::bug::data_err::atomicity::mutex::replace spinlock_t with raw_spinlock_t}
+  + [[file:2.6.29/preempt-realtime-debugobjects-rt-safe.patch][2.6.29]]
+* [2.6.29         ] rt: signals struct lock init fix{C::bug::data_err::atomicity::mutex::ignals struct lock init fix}
+  + [[file:2.6.29/preempt-realtime-fix-sig-cputimer-lock.patch][2.6.29]]
+* [   3.2         ] ACPI: Convert embedded controller lock to raw spinlock{C::bug::deadlock::atomicity::mutex::replace with raw}
+  + [[file:3.2/acpi-make-ec-lock-raw-as-well.patch][3.2]]
+* [   3.2 -    3.8] intel_idle: Convert i7300_idle_lock to raw spinlock{C::bug::crash::atomicity::preempt::replace with raw}
+  + [[file:3.2/intel_idle-convert-i7300_idle_lock-to-raw-spinlock.patch][3.2]]
+* [  3.14         ] sparc64: convert ctx_alloc_lock raw_spinlock_t{C::bug::data_err::atomicity::mutex::sparc64: convert ctx_alloc_lock raw_spinlock_t}
+  + [[file:3.14/0003-sparc64-convert-ctx_alloc_lock-raw_spinlock_t.patch][3.14]]
+* [  3.14         ] sparc64: convert spinlock_t to raw_spinlock_t in mmu_context_t{C::bug::data_err::atomicity::mutex::sparc64: convert spinlock_t to raw_spinlock_t in mmu_context_t}
+  + [[file:3.14/0002-sparc64-convert-spinlock_t-to-raw_spinlock_t-in-mmu_.patch][3.14]]
+
+其次呢，有些bug实际上是函数流程设计的问题，比如：[2.6.22 - 2.6.26] fix-migrating-softirq.patch，中断处理函数运行中，函数可能被迁移到别的cpu上，使得软中断线程中的变量失效。patch关闭了该函数的迁移
+这样的patch实际上并不具有特殊的含义，不太具有普遍的借鉴意义。这类patch还有一些，比如sched的设计，cpu hotplug，还有futex设计等等。总结的时候我把它们排除在外。
+
+bug的分析：
+- migration
+这类bug遇到的主要问题是per CPU var的保护，更加具体一点，有很多是smp_processor_id的调用，调用该函数需要避免在可抢占的代码中导致warning。
+如果有访问per cpu函数在可抢占的区域被调用，一般会出现invalid text错误。
+
+这类bug一般回掉之后检查per CPU变量是否得到了保护，进一步判断保护是需要关闭中断，关闭抢占还是关闭迁移。
+发生错误的地方很直接，很少出现在别的地方。
+
+一般的修复方式是增加migrate_disable来避免迁移，调用per CPU后，保存在本地。
+
+或者使用_nort宏，关闭本地的中断。
+
+- atomicity
+这类bug出现的原因比较多。先说几个我认为分类有问题的：
+  - 之前标记应该是preempt的，有的部分处于不可休眠的区域irq text或scheduler等等，但是锁是可抢占的，导致might_sleep，或者schedule while atomic等等。虽然报错带“atomic”，但是我认为这是和抢占相关的，应该算是preempt的
+    这类bug一般使用raw_的锁来解决
+  - 还有虽然添加了raw_，但是patch里没有记录bug信息，我认为应该放到rtsupport里去
+
+我认为和atomicity相关的错误应该是有的代码段需要添加锁来进行保护，或者之前的同步互斥设计的不好，出现死锁，需要重新加上额外的锁。per CPU变量的访问和锁是否可抢占应该放到别的类中。
+
+与atomicity相关的形式大概是这样：
+```c
++	spin_lock(&own->pi_lock);
+ 	for (i = own->reader_lock_count - 1; i >= 0; i--) {
+ 		if (own->owned_read_locks[i].lock == rwm)
+ 			break;
+ 	}
++	spin_unlock(&own->pi_lock);
+```
+这个是比较一般的同步互斥问题。添加自旋锁即可解决。
+
+还有的是某些变量（一般是counter）需要保证原子性，类型`atomic_t`，操作时使用`atomic_set`等原子读写函数，保证变量的原子性。
+
+有一个比较需要注意的，是per cpu var虽然能保证不被迁移，但是内部同样会竞争？修改为per_cpu_var_locked来避免同步互斥出错。
+这一类per cpu var不能只注意迁移的问题，原子性也要注意。
+
+最后还有rcu相关的错误，没有仔细去了解细节
+* [   4.6 -   4.11] trace: Use rcuidle version for preemptoff_hist trace point{C::bug::crash::atomicity::semantics::replace trace_preempt_off to rcuidle}
+  + [[file:4.6/trace_Use_rcuidle_version_for_preemptoff_hist_trace_point.patch][4.6]]

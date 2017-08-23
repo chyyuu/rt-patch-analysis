@@ -33,7 +33,7 @@ _nort的实现就是一个barrier()，保护执行顺序。
 
 ## Q2
 ### 何时需要添加或取消migrate_disable/disable
-关闭迁移但是依然可以抢占，可以保护per cpu var，阻塞调度（？）  
+关闭迁移但是依然可以抢占，可以保护per cpu var，抢占进来的进程不会修改该进程的per cpu var，所以该进程只需要保证不被迁移出去即可 
 有大量的关闭迁移用于替代关闭抢占，但是patch中只找到以下两例：
 [3.0]console-make-rt-friendly.patch
 [3.18]printk-rt-aware.patch
