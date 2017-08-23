@@ -248,6 +248,39 @@ order/dead lock/live lock与并发执行情况下的执行顺序和执行的时�
 
 ### 4.3 Fix Strategies 
 
+对于不同类型的bugs，有专门正对下的修复策略，但也有一些共性的修复策略。下面的表格描述和统计了对所有bug的修复策略。对于属于编译出错和config出错的err_code bug，一般的错误原因通过编译器的编译错误输出就可以看到，错误现象比较简单和直接，且容易修改，主要的解决办法就是根据编译器的编译错误输出直接修改源文件中的语法错误和config文件的配置错误。对于memory bug，其错误后果需要在运行时才能看到，所以首先需要对运行时的kernel error/bug log信息进行分析，并采用相对应的修改策略，比如i变量类型进行修改，完善变量的初始化过程，确保数据资源的合理动态申请与释放等。相对而言，err_code bug和memory bug与Preempt_RT的关系不大，与官方kernel的patch中同类bug的修复策略基本一样。
+
+对于semantic bug的修复策略，大部分与具体硬件控制规范或软件逻辑有关，比如对于硬件控制的处理流程有误，对错误/异常情况的处理考虑不全，某功能的实现缺失等，所以修复方法差异性较大，比较难找到共性的地方。而semantic bug与Preempt_RT有一定的直接或间接关系。特别是如果深入分析，会发现部分修改的逻辑其实与同步互斥相关，其所涉及的函数表面上看与Preempt_RT相关的底层基础同步/互斥函数无关，但通过基于call graph等静态分析，可以发现这些高层函数会直接或间接地调用与Preempt_RT相关的底层基础同步/互斥函数，从而修复了与concurrency bug一样的问题。另外还有一类修复策略与动态检查相关，通过在代码中添加runtime check，类似动态的assert功能，可有效地在运行时发现问题，并可进一步解决未来会出现的bug。
+
+| Fix Method / Num   | Description                              |
+| ------------------ | ---------------------------------------- |
+| hardware /24       | 硬件相关的修复                                  |
+| mutex / 58         | 互斥相关的修复                                  |
+| sync\|order / 23   | 同步/执行顺序相关的修复                             |
+| irq\|softirq / 66  | 中断/软中断相关的修复                              |
+| preempt / 39       | 抢占相关的修复                                  |
+| migration / 14     | 迁移相关的修复                                  |
+| idle  / 4          | idle OR suspend/resume相关的修复              |
+| sched / 10         | 调度相关的修复                                  |
+| memory /18         | 针对variable的类型变化/初始化/申请与释放等修复             |
+| config /13         | config相关的修复                              |
+| syntax /53         | 修复编译语法错误                                 |
+| runtime check / ?? | add/modify might_sleep() function/condition to do runtime check |
+| semantics /156??   | 不属于上述修复手段，与具体代码逻辑有关的语义修复                 |
+
+由于concurrency bug直接与Preempt_RT相关，且数量最多，对于concurrency bug的修复策略将详细分析。首先之前已提到concurrency bug大部分与违反原子性（ atomicity-violation）相关，还有部分与违反执行顺序（order-violation）相关。但由于在kernel with Preempt_RT中的原子性可细分为多个层面，具体描述如下：
+
+Table X:  Description of different level of atomicity
+
+| Atomicity Level  | Description                              |
+| ---------------- | ---------------------------------------- |
+| critical section | can mutex access global resource in Multi Processors env. |
+| no_interrupt     | disable interrupt and can mutex access per-cpu resource in local CPU env. |
+| no_preempt       | disable sched/preempt and can mutex access per-cpu resource in local CPU env. |
+| no_migrate       | disable migrating to other CPU and can avoid access per-cpu resource of other CPU env. |
+| no_softirq/bh    | disable migrating softirq thread if task.softirq_nestcnt==1 and can avoid access per-cpu resource of other CPU env. |
+
+
 
 
 ## 5  Program Rules in Preempt_RT
