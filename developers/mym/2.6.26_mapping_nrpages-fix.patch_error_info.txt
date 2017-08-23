@@ -9,7 +9,7 @@
 
 看到了其主要是将
 mapping->nrpages直接通过->结构体成员的访问
-替换为了一个通过函数来访问次结构体成员。
+替换为了一个通过函数来访问此结构体成员。
 
 但是此patch里面并没有mapping_nrpages这个api的定义
 
@@ -70,12 +70,53 @@ static inline void mapping_nrpages_dec(struct address_space *mapping)
 
 总结：
 ================
-原因是；原因分特殊。看patch的时候不能仅仅看一个patch。要结合其他patch看。并且还要按照patch先后的提交顺序看。
+出错原因比较特殊。看patch的时候不能仅仅看一个patch。要结合其他patch看。并且还要按照patch先后的提交顺序看。
 如果没有做到上面的要求，就会出现问题。
 
 
 2.6.26/mapping_nrpages-fix.patch 
 这个patch正确的分类应该归为重构。
+
+
+
+2.6.22-rt1/series中顺序
+=====================
+mapping_nrpages.patch      重构
+mapping_nrpages-fix.patch  重构
+mm-concurrent-pagecache.patch   //atomicity bug fix
+
+
+如果是这样的顺序，这patch的分类会发生变化
+mapping_nrpages.patch      重构
+mm-concurrent-pagecache.patch   //atomicity bug fix
+mapping_nrpages-fix.patch  bugfix
+
+
+history.org里面的顺序
+==================
+2554 * [2.6.23 - 2.6.26] mm/fs: abstract address_space::nrpages {C::maintain::refactor::provide function for accessing mapping->nrpages}
+2555   + [[file:2.6.23/mapping_nrpages.patch][2.6.23]]
+2556   m [[file:2.6.24/mapping_nrpages.patch][2.6.24]]
+2557   M [[file:2.6.25/mapping_nrpages.patch][2.6.25]]
+2558   M [[file:2.6.26/mapping_nrpages.patch][2.6.26]]
+2559   - 2.6.29
+
+//重构
+
+2584 * [2.6.23 - 2.6.26] mm: concurrent pagecache write side {C::maintain::refactor::remove tree_lock, change address_space.nrpages to atomic_long_t}
+2585   + [[file:2.6.23/mm-concurrent-pagecache.patch][2.6.23]]
+2586   M [[file:2.6.24/mm-concurrent-pagecache.patch][2.6.24]]
+2587   m [[file:2.6.25/mm-concurrent-pagecache.patch][2.6.25]]
+2588   m [[file:2.6.26/mm-concurrent-pagecache.patch][2.6.26]]
+2589   - 2.6.29
+
+//atomic_long_read 属于bugfix吗？
+
+3592 * [2.6.26         ] mapping_nrpages-fix.patch {C::bug::data_err::atomicity::mutex::use  atomic_long_read instead of direct access struct member}
+3593   + [[file:2.6.26/mapping_nrpages-fix.patch][2.6.26]]
+
+//由于上面进行了bugfix，因此这里也是bugfix，将不安全的访问方式替换为安全的访问方式
+
 
 
 patch-2.6.26-rt1  分析
