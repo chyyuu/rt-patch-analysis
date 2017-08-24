@@ -331,3 +331,14 @@ might_sleep等情况）中进行正确且实时性高的保护，应该如何设
  开始修改和写技术报告，有问题随时交流。
 
 
+## 2017.8.24 some_questions
+```
+ 我们看到有一类bug（数量不少）与might_sleep相关。请思考问题 
+问题1：对于直接或间接调用了might_sleep的函数有何特点？为何要在这些函数中调用might_sleep? 如果不调用，会如何？在Kernel没有config  hacking的情况下，其实might_sleep是空函数。 
+
+问题2：preempt中的另外一类bug是order, deadlock, livelock，它们有何特点？是否有一些共性的特征？
+
+问题3：对于内核中的Preempt_RT开发，特别是使用相关的RT API，是否有一些比较好的API usage rule/pattern，可保证没有bug的情况下，还有RT性能。 
+
+希望晚上大家就此思考和讨论一下。当然，不限于这些问题。
+```
