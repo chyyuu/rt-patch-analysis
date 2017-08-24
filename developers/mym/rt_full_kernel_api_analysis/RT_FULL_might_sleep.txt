@@ -1,0 +1,61 @@
+/**
+ * might_sleep - annotation for functions that can sleep
+ *
+ * this macro will print a stack trace if it is executed in an atomic
+ * context (spinlock, irq-handler, ...).
+ *
+ * This is a useful debugging help to be able to catch problems early and not
+ * be bitten later when the calling function happens to sleep when it is not
+ * supposed to.
+ */
+ 
+ 
+
+# 209 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/kernel.h"
+
+#define might_sleep() do { might_resched(); } while (0)
+#define might_resched() do { } while (0)	
+	
+might_sleep()
+会被展开成
+ do { do { } while (0); } while (0);
+
+即do nothing。
+
+
+
+_ _might_sleep 函数	kernel.h (include\linux)	1
+调用了_ _ _might_sleep 函数
+因为_ _ _might_sleep是内联的，因此只显示了_ _might_sleep
+ 
+================================================ 
+
+/mm/vmalloc.c
+
+/**
+ *	vunmap  -  release virtual mapping obtained by vmap()
+ *	@addr:		memory base address
+ *
+ *	Free the virtually contiguous memory area starting at @addr,
+ *	which was created from the page array passed to vmap().
+ *
+ *	Must not be called in interrupt context.
+ */
+void vunmap(const void *addr)
+{
+	BUG_ON(in_interrupt());
+	might_sleep();
+	if (addr)
+		__vunmap(addr, 0);
+}
+EXPORT_SYMBOL(vunmap);
+
+
+void vunmap(const void *addr)
+{
+ do { if (__builtin_expect(!!(((preempt_count() & ((((1UL << (4))-1) << ((0 + 8) + 8)) | (((1UL << (8))-1) << (0 + 8)) | (((1UL << (1))-1) << (((0 + 8) + 8) + 4)))))), 0)) do { asm volatile("1:\tud2\n" ".pushsection __bug_table,\"a\"\n" "2:\t.long 1b - 2b, %c0 - 2b\n" "\t.word %c1, 0\n" "\t.org 2b+%c2\n" ".popsection" : : "i" ("/home/elwin/rt-test-mym/linux-stable-git/linux-stable/mm/vmalloc.c"), "i" (1613), "i" (sizeof(struct bug_entry))); do { ; __builtin_unreachable(); } while (0); } while (0); } while (0);
+ do { do { } while (0); } while (0);
+ if (addr)
+  __vunmap(addr, 0);
+}
+
