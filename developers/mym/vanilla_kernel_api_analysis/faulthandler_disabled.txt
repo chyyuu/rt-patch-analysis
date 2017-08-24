@@ -1,0 +1,11 @@
+vanilla和RT_FULL grep 内容一样，需要查看语义是否一样
+
+./arch/x86/mm/fault.c:17:#include <linux/uaccess.h>             /* faulthandler_disabled()      */
+./arch/x86/mm/fault.c:1292:     if (unlikely(faulthandler_disabled() || !mm)) {
+
+
+
+./include/linux/uaccess.h:62:#define faulthandler_disabled() (pagefault_disabled() || in_atomic())
+
+in_atomic语义一样
+pagefault_disabled 该函数的执行效果一样。但是意思不一样，一个关闭了迁移，一个没有关闭。

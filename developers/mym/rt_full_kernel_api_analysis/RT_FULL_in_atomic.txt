@@ -1,0 +1,36 @@
+
+percpu变量__preempt_count里面关于PREEMPT_NEED_RESCHED的字段不为0。
+也就是说不允许调度的情况下，就不允许抢占？
+
+
+#define in_atomic() (preempt_count() != 0)
+
+
+# 157 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/preempt.h"
+
+
+
+
+#define PREEMPT_NEED_RESCHED 0x80000000
+
+
+/*
+ * We mask the PREEMPT_NEED_RESCHED bit so as not to confuse all current users
+ * that think a non-zero value indicates we cannot preempt.
+ */
+static __always_inline int preempt_count(void)
+{
+        return raw_cpu_read_4(__preempt_count) & ~PREEMPT_NEED_RESCHED;
+}
+
+#define raw_cpu_read_4(pcp) percpu_from_op("mov", pcp)
+
+
+
+# 7 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h" 2
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) int preempt_count(void)
+{
+ return ({ typeof(__preempt_count) pfo_ret__; switch (sizeof(__preempt_count)) { case 1: asm("mov" "b ""%%""gs"":" "%" "1"",%0" : "=q" (pfo_ret__) : "m" (__preempt_count)); break; case 2: asm("mov" "w ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; case 4: asm("mov" "l ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; case 8: asm("mov" "q ""%%""gs"":" "%" "1"",%0" : "=r" (pfo_ret__) : "m" (__preempt_count)); break; default: __bad_percpu_size(); } pfo_ret__; }) & ~0x80000000;
+}
+

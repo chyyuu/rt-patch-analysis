@@ -1,0 +1,11 @@
+vanilla和RT_FULL grep 内容一样，需要查看语义是否一样
+
+lock/unlock_fpu_owner
+
+lock_fpu_owner
+
+好像这个api并没有被X86平台使用。
+
+./arch/mips/kernel/signal.c:322:                lock_fpu_owner();
+./arch/mips/kernel/signal.c:385:                lock_fpu_owner();
+./arch/mips/kernel/signal-common.h:31:#define lock_fpu_owner()  ({ preempt_disable(); pagefault_disable(); })

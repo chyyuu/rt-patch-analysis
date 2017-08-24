@@ -48,19 +48,24 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 ### bug type
 #### semantics
 - hardware:: 硬件初始化/工作流控制逻辑错误 
+- time:: 时间处理相关的错误
+_ err_access:: 用户态访问内核态等类似的程序访问错误，执行错误指令
+- semantics:: 编程逻辑有误，对函数语义理解有误 
+- na: Not Available OR Not Applicable 无从得知或不适用
+
+* semantics+na 都可归于other类
+
+#### concurrency
 - migration:: 与线程/进程迁移处理中的错误
 - preempt:: 与线程/进程能否抢占相关的错误
 - sched:: 与线程/进程调度相关的错误 （主要集中在kernel/sched*.c）
-- time:: 时间处理相关的错误
 - irq/softirq:: 与设置中断/软中断相关的错误 如 change die_chain from atomic to raw notifiers   atomic_notifier_call_chain --> raw_notifier_call_chain ???
-- semantics:: 编程逻辑有误，对函数语义理解有误
-- na: Not Available OR Not Applicable 无从得知或不适用
-
-#### concurrency
-- atomicity:临界区没有保护好/过度保护共享资源的互斥(mutex)访问.
+- atomicity:临界区没有保护好/过度保护共享资源的互斥(mutex)访问. 
 - order: 没有确保执行的顺序性(sync,barrier),或者barrier工作无效了。如  [2.6.24 - 2.6.26] rt: PI-workqueue: fix barriers
 - deadlock: 形成了死锁   e.g. BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914 |in_atomic(): 1, irqs_disabled(). 一个进程获得了spinlock之后它就进入了这里所谓的atomic context，或者是在一个irq-handler，也就是一个中断上下文中。这两种上下文中理论上不应该让当前的execution path进入sleep状态(虽然不是强制规定，换句话说，一个拥有spinlock的进程进入sleep并不必然意味着系统就一定会deadlock 等，但是对内核编程而言，还是应该尽力避开这个雷区)。
-- livelock: 形成了活锁
+- livelock: 一个线程在不确定的长时间范围内得不到执行，导致活锁
+
+* atomicity 在文中用mutual exclusive（mutex）表示更好，因为她主要表示共享数据/资源的mutex相关bug
 
 #### memory
 - resource_leak:: 资源/动态分配的内存没有释放
@@ -69,7 +74,7 @@ MAINTAIN_METHOD ::='refactor'|'donothing'|...
 - overflow::缓冲区溢出 OR 栈溢出 buf/stack overflow刘明明 <eva980636@126.com>, eva980636 <eva980636@163.com>
 
 - err_var:: 数据处理/比较错误 use after free
-_ err_access:: 用户态访问内核态等类似的程序访问错误，执行错误指令
+
 
 #### error code
 - compiling_err:: 编译错误

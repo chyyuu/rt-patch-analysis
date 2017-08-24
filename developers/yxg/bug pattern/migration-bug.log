@@ -1,0 +1,60 @@
+[*]:
+- impl: 是rt的函数使用bug
+- kern：rt系统设计bug
+- sem：语句错误
+
+* [2.6.22 - 2.6.26] preempt-realtime-powerpc-b3.patch {C::bug::crash::migration::migration::get the right cpu_mask}
+  + [[file:2.6.22/preempt-realtime-powerpc-b3.patch][2.6.22]]
+[impl]可能在rt kernel中，此前的代码不再会关闭抢占，导致函数的使用范围不对，改成不会产生warning的方式来获得对应的cpu_id
+
+* [2.6.22 - 2.6.26] fix-migrating-softirq.patch {C::bug::hang::migration::migration::restrict irq migration}
+  + [[file:2.6.22/fix-migrating-softirq.patch][2.6.22]]
+[kern]这是一个rt将软中断线程化之后，设计上的问题：中断处理函数运行中，函数可能被迁移到别的cpu上，使得软中断线程中的变量失效。patch关闭了该函数的迁移
+
+* [2.6.23         ] sched-rt-balance-fix.patch {C::bug::hang::migration::migration::update variable in time}
+  + [[file:2.6.23/sched-rt-balance-fix.patch][2.6.23]]
+[kern]是一个调度平衡算法设计问题，低优先级的任务被调度，但是高优先级的任务在另一个队列中等待。更新变量next来记录当前的priority，来保证下一个任务低于当前的任务
+
+* [2.6.23 - 2.6.25] Fix alternate_node_alloc() on RT kernel {C::bug::data_err::migration::migration::pass the this_cpu variable to cache_grow()}
+  + [[file:2.6.23/fix-alternate_node_alloc.patch][2.6.23]]
+[sem]per cpu变量传递错误，和迁移关系似乎不大，更像一个semantic的错误
+
+* [2.6.24 - 2.6.29] Preemption problem in kernel RT    Patch] {C::bug::rtlatency::migration::migration:: change preempt problem in net code}
+  + [[file:2.6.24/dev-queue-xmit-preempt-fix.patch][2.6.24]]
+[impl]从smp_processor_id变为局部变量current
+
+* [2.6.25 - 2.6.26] radix-percpu-hack-fix.patch {C::bug::corrupt::migration::migration::protect the percpu var}
+  + [[file:2.6.25/radix-percpu-hack-fix.patch][2.6.25]]
+[impl]增加一个中断关闭来保护，避免smp_processor_id出现在可抢占代码中而产生warning
+
+* [2.6.25 - 2.6.29] rt-slab: fix cpu inconsistency case {C::bug::corrupt::migration::migration::add per-CPU variable}
+  + [[file:2.6.25/slab-irq-nopreempt-fix.patch][2.6.25]]
+[impl]修改_nort宏，使其关闭本地中断（可能是吧，我没有找到slab_irq_disable()的代码），避免其它cpu的函数来修改局部变量。和迁移也不太一样，是this_cpu变量没有得到更新，从而导致其他cpu可以访问并修改属于该cpu的变量。
+
+* [2.6.26         ] sched-cpupri-hotplug-support.patch {C::bug::crash::migration::migration::sched: fix cpupri hotplug support}
+  + [[file:2.6.26/sched-cpupri-hotplug-support.patch][2.6.26]]
+[kern]修改注册机制，增加了对于class的注册。之前的bug是依然会有任务分配给offline cpu？似乎也和迁移关系不大。
+
+* [   3.2 -   3.18] mm: raw_pagefault_disable{C::bug::crash::migration::migration::replace with raw pgfault disable}
+  + [[file:3.2/peterz-raw_pagefault_disable.patch][3.2]]
+[impl]应该是preempt的bug，pagefault_disable带上preempt disable之后，某个调用pagefault_disable的函数出错，所以增加一个raw_函数，使得非rt下，pagefault_disable依然是可抢占的
+
+* [   3.2 -    4.0] sched, rt: Fix migrate_enable() thinko{C::bug::data_err::migration::migration::reorder fun}
+  + [[file:3.2/sched-rt-fix-migrate_enable-thinko.patch][3.2]]
+[impl]调整顺序，在允许迁移之前保存per CPU值，同时在比较得到mask不一致的时候重新获取。
+
+* [  3.18 -    4.0] Revert "migrate_disable pushd down in atomic_dec_and_spin_lock"{C::bug::data_err::migration::migration::reorder migrate_disable???}
+  + [[file:3.18/Revert-migrate_disable-pushd-down-in-atomic_dec_and_.patch][3.18]]
+[impl]回滚，将关闭迁移的范围变大，我理解的是在这个区域rt_spin_lock没有关闭抢占但是需要关闭迁移？
+
+* [  3.18 -    4.0] rwlock: disable migration before taking a lock {C::bug::crash::migration::migration::reorder migration_disable}
+  + [[file:3.18/rwlock-disable-migration-before-taking-a-lock.patch][3.18]]
+[impl]本身调用rt_write/read_trylock就会关闭抢占，现在调用rt_mutex_trylock前也关闭迁移。
+
+* [  3.18 -    4.0] sched: Do not clear PF_NO_SETAFFINITY flag in select_fallback_rq() {C::bug::crash::migration::semantics::do not clear PF_NO_SETAFFINITY}
+  + [[file:3.18/sched-do-not-clear-pf_no_setaffinity-flag-in-select_fallback_rq.patch][3.18]]
+[kern]系统设计问题，清理flag中的值，使得migrate_disable会忽略设置过这个flag的任务，但是在cpu hotplug中，这样的任务无法同步导致系统崩溃
+
+* [   4.6 -   4.11] kernel: softirq: unlock with irqs on{C::bug::irq::migration::irq::add local_irq_enable/disable pairs for symmetrical status of interrupt}
+  + [[file:4.6/kernel-softirq-unlock-with-irqs-on.patch][4.6]]
+[kern]unlock_softirq时打开中断，使得migrate_enable/disable在irq的状态一致？
