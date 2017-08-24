@@ -1,0 +1,160 @@
+
+[[file:2.6.29/rt-res_counter-fix.patch][2.6.29]]
+[[file:3.0/tty-use-local-irq-nort.patch]
+[[file:3.0/resource-counters-use-localirq-nort.patch]
+[[file:3.6/scsi-qla2xxx-fix-bug-sleeping-function-called-from-invalid-context.patch][3.6]]
+
+上面的bug都有栈回溯信息，都是不能在中断关闭的时候调用sleep函数。否则会触发__might_sleep
+从栈回溯信息上看：
+都是
+_ _might_sleep
+rt_spin_lock
+
+
+首先这里之所以能报出这样的错是因为_ _might_sleep函数不为空
+
+_ _might_sleep 函数	(include\linux\kernel.h)	
+调用了_ _ _might_sleep 函数
+因为_ _ _might_sleep是内联的，因此只显示了_ _might_sleep
+
+
+在rt_spin_lock上面下一个断点
+然后再到__might_sleep下一个断点
+然后continue，如果__might_sleep命中，可以知道rt_spin_lock调用__might_sleep的路径了？
+保护了内联函数？
+
+
+
+Function qla2x00_poll does local_irq_save() before calling qla24xx_intr_handler
+which has a spinlock. Since spinlocks are sleepable on rt, it is not allowed
+to call them with interrupts disabled. Therefore we use local_irq_save_nort()
+instead which saves flags without disabling interrupts.
+
+
+local_irq_save 会关闭中断
+此时如果再调用 spin_lock那么就有可能会睡眠
+
+因此会被
+rt_spin_lock
+__might_sleep
+捉到
+
+报警，此时如果真的没有获取到锁，应该是会panic的？
+此处的解决方法，是不在中断上下文里面取调用spin_lock了，也就说开启了中断。
+
+
+[   11.307652]  [<ffffffff81077b27>] __might_sleep+0xe7/0x110
+[   11.307663]  [<ffffffff8150e524>] rt_spin_lock+0x24/0x60
+[   11.307670]  [<ffffffff8150da78>] ? rt_spin_lock_slowunlock+0x78/0x90
+[   11.307703]  [<ffffffffa0272d83>] qla24xx_intr_handler+0x63/0x2d0 [qla2xxx]
+[   11.307736]  [<ffffffffa0262307>] qla2x00_poll+0x67/0x90 [qla2xxx]
+
+
+@@ -59,12 +59,12 @@ qla2x00_poll(struct rsp_que *rsp)
+ {
+ 	unsigned long flags;
+ 	struct qla_hw_data *ha = rsp->hw;
+-	local_irq_save(flags);
+    //关闭中断
++	local_irq_save_nort(flags);
+ 	if (IS_P3P_TYPE(ha))
+ 		qla82xx_poll(0, rsp);
+ 	else
+ 		ha->isp_ops->intr_handler(0, rsp);
+		//在此处调用了qla24xx_intr_handler ？
+-	local_irq_restore(flags);
++	local_irq_restore_nort(flags);
+ }
+
+ 
+
+ 
+
+
+ __might_sleep
+ might_sleep
+ xxxxx(这里的调用链找不见)
+ debug_rt_mutex_lock ？
+ __try_to_take_rt_mutex？
+ rt_spin_lock_slowlock？
+ rt_spin_lock
+ spin_lock
+ qla24xx_intr_handler 
+	
+中间看不到的函数有可能内联了，或者返回了。	
+
+
+
+只有might_sleep宏定义可能调用__might_sleep
+因此看看哪些函数调用了might_sleep宏定义
+
+
+./kernel/locking/rtmutex.c:2050:        might_sleep();
+./kernel/locking/rtmutex.c:2121:        might_sleep();
+./kernel/locking/rtmutex.c:2542:        might_sleep();
+./kernel/locking/rtmutex.c:2562:        might_sleep();
+
+
+int __sched rt_mutex_lock_state(struct rt_mutex *lock, int state)
+{
+	might_sleep();
+
+	return rt_mutex_fastlock(lock, state, NULL, rt_mutex_slowlock);
+}
+
+int
+rt_mutex_timed_lock(struct rt_mutex *lock, struct hrtimer_sleeper *timeout)
+{
+	might_sleep();
+
+	return rt_mutex_timed_fastlock(lock, TASK_INTERRUPTIBLE, timeout,
+				       RT_MUTEX_MIN_CHAINWALK,
+				       NULL,
+				       rt_mutex_slowlock);
+}
+
+
+void __sched mutex_lock(struct mutex *lock)
+{
+	might_sleep();
+
+	if (!__mutex_trylock_fast(lock))
+		__mutex_lock_slowpath(lock);
+}
+EXPORT_SYMBOL(mutex_lock);
+
+
+==============================================
+  static inline __attribute__((no_instrument_function)) void __might_sleep(const char *file, int line,
+       int preempt_offset) { }
+	   
+	   
+
+
+./include/linux/kernel.h:191:  void __might_sleep(const char *file, int line, int preempt_offset);
+./include/linux/kernel.h:203:   do { __might_sleep(__FILE__, __LINE__, 0); might_resched(); } while (0)
+./include/linux/kernel.h:211:  static inline void __might_sleep(const char *file, int line,
+./include/acpi/platform/aclinuxex.h:82: * to quiet __might_sleep() in kmalloc() and resume does not.
+./kernel/sched/core.c:6402:void __might_sleep(const char *file, int line, int preempt_offset)
+./kernel/sched/core.c:6418:EXPORT_SYMBOL(__might_sleep);
+./mm/memory.c:4325:     __might_sleep(file, line, 0);
+
+
+
+
+
+#ifdef CONFIG_DEBUG_ATOMIC_SLEEP
+  void ___might_sleep(const char *file, int line, int preempt_offset);
+  void __might_sleep(const char *file, int line, int preempt_offset);
+  # define might_sleep() \
+	do { __might_sleep(__FILE__, __LINE__, 0); might_resched(); } while (0)
+  此时的might_sleep就通过__might_sleep函数附带了检查功能
+	
+#else
+  static inline void ___might_sleep(const char *file, int line,
+				   int preempt_offset) { }
+  static inline void __might_sleep(const char *file, int line,
+				   int preempt_offset) { }	   
+				   
+				   
+				   

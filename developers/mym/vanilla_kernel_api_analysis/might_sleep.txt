@@ -1,0 +1,217 @@
+
+might_sleep()
+会被展开成
+ do { _cond_resched(); } while (0);
+
+ 
+ 
+#define might_sleep() do { might_resched(); } while (0)
+	
+#define might_resched() _cond_resched()
+
+
+./kernel/sched/core.c:4946:int __sched _cond_resched(void)
+./kernel/sched/core.c:4954:EXPORT_SYMBOL(_cond_resched);
+
+#ifndef CONFIG_PREEMPT
+int __sched _cond_resched(void)
+{
+        if (should_resched(0)) {
+			//should_resched(0) 表示如果__preempt_count 为0，即可以抢占
+                preempt_schedule_common();
+				//进程切换。调度
+                return 1;
+        }
+        return 0;
+}
+EXPORT_SYMBOL(_cond_resched);
+#endif
+
+
+
+基本上，内核中耗时长的操作不应该完全占据整个系统。相反，它们应该不时地检测是否有另一
+个进程变为可运行，并在必要的情况下调用调度器选择相应的进程运行。该机制不依赖于内核抢
+占，即使内核连编时未指定支持抢占，也能够降低延迟。
+
+发起有条件重调度的函数是cond_resched。其实现如下：
+kernel/sched.c   
+int __sched cond_resched(void)   
+{   
+        if (need_resched() && !(preempt_count() & PREEMPT_ACTIVE))   
+                __cond_resched();   
+                return 1;   
+        }  
+        return 0;  
+} 
+
+need_resched检查是否设置了TIF_NEED_RESCHED标志，代码另外还保证内核当前没有被抢占 
+，因此允许重调度。只要两个条件满足，那么__cond_resched会处理必要的细节并调用调度器。
+
+如何使用cond_resched？举例来说，考虑内核读取与给定内存映射关联的内存页的情况。这可以
+通过无限循环完成，直至所有需要的数据读取完毕：
+
+for (;;)  
+        /* 读入数据 */  
+        if (exit_condition)  
+                continue;  
+			
+
+如果需要大量的读取操作，可能耗时会很长。由于进程运行在内核空间中，调度器无法象在用户
+空间那样撤销其CPU，假定也没有启用内核抢占。通过在每个循环迭代中调用cond_resched，即可
+改进此种情况。
+
+
+for (;;)  
+        cond_resched();  
+        /* 读入数据 */  
+        if (exit_condition)  
+                continue;  
+
+内核代码已经仔细核查过，以找出长时间运行的函数，并在适当之处插入对cond_resched的调用
+。即使没有显式内核抢占，这也能够保证较高的响应速度。
+
+
+
+
+
+
+# 54 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/arch/x86/include/asm/preempt.h"
+
+
+/*
+ * Returns true when we need to resched and can (barring IRQ state).
+ */
+static __always_inline bool should_resched(int preempt_offset)
+{
+        return unlikely(raw_cpu_read_4(__preempt_count) == preempt_offset);
+}
+
+
+# 1471 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/sched.h"
+
+static __always_inline bool need_resched(void)
+{
+        return unlikely(tif_need_resched());
+}
+
+
+
+# 41 "/home/elwin/rt-test-mym/linux-stable-git/linux-stable/include/linux/thread_info.h"
+
+
+#define tif_need_resched() test_thread_flag(TIF_NEED_RESCHED)
+
+#define test_thread_flag(flag) test_ti_thread_flag(current_thread_info(), flag)
+
+#define current_thread_info() ((struct thread_info *)current)
+
+
+#define current get_current()
+
+#define TIF_SYSCALL_TRACE 0
+#define TIF_NOTIFY_RESUME 1
+#define TIF_SIGPENDING 2
+#define TIF_NEED_RESCHED 3
+
+
+static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
+{
+        return test_bit(flag, (unsigned long *)&ti->flags);
+}
+
+
+
+static inline __attribute__((no_instrument_function)) __attribute__((always_inline)) bool need_resched(void)
+{
+ return __builtin_expect(!!(test_ti_thread_flag(((struct thread_info *)get_current()), 3)), 0);
+}
+
+
+
+
+static void __sched notrace preempt_schedule_common(void)
+{
+        do {
+                /*
+                 * Because the function tracer can trace preempt_count_sub()
+                 * and it also uses preempt_enable/disable_notrace(), if
+                 * NEED_RESCHED is set, the preempt_enable_notrace() called
+                 * by the function tracer will call this function again and
+                 * cause infinite recursion.
+                 *
+                 * Preemption must be disabled here before the function
+                 * tracer can trace. Break up preempt_disable() into two
+                 * calls. One to disable preemption without fear of being
+                 * traced. The other to still record the preemption latency,
+                 * which can also be traced by the function tracer.
+                 */
+                preempt_disable_notrace();
+                preempt_latency_start(1);
+                __schedule(true);
+                preempt_latency_stop(1);
+                preempt_enable_no_resched_notrace();
+
+                /*
+                 * Check again in case we missed a preemption opportunity
+                 * between schedule and now.
+                 */
+        } while (need_resched());
+		//need_resched表示thread_info->flags中对应的#define TIF_NEED_RESCHED 3 是否为1，如果是的则表示需要进行调度
+		//则执行schedul调度程序。但是这里为啥执行了的是__schedule而不是schedule()?
+}
+
+schedule函数和__schedule函数的区别
+
+ 以下几种情况可能调用这个函数
+/*
+ * __schedule() is the main scheduler function.
+ *
+ * The main means of driving the scheduler and thus entering this function are:
+ * 
+ *   1. Explicit blocking: mutex, semaphore, waitqueue, etc.
+ *
+ *   2. TIF_NEED_RESCHED flag is checked on interrupt and userspace return
+ *      paths. For example, see arch/x86/entry_64.S.
+ *
+ *      To drive preemption between tasks, the scheduler sets the flag in timer
+ *      interrupt handler scheduler_tick().
+ *
+ *   3. Wakeups don't really cause entry into schedule(). They add a
+ *      task to the run-queue and that's it.
+ *
+ *      Now, if the new task added to the run-queue preempts the current
+ *      task, then the wakeup sets TIF_NEED_RESCHED and schedule() gets
+ *      called on the nearest possible occasion:
+ *
+ *       - If the kernel is preemptible (CONFIG_PREEMPT=y):
+ *
+ *         - in syscall or exception context, at the next outmost
+ *           preempt_enable(). (this might be as soon as the wake_up()'s
+ *           spin_unlock()!)
+ *
+ *         - in IRQ context, return from interrupt-handler to
+ *           preemptible context
+ *
+ *       - If the kernel is not preemptible (CONFIG_PREEMPT is not set)
+ *         then at the next:
+ *
+ *          - cond_resched() call
+ *          - explicit schedule() call
+ *          - return from syscall or exception to user-space
+ *          - return from interrupt-handler to user-space
+ *
+ * WARNING: must be called with preemption disabled!
+ */
+static void __sched notrace __schedule(bool preempt)
+
+
+
+
+void vunmap(const void *addr)
+{
+ do { if (__builtin_expect(!!(((preempt_count() & ((((1UL << (4))-1) << ((0 + 8) + 8)) | (((1UL << (8))-1) << (0 + 8)) | (((1UL << (1))-1) << (((0 + 8) + 8) + 4)))))), 0)) do { asm volatile("1:\tud2\n" ".pushsection __bug_table,\"a\"\n" "2:\t.long 1b - 2b, %c0 - 2b\n" "\t.word %c1, 0\n" "\t.org 2b+%c2\n" ".popsection" : : "i" ("/home/elwin/rt-test-mym/linux-stable-git/linux-stable/mm/vmalloc.c"), "i" (1610), "i" (sizeof(struct bug_entry))); do { ; __builtin_unreachable(); } while (0); } while (0); } while (0);
+ do { _cond_resched(); } while (0);
+ if (addr)
+  __vunmap(addr, 0);
+}
+
