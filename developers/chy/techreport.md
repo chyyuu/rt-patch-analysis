@@ -268,17 +268,34 @@ order/dead lock/live lock与并发执行情况下的执行顺序和执行的时�
 | runtime check / ?? | add/modify might_sleep() function/condition to do runtime check |
 | semantics /156??   | 不属于上述修复手段，与具体代码逻辑有关的语义修复                 |
 
-由于concurrency bug直接与Preempt_RT相关，且数量最多，对于concurrency bug的修复策略将详细分析。首先之前已提到concurrency bug大部分与违反原子性（ atomicity-violation）相关，还有部分与违反执行顺序（order-violation）相关。但由于在kernel with Preempt_RT中的原子性可细分为多个层面，具体描述如下：
+由于concurrency bug直接与Preempt_RT相关，且数量最多，对于concurrency bug的修复策略将详细分析。首先之前已提到concurrency bug大部分与违反原子性（ atomicity-violation）相关，还有部分与违反执行顺序（order-violation）相关。
 
-Table X:  Description of different level of atomicity
+#### Fix Strategies for  atomicity-violation bug
 
-| Atomicity Level  | Description                              |
-| ---------------- | ---------------------------------------- |
-| critical section | can mutex access global resource in Multi Processors env. |
-| no_interrupt     | disable interrupt and can mutex access per-cpu resource in local CPU env. |
-| no_preempt       | disable sched/preempt and can mutex access per-cpu resource in local CPU env. |
-| no_migrate       | disable migrating to other CPU and can avoid access per-cpu resource of other CPU env. |
-| no_softirq/bh    | disable migrating softirq thread if task.softirq_nestcnt==1 and can avoid access per-cpu resource of other CPU env. |
+由于在kernel with Preempt_RT中的atomic context可细分为多个层面，具体描述如下：
+
+Table X:  Description of different atomicity context in Linux Preempt-RT
+
+| Basic Atomicity Context | Description                              |
+| ----------------------- | ---------------------------------------- |
+| spin critical section   | can mutex access global resource with spin_lock method in Multi Processors env. |
+| sleep critical section  | can mutex access global resource with sleepable_lock method in Multi Processors env. |
+| no_interrupt            | disable interrupt and can mutex access per-cpu resource in local CPU env. |
+| no_preempt              | disable sched/preempt and can mutex access per-cpu resource in local CPU env. |
+| no_migrate              | disable migrating to other CPU and can avoid access per-cpu resource of other CPU env. |
+| no_softirq/bh           | disable migrating softirq thread if task.softirq_nestcnt==1 and can avoid access per-cpu resource of other CPU env. |
+
+这里需要注意，对于如果通过local_irq_disable实现了no_interrupt atomicity level则也就意味这实现了no_softirq/bh，no_preempt和no_migrate。它们之间的atomic强度为:
+
+```
+no_interrupt>no_preempt>no_migrate>no_softirq/bh
+```
+
+这里no_softirq/bh是一种有条件的no_migrate atomicity level，它只有在current的task.softirq_nestcnt==1的情况下才处于no_migrate atomicity level。另外，spin critical section和 sleep  critical section是属于一个Basic Atomicity集合，而其他的属于另外一个Basic Atomicity集合，这两个集合中的item可组合，形成compound atomicity。但需要注意，sleep critical section不能与禁止切换的no_interrupt和no_preempt组合在一起。
+
+正对不同类型的共享资源，需要用能够形成正确的compound atomicity context。正是由于 atomicity context和共享资源特征的多样性，使得kernel开发者容易出现错误。对于违反原子性（ atomicity-violation）的bug，通常的修复策略是针对共享资源特征用符合atomic强度的atomicity context。另外，可充分利用kernel中已有的might_sleep和添加条件判断增加发现新bug的可能性。
+
+#### Fix Strategies for  order-violation bug
 
 
 
