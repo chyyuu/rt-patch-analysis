@@ -341,3 +341,37 @@ might_sleep等情况）中进行正确且实时性高的保护，应该如何设
 
 *   希望晚上大家就此思考和讨论一下。当然，不限于这些问题。
 
+## 2017.8.24 交流记录
+1. might_sleep这个API的问题，它的语义是什么。
+ 
+1. performance和feature的区别。 patch的分类需要一些调整。
+   其中fix methord里面属于semantic的类型很多，需要再分。可以看看推荐的文献里面分类是怎么分的。
+
+    
+1. 关于互斥和原子类型的bug，有可能会用到多种方式（API）来保护一个percpu变量。   
+   例如使用migrate_disable和local_lock组合来保护一个percpu变量。其中local_lock里面的锁的
+   来说还是一个per_cpu类型的变量。
+1. 关于同步、order类型的bug。分析一下rt kernel里常用哪种发式来实现同步？是否有找到了livelock问题(ABBA) 
+```
+   lockdep 是一种死锁检测机制
+   while(1)
+   {
+    cpu_chill()/cpu_relax();
+	if(condition)
+	  break;
+   }
+   上面的代码是一种同步形式。
+    有一个order类型的bug。
+   [  3.14 -   4.11] net: sched: Use msleep() instead of yield(){C::bug::deadlock::deadlock::semantics::sched: Use msleep() instead of yield()}
+  + [[file:3.14/net-sched-dev_deactivate_many-use-msleep-1-instead-o.patch][3.14]]
+```
+1. 使用rt kernel内核编程的时候，会有什么类型的编程错误，例如cpuhotplug部分支持的不太好。
+   写内核模块，或者升级的时候，是否会出现内核编程错误。
+    当vanilla打上rt patch以后，内核的驱动需要改吗?
+    linux desktop换上rt kernel是否可以继续运行?
+	可以升级一下内核看看会碰到什么问题（例如4.9升级到4.10或者4.11升级到4.12，总结过程中的错误）
+1. 如何从静态的call graph里面找到一些错误的函数调用路径（例如preempt_disable, might_sleep, preempt_enable)
+    矛俊杰建议可以采用给每个statment着色的方法(preempt_disable开始，以后开始着色，然后找了preempt_enable以后停止着色）
+    还可以看哪些函数调用了might_sleep，然后再看第2级调用了might_sleep的函数，倒着推（好像是这样，没有记清楚）	
+
+
