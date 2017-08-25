@@ -1,12 +1,29 @@
+- 从所看patch中可以看出preempt_bug可以分为几类：
+	- 在RT上在，由于引入rt_mutex造成一些临界区获取了睡眠锁，造成在`preempt_diable()`---原子上下文产生睡眠或调度，这是有问题的。
+		- [[file:2.6.22/rcu-preempt-fix-nmi-watchdog.patch][2.6.22]]
+		- [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]]
+		- [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]]
+		- [[file:2.6.25/genhd-protect-percpu-var.patch][2.6.25]]
+		- [[file:2.6.29/sched-generic-hide-smp-warning.patch][2.6.29]]
+
+	- 
+
+
+
+
+
+
+
+
 
 
 - pattern 1
 
 	- `atomic_notifier_call_chain()替换为raw notifier_call_chain()`
 
-		
-	- 此处是在RT上将`atomic_notifier_call_chain()->raw notifier_call_chain() `说是为了避免not `NMI_safe` in -rt。从源代码看，`atomic_notifier_call_chain()调用了rcu_read_lock()->preempt_disable()为什么会产生not NMI_safe不大理解？？`
-
+	- 通知链技术可以概括为：事件的接收者将事件发生时应该执行的操作通过函数指针方式保存在链表中，然后当事件发生时通知者依次执行链表中每一个元素的回调函数。	
+	- 此处是在RT上将`atomic_notifier_call_chain()->raw notifier_call_chain() `是为了避免not `NMI_safe` in -rt。从源代码看，`atomic_notifier_call_chain()调用了rcu_read_lock()->preempt_disable()`这里是原子上下文，在RT中，回调函数有可能会引起睡眠或调度，对于原子上下文这是不允许的。
+	
 	- 原子通知链(Atomic notifier chains)：通知链元素的回调函数（当事件发生时要执行的函数）在中断或原子操作上下文中运行，不允许阻塞。
 
 		     /*
@@ -71,8 +88,6 @@
 			    }
 
 
-
-
 - 相关patch
 		
 	-  [[file:2.6.22/rcu-preempt-fix-nmi-watchdog.patch][2.6.22]]
@@ -81,7 +96,29 @@
 - pattern 2
 	
 	- `raw_local_irq_save() 替换local_irq_save()`
-	- [[file:2.6.22/rt-mutex-core.patch][2.6.22]]在这个patch中对这两个宏做了定义，但不明白为什么产生了互相调用，可能跟配置有关系，但是怎么会互相调用？
+	- [[file:2.6.22/rt-mutex-core.patch][2.6.22]]在这个patch中对这两个宏做了定义，从源代码上看两个API的区别并不大。
+	
+			#ifdef CONFIG_TRACE_IRQFLAGS_SUPPORT
+
+			#include <asm/irqflags.h>
+			
+			#define local_irq_enable() \
+				do { trace_hardirqs_on(); raw_local_irq_enable(); } while (0)
+			#define local_irq_disable() \
+				do { raw_local_irq_disable(); trace_hardirqs_off(); } while (0)
+			#define local_irq_save(flags) \
+				do { raw_local_irq_save(flags); trace_hardirqs_off(); } while (0)
+
+
+			/*
+			 * The local_irq_*() APIs are equal to the raw_local_irq*()
+			 * if !TRACE_IRQFLAGS.
+			 */
+			# define raw_local_irq_disable()	local_irq_disable()
+			# define raw_local_irq_enable()		local_irq_enable()
+			# define raw_local_irq_save(flags)	local_irq_save(flags)
+			# define raw_local_irq_restore(flags)	local_irq_restore(flags)
+			#endif /* CONFIG_TRACE_IRQFLAGS_SUPPORT */
 	
 	- 相关patch 
 		- [[file:2.6.22/arm-fix-atomic-cmpxchg.patch][2.6.22]]
@@ -92,9 +129,15 @@
 
 	- `__get_cpu_var()替换为__raw_get_cpu_var()`
 
-			#define __get_cpu_var(var)         per_cpu__##var
- 			#define __raw_get_cpu_var(var)         per_cpu__##var
-	
+			#define __get_cpu_var(var) (*({				\
+				extern int simple_identifier_##var(void);	\
+				RELOC_HIDE(&per_cpu__##var, __my_cpu_offset()); }))
+			#define __raw_get_cpu_var(var) (*({			\
+				extern int simple_identifier_##var(void);	\
+				RELOC_HIDE(&per_cpu__##var, __my_cpu_offset()); }))
+
+			#define __get_cpu_var(var)			per_cpu__##var
+			#define __raw_get_cpu_var(var)			per_cpu__##var
 	-  在[[file:2.6.22/percpu-locked-mm.patch][2.6.22]] 对两个宏进行了定义，并没有变化，只是重构了一下
 	-  相关patch 
 		-  [[file:2.6.22/nf_conntrack-fix-smp-processor-id.patch][2.6.22]]
@@ -107,12 +150,12 @@
 	- 此处的commit：BUG: using `smp_processor_id()` in preemptible [00000000] code: khvcd/280 caller is .xmon_core+0xb8/0x8ec
 	- 可见这里是在可抢占区域中操作了`per_cpu`var,引入的bug。
 	- 相关patch：
-		-  [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]
+		- [[file:2.6.22/preempt-realtime-powerpc-b4.patch][2.6.22]]
 		- [[file:3.8/fix-2-2-slub-tid-must-be-retrieved-from-the-percpu-area-of-the-current-processor.patch][3.8]]
 
 - pattern 5
 	- `raw_spin_lock代替spin_lock`
-	- 此处是在rt中对引入`spin_lock`的修复。因为`raw_spin_lock`是原始自旋锁，并不会引起抢占睡眠，而`spin_lock`在RT中是睡眠锁，在原子上下文，中断上下文，抢占禁止上下文是不可以调用的。
+	- 此处是在rt中对引入`spin_lock`的修复。因为`raw_spin_lock`是原始自旋锁，并不会引起抢占睡眠，而`spin_lock`在RT中是睡眠锁，在原子上下文，中断上下文，抢占禁止上下文是不可以产生调度。
 	- 相关patch
 		- [[file:2.6.22/preempt-realtime-powerpc-b2.patch][2.6.22]]
 		- [[file:2.6.25/pcounter-percpu-protect.patch][2.6.25]]
@@ -149,7 +192,7 @@
 
 - pattern 8
 	- `用get_cpu_var_locked()替换__get_cpu_var()`
-	-  `用get_cpu_var() 替换preempt_disable;__get_cpu_var()`
+	- `用get_cpu_var() 替换preempt_disable;__get_cpu_var()`
     
 			#define get_cpu_var_locked(var, cpuptr)         \
 			(*({                            \
@@ -167,7 +210,7 @@
 			    preempt_disable();              \
 			    &__get_cpu_var(var); }))
 		
-	- 从他们的API可以看出`get_cpu_var_locked()`获取spin_lock(), 而`get_cpu_var()禁止了抢占`从而保护Percpu var.
+	- 从他们的API可以看出`get_cpu_var_locked()`获取spin_lock()；而`get_cpu_var()禁止了抢占`从而保护Percpu var.
 	- 相关patch
 			- [[file:2.6.26/ppc64-fix-preempt-unsafe-paths-accessing-per_cpu-variables.patch][2.6.26]]
 
@@ -188,14 +231,14 @@
 				trace_hardirqs_off();		\
 			} while (0)
 
-	- 在RT中`spin_lock_irqsave()`并没有禁止中断，只是获取了`spin_lock()`,但不明白禁止中断在这里有什么关系。
+	- 原子上下文中不能产生睡眠或调度，因此，在RT中，在原子上下文需要将`spin_lock`替换为原始自旋锁形式。
 	
 	- 相关patch
 		- [[file:2.6.26/ftrace-wakeup-rawspinlock.patch][2.6.26]]
 
 - pattern 10
 	-  `get_cpu()/put_cpu_no_preempt()替换为get_cpu()/put_cpu()`
-	-  因为对于`put_cpu_no_preempt()`并没有进行preemption检查，从而产生抢占调度，这样有可能对高优先级任务造成长时间延迟，需要将其替换。
+	-  因为`put_cpu_no_preempt()`在使能抢占后并没有产生preemption check，从而不能产生重新调度，这样有可能对高优先级任务造成长时间延迟，需要将其替换。
 	- 相关patch
 		-  [[file:2.6.26/nfs-stats-miss-preemption.patch][2.6.26]]
 
@@ -207,9 +250,22 @@
 - pattern 12
 	- `用raw_spin_lock_irq_save()替换spin_lock_irqsave()`
 
-			call trace 信息	[   25.607517] igb 0000:01:00.0: DCA enabled
-	   						[   25.607524] BUG: sleeping function called from invalid context at kernel/rtmutex.c:684
-	- 从call trace可以看出是调用了睡眠函数，产生bug，分析这两个API源代码：
+	call trace 信息：
+
+ 			  7 [   25.607517] igb 0000:01:00.0: DCA enabled
+			  8 [   25.607524] BUG: sleeping function called from invalid context at kernel/rtmutex.c:684
+			  9 [   25.607528] pcnt: 1 0 in_atomic(): 1, irqs_disabled(): 0, pid: 1805, name: modprobe
+			 10 [   25.607532] Pid: 1805, comm: modprobe Tainted: G   M    W N  2.6.33.5-rt23-rt_debug #2
+			 11 [   25.607536] Call Trace:
+			 12 [   25.607557]  [<ffffffff820078a1>] try_stack_unwind+0x151/0x1a0
+			 13 [   25.607566]  [<ffffffff820062c2>] dump_trace+0x92/0x370
+			 14 [   25.607573]  [<ffffffff8200731c>] show_trace_log_lvl+0x5c/0x80
+			 15 [   25.607578]  [<ffffffff82007355>] show_trace+0x15/0x20
+			 16 [   25.607587]  [<ffffffff823f4588>] dump_stack+0x77/0x8f
+			 17 [   25.607595]  [<ffffffff82043f2a>] __might_sleep+0x11a/0x130
+			 18 [   25.607602]  [<ffffffff823f7b93>] rt_spin_lock+0x83/0x90
+
+	- 从call trace可以看出`in_atomic(): 1, irqs_disabled(): 0`为禁用中断的原子上下文，则在原子上下文，调用可睡眠的`rt_spin_lock`后出现的错误信息，产生bug，分析这两个API源代码：
 			
 			#define raw_spin_lock_irqsave(lock, flags)			\
 			do {						\
@@ -250,9 +306,36 @@
 				flags = 0;				 \
 				spin_lock(lock);			 \
 			} while (0)
-		
-	从源代码中可以看出在RT中`spin_lock_irqsave(lock, flags)`并没有禁止中断,只是获取睡眠锁。
-	`raw_spin_lock_irq_save()`禁止了中断、抢占。
+
+			#define spin_lock(lock)			rt_spin_lock(lock)
+
+			void __lockfunc rt_spin_lock(spinlock_t *lock)
+			{
+				rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock, true);
+				spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+			}
+			
+			#ifdef CONFIG_PREEMPT_RT_FULL
+			/*
+			 * preemptible spin_lock functions:
+			 */
+			static inline void rt_spin_lock_fastlock(struct rt_mutex *lock,
+								 void  (*slowfn)(struct rt_mutex *lock,
+										 bool mg_off),
+								 bool do_mig_dis)
+			{
+				might_sleep_no_state_check();
+			
+				if (do_mig_dis)
+					migrate_disable();
+			
+				if (likely(rt_mutex_cmpxchg_acquire(lock, NULL, current)))
+					return;
+				else
+					slowfn(lock, do_mig_dis);
+			}
+
+	因此，在RT中，这里需要用原始自旋锁代替了`spin_lock`
 	- 相关patch
 		- [[file:3.0/drivers-dca-convert-dcalock-to-raw.patch][3.0]]
 
@@ -283,7 +366,7 @@
 
 - pattern 17
 	- `cpu_chill()代替cpu_relax()`
-	- 此处为了避免RT中Retry loops forever when the modifying side was preempted,用`cpu_chill()`	代替`cpu_relax()` on RT：`cpu_chill()`会睡眠一秒钟
+	- 此处为了避免RT中Retry loops forever when the modifying side was preempted,用`cpu_chill()`代替`cpu_relax()` on RT：`cpu_chill()`会睡眠一秒钟
 
 			#ifdef CONFIG_PREEMPT_RT_FULL
 			/*
