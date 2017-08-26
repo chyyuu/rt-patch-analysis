@@ -2,63 +2,63 @@
 # -*- coding: utf-8 -*-
 
 import gcc
+import pickle
 import gccutils
-import re
 import networkx as nx
-from collections import defaultdict
-
-G = nx.DiGraph()
-callee2caller = defaultdict(set)
-
-regex = re.compile(r'"(?P<caller>\w+)"\s->\s"(?P<callee>\w+)"')
-
-with open('callgraph.dot', 'r') as f:
-    data = f.read()
-
-for match in regex.finditer(data):
-    caller = match.group('caller')
-    callee = match.group('callee')
-    G.add_edge(caller, callee)
-    callee2caller[callee].add(caller)
-
-size = 0
-sleepable = set(callee2caller['___might_sleep'])
-critical = set(callee2caller['_raw_spin_lock_irqsave'])
-
-while len(sleepable) > size:
-    size = len(sleepable)
-
-    difference = set()
-    for callee in sleepable:
-        difference |= callee2caller[callee]
-
-    sleepable |= difference
-
-log = open('log.txt', 'w')
+from re import finditer
+from collections import defaultdict, deque
 
 
 class CheckingPass(gcc.GimplePass):
 
+    def __init__(self, name):
+        super(CheckingPass, self).__init__(name)
+        self.log = open('log.txt', 'a')
+        self.graph = pickle.load(open('graph.pkl', 'rb'))
+        self.sleepable = pickle.load(open('sleepable.pkl', 'rb'))
+        self.callee2caller = pickle.load(open('callee2caller.pkl', 'rb'))
+        self.lock = '_raw_spin_lock_irqsave'
+        # self.lock = 'arch_local_irq_disable'
+        # self.lock = '__preempt_count_add'
+        self.unlock = '_raw_spin_unlock_irqrestore'
+        # self.unlock = 'arch_local_irq_enable'
+        # self.unlock = '__preempt_count_sub'
+        self.global_count = 0
+
+    # This is called per-function during compilation:
     def execute(self, func):
-        # This is called per-function during compilation:
-        if not func.decl.name in critical:
+        if not func.decl.name in self.callee2caller[self.lock]:
             return
+        self.dfs(func.cfg.entry, set())
 
-        for bb in func.cfg.basic_blocks:
-            if bb.gimple:
-                for stmt in bb.gimple:
-                    if isinstance(stmt, gcc.GimpleCall):
-                        name = str(stmt).split(' (')[0]
-                        if name in sleepable:
-                            shortest_path = nx.shortest_path(
-                                G, name, '___might_sleep')
-                            log.write('{}:{}\n'.format(
-                                stmt.loc, ' -> '.join(shortest_path)))
+    def dfs(self, block, visited):
+        visited.add(block)
 
-    def check(self, node, loc):
-        if isinstance(node, gcc.GimpleCall):
-            raise Exception(node)
+        count = 0
+        for stmt in block.gimple:
+            if isinstance(stmt, gcc.GimpleCall):
+                name = str(stmt.fn)
+                if name == self.lock:
+                    count += 1
+                    self.global_count += 1
+                elif name == self.unlock:
+                    count -= 1
+                    self.global_count -= 1
+                elif self.global_count > 0 and name in self.sleepable:
+                    try:
+                        self.log.write('{}:{}\n'.format(stmt.loc, nx.all_shortest_path(self.graph, name, '___might_sleep')))
+                    except Exception as e:
+                        # self.log.write(str(e))
+                        pass
+
+        for edge in block.succs:
+            if not edge.dest in visited:
+                self.dfs(edge.dest, visited)
+
+        self.global_count -= count
+
+        visited.remove(block)
 
 # Wire up our callback:
-ps = CheckingPass(name='sleepatomic')
+ps = CheckingPass(name='SleepInAtomic')
 ps.register_after('cfg')

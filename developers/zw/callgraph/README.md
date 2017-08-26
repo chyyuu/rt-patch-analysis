@@ -16,7 +16,9 @@ Kernel Hacking  --->
 
 才能展开为`do { __might_sleep(__FILE, __LINE__, 0); do { } while (0); } while (0)`，`__might_sleep`会在atomic context中输出调试信息。因此`might_sleep`宏只能作为*annotation for functions that can sleep*，本身没有任何作用。
 
-# 使用egypt获取callgraph
+# 获取调用关系
+
+## 使用egypt获取调用关系
 
 首先安装[egypt](https://www.gson.org/egypt/)
 
@@ -28,7 +30,7 @@ make
 make install
 ```
 
-`make menuconfig`后修改Makefile，并在各个`CFLAGS`和`CXXFLAGS`中加入`-fdump-rtl-expand`选项，在Makefile中找到`# Make variables (CC, etc...)`并进行修改
+编译kernel时，在`make menuconfig`后修改Makefile，在Makefile中找到`# Make variables (CC, etc...)`并进行修改
 
 ```diff
 @@ -348,7 +348,7 @@
@@ -42,15 +44,35 @@ make install
  NM     = $(CROSS_COMPILE)nm
 ```
 
-编译完成后，使用以下命令生成DOT文件
+编译完成后，在目标目录使用以下命令生成DOT文件
 
 ```bash
-egypy `find . -name "*.expand"` --include-external > callgraph.dot
+egypt `find . -name "*.expand"` --include-external > callgraph.dot
 ```
+
+callgraph.dot包含了函数之间的调用关系。
+
+## 使用gcc-python-plugin获取调用关系
+
+在Makefile中找到`# Make variables (CC, etc...)`并进行修改
+
+```diff
+@@ -348,7 +348,7 @@
+ # Make variables (CC, etc...)
+ AS     = $(CROSS_COMPILE)as
+ LD     = $(CROSS_COMPILE)ld
+-CC     = $(CROSS_COMPILE)gcc
++CC     = $(CROSS_COMPILE)gcc -fplugin=~/gcc-python-plugin/python.so -fplugin-arg-python-script=~/rt-patch-analysis/developers/zw/callgraph/find_call.py
+ CPP        = $(CC) -E
+ AR     = $(CROSS_COMPILE)ar
+ NM     = $(CROSS_COMPILE)nm
+```
+
+编译完成后在目标目录下可找到callgraph.txt，该文件内包含了函数之间的调用关系。
 
 # 构造callgraph
 
-* [NetworkX](https://networkx.github.io/)
+首先使用`pip install networkx`安装[NetworkX](https://networkx.github.io/)包，在目标目录下运行build_graph.py以生成之后分析所需的文件。
 
 # 静态分析
 
@@ -79,18 +101,18 @@ git checkout tags/v0.15
 make
 ```
 
-在Makefile中找到`# Make variables (CC, etc...)`并进行修改
+在Kernel的Makefile中找到`# Make variables (CC, etc...)`并进行修改
 
 ```diff
 @@ -348,7 +348,7 @@
  # Make variables (CC, etc...)
  AS     = $(CROSS_COMPILE)as
  LD     = $(CROSS_COMPILE)ld
--CC     = $(CROSS_COMPILE)gcc -fdump-rtl-expand
+-CC     = $(CROSS_COMPILE)gcc
 +CC     = $(CROSS_COMPILE)gcc -fplugin=~/gcc-python-plugin/python.so -fplugin-arg-python-script=~/rt-patch-analysis/developers/zw/callgraph/check.py
  CPP        = $(CC) -E
  AR     = $(CROSS_COMPILE)ar
  NM     = $(CROSS_COMPILE)nm
 ```
 
-编译完成后检查log.txt文件
+编译内核，编译完成后检查log.txt文件。
