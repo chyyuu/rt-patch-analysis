@@ -1,0 +1,23 @@
+#Hunk #6 FAILED at 1398.
+
+--- kernel/fork.c
++++ kernel/fork.c
+@@ -1398,15 +1427,16 @@
+ 	spin_lock_init(&p->alloc_lock);
+ 
+ 	init_sigpending(&p->pending);
++	p->sigqueue_cache = NULL;
+ 
+ 	p->utime = p->stime = p->gtime = 0;
+ 	p->utimescaled = p->stimescaled = 0;
+ 	prev_cputime_init(&p->prev_cputime);
+ 
+ #ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
+-	seqlock_init(&p->vtime_seqlock);
++	seqcount_init(&p->vtime_seqcount);
+ 	p->vtime_snap = 0;
+-	p->vtime_snap_whence = VTIME_SLEEPING;
++	p->vtime_snap_whence = VTIME_INACTIVE;
+ #endif
+ 
+ #if defined(SPLIT_RSS_COUNTING)

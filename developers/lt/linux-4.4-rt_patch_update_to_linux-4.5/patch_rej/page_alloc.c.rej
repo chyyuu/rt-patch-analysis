@@ -1,0 +1,31 @@
+#Hunk #6 FAILED at 899.
+
+--- mm/page_alloc.c
++++ mm/page_alloc.c
+@@ -899,24 +947,12 @@
+ 			batch_free = to_free;
+ 
+ 		do {
+-			int mt;	/* migratetype of the to-be-freed page */
+-
+-			page = list_entry(list->prev, struct page, lru);
+-			/* must delete as __free_one_page list manipulates */
++			page = list_last_entry(list, struct page, lru);
+ 			list_del(&page->lru);
+ 
+-			mt = get_pcppage_migratetype(page);
+-			/* MIGRATE_ISOLATE page should not go to pcplists */
+-			VM_BUG_ON_PAGE(is_migrate_isolate(mt), page);
+-			/* Pageblock could have been isolated meanwhile */
+-			if (unlikely(has_isolate_pageblock(zone)))
+-				mt = get_pageblock_migratetype(page);
+-
+-			__free_one_page(page, page_to_pfn(page), zone, 0, mt);
+-			trace_mm_page_pcpu_drain(page, 0, mt);
++			list_add(&page->lru, dst);
+ 		} while (--to_free && --batch_free && !list_empty(list));
+ 	}
+-	spin_unlock(&zone->lock);
+ }
+ 
+ static void free_one_page(struct zone *zone,

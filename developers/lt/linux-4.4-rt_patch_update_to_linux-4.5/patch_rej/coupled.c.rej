@@ -1,0 +1,12 @@
+### Reversed (or previously applied) patch detected!  Skipping patch.
+
+--- drivers/cpuidle/coupled.c
++++ drivers/cpuidle/coupled.c
+@@ -119,7 +119,6 @@
+ 
+ #define CPUIDLE_COUPLED_NOT_IDLE	(-1)
+ 
+-static DEFINE_MUTEX(cpuidle_coupled_lock);
+ static DEFINE_PER_CPU(struct call_single_data, cpuidle_coupled_poke_cb);
+ 
+ /*

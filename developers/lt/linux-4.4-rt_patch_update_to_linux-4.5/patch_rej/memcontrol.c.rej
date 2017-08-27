@@ -1,0 +1,51 @@
+#Hunk #6 FAILED at 4697.
+#Hunk #7 FAILED at 5492.
+#Hunk #10 FAILED at 5809.
+
+--- mm/memcontrol.c
++++ mm/memcontrol.c
+@@ -4697,12 +4703,12 @@
+ 
+ 	ret = 0;
+ 
+-	local_irq_disable();
++	local_lock_irq(event_lock);
+ 	mem_cgroup_charge_statistics(to, page, nr_pages);
+ 	memcg_check_events(to, page);
+ 	mem_cgroup_charge_statistics(from, page, -nr_pages);
+ 	memcg_check_events(from, page);
+-	local_irq_enable();
++	local_unlock_irq(event_lock);
+ out_unlock:
+ 	unlock_page(page);
+ out:
+@@ -5492,10 +5498,10 @@
+ 		VM_BUG_ON_PAGE(!PageTransHuge(page), page);
+ 	}
+ 
+-	local_irq_disable();
++	local_lock_irq(event_lock);
+ 	mem_cgroup_charge_statistics(memcg, page, nr_pages);
+ 	memcg_check_events(memcg, page);
+-	local_irq_enable();
++	local_unlock_irq(event_lock);
+ 
+ 	if (do_swap_account && PageSwapCache(page)) {
+ 		swp_entry_t entry = { .val = page_private(page) };
+@@ -5809,12 +5816,16 @@
+ 	 * important here to have the interrupts disabled because it is the
+ 	 * only synchronisation we have for udpating the per-CPU variables.
+ 	 */
++	local_lock_irqsave(event_lock, flags);
++#ifndef CONFIG_PREEMPT_RT_BASE
+ 	VM_BUG_ON(!irqs_disabled());
++#endif
+ 	mem_cgroup_charge_statistics(memcg, page, -1);
+ 	memcg_check_events(memcg, page);
+ 
+ 	if (!mem_cgroup_is_root(memcg))
+ 		css_put(&memcg->css);
++	local_unlock_irqrestore(event_lock, flags);
+ }
+ 
+ /**

@@ -1,0 +1,19 @@
+#Hunk #28 FAILED at 4701.
+
+--- kernel/rcu/tree.c
++++ kernel/rcu/tree.c
+@@ -4701,12 +4826,13 @@
+ 
+ 	rcu_bootup_announce();
+ 	rcu_init_geometry();
++#ifndef CONFIG_PREEMPT_RT_FULL
+ 	rcu_init_one(&rcu_bh_state, &rcu_bh_data);
++#endif
+ 	rcu_init_one(&rcu_sched_state, &rcu_sched_data);
+ 	if (dump_tree)
+ 		rcu_dump_rcu_node_tree(&rcu_sched_state);
+ 	__rcu_init_preempt();
+-	open_softirq(RCU_SOFTIRQ, rcu_process_callbacks);
+ 
+ 	/*
+ 	 * We don't need protection against CPU-hotplug here because
