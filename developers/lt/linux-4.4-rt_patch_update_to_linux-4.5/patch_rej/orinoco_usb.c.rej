@@ -1,0 +1,19 @@
+#can't find file to patch
+#Skipping patch.
+#1 out of 1 hunk ignored
+
+diff --git a/drivers/net/wireless/orinoco/orinoco_usb.c b/drivers/net/wireless/orinoco/orinoco_usb.c
+index f2cd513d54b2..6c0f4c9638a2 100644
+--- a/drivers/net/wireless/orinoco/orinoco_usb.c
++++ b/drivers/net/wireless/orinoco/orinoco_usb.c
+@@ -697,7 +697,7 @@ static void ezusb_req_ctx_wait(struct ezusb_priv *upriv,
+                        while (!ctx->done.done && msecs--)
+                                udelay(1000);
+                } else {
+-                       wait_event_interruptible(ctx->done.wait,
++                       swait_event_interruptible(ctx->done.wait,
+                                                 ctx->done.done);
+                }
+                break;
+
+

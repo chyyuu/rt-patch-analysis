@@ -1,0 +1,21 @@
+#Hunk #1 FAILED at 148.
+
+--- include/linux/init_task.h
++++ include/linux/init_task.h
+@@ -148,9 +148,15 @@
+ # define INIT_PERF_EVENTS(tsk)
+ #endif
+ 
++#ifdef CONFIG_PREEMPT_RT_BASE
++# define INIT_TIMER_LIST		.posix_timer_list = NULL,
++#else
++# define INIT_TIMER_LIST
++#endif
++
+ #ifdef CONFIG_VIRT_CPU_ACCOUNTING_GEN
+ # define INIT_VTIME(tsk)						\
+-	.vtime_seqlock = __SEQLOCK_UNLOCKED(tsk.vtime_seqlock),	\
++	.vtime_seqcount = SEQCNT_ZERO(tsk.vtime_seqcount),	\
+ 	.vtime_snap = 0,				\
+ 	.vtime_snap_whence = VTIME_SYS,
+ #else

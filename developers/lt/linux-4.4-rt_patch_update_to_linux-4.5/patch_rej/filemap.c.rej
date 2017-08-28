@@ -1,0 +1,15 @@
+#Hunk #2 FAILED at 221.
+
+--- mm/filemap.c
++++ mm/filemap.c
+@@ -221,7 +224,9 @@
+ 	if (!workingset_node_pages(node) &&
+ 	    list_empty(&node->private_list)) {
+ 		node->private_data = mapping;
+-		list_lru_add(&workingset_shadow_nodes, &node->private_list);
++		local_lock(workingset_shadow_lock);
++		list_lru_add(&__workingset_shadow_nodes, &node->private_list);
++		local_unlock(workingset_shadow_lock);
+ 	}
+ }
+ 

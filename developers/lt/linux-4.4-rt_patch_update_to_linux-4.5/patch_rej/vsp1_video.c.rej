@@ -1,0 +1,14 @@
+#Reversed (or previously applied) patch detected!  Skipping patch.
+#1 out of 1 hunk ignored
+
+--- drivers/media/platform/vsp1/vsp1_video.c
++++ drivers/media/platform/vsp1/vsp1_video.c
+@@ -520,7 +520,7 @@
+ 	bool stopped;
+ 
+ 	spin_lock_irqsave(&pipe->irqlock, flags);
+-	stopped = pipe->state == VSP1_PIPELINE_STOPPED,
++	stopped = pipe->state == VSP1_PIPELINE_STOPPED;
+ 	spin_unlock_irqrestore(&pipe->irqlock, flags);
+ 
+ 	return stopped;

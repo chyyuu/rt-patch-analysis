@@ -1,0 +1,26 @@
+#Hunk #3 FAILED at 786.
+
+--- fs/dcache.c
++++ fs/dcache.c
+@@ -786,9 +789,18 @@
+ 	return;
+ 
+ kill_it:
+-	dentry = dentry_kill(dentry);
+-	if (dentry) {
+-		cond_resched();
++	parent = dentry_kill(dentry);
++	if (parent) {
++		int r;
++
++		if (parent == dentry) {
++			/* the task with the highest priority won't schedule */
++			r = cond_resched();
++			if (!r)
++				cpu_chill();
++		} else {
++			dentry = parent;
++		}
+ 		goto repeat;
+ 	}
+ }

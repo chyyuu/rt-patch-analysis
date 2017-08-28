@@ -1,0 +1,15 @@
+#Hunk #3 FAILED at 358.
+
+--- kernel/watchdog.c
++++ kernel/watchdog.c
+@@ -358,8 +367,9 @@
+ 				!test_and_set_bit(0, &hardlockup_allcpu_dumped))
+ 			trigger_allbutself_cpu_backtrace();
+ 
++		raw_spin_unlock(&watchdog_output_lock);
+ 		if (hardlockup_panic)
+-			panic("Hard LOCKUP");
++			nmi_panic(regs, "Hard LOCKUP");
+ 
+ 		__this_cpu_write(hard_watchdog_warn, true);
+ 		return;
