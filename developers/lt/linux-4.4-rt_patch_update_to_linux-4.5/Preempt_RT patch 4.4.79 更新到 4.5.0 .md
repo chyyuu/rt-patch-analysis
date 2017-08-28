@@ -73,12 +73,12 @@ kernel代码有差别，如下图。但是patch文件修改的地方没差别，
 （2）Hunk #7 FAILED.
 
 和Hunk #6类似的问题，kernel代码有区别，如下图。patch文件比较好改，但是同样的，kernel代码的差别会不会引起运行时的bug还需要更深入的分析。
-![mm/memcontrol](https://github.com/lighttime0/pictures/blob/master/mm:memcontrol_Hunk#7.png)
+![mm/memcontrol](https://github.com/lighttime0/pictures/blob/master/mm:memcontrol_Hunk%237.png)
 
 （3）Hunk #10 FAILED.
 
 和Hunk #6类似的问题，kernel代码有区别，如下图。patch文件比较好改，但是同样的，kernel代码的差别会不会引起运行时的bug还需要更深入的分析。
-![mm/memcontrol](https://github.com/lighttime0/pictures/blob/master/mm:memcontrol_Hunk#10.png)
+![mm/memcontrol](https://github.com/lighttime0/pictures/blob/master/mm:memcontrol_Hunk%2310.png)
 
 #### 12 /arch/x86/kernel/nmi.c
 在Linux-4.5.0中，此处修改已经加入了kernel代码，不需要打patch。
