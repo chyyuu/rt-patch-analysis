@@ -1,0 +1,86 @@
+#!/bin/bash
+
+umask 002
+
+export PATH=$PATH:$LKP_SRC/bin
+
+#. $LKP_SRC/lib/bootstrap.sh
+
+redirect_stdout_stderr0()
+{
+        exec  > /tmp/stdout
+        exec 2> /tmp/stderr
+
+        ln -sf /usr/bin/tail /bin/tail-to-console
+        ln -sf /usr/bin/tail /bin/tail-to-serial
+
+        # write log to screen as well so that we can see them
+        # even network is broken
+
+        for i in $(seq 10)
+        do
+                [ -c /dev/console ] &&
+                [ -c /dev/ttyS0   ] && break
+                sleep 1
+        done
+
+        # the test fixes "cannot create /dev/console: Input/output error"
+        [ -c /dev/console ] &&
+        tail-to-console -f /tmp/stdout /tmp/stderr > /dev/console &
+
+        # some machines do not have serial console, writing to /dev/ttyS0 may fail
+        [ -c /dev/ttyS0 ] &&
+        echo > /dev/ttyS0 2>/dev/null && {
+                tail-to-serial -f /tmp/stderr > /dev/ttyS0 2>/dev/null &
+        }
+}
+
+run_job()
+{
+	local job=$1
+	local job_yaml="jobs/$j.yaml"
+	echo Running lkp job:$job_yaml
+
+	cd $LKP_SRC
+
+	jobs_dir="/tmp/jobs"
+	[[ -d $jobs_dir ]] || mkdir -p $jobs_dir
+
+	#RESULT_ROOT="$lresult_root$job"
+	#[[ -d $RESULT_ROOT ]] || mkdir -p $RESULT_ROOT
+
+	#lkp install $LKP_SRC/$job_yaml
+	split_job=$( lkp split -o $jobs_dir $LKP_SRC/$job_yaml | awk '/\.yaml/ {print $3}' )
+	echo -e "\033[32m $split_job \033[0m"
+
+	#lkp compile -o ${split_job}.sh $split_job
+	
+	#lkp run -o $RESULT_ROOT $split_job
+	lkp run $split_job
+}
+
+redirect_stdout_stderr0
+
+echo $(id) PATH=$PATH JOBS=$job
+
+lresult_root="/result/"
+mount -t 9p -o trans=virtio $result_service $lresult_root -oversion=9p2000.L,posixacl,cache=loose
+if [ $? -ne 0 ]; then
+	echo -e "\033[31m Mount virtio 9p ERROR! \033[0m"
+else
+	echo -e "\033[32m Mounted 9p $result_service to $lresult_root \033[0m"
+fi  
+
+for j in `echo $job | sed "s/\,/\ /g"`
+do
+	jobs_yaml="$LKP_SRC/jobs/$j.yaml"
+	[ -a "$jobs_yaml" ] || {
+		echo LKP job:$jobs_yaml does not exist.
+		continue
+	}
+
+	run_job $j
+done
+
+echo -e "\033[32m LKP jobs finished. \033[0m"
+
