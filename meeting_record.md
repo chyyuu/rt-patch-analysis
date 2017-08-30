@@ -374,4 +374,11 @@ might_sleep等情况）中进行正确且实时性高的保护，应该如何设
     矛俊杰建议可以采用给每个statment着色的方法(preempt_disable开始，以后开始着色，然后找了preempt_enable以后停止着色）
     还可以看哪些函数调用了might_sleep，然后再看第2级调用了might_sleep的函数，倒着推（好像是这样，没有记清楚）	
 
-
+## 2017.8.26 rt内核版本升级
+```
+4.2 yxg
+4.3 mym
+4.5 lt
+4.7 zzm
+4.12 zw
+```
