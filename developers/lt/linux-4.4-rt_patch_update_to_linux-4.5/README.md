@@ -4,6 +4,10 @@
 
 ​	使用Linux-4.4.79-rt92.patch更新Linux-4.5.0。
 
+项目进度：
+
+​	已经手动更改好了patch，正在处理编译过程中的bug。
+
 文件说明：
 
 ​	patch_log.txt：将patch打到kernel代码上时的信息。
@@ -11,5 +15,7 @@
 ​	patch_rej：打patch时出现冲突的Hunk。
 
 ​	patch-4.4.79-rt92.patch：patch文件
+
+​	patch-4.4.79-rt92_after_change.patch：手动修改了冲突之后的patch。
 
 ​	Preempt_RT patch 4.4.79 更新到 4.5.0.md：自己对出现冲突的Hunk做的分析，未完待续。
