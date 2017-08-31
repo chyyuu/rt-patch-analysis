@@ -105,6 +105,8 @@ patch好修改，语义问题**留坑**。
 
 这两处修改在linux-4.5.0中已经加入kernel代码，不需要打这两个Hunk。
 
+编译过程中，发现Hunk #1中对`nmi_panic_self_stop`函数的定义已经加入到kernel代码中，对`nmi_panic`的定义在linux-4.5.0中加入到`include/linux/kernel.h`中。在patch中将Hunk #1删除。
+
 #### 16 /arch/x86/kernel/reboot.c
 错误信息：`Can't find file to patch. Skipping patch. 3 out of 3 hunks ignored.`
 
@@ -135,13 +137,13 @@ patch好修改，语义问题**留坑**。
 
 （2）错误信息：`Hunk #10 FAILED.`
     linux-4.5.0在这处修改中增加了一个if的判断条件，可能存在一些语义上的隐患，**留坑**。
-    
+
 #### 21 /kernel/rcu/tree.c
 错误信息：`Hunk #28 FAILED.`
 
 linux-4.5.0在这里代码有些差别，可能存在一些语义上的隐患，**留坑**。
 
-    
+
 #### 22 /mm/truncate.c
 错误信息：`Hunk #1 FAILED.`
 
@@ -161,4 +163,26 @@ linux-4.5.0在这处修改上有一些代码变化，可能存在一些语义上
 错误信息：`Hunk #3 FAILED.`
 
 Hunk #3的两处修改，一处已经加入到linux-4.5.0的代码中，另一处没有语义隐患。
+
+#### 26 /kernel/ksysfs.c
+编译错误。
+
+patch中的定位有问题，需要改一下。
+
+#### 27 /kernel/futex.c
+编译错误：`inplicit declaration of function 'free_pi_state'`
+
+根据`https://patchwork.kernel.org/patch/7890761/`可以看出，在linux-4.5.0中，`free_pi_state`被修改为`put_pi_state`。
+
+#### 28 /kernel/stop_machine.c
+
+编译错误。
+
+经排查，需要在linux-4.5.0上手动修改四行代码，都是将`spin_lock`修改为`raw_spin_lock`。
+
+#### 29 /mm/filemap.c
+
+编译错误。
+
+需要在`/mm/filemap.c`第663行，将`workingset_shadow_nodes`修改为`__workingset_shadow_nodes`。
 
