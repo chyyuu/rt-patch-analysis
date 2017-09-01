@@ -189,6 +189,12 @@
 
 					
 - **编译内核过程：**
+	
+		
+	- 编译环境：
+	
+			Linux version 4.10.0-33-generic (buildd@lgw01-22) (gcc version 5.4.0 20160609 
+			(Ubuntu 5.4.0-6ubuntu1~16.04.4) ) #37~16.04.1-Ubuntu SMP Fri Aug 11 14:07:24 UTC 2017
 	- make O=../v4.7-rt defconfig 	
 
 		- make defconfig:按照默认的配置文件arch/i386/defconfig对内核进行配置，生成.config可以用作初始化配置，然后再使用make menuconfig进行定制化配置
