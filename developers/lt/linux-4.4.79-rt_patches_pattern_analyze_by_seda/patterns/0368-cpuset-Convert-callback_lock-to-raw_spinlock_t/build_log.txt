@@ -1,0 +1,11 @@
+base commit: b7003904c8d2^1
+target commit: b7003904c8d2
+checking out base commit... ok (1s)
+formatting diff... ok (1s)
+1 source file(s) touched in the old version
+`-- kernel/cpuset.c
+1 source file(s) touched in the new version
+`-- kernel/cpuset.c
+compile base commit... ok (9s)
+apply b7003904c8d2... ok (9s)
+compile target commit... ok (14s)
