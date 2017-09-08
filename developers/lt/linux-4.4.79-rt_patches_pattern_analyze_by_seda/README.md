@@ -16,7 +16,7 @@
 
 ​	patterns文件夹：
 
-​		该文件夹下每个子文件夹表示一个commit的patch，里面放了用seda分析的过程和结果文件，build_log	和prepare_log是过程log，coccigen_result是抽取出的pattern。
+​		该文件夹下每个子文件夹表示一个commit的patch，里面放了用seda分析的过程和结果文件，以及原本的patch文件，build_log	和prepare_log是过程log，coccigen_result是从patch中抽取出的pattern。
 
 ### 
 
