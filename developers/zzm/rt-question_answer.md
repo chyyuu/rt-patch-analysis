@@ -49,9 +49,10 @@ The problem with this feature, from the realtime developers' point of view, is t
 - 相比于waitqueue,Simple wait queues作了如下调整：
  - mixing INTERRUPTIBLE and UNINTERRUPTIBLE sleeps on the same waitqueue;all wakeups are TASK_NORMAL in order to avoid O(n) lookups for the right sleeper state.
  
- *  the exclusive mode; because this requires preserving the list order and this is hard.
+	-  the exclusive mode; because this requires preserving the list order and this is hard.
 
- * custom wake functions; because you cannot give any guarantees about random code.
+
+	-  custom wake functions; because you cannot give any guarantees about random code.
 
 - 相关patch的替换为：
 	- completion-use-simple-wait-queues.patch
@@ -117,7 +118,7 @@ Q5.
 
 - `per_cpu()`：获得一个为用`DEFINE_PER_CPU`宏为CPU选择的一个每CPU数组元素，CPU由cpu指定，数组名称为name：`#define per_cpu(var, cpu)     (*((void)(cpu), &per_cpu__##var))`
 
-- `gut_cpu_var`:先禁用内核抢占，然后在每CPU数组name中，为本地CPU选择元素：`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
+- `get_cpu_var`:先禁用内核抢占，然后在每CPU数组name中，为本地CPU选择元素：`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
 - 此处同样存在-RT下，在调用`gut_cpu_var`时禁止抢占，同时可能会持有睡眠锁，在抢断禁止的情况可能导致调度延迟，从而影响实时性，所以需要用`get_cpu_light();&per_cpu();put_cpu_light()`这样的组合，允许抢占，但不允许迁移。
 
@@ -177,7 +178,7 @@ Q5.
 			
 	- 而`get_cpu_var()`的定义为（禁止了抢占）
 	
-			 `#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
+			`#define get_cpu_var(var) (*({ preempt_disable(); &__get_cpu_var(var); }))`
 
 
 从代码中可以看出，在!RT或UP内核中`get_locked_var; put_locked_var OR  get_local_var;put_local_var`直接被定义为`get_cpu_var;put_cpu_var`。在-RT或SMP内核中，为增加抢占区域，将`preempt_disable()`替换为`migrate_disable()`。
