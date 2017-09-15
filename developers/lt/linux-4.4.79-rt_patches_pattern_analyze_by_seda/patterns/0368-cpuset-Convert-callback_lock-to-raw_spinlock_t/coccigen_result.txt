@@ -1,0 +1,20 @@
+//# pattern-1, witnesses: 13
+@@
+expression list listE0;
+@@
+- spin_lock_irq(listE0)
++ raw_spin_lock_irq
+//# pattern-3, witnesses: 13
+@@
+expression list listE0;
+@@
+- spin_unlock_irq(listE0)
++ raw_spin_unlock_irq
+//# pattern-2, witnesses: 3
+@@
+@@
+- spin_lock_irqsave(&callback_lock, flags);
+- spin_unlock_irqrestore(&callback_lock, flags);
++ raw_spin_lock_irqsave(&callback_lock, flags);
++ raw_spin_unlock_irqrestore(&callback_lock, flags);
+
